@@ -1,33 +1,39 @@
 # Repository Audit
 
-Remediation date: 2026-07-24. No implementation or dependency files were added, and teammate material was preserved.
+Remediation date: 2026-07-24. No implementation or dependency files were added, and no teammate work was deleted.
+
+## Status versus disposition
+
+`CONFIRMED`, `CONFLICT`, and `UNKNOWN` describe the certainty of a requirement. `KEEP`, `QUARANTINE`, `ARCHIVE`, and `REMOVE LATER` describe what should happen to a file. A file’s disposition does not make its contents authoritative.
 
 ## Current disposition
 
-| Path/scope | Purpose | Classification | Verified state | Unsupported state | Required action |
-|---|---|---|---|---|---|
-| `README.md` | Project entry point | KEEP | Verified-requirements phase, companion link, structural baseline, Cop assignment | Runtime commands/mechanics | Keep synchronized with ledger |
-| `LICENSE` | Team code license | KEEP WITH WARNING | License file remains | Application to lecturer material | MIT applies only to team-authored material where legally valid |
-| `.env-example` and `.gitignore` | Secret hygiene | KEEP WITH WARNING | Required pattern confirmed by `PS-006` | Provider-specific variables | Revisit when integrations are confirmed |
-| `config/README.md` | Configuration status | KEEP | Active runtime config is absent | None | Controlling config notice |
-| `config/drafts/cop/*` | Historical Cop config drafts | QUARANTINE | Located outside active-looking role paths; valid draft syntax | All filenames, fields, versions, schemas, and values | Never load; replace only from official evidence |
-| `archive/pre-audit/opposite-role-config/thief/*` | Preserved opposite-role drafts | ARCHIVE | Outside active config tree; teammate work retained | All runtime/schema claims | Cop implementation must ignore |
-| `docs/REQUIREMENTS_LEDGER.md` | Evidence ledger | KEEP | Canonical `SR-*`, `PS-*`, and `COP-001` baseline | Runtime unknowns | Update only with direct evidence |
-| `docs/SHARED_REQUIREMENT_BASELINE.md` | Cross-repository baseline | KEEP | Contains only shared confirmed structural/professional requirements | Gameplay/simulator details excluded | Synchronize wording with Thief repo |
-| `docs/UNKNOWN_REQUIREMENTS.md` | Blocker register | KEEP | Runtime details remain UNKNOWN | None promoted indirectly | Resolve field by field |
-| `docs/SPECIFICATION_CONFLICTS.md` | Conflict register | KEEP | Required conflicts/discrepancies preserved | No silent resolution | Import direct evidence |
-| `docs/PROMPT_LOG.md` | Prompt engineering log | KEEP | Canonical path confirmed by `PS-009` | Historical entries are not requirements | Continue maintaining |
-| Legacy `docs/PRD*`, `PLAN.md`, `TODO.md` | Historical planning | QUARANTINE | Quarantine notices present | Numerous premature mechanics/values | Do not implement from them |
-| `docs/SIMULATOR_BASELINE.md` | Simulator dependency record | KEEP WITH WARNING | Pinned public commit recorded | No centralized reverse-engineering export | Await planning-repo export |
-| `Material/` | Untracked source/reference material | KEEP WITH WARNING | Preserved and read | Summaries/translations are nonbinding | Do not stage as implementation |
+| Path/scope | Purpose | Classification | Current state | Required action |
+|---|---|---|---|---|
+| `README.md` | Project entry point | KEEP | Verified-requirements phase | Keep synchronized with the ledger |
+| `LICENSE` | Team code license | KEEP WITH WARNING | Retained; does not automatically relicense lecturer material | Complete licensing review later |
+| `.env-example` | Secret-file template | KEEP | Neutral; contains no selected provider or credential variable | Add placeholders only after decisions are confirmed |
+| `.gitignore` | Secret and generated-file exclusions | KEEP WITH WARNING | Existing exclusions retained | Recheck when integrations are confirmed |
+| `config/README.md` | Configuration status | KEEP | Confirms there is no runtime configuration | Controlling config notice |
+| `config/drafts/cop/*` | Historical Cop config drafts | QUARANTINE | Unverified drafts outside active-looking role paths | Never load |
+| `archive/pre-audit/opposite-role-config/thief/*` | Opposite-role drafts | ARCHIVE | Preserved outside active config tree | Cop implementation must ignore |
+| `archive/pre-audit/documentation/*` | Complete legacy PRD/PLAN/TODO/mechanism documents | ARCHIVE | Unsupported pre-verification plans preserved with history | History and idea recovery only |
+| Active `docs/PRD.md`, `PLAN.md`, `TODO.md` | Current product/plan/task status | KEEP | Short verified-phase stubs | Update only from direct evidence |
+| Active mechanism PRDs | Subsystem status | KEEP | Short blocked/unknown stubs | Add requirements only when confirmed |
+| `docs/PROMPT_LOG.md` | Development provenance | KEEP WITH WARNING | Historical prompts retained; warning states they are nonauthoritative | Continue maintaining provenance |
+| `docs/REQUIREMENTS_LEDGER.md` | Evidence ledger | KEEP | Canonical confirmed baseline and runtime unknowns | Direct evidence required for changes |
+| `docs/SHARED_REQUIREMENT_BASELINE.md` | Cross-repository baseline | KEEP | Shared confirmed structural/professional requirements | Synchronize separately with Thief repository |
+| `docs/UNKNOWN_REQUIREMENTS.md` | Blocker register | KEEP | Runtime details remain unknown | Resolve field by field |
+| `docs/SPECIFICATION_CONFLICTS.md` | Conflict register | KEEP | Required conflicts/discrepancies preserved | Do not resolve silently |
+| `Material/` | Untracked source/reference material | KEEP WITH WARNING | Preserved; summaries/translations remain nonbinding | Do not stage as implementation |
 
 ## Remediation results
 
+- Legacy PRD, PLAN, TODO, and mechanism documents are archived intact.
+- Active planning documents are verified-phase stubs.
+- The former 600-plus-task backlog is not active or executable-looking.
+- `.env-example` is neutral and provider-independent.
 - Active runtime configuration: **none**.
-- Cop drafts: `config/drafts/cop/`.
-- Thief drafts: `archive/pre-audit/opposite-role-config/thief/`.
-- Injected audit-only JSON fields: removed from all drafts.
-- Old active-looking `config/police/` and `config/thief/` files: absent.
-- README: corrected; no installation/run commands or section-count claim.
-- Shared structural requirements: confirmed under canonical IDs.
-- Runtime mechanics, schemas, values, and simulator-dependent details: still `UNKNOWN`.
+- No gameplay, FastMCP runtime, cryptography, strategy, Gmail, GUI, replay, reporting, package, or test implementation is authorized.
+- No teammate work was deleted.
+- Phase 1 remains blocked by the active TODO and unknown-requirements ledger.

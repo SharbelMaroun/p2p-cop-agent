@@ -1,3 +1,7 @@
+> **KEEP WITH WARNING.**
+> This document records development provenance.
+> Prompts and AI outputs are not authoritative requirement evidence and cannot independently change a requirement to `CONFIRMED`.
+
 # PROMPTS — Prompt Engineering Log ("Prompt Book")
 
 - **Document version:** 1.00 · **Status:** LIVING DOCUMENT — update with every significant AI-assisted step (guidelines §8.3)
@@ -60,6 +64,17 @@
 - **Prompt (essence):** "Check if everything is made according to `police_thief_p2p_PerPage_Condensed.md`, `police_thief_p2p_Summary.md` and `software_submission_guidelines-V3_Summary.md`."
 - **Output:** rule-by-rule sweep of Appendix E (55 rules) + Appendix F tables + guidelines §1–20 against PRD/PLAN/TODO/5 PRDs. Three confirmed gaps fixed: (1) **rule 49** — the game-end JSON needs **four** repo links (two per team), docs said "both"; (2) **rule 23** — the scent-model pre-game crypto-lock was only implicit in the signed `game.json`, now explicit in NET-7 + scent PRD; (3) guidelines **§10** UI documentation (workflows, accessibility, Nielsen heuristics) had no task. Plus stale "620-task" references reconciled to 635. New tasks T633–T635 (Addendum B).
 - **Lesson:** suspicious grep targets for audits are *counted things* ("both", "two", "all") — a source that says "four links" while the doc says "both links" is exactly the class of bug summaries introduce; verify every quantity against the primary source, not the derived one.
+
+---
+
+## P-008 — Requirements audit and legacy-document remediation
+
+- **Date:** 2026-07-24 · **Tool:** Codex
+- **Goal:** prevent pre-verification plans from being mistaken for approved requirements.
+- **Prompt (essence):** audit every repository file, quarantine unsupported configuration, confirm only directly supported structural requirements, and remove active-looking legacy planning documents.
+- **Output:** the first repository audit created evidence ledgers and quarantine notices; the remediation moved unsafe configuration drafts, confirmed the structural baseline, archived the complete legacy PRD/PLAN/TODO/mechanism documents, and replaced active copies with short verified-phase stubs.
+- **Mistake corrected:** quarantine warnings alone were insufficient, especially when large documents could be read partially or when warnings were not encountered before implementation details.
+- **Lesson:** unsafe historical plans belong in an explicit archive; active documentation should expose only current verified status and link to evidence.
 
 ---
 
