@@ -1,6 +1,6 @@
-# REQUIREMENTS AUDIT: QUARANTINED UNVERIFIED DRAFT. This is Thief-role material
-# inside the Cop repository and must not be loaded or used to define Cop behavior.
-# PRIVATE per-peer configuration (legacy claim; not yet verified).
+# Historical unverified Cop draft. Do not load as runtime configuration.
+# Exact fields, filenames, versions, values, and schema remain UNKNOWN.
+# The following comments and values are preserved for audit history only.
 # The shared game.json OVERRIDES any matching game condition here.
 version = "1.00"
 
@@ -15,12 +15,12 @@ cop = "https://github.com/SharbelMaroun/p2p-cop-agent"
 thief = "https://github.com/SharbelMaroun/p2p-thief-agent"
 
 [network]
-my_port = 8801
-opponent_url = "http://127.0.0.1:8802/mcp"
+my_port = 8802
+opponent_url = "http://127.0.0.1:8801/mcp"
 turn_timeout_seconds = 180
 
 # [strategy]
-# thief_class = "<pkg>.strategy:ThiefBrain"   # package.module:Class — unset = default heuristic
+# police_class = "<pkg>.strategy:PoliceBrain"   # package.module:Class — unset = default heuristic
 
 [trash_talk]
 provider = "template"   # template (0 tokens, default) | ollama | claude_api | claude_cli

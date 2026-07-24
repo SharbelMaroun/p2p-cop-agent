@@ -1,5 +1,4 @@
 {
-  "_audit_status": "UNKNOWN - quarantined draft; Cop repository must not load",
   "version": "1.00",
   "rate_limits": {
     "requests_per_minute": 30,

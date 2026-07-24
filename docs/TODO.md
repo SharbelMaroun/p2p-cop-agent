@@ -22,7 +22,7 @@
 - [x] **T007** (P0) Write `docs/PRD_p2p_mcp.md` (networking mechanism)
 - [x] **T008** (P0) Write `docs/PRD_gatekeeper_reporting.md` (reporting mechanism)
 - [ ] **T009** (P1) Create `docs/ADR/` and seed ADR-1…ADR-7 as separate records *(ADRs currently live in PLAN §8)*
-- [x] **T010** (P1) Create `docs/PROMPTS.md` prompt-engineering log skeleton
+- [x] **T010** (P1) Create `docs/PROMPT_LOG.md` prompt-engineering log skeleton
 - [ ] **T011** (P1) Draft `README.md` skeleton with the 6 required report sections
 - [ ] **T012** (P2) Create `docs/GLOSSARY.md` (Dec-POMDP, stigmergy, commit-reveal, …)
 - [ ] **T013** (P2) Add a docs index / table of contents
@@ -694,7 +694,7 @@
 - [ ] **T539** (P2) Demo GIF / video link
 
 ### 8.E Process docs
-- [ ] **T540** (P1) Complete `docs/PROMPTS.md` (significant AI prompts, context, outputs)
+- [ ] **T540** (P1) Complete `docs/PROMPT_LOG.md` (significant AI prompts, context, outputs)
 - [ ] **T541** (P1) Finalize ADR records (rationale, trade-offs)
 - [ ] **T542** (P1) C4 + UML diagrams in `PLAN.md` / `docs/`
 - [ ] **T543** (P2) Deployment/run diagram

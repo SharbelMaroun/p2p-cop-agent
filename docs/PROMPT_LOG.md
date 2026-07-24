@@ -69,3 +69,4 @@
 3. **Mechanical verifiability** — sequential IDs, one item per line, grep-checkable counts and section lists.
 4. **Reference ≠ spec** — log every reference-code deviation and let the book win (ADRs).
 5. **Audit passes are prompts too** — schedule an explicit "find what's missing" pass after any large generation; it found 4 real gaps here.
+> Canonical prompt-engineering log path confirmed by Professional Software Submission Guidelines v3.0, page 19.

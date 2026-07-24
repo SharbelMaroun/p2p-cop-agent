@@ -112,7 +112,7 @@ Capture: Cop **20** / Thief **5**. Survival: Cop **5** / Thief **10**. Tie **2**
 ## 5. Assumptions, Dependencies, Constraints
 - **Assumptions:** opponents obey the rulebook + Appendix F; both sides load byte-identical `game.json`.
 - **Dependencies:** `fastmcp`, Gmail API + OAuth, a tunnel service, `uv`, `ruff`, `pytest`.
-- **Constraints:** Appendix F values are minimums (raise by agreement, never lower); "Fixed" values immutable; where the reference engine differs from the book, **the book wins** (e.g. scent decay multiplicative).
+- **Constraints:** Exact Appendix F values and their fixed/minimum/negotiated statuses remain `UNKNOWN` pending field-level verification. The official book controls over illustrative simulator behavior.
 
 ---
 
