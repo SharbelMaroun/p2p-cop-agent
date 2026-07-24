@@ -53,3 +53,4 @@ Decision = {move_type, direction, hint, verdict, reasoning, response_seconds}
 
 ## 9. Test scenarios (→ T191, T200, T210-212, T219, T225)
 - Thief picks the max-distance legal move. · Police picks the min-distance move + valid barrier. · Illegal move never returned (surrounded → HOLD). · Bad `[strategy]` selector fails fast. · Same seed → identical game. · Benchmark harness reports win-rate vs baselines.
+> **QUARANTINED — requirements audit:** This legacy draft contains unverified Cop and Thief strategy behavior. This repository is Cop-only; do not implement Thief behavior here.

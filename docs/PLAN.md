@@ -204,3 +204,4 @@ Both repos share the engine core; they differ only in default role + strategy cl
   notebooks/  results/  assets/  scripts/  data/
 ```
 Cop README ↔ Thief README cross-linked; both shared with the lecturer. [T015-028, T558-564]
+> **QUARANTINED — requirements audit:** Do not begin Phase 1. This plan predates source verification and contains unsupported architecture, filenames, values, and tests.

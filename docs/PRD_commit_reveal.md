@@ -57,3 +57,4 @@ audit_records(records: list[{payload,nonce,commit}]) -> {passed, verified_steps,
 
 ## 9. Test scenarios (→ T350-353, T367-369, T621-622)
 - commit→verify round-trip OK. · Tamper each payload field → verify raises. · Nonce uniqueness across N seals. · Reordered JSON keys → same commit. · Mutual audit with 1 bad step → `failed_steps=[k]`. · Missing nonce at audit → forfeit. · **Ack ordering:** a reveal arriving before the commit was acknowledged is rejected.
+> **QUARANTINED — requirements audit:** This legacy draft contains unverified cryptographic fields and protocol behavior. Do not implement from it. Consult `REQUIREMENTS_LEDGER.md`.

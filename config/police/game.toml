@@ -1,4 +1,6 @@
-# PRIVATE per-peer configuration (never negotiated, never signed).
+# REQUIREMENTS AUDIT: QUARANTINED UNVERIFIED DRAFT. Do not load this file.
+# Every key, value, version, port, model, recipient, and mode remains UNKNOWN.
+# PRIVATE per-peer configuration (legacy claim; not yet verified).
 # The shared game.json OVERRIDES any matching game condition here.
 version = "1.00"
 
