@@ -40,7 +40,7 @@ guidelines §2 is present; the requirement-dependent ones are deliberate stubs p
 The recommended project tree (guidelines §2.4) also lists code-phase artifacts that are
 **intentionally absent** during requirements verification and are tracked by `PS-002` and the
 TODO: `pyproject.toml`, `uv.lock`, `src/`, `tests/`, `.gitignore` review, `assets/`, `results/`,
-`data/`, `notebooks/`. `.env-example` exists as a neutral placeholder.
+`data/`, `notebooks/`. `.env-example` is a placeholder template governed by `PS-006`.
 
 ## Academic README report (graded)
 
@@ -58,6 +58,14 @@ breakdown. The complete 600+-task plan (T001–T635) is preserved in
 requirements — when implementation is authorized. A short active list is correct for the current
 phase; it is neither a missing nor a truncated document.
 
+## Additional verified-phase documents
+
+Also maintained this phase: `PARAMETERS_BASELINE.md` (candidate Appendix-F values, pending
+confirmation), `SUBMISSION_CHECKLIST.md` (submission/league obligations), `PRD_gui.md` and
+`PRD_replay.md` (the mandatory GUI and replay deliverables, per guidelines §2.3), and the
+requirements registers (ledger, conflicts, unknowns). The academic six-section report is now
+recorded as `SR-008` (resolves `C-002`).
+
 ---
 
-_Last updated 2026-07-24 by the Repos agent (pending Supervisor review)._
+_Last updated 2026-07-25 by the Repos agent (pending Supervisor review)._

@@ -25,6 +25,8 @@ Remediation date: 2026-07-24. No implementation or dependency files were added, 
 | `docs/SHARED_REQUIREMENT_BASELINE.md` | Cross-repository baseline | KEEP | Shared confirmed structural/professional requirements | Synchronize separately with Thief repository |
 | `docs/UNKNOWN_REQUIREMENTS.md` | Blocker register | KEEP | Runtime details remain unknown | Resolve field by field |
 | `docs/SPECIFICATION_CONFLICTS.md` | Conflict register | KEEP | Required conflicts/discrepancies preserved | Do not resolve silently |
+| `docs/PARAMETERS_BASELINE.md`, `SUBMISSION_CHECKLIST.md`, `DOCS_COMPLETENESS.md` | Candidate parameters, submission and completeness records | KEEP | Candidates flagged pending official confirmation; numbers must not enter runtime config |
+| `docs/PRD_gui.md`, `docs/PRD_replay.md` | Mandatory GUI + replay deliverable PRDs | KEEP | Confirmed structural shape; framework is a later implementation choice |
 | `Material/` | Untracked source/reference material | KEEP WITH WARNING | Preserved; summaries/translations remain nonbinding | Do not stage as implementation |
 
 ## Remediation results
