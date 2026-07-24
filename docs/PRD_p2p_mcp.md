@@ -56,3 +56,4 @@ negotiate(runtime); validate_agreement(config); terms_from_config(config)
 
 ## 9. Test scenarios (→ T140, T167-169, T323-324, T337-339, T621-624)
 - Serialize/deserialize `TurnMessage` round-trip. · Two-process localhost message exchange. · Start thief-first and police-first (both connect). · Matching terms → agree; mismatched terms → refuse. · Opponent silent past timeout → `timeout` result. · Reveal-before-ack rejected. · Outbound hint containing coordinates blocked by validation.
+> **QUARANTINED — requirements audit:** This legacy draft contains unverified MCP tools, messages, ports, retry, and timeout behavior. Do not implement from it. Consult `REQUIREMENTS_LEDGER.md`.

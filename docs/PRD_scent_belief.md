@@ -57,3 +57,4 @@ BeliefGrid(board_size, smell_trust=4.0, orthogonal=True)
 
 ## 9. Test scenarios (→ T241-244, T256-260, T267)
 - 5×5 emission values match spec. · Decay over N turns matches `(1−ρ)^n`. · `observe_smell` peaks at the scented cell. · `diffuse` conserves total mass. · `exclude` renormalizes. · Contradiction case lowers trust coefficient.
+> **QUARANTINED — requirements audit:** This legacy draft contains unverified scent values, equations, observations, and belief behavior. Do not implement from it. Consult `REQUIREMENTS_LEDGER.md`.

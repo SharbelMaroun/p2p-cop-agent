@@ -56,3 +56,4 @@ emit_series(config, logs_dir, series) -> result_json
 
 ## 9. Test scenarios (→ T419-420, T438-439, T456-457)
 - Token bucket allows then blocks under burst. · Overflow queues to configured depth. · DOS pattern → LOCKED. · `send_report` builds correct MIME + base64url (API mocked). · Artifacts validate vs schema + golden sample. · 429 → backoff, not resend-storm.
+> **QUARANTINED — requirements audit:** This legacy draft contains unverified reporting, Gmail, rate-limit, schema, and timeout claims. Do not implement from it. Consult `REQUIREMENTS_LEDGER.md`.

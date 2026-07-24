@@ -1,69 +1,40 @@
-# P2P Cop Agent — Distributed Cops-and-Robbers over a P2P Network
+# P2P Cop Agent
 
-> **Companion repository (Thief):** <https://github.com/SharbelMaroun/p2p-thief-agent>
+This repository is reserved for the **Cop peer** of the “Distributed Cops-and-Robbers over a Peer-to-Peer Network” final project.
 
-An autonomous **Cop (Police) agent** that plays a distributed pursuit game against a Thief agent over a real peer-to-peer network — no central server, no referee. Each agent is simultaneously a FastMCP server and client, perceives only partial information (scent fields + possibly-deceptive natural-language hints), and proves its own honesty via SHA-256 commit-reveal.
+> Companion Thief repository: <https://github.com/SharbelMaroun/p2p-thief-agent>
 
-- **Course:** Orchestration of AI Agents — University of Haifa (Dr. Yoram Segal), Final Project
-- **Model:** Dec-POMDP · **Network:** FastMCP P2P + tunnel · **Integrity:** commit-reveal + mutual audit
-- **Status:** Phase 0 — documentation & scaffold (see [`docs/TODO.md`](docs/TODO.md))
+## Requirements status
 
----
+Phase 0 is an evidence audit only. Gameplay, networking, cryptography, strategy, LLM, Gmail, GUI, replay, reporting, packaging, and tests have **not** been implemented.
 
-## Academic Report
+Do not use the older PRDs, plans, TODO list, or configuration drafts as implementation specifications. They contain unverified examples and are classified in [the repository audit](docs/REPOSITORY_AUDIT.md).
 
-*The six mandatory report sections (rulebook Ch.9) — completed as the build progresses:*
+- [Requirements ledger](docs/REQUIREMENTS_LEDGER.md)
+- [Unknown requirements](docs/UNKNOWN_REQUIREMENTS.md)
+- [Specification conflicts](docs/SPECIFICATION_CONFLICTS.md)
+- [Verification policy](docs/VERIFICATION_POLICY.md)
 
-### 1. Selected Dec-POMDP model
-*(to be written — see [`docs/PRD.md`](docs/PRD.md) §1 for the current formulation)*
+The authoritative-source hierarchy and evidence availability are recorded in [SOURCE_OF_TRUTH.md](docs/SOURCE_OF_TRUTH.md) and [SOURCE_INVENTORY.md](docs/SOURCE_INVENTORY.md).
 
-### 2. FastMCP communication dilemma
-*(to be written — queues, failure handling, Orchestrator + Gatekeeper; see [`docs/PLAN.md`](docs/PLAN.md))*
+## Cop scope
 
-### 3. Implemented strategy
-*(to be written — belief-driven heuristics; see [`docs/PRD_strategy.md`](docs/PRD_strategy.md))*
+Subject to verification of the official specification, Cop-side design work will cover pursuit strategy, the Cop’s belief about the Thief, Thief-scent observations, legal barrier placement and budget, the capture objective and proof, the Cop’s verbal truth/bluff policy, and Cop-local state and private settings.
 
-### 4. Learning curves
-*(only if RL is used — currently out of scope, see PRD §6)*
+This repository must not import from, mount, or depend on the Thief repository. Whether generic stateless protocol/domain code may be independently duplicated here remains `UNKNOWN`; shared live state is not an accepted design basis.
 
-### 5. Screenshots
-*(to be added — Live GUI belief map + Replay Viewer "Verified OK")*
+## Academic report
 
-### 6. Companion repository
-The Thief agent lives at **<https://github.com/SharbelMaroun/p2p-thief-agent>** — the two agents run as fully separated processes with separate config directories (Zero-Trust mandate, rulebook Ch.2).
+The required README report structure, section count, evidence, submission tag rules, and screenshots remain placeholders until the official project book and Professional Software Submission Guidelines are directly verified.
 
----
+## Installation and usage
 
-## Installation
-
-*(scaffold pending — `uv` only, per submission guidelines §8.4)*
-
-```bash
-git clone https://github.com/SharbelMaroun/p2p-cop-agent
-cd p2p-cop-agent
-uv sync
-```
-
-## Usage
-
-*(pending — will follow the pattern below)*
-
-```bash
-uv run python -m <pkg> peer --role police
-uv run python -m <pkg> replay --log logs/<log-file>.json
-```
+`UNKNOWN` — no package manifest, lockfile, dependencies, CLI, ports, or commands are approved yet.
 
 ## Configuration
 
-- `config/police/game.json` — **shared, signed** game contract (Appendix F values; byte-identical for both peers)
-- `config/police/game.toml` — **private** per-peer settings (port, opponent URL, strategy class, LLM provider)
-- `config/police/rate_limits.json` — Gatekeeper limits
-- Secrets go in `.env` (never committed) — see `.env-example`
-
-## Documentation
-
-Full documentation suite in [`docs/`](docs/): [PRD](docs/PRD.md) · [PLAN](docs/PLAN.md) · [TODO](docs/TODO.md) · per-mechanism PRDs ([commit-reveal](docs/PRD_commit_reveal.md), [scent & belief](docs/PRD_scent_belief.md), [strategy](docs/PRD_strategy.md), [P2P/MCP](docs/PRD_p2p_mcp.md), [gatekeeper & reporting](docs/PRD_gatekeeper_reporting.md)) · [prompt log](docs/PROMPTS.md)
+The files under `config/` are unverified drafts inherited from the initial scaffold. Their filenames, schemas, versions, values, and split between shared/private settings are not approved. They are quarantined by policy and must not be loaded by future code until the official templates and Appendix evidence are obtained.
 
 ## License
 
-[MIT](LICENSE) — educational project. Game specification © Dr. Yoram Segal (course materials, not included here).
+The repository currently contains an MIT license. Whether that license is appropriate for all future original code and compatible with the lecturer material is still under review; lecturer material is not relicensed here.

@@ -153,3 +153,4 @@ Capture: Cop **20** / Thief **5**. Survival: Cop **5** / Thief **10**. Tie **2**
 | FR-18…FR-20 (league/reporting) | M7 | 4 artifacts validate, email sent | T408-459, T545-557 |
 | NFR-1…NFR-6 (quality) | all | CI gates (ruff/cov/line/secret) | T498-620 |
 | v2.10/v2.11 additions (Ack step, NL-only hints, 6-game series, league integrity, 4 repo links, scent-lock, UI docs) | M2, M6, M7 | protocol + hint-validation + artifact tests | T621-T635 |
+> **QUARANTINED — requirements audit:** This legacy draft contains unverified claims, values, schemas, and role assumptions. It is not an implementation specification. Consult `REQUIREMENTS_LEDGER.md`.
