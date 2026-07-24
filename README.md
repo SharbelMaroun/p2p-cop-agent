@@ -1,40 +1,51 @@
 # P2P Cop Agent
 
-This repository is reserved for the **Cop peer** of the “Distributed Cops-and-Robbers over a Peer-to-Peer Network” final project.
+This repository is assigned to the **Cop peer** of the “Distributed Cops-and-Robbers over a Peer-to-Peer Network” final project.
 
 > Companion Thief repository: <https://github.com/SharbelMaroun/p2p-thief-agent>
 
 ## Requirements status
 
-Phase 0 is an evidence audit only. Gameplay, networking, cryptography, strategy, LLM, Gmail, GUI, replay, reporting, packaging, and tests have **not** been implemented.
-
-Do not use the older PRDs, plans, TODO list, or configuration drafts as implementation specifications. They contain unverified examples and are classified in [the repository audit](docs/REPOSITORY_AUDIT.md).
+The repository is in the **verified-requirements phase**. Gameplay, FastMCP runtime code, strategy, cryptography, Gmail, GUI, replay, reporting, packaging, and tests have not been implemented.
 
 - [Requirements ledger](docs/REQUIREMENTS_LEDGER.md)
 - [Unknown requirements](docs/UNKNOWN_REQUIREMENTS.md)
 - [Specification conflicts](docs/SPECIFICATION_CONFLICTS.md)
 - [Verification policy](docs/VERIFICATION_POLICY.md)
+- [Repository audit](docs/REPOSITORY_AUDIT.md)
+- [Configuration status](config/README.md)
 
-The authoritative-source hierarchy and evidence availability are recorded in [SOURCE_OF_TRUTH.md](docs/SOURCE_OF_TRUTH.md) and [SOURCE_INVENTORY.md](docs/SOURCE_INVENTORY.md).
+Legacy PRDs, plans, tasks, and configuration drafts contain unverified runtime details. Their quarantine notices remain controlling until the relevant requirements are confirmed.
+
+## Confirmed structural requirements
+
+The shared baseline is maintained in [SHARED_REQUIREMENT_BASELINE.md](docs/SHARED_REQUIREMENT_BASELINE.md).
+
+- `SR-001`–`SR-003`: use separate Cop and Thief repositories, cross-link them, and make both accessible to the lecturer.
+- `SR-004`: run the peers as separate processes and configuration environments without shared live mutable state or access to the opponent’s private truth.
+- `SR-005`: each peer acts as both a FastMCP server and FastMCP client. Exact tool names remain `UNKNOWN`.
+- `SR-006`: each repository contains at least a root README, configuration directory, PRD documents, PLAN, TODO, and code when implementation begins.
+- `PS-001`: maintain the mandatory README, core planning documents, and dedicated mechanism PRDs.
+- `PS-002`: use `uv`, with `pyproject.toml` as the dependency source of truth and a committed `uv.lock`; those files are intentionally not created in this remediation.
+- `PS-003`–`PS-005`: keep code/tests within the confirmed line limit, use TDD with the confirmed coverage floor, and pass the official Ruff configuration.
+- `PS-006`: keep configurable values out of code and secrets out of Git.
+- `PS-007`–`PS-008`: preserve an SDK/service boundary and route external API calls through a centralized gatekeeper.
+- `PS-009`: maintain the prompt-engineering log at [docs/PROMPT_LOG.md](docs/PROMPT_LOG.md).
 
 ## Cop scope
 
-Subject to verification of the official specification, Cop-side design work will cover pursuit strategy, the Cop’s belief about the Thief, Thief-scent observations, legal barrier placement and budget, the capture objective and proof, the Cop’s verbal truth/bluff policy, and Cop-local state and private settings.
+Candidate Cop concerns are pursuit, belief about the Thief, Thief-scent observation, legal barrier placement, capture, Cop-local strategy, and Cop-local verbal behavior.
 
-This repository must not import from, mount, or depend on the Thief repository. Whether generic stateless protocol/domain code may be independently duplicated here remains `UNKNOWN`; shared live state is not an accepted design basis.
-
-## Academic report
-
-The required README report structure, section count, evidence, submission tag rules, and screenshots remain placeholders until the official project book and Professional Software Submission Guidelines are directly verified.
+Their exact mechanics, fields, values, proofs, and timing remain subject to direct Appendix E/F and official-template verification. This repository must not depend on the Thief repository filesystem or import its private runtime code.
 
 ## Installation and usage
 
-`UNKNOWN` — no package manifest, lockfile, dependencies, CLI, ports, or commands are approved yet.
+Not published yet. Package metadata, dependencies, runtime entry points, and active configuration are intentionally absent during requirements verification.
 
 ## Configuration
 
-The files under `config/` are unverified drafts inherited from the initial scaffold. Their filenames, schemas, versions, values, and split between shared/private settings are not approved. They are quarantined by policy and must not be loaded by future code until the official templates and Appendix evidence are obtained.
+There is no approved runtime configuration. Historical Cop drafts are quarantined under `config/drafts/cop/`; opposite-role drafts are preserved outside the active configuration tree under `archive/pre-audit/opposite-role-config/thief/`. See [config/README.md](config/README.md).
 
 ## License
 
-The repository currently contains an MIT license. Whether that license is appropriate for all future original code and compatible with the lecturer material is still under review; lecturer material is not relicensed here.
+The existing MIT license applies only to team-authored material where legally valid. Lecturer-provided documents and code are not automatically relicensed. The final licensing decision remains subject to review.

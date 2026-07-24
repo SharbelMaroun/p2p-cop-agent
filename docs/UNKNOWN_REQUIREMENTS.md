@@ -1,21 +1,22 @@
 # Unknown Requirements
 
-These items block implementation of their affected subsystem:
+The following remain `UNKNOWN` and block only their affected subsystem:
 
-- exact book identity, version, pagination, Appendix E rules, and Appendix F values;
-- official Moodle declaration/config/log/result templates and all exact schemas/filenames;
-- `schema_version`, repository/code version, and version synchronization rules;
-- grid size, origins, starts, movement modes, barrier budget, step/survival limits;
-- scent field, intensity, decay, sensing, and belief-update semantics;
-- scoring, technical loss, number of games/sub-games, role alternation, and league limits;
-- MCP tool names, payloads, ordering, acknowledgements, retries, timeouts, and ports;
-- commit/reveal canonicalization, nonce, signature, Step-0, audit, and capture-proof fields;
-- permitted stateless common-code sharing; shared live state is not an implementation basis;
-- exact Cop truth/bluff obligations and legal barrier-placement semantics;
-- LLM modes, provider choices, model names, deadlines, and token reporting;
-- Gmail OAuth behavior, recipient spelling, automatic send versus draft, and rate limiting;
-- exact README/report sections, screenshots, repository sharing, tag, and submission rules;
-- approved Python version, dependencies, package metadata, quality gates, and file limits;
-- team name, group ID, member names/IDs, contact details, and private settings.
+- exact number of games or sub-games;
+- exact JSON schemas, ownership, and byte-equality rules;
+- exact active configuration filenames and private TOML schema;
+- exact configuration fields, versions, and values, including Appendix F values not yet transcribed into the ledger;
+- exact MCP tool names, message fields, acknowledgement flow, and ordering;
+- exact Step-0 sequence, commit payload, nonce construction, and nonce reveal time;
+- exact ports, timeouts, and rate-limit values;
+- exact model/provider choices and LLM deadlines;
+- exact Gmail draft/send mode, final-project address spelling, and reporting attachments;
+- whether independently packaged stateless shared code is permitted; shared live state is separately prohibited by `SR-004`;
+- exact final README academic-report section count;
+- exact submission tag naming requirement;
+- exact Cop pursuit, scent, belief, barrier, capture, truth/bluff, and proof mechanics;
+- team identifiers, members, and private settings.
 
-The safe next action is source acquisition and field-by-field verification, not Phase 1.
+Simulator-dependent protocol details also remain pending on verified exports from the central planning repository. This repository will not duplicate simulator reverse engineering or copy the lecturer simulator.
+
+The safe next step is to obtain the official templates, complete Appendix E/F field-level extraction, import the centralized simulator evidence, and update the ledger before implementation.

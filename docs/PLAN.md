@@ -197,7 +197,7 @@ Python **3.13+** · **`uv`** (pyproject + uv.lock) · **`fastmcp`** · **`ruff`*
 Both repos share the engine core; they differ only in default role + strategy class.
 ```
 <repo>/  README.md  pyproject.toml  uv.lock  .gitignore  .env-example  LICENSE
-  docs/{PRD,PLAN,TODO}.md + PRD_<mechanism>.md + ADR/ + PROMPTS.md
+  docs/{PRD,PLAN,TODO}.md + PRD_<mechanism>.md + ADR/ + PROMPT_LOG.md
   config/{police,thief}/{game.json,game.toml,rate_limits.json}
   src/<pkg>/{sdk,peer,domain,strategy,infra,report,gui,shared}/  constants.py
   tests/{unit,integration}/  conftest.py
