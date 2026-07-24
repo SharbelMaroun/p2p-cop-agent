@@ -1,9 +1,25 @@
 # PRD — Cop Scent and Belief
 
-Status: blocked by `UNKNOWN` gameplay requirements.
+Status: mechanism **shape `CONFIRMED`**; exact values/equations blocked by `UNKNOWN`.
 
-This repository may eventually implement Cop-local belief about the Thief and observations related to the Thief’s scent.
+## Confirmed structure (cited — book Ch.4 + Ch.6; Appendix E rule 23)
 
-Exact dimensions, values, decay, equations, observation timing, trust behavior, normalization, and acceptance tests require direct Appendix E/F evidence.
+- Scent is **involuntary and symmetric**: each move emits a scent field centered on the agent;
+  **you emit your own scent and read only the opponent's**. Scent **cannot be faked** — it is a
+  byproduct of movement, which is how verbal lies are caught.
+- The emission/decay model is **cryptographically locked (SHA-256) before the game** (rule 23);
+  deviation cancels the game.
+- The Cop maintains a **belief map** (probability matrix over the board) of the **Thief's**
+  location, updated by **Bayes** with a per-hint **trust/reliability factor**; measured Thief
+  scent that contradicts a verbal hint lowers that hint's trust.
+- Cop role: consume **Thief-scent** observations; the pursuit policy targets the `argmax` of the
+  belief map (see [PRD_strategy.md](PRD_strategy.md)).
 
-No formula or numerical value is approved yet.
+## Pending / UNKNOWN — numbers in PARAMETERS_BASELINE (pending)
+
+- Scent constants (source 0.9, decay ρ 0.10, 5×5 field) and the exact decay-equation shape,
+  normalization, and trust-weight math — candidates in
+  [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md); confirm Appendix F before coding.
+- Exact observation timing and acceptance tests — `U-014`.
+
+This repository implements Cop-side belief only; it never reads the Thief's private state.
