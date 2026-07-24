@@ -46,6 +46,32 @@ Not published yet. Package metadata, dependencies, runtime entry points, and act
 
 There is no approved runtime configuration. Historical Cop drafts are quarantined under `config/drafts/cop/`; opposite-role drafts are preserved outside the active configuration tree under `archive/pre-audit/opposite-role-config/thief/`. See [config/README.md](config/README.md).
 
+## Report
+
+**Development report — documentation work log.** This section records how the repository's
+documentation is built and reviewed. It is the work-provenance report; the graded **academic
+report** (Dec-POMDP model, FastMCP dilemma, strategy, learning curves, screenshots,
+companion-repository link — book Ch.9.4.2 / `DEV-SPEC.md` §17) will be added under its own
+sections once runtime and results exist. Completeness is tracked in
+[docs/DOCS_COMPLETENESS.md](docs/DOCS_COMPLETENESS.md).
+
+**Two-agent workflow.** Documentation is produced by a **Repos agent** (edits, commits, and
+pushes to the `Sharbel` branch of both repositories) and independently reviewed by a
+**Supervisor agent** (read-only; checks every commit against the official sources before it is
+trusted). Both operate under [docs/SOURCE_OF_TRUTH.md](docs/SOURCE_OF_TRUTH.md) and
+[docs/VERIFICATION_POLICY.md](docs/VERIFICATION_POLICY.md): only `CONFIRMED` requirements drive
+changes; summaries and derived references may point to evidence but cannot confirm it.
+
+**Change log.**
+
+- **2026-07-24 — Documentation completeness pass.** Added
+  [docs/DOCS_COMPLETENESS.md](docs/DOCS_COMPLETENESS.md), which verifies that every document
+  required by Professional Software Guidelines v3.0 §2 is present (no mandatory file missing).
+  Confirmed the active [docs/TODO.md](docs/TODO.md) is a short verified-phase stub (16 tasks) and
+  that the full 600+-task plan (T001–T635) remains archived under
+  `archive/pre-audit/documentation/TODO.md`. Added this Report section and the two-agent-workflow
+  note. Logged as `P-009` in [docs/PROMPT_LOG.md](docs/PROMPT_LOG.md). Pending Supervisor review.
+
 ## License
 
 The existing MIT license applies only to team-authored material where legally valid. Lecturer-provided documents and code are not automatically relicensed. The final licensing decision remains subject to review.

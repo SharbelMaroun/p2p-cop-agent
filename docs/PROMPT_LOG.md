@@ -78,6 +78,16 @@
 
 ---
 
+## P-009 — Documentation completeness pass (Repos agent + Supervisor setup)
+- **Date:** 2026-07-24 · **Tool:** Claude (agentic CLI)
+- **Goal:** confirm the `docs/` folder satisfies the guidelines' mandatory-documentation list, and stand up the two-agent (Repos + Supervisor) workflow requested by the team.
+- **Prompt (essence):** "Check the docs folder and all its md files against `software_submission_guidelines-V3_Summary.md` so the lecturer will not deduct points; verify the TODO is not the 600+-task version; add a Report section to the README noting the supervisor + repos agents."
+- **Output:** `docs/DOCS_COMPLETENESS.md` — a §2-by-§2 matrix showing every mandatory document is present (README, PRD, PLAN, TODO, five mechanism PRDs, PROMPT_LOG, companion cross-link) with per-file content status. Confirmed the active `docs/TODO.md` is a 16-task verified-phase stub while the full 620/635-task plan stays under `archive/pre-audit/documentation/TODO.md`. Added a `## Report` section to `README.md` (development work log + Supervisor/Repos two-agent note).
+- **Refinement:** kept requirement-dependent stubs unchanged rather than padding them — a stub is a deliberate verified-phase state, and inventing content would break the source hierarchy.
+- **Lesson:** "completeness" for a submission means *every mandatory file exists*; content depth is a separate, later gate driven by `CONFIRMED` evidence. Prove presence explicitly in a checked-in matrix so the grader sees nothing is missing.
+
+---
+
 ## Best practices derived so far
 1. **Binding values live in one table** — quote Appendix F, never paraphrase numbers.
 2. **Decide, then generate** — architecture-defining choices go to the human first.
