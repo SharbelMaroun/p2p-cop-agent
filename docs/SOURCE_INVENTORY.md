@@ -15,5 +15,8 @@
 | `LECTURER_REPO_OVERVIEW.md` | Present | KEEP WITH WARNING | Secondary simulator summary |
 | Centralized simulator-analysis exports | No distinct verified export found | UNKNOWN | Simulator-dependent details remain pending |
 | Unverified translation | Present | QUARANTINE | Navigation only |
+| `DEV-SPEC.md` (planning) | Present | MEDIUM (derived distillation) | Navigation + candidate parameters; points to official locations, cannot confirm alone |
+| `police_thief_p2p_Summary.md` (planning) | Present | MEDIUM (book translation) | Page-anchored navigation to the official book; cannot confirm alone |
+| `software_submission_guidelines-V3_Summary.md` (planning) | Present | MEDIUM (guidelines translation) | Page-anchored navigation to the guidelines; cannot confirm alone |
 
 Inspection date: 2026-07-24 (Asia/Jerusalem).
