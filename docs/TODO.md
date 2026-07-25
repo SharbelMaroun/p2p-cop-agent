@@ -9,7 +9,9 @@
 - [x] Archive pre-audit PRD, PLAN, TODO, and mechanism documents.
 - [ ] Obtain direct Appendix E extraction.
 - [x] Extract Appendix F tables 13–19 directly from the original PDF.
-- [ ] Obtain official JSON templates.
+- [x] Inspect and hash all four supplied official JSON examples (schema version 1.1).
+- [ ] Obtain referenced `artifact_schemas.py` and `tests/fixtures/json_schemas.py` to confirm
+      formal validation constraints and exact-key fixtures.
 - [ ] Obtain newer Moodle instructions and lecturer announcements.
 - [ ] Import centralized simulator-analysis exports.
 - [x] Synchronize the shared baseline with the Thief repository (converged byte-identical).

@@ -6,7 +6,8 @@ Current work:
 
 1. Maintain the shared confirmed baseline.
 2. Obtain direct Appendix E and Appendix F evidence.
-3. Obtain official JSON templates.
+3. Obtain the referenced in-code artifact schemas and validation fixtures; the four official
+   JSON examples have been inspected and baselined.
 4. Obtain current Moodle instructions and lecturer announcements.
 5. Import centralized simulator-analysis exports.
 6. Resolve unknowns and conflicts.
