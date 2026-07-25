@@ -1,8 +1,8 @@
 # Documentation Completeness Check
 
-Purpose: verify that every documentation artifact **required** by the Professional Software
-Submission Guidelines v3.0 (§2, "Mandatory Project Structure and Documentation") is present in
-this repository, so that no submission points are lost for a missing document.
+Purpose: inventory every documentation artifact required by the Professional Software Submission
+Guidelines v3.0 (§2). A complete documentation inventory does **not** mean the project or
+submission is complete, compliant, or ready to submit.
 
 Two things are tracked separately:
 
@@ -31,9 +31,9 @@ This is a shared, byte-identical file in both the Cop and Thief repositories.
 | 10 | `docs/PROMPT_LOG.md` (prompt book) | §8.3, p.19 | Yes | Maintained (living) | Append an entry per significant AI-assisted step |
 | 11 | README ↔ companion cross-link | book Ch.9 / `SR-002` | Yes | Done | Kept in sync with the companion repository URL |
 
-**Structural verdict: no mandatory documentation file is missing.** Every artifact required by
-guidelines §2 is present; the requirement-dependent ones are deliberate stubs pending
-`CONFIRMED` evidence.
+**Documentation-inventory verdict: no mandatory documentation file is missing.** This is limited
+to file presence. It does not certify content completeness, implementation, tests, runtime
+evidence, league play, Moodle deliverables, release tagging, or overall submission readiness.
 
 ## Deferred to the implementation phase (not documentation gaps)
 
@@ -60,8 +60,8 @@ phase; it is neither a missing nor a truncated document.
 
 ## Additional verified-phase documents
 
-Also maintained this phase: `PARAMETERS_BASELINE.md` (candidate Appendix-F values, pending
-confirmation), `SUBMISSION_CHECKLIST.md` (submission/league obligations), `PRD_gui.md` and
+Also maintained this phase: `PARAMETERS_BASELINE.md` (directly confirmed Appendix-F values),
+`SUBMISSION_CHECKLIST.md` (submission/league obligations), `PRD_gui.md` and
 `PRD_replay.md` (the mandatory GUI and replay deliverables, per guidelines §2.3), and the
 requirements registers (ledger, conflicts, unknowns). The academic six-section report is now
 recorded as `SR-008` (resolves `C-002`).

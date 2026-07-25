@@ -21,8 +21,9 @@ Status: structural architecture `CONFIRMED`; exact runtime contract blocked by `
 
 - Exact MCP **tool names**, message fields, acknowledgement flow, and ordering — `U-003`
   (needs official protocol evidence or the centralized simulator export).
-- Exact **ports, timeouts, retries** — candidates (response 30 s, watchdog 60 s) in
-  [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md); ports are per-peer TOML choices.
+- Response timeout (30 s) and watchdog threshold (60 s) are directly confirmed in
+  [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md). Exact ports, retry semantics, and schemas
+  remain `UNKNOWN`.
 - Concrete transport/serialization schema — pending official templates.
 
 No FastMCP runtime, tool, or transport code is authorized until the above are `CONFIRMED`.

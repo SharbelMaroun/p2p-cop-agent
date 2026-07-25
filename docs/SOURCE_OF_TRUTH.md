@@ -28,4 +28,6 @@ Simulator behavior is not automatically a project requirement. NotebookLM, summa
 - Professional Software Submission Guidelines v3.0, 39 pages, local course-material copy SHA-256 `3F02DF37767C745EFC47646140C2E6AC7CAE3B9C87C92073DAF4EEF74BE09EBB`. Pages 7–20 were inspected directly.
 - Planning repository `AmrSafadi/AI-Agent-Orchestration-FinalProject` at commit `0c751942fc133a4bbd7a1a3348f95800e73c81e3` was used for navigation and dependency inventory only.
 
-The official JSON templates and newer Moodle/lecturer materials were not available. Field-level Appendix E/F runtime verification remains incomplete.
+The official JSON templates and newer Moodle/lecturer materials were not available. Appendix F
+tables 13–19 and the two addresses in table 20 were directly verified; official schemas, exact
+MCP messages, and unverified simulator details remain incomplete.

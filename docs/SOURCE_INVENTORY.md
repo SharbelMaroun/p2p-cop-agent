@@ -3,9 +3,9 @@
 | Source | Availability | Status | Use |
 |---|---|---|---|
 | Official final-project book v3.0.0 | Local PDF directly extracted; hash recorded | CONFIRMED source | Structural requirements; later field-level game verification |
-| Appendix E | Present in official PDF | CONFIRMED source, partial extraction | `SR-006`; other rules remain unledgered |
-| Appendix F | Present in official PDF | CONFIRMED source, field-level work pending | Numerical/runtime values remain UNKNOWN until transcribed |
-| Official JSON templates | Not present | UNKNOWN | Schemas and artifact rules blocked |
+| Appendix E | Present in official PDF | CONFIRMED source, targeted extraction | Includes direct verification of rule 25 wording/status |
+| Appendix F | Present in official PDF | CONFIRMED source, tables 13–19 extracted | Binding values/statuses recorded in `PARAMETERS_BASELINE.md` |
+| Four official JSON examples, schema version 1.1 | Supplied from external local `SimulatorEXM-Repo/Json-examples` | DIRECTLY INSPECTED | Artifact families and exemplar key sets confirmed; formal validation constraints remain UNKNOWN |
 | Moodle instructions/announcements | Not present | UNKNOWN | Recency conflicts blocked |
 | Professional Software Submission Guidelines v3.0 | Direct 39-page PDF found in local course materials; hash recorded | CONFIRMED source | `PS-001`–`PS-009` |
 | Planning repository | Read at `0c751942fc133a4bbd7a1a3348f95800e73c81e3` | Navigation only | Source and simulator-export inventory |

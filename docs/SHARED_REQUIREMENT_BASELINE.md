@@ -3,7 +3,7 @@
 This file contains only shared, directly confirmed structural and professional-software
 requirements. It intentionally contains no gameplay values or simulator-specific names, and is
 byte-identical in both repositories. Candidate numeric values live in
-[PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md) (pending confirmation).
+[PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md) (directly confirmed Appendix F values).
 
 | ID | Status | Requirement | Direct source location |
 |---|---|---|---|
