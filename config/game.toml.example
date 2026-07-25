@@ -1,0 +1,5 @@
+# Cop-private local overlay example.
+# This file is not parity-controlled, negotiated, signed, or loaded in M1.
+# Add values only after their private schema is accepted in an ADR.
+
+[local]

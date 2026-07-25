@@ -1,0 +1,7 @@
+* text=auto
+.gitattributes text eol=lf
+/config/*.json text eol=lf
+/docs/contracts/** text eol=lf
+/docs/schemas/** text eol=lf
+/scripts/check_shared_contracts.py text eol=lf
+/tests/fixtures/contracts/** text eol=lf

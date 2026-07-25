@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/p2p-contract/0.1.0-proposed/rate-limits.schema.json",
+  "x-contract-version": "0.1.0-proposed",
+  "title": "Proposed shared Gatekeeper configuration",
+  "description": "M1 contract schema derived from Appendix F table 19 and ADR-004.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "schema_version",
+    "rate_limiter_gatekeeper"
+  ],
+  "properties": {
+    "version": {
+      "const": "1.00"
+    },
+    "schema_version": {
+      "const": "1.2"
+    },
+    "rate_limiter_gatekeeper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requests_per_minute",
+        "concurrent_requests",
+        "retry_backoff_sec",
+        "max_retries",
+        "queue_depth",
+        "response_timeout_sec",
+        "watchdog_timeout_sec"
+      ],
+      "properties": {
+        "requests_per_minute": {
+          "type": "integer",
+          "minimum": 30
+        },
+        "concurrent_requests": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "retry_backoff_sec": {
+          "type": "number",
+          "minimum": 5
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "queue_depth": {
+          "type": "integer",
+          "minimum": 100
+        },
+        "response_timeout_sec": {
+          "type": "number"
+        },
+        "watchdog_timeout_sec": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

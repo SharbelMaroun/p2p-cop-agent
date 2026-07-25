@@ -1,24 +1,34 @@
 # Secrets — NEVER commit (rulebook App.A rule 39-40, guidelines §7.4)
 .env
+.env.*
+!.env-example
 credentials.json
 token.json
+*credentials*.json
+*token*.json
 *.key
 *.pem
+/config/game.toml
+/config/*.local.toml
 
 # Python
 __pycache__/
 *.py[cod]
 .venv/
+.uv-cache/
 .pytest_cache/
 .ruff_cache/
 .coverage
+.coverage.*
 htmlcov/
 dist/
 build/
 *.egg-info/
 
-# Runtime artifacts (official game artifacts are copied to results/, which is tracked)
-logs/
+# Generated runtime artifacts
+/logs/
+/reports/generated/
+/results/generated/
 
 # OS / editor
 .DS_Store

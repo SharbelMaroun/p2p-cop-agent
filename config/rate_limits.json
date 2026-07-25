@@ -1,0 +1,13 @@
+{
+  "version": "1.00",
+  "schema_version": "1.2",
+  "rate_limiter_gatekeeper": {
+    "requests_per_minute": 30,
+    "concurrent_requests": 2,
+    "retry_backoff_sec": 5,
+    "max_retries": 3,
+    "queue_depth": 100,
+    "response_timeout_sec": 30,
+    "watchdog_timeout_sec": 60
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/p2p-contract/0.1.0-proposed/artifact-keyset-fixture.schema.json",
+  "x-contract-version": "0.1.0-proposed",
+  "title": "Observed artifact key-set fixture descriptor",
+  "description": "Validates fixture metadata, not official artifact instances.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_family",
+    "source",
+    "observed_schema_version",
+    "key_sets"
+  ],
+  "properties": {
+    "artifact_family": {
+      "enum": [
+        "pre_game_declaration",
+        "agreed_config",
+        "game_log",
+        "final_result"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "filename",
+        "sha256",
+        "evidence"
+      ],
+      "properties": {
+        "filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "evidence": {
+          "const": "supplied example; exact key-set observation only"
+        }
+      }
+    },
+    "observed_schema_version": {
+      "const": "1.1"
+    },
+    "key_sets": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/p2p-contract/0.1.0-proposed/game-config.schema.json",
+  "x-contract-version": "0.1.0-proposed",
+  "title": "Proposed shared game configuration",
+  "description": "M1 contract schema; this is not a formal reporting-artifact schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "schema_version",
+    "board_and_agents",
+    "world",
+    "movement_and_barriers",
+    "scoring",
+    "pheromones",
+    "network_and_league"
+  ],
+  "properties": {
+    "version": {
+      "const": "1.00"
+    },
+    "schema_version": {
+      "const": "1.2"
+    },
+    "board_and_agents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grid_size",
+        "num_agents",
+        "thief_start",
+        "cop_start",
+        "axis_origin_corner",
+        "axis_start_index"
+      ],
+      "properties": {
+        "grid_size": {
+          "type": "integer",
+          "minimum": 7
+        },
+        "num_agents": {
+          "const": 2
+        },
+        "thief_start": {
+          "$ref": "#/$defs/coordinate"
+        },
+        "cop_start": {
+          "$ref": "#/$defs/coordinate"
+        },
+        "axis_origin_corner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "axis_start_index": {
+          "type": "integer"
+        }
+      }
+    },
+    "world": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "map_area",
+        "hint_max_words"
+      ],
+      "properties": {
+        "map_area": {
+          "type": "string"
+        },
+        "hint_max_words": {
+          "type": "integer"
+        }
+      }
+    },
+    "movement_and_barriers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "move_set",
+        "max_barriers",
+        "max_moves",
+        "survival_threshold"
+      ],
+      "properties": {
+        "move_set": {
+          "const": [
+            "N",
+            "S",
+            "E",
+            "W",
+            "STAY"
+          ]
+        },
+        "max_barriers": {
+          "type": "integer",
+          "minimum": 14
+        },
+        "max_moves": {
+          "type": "integer",
+          "minimum": 35
+        },
+        "survival_threshold": {
+          "type": "integer",
+          "minimum": 35
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capture_cop",
+        "capture_thief",
+        "survival_cop",
+        "survival_thief",
+        "tie_score",
+        "technical_loss"
+      ],
+      "properties": {
+        "capture_cop": {
+          "const": 20
+        },
+        "capture_thief": {
+          "const": 5
+        },
+        "survival_cop": {
+          "const": 5
+        },
+        "survival_thief": {
+          "const": 10
+        },
+        "tie_score": {
+          "const": 2
+        },
+        "technical_loss": {
+          "const": 0
+        }
+      }
+    },
+    "pheromones": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pheromone_center_intensity",
+        "pheromone_decay",
+        "pheromone_grid_size"
+      ],
+      "properties": {
+        "pheromone_center_intensity": {
+          "const": 0.9
+        },
+        "pheromone_decay": {
+          "const": 0.1
+        },
+        "pheromone_grid_size": {
+          "const": 5
+        }
+      }
+    },
+    "network_and_league": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "num_games",
+        "diversity_reward",
+        "min_games_to_pass",
+        "max_games_per_team",
+        "token_budget_per_series"
+      ],
+      "properties": {
+        "num_games": {
+          "const": 6
+        },
+        "diversity_reward": {
+          "const": 10
+        },
+        "min_games_to_pass": {
+          "const": 2
+        },
+        "max_games_per_team": {
+          "const": 10
+        },
+        "token_budget_per_series": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "coordinate": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    }
+  }
+}
