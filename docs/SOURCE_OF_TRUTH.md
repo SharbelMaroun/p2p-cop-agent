@@ -2,32 +2,38 @@
 
 ## Status vocabulary
 
-- `CONFIRMED`: supported by direct authoritative evidence.
-- `CONFLICT`: authoritative or candidate sources disagree.
-- `UNKNOWN`: direct evidence is missing, incomplete, or unresolved.
+- `CONFIRMED`: direct authoritative evidence.
+- `CONFLICT`: authoritative sources/examples differ and the difference is isolated.
+- `UNKNOWN`: evidence or a required cross-team decision is still missing.
+- `PROPOSED`: an ADR/contract choice offered for acceptance; not frozen.
 
-Only `CONFIRMED` entries may guide implementation.
+## Authority order
 
-## Priority
+1. Official assignment book `police_thief_p2p.pdf` v3.0.0, including Appendices.
+2. Official course JSON templates/examples.
+3. Lecturer simulator at exact commit
+   `960499fd5e8777b4929625f5d8fdcf2ab4677b54`.
+4. Dated lecturer/Moodle clarification.
+5. Professional Software Submission Guidelines v3.0.
+6. Cross-team ADR accepted by both peers.
+7. Current active repository documents.
+8. Archived documents, NotebookLM text, summaries, translations, and AI output.
 
-1. Official final-project book v3.0.0.
-2. Appendix F for binding numerical values and modes.
-3. Appendix E for mandatory rules.
-4. Official JSON templates.
-5. Newer Moodle instructions and lecturer announcements.
-6. Professional Software Submission Guidelines v3.0.
-7. Lecturer simulator at a recorded commit.
-8. NotebookLM answers as navigation aids only.
-9. Summaries, translations, existing PRDs/plans, and AI notes.
+Higher authority wins. Simulator behavior remains a reference rather than an
+automatic assignment rule, and its educational-use EULA remains controlling for
+reuse. An accepted ADR may select among permitted designs but cannot weaken a
+confirmed rule or minimum.
 
-Simulator behavior is not automatically a project requirement. NotebookLM, summaries, and translations do not independently confirm requirements.
+## Directly inspected evidence
 
-## Directly inspected sources
+- Official book: 160 pages; SHA-256
+  `7C9E1D7527582C3AEF9AFD71709981CEA50EA60B8FABEFE85EFCCAB0A5FDD02E`.
+  Relevant Chapter 2/4/5/7/9 and Appendix B/C/E/F text was checked directly.
+- Professional Guidelines v3.0: 39 pages; SHA-256
+  `3F02DF37767C745EFC47646140C2E6AC7CAE3B9C87C92073DAF4EEF74BE09EBB`.
+- Four official artifact examples: hashes and limits recorded in
+  [ARTIFACT_TEMPLATE_BASELINE.md](ARTIFACT_TEMPLATE_BASELINE.md).
 
-- `Material/reference/police_thief_p2p.pdf`, 160 pages, SHA-256 `7C9E1D7527582C3AEF9AFD71709981CEA50EA60B8FABEFE85EFCCAB0A5FDD02E`. Text was extracted directly with `pypdf` during this remediation. Structural evidence was checked in Chapter 2, Chapter 9, Appendix C, and Appendix E.
-- Professional Software Submission Guidelines v3.0, 39 pages, local course-material copy SHA-256 `3F02DF37767C745EFC47646140C2E6AC7CAE3B9C87C92073DAF4EEF74BE09EBB`. Pages 7–20 were inspected directly.
-- Planning repository `AmrSafadi/AI-Agent-Orchestration-FinalProject` at commit `0c751942fc133a4bbd7a1a3348f95800e73c81e3` was used for navigation and dependency inventory only.
-
-The official JSON templates and newer Moodle/lecturer materials were not available. Appendix F
-tables 13–19 and the two addresses in table 20 were directly verified; official schemas, exact
-MCP messages, and unverified simulator details remain incomplete.
+The template key sets are available; their complete formal required/optional,
+type/enum, conditional, and compatibility rules are not. That distinction replaces
+the former false statement that the official templates were unavailable.

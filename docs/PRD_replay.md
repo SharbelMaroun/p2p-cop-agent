@@ -1,22 +1,20 @@
-# PRD — Replay + Verification Viewer
+# PRD — Replay and Verification Viewer
 
-Status: requirement `CONFIRMED` (`SR-010`; Appendix E rule 20); exact UI is an implementation choice.
+Status: mandatory verification viewer confirmed; runtime UI deferred.
 
-## Confirmed structure (cited — book Ch.7; Appendix E rule 20)
+## Confirmed behavior
 
-- A **replay viewer is mandatory**. It loads the final game log (`log_<game_id>_g<NN>.json`),
-  steps forward/back, and for **every step** recomputes the SHA-256 over the revealed fields and
-  compares it to the stored commit.
-- Match ⇒ **"Verified OK"**; any mismatch ⇒ **"TAMPERED"** and the match is **immediately
-  disqualified** — a single tampered step voids the whole match (no appeal).
-- A **screenshot of a "Verified OK" replay is a submission requirement** (README section 5, `SR-008`).
+- The viewer loads `log_<game_id>_g<NN>.json`, moves through the history, and
+  recomputes each SHA-256 commitment from revealed data.
+- A match displays `Verified OK`; any mismatch displays `TAMPERED` and invalidates
+  the match.
+- The README submission report includes a `Verified OK` replay screenshot.
 
-## Pending / UNKNOWN
+Sources: book Ch. 7; Appendix E rule 20; `SR-008`/`SR-010`.
 
-- Exact log JSON field schema being verified — `U-002` (needs the official log template); the
-  verification math itself is fixed by the commit-reveal contract
-  (see [PRD_commit_reveal.md](PRD_commit_reveal.md)).
-- Viewer framework and layout — team implementation choice.
+The official log exemplar and observed key set have already been inspected. What
+remains unresolved is its complete formal validation schema and the exact commit
+byte canonicalization governed by ADR-006. SHA-256 and mismatch consequences are
+fixed; a particular JSON serialization is not.
 
-No replay code is authorized during the requirements phase. This PRD tracks the mandatory
-verification-viewer deliverable (guidelines §2.3).
+This milestone may validate the 1.1 fixture but adds no replay/UI behavior.

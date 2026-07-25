@@ -1,18 +1,19 @@
-# Specification Conflicts and Unresolved Discrepancies
+# Specification Conflicts and Resolutions
 
-Shared register, byte-identical in both repositories. Each row is `CONFIRMED` (resolved with
-direct evidence), `CONFLICT` (sources still disagree), or `UNKNOWN` (evidence missing). No
-entry is resolved by adopting a simulator default or an unverified number; numeric values live
-in [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md) as directly confirmed Appendix F values.
+This register is not byte-identical with the Thief repository at the compared
+baseline; see [PARITY_REPORT.md](PARITY_REPORT.md).
 
-| ID | Status | Issue | Resolution / evidence |
+| ID | Status | Conflict | Resolution / required action |
 |---|---|---|---|
-| C-001 | CONFIRMED | Draft `num_games = 1` versus a derived-source claim of "6". | Appendix F table 18 directly confirms 6 games in a series, minimum-to-pass 2, and maximum 10 per group (original PDF p. 154). It does not confirm a JSON field named `num_games` or its default; those schema/simulator details remain `UNKNOWN`. |
-| C-002 | CONFIRMED | README "five components + a cross-link" versus "six mandatory sections". | Reconciled: the academic report has **six mandatory sections and #6 is the companion cross-link**, so "five + link" equals six. Book Ch.9.4.2 (summary :2291–2296); Appendix E rule 42. Recorded as `SR-008`. |
-| C-003 | UNKNOWN | Simulator audit-tool name may be `submit_audit`, `exchange_audit`, or another. | Import the centralized verified simulator export at a recorded commit. Not derivable from summaries. |
-| C-004 | CONFIRMED | Gmail address spelling differed across derived sources. | Original PDF p. 157, table 20 gives `rmisegal@gmail.com` for repository sharing and `rmisegal+uoh26finalgame@gmail.com` for automated reports. |
-| C-005 | CONFIRMED | Earlier references cited Appendix G for GitHub submission. | Corrected: book v3.0.0 uses Appendix C. |
-| C-006 | UNKNOWN | Whether all four reporting artifacts must be byte-identical. | Only the shared `config` JSON is byte-identical (`config_sha256`); the four files share a `game_uid` but differ by content (summary :2227–2243). Exact field-equality rules need the official Moodle templates. |
-| C-007 | UNKNOWN | Whether an independently duplicated stateless shared package is permitted. | Shared **live** state is prohibited (`SR-004`). Whether duplicated stateless code is allowed needs a direct rule or lecturer clarification. |
+| C-001 | CONFIRMED | Example `num_games: 1` versus six sub-games | One is an example sub-game/default; Appendix F table 18 fixes a played series at six. Do not promote the demo default. |
+| C-002 | CONFIRMED | “Five components plus link” versus “six README sections” | They are the same mapping: five content sections plus section 6 companion link (book PDF p. 97; rule 42). |
+| C-003 | UNKNOWN | Exact MCP tool names | Simulator candidates are `negotiate`, `receive_turn`, `submit_audit`, `receive_control`; none is book-mandated. ADR-001 and Thief acceptance decide. |
+| C-004 | CONFIRMED | Lecturer/report address spellings differed | Canonical values are `rmisegal@gmail.com` and `rmisegal+uoh26finalgame@gmail.com` (book PDF p. 157). |
+| C-005 | CONFIRMED | Earlier text cited Appendix G for GitHub submission | Book v3.0.0 uses Appendix C. |
+| C-006 | CONFIRMED | Existing docs claimed cross-repository byte parity | Baseline hashes differ and two claimed files are absent on Thief main. New contract remains unfrozen pending evidence. |
+| C-007 | UNKNOWN | Duplicated stateless shared runtime package versus separate peers | A parity-controlled docs/config/fixture bundle is proposed; generic duplicated runtime code is not authorized by that proposal. |
+| C-008 | CONFLICT | Appendix B shared config uses schema 1.2; official artifact examples use 1.1 | ADR-003 isolates shared game/rate 1.2 from reporting-artifact fixture 1.1; no silent normalization. |
+| C-009 | CONFIRMED | Simulator subtractive scent versus book multiplicative scent | Book Ch. 4 controls; use `max(0,(1-ρ)τ+Δτ)`. ADR-005 records the decision. |
+| C-010 | UNKNOWN | Whether simulator source may be copied into this public MIT repository | Educational-use EULA/provenance review or lecturer permission is required. ADR-008 defaults to no substantial copying. |
 
-_No unresolved entry is closed by selecting an example or a simulator default._
+No unresolved row is closed by selecting a simulator/example default.

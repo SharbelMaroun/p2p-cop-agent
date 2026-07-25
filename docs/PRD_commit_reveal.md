@@ -1,23 +1,29 @@
 # PRD — Commit-Reveal
 
-Status: cryptographic **shape `CONFIRMED`**; exact payload schema blocked by `UNKNOWN`.
+Status: mandatory cryptographic semantics are confirmed; wire representation and
+byte canonicalization are **not frozen**.
 
-## Confirmed structure (cited — book Ch.5; Appendix E rules 17–19, 24)
+## Confirmed behavior
 
-- Every step runs four ordered phases: **Commit → Acknowledge → Reveal → Final Audit**.
-- Commit sends **only** `H_commit = SHA-256(State ‖ Move ‖ Intent ‖ Nonce)` — never the content.
-- A fresh random **Nonce** (via the `secrets` module, not `random`) is generated per commit and
-  kept **secret until the end-of-game audit** (rule 18).
-- Payloads use **canonical serialization** (`json.dumps(sort_keys=True, separators=(",",":"))`)
-  so both peers hash identical bytes; comparison uses `secrets.compare_digest`.
-- At end of game both sides reveal all nonces and **recompute every commit**; any mismatch is a
-  **technical forfeit, score 0, no appeal** (rule 19).
-- **Step-0** before the first move: each side signs its hardware/LLM spec, code version, group,
-  game number, and the GitHub commit hash (rule 24) — reported in the declaration JSON.
+- Every turn follows Commit → Acknowledge → Reveal → Final Audit.
+- SHA-256 commits bind the semantic state, move, intent, and nonce before reveal.
+- Only the hash is sent during Commit.
+- A fresh nonce remains secret until the end-of-game final reveal/audit.
+- Both peers recompute every commitment. Any mismatch is a technical loss worth zero.
+- Step 0 records the required hardware/LLM/code/group/game/commit declaration data.
 
-## Pending / UNKNOWN
+Sources: book Ch. 5; Appendix E rules 17–19/24.
 
-- Exact commit **payload field-set**, sub-game/role sealing, and wire schema — `U-005`.
-- Exact **nonce reveal timing** relative to acknowledgement — `U-005`.
+## Proposed decision boundary
 
-No cryptographic code is authorized until the exact payload schema is `CONFIRMED`.
+ADR-006 must define deterministic bytes and nonce length. A Python expression such as
+`json.dumps(sort_keys=True, separators=(",", ":"))`, a delimiter, field spelling,
+encoding, and comparison helper are implementation proposals—not Appendix E rules.
+No cryptographic runtime behavior may depend on them until both peers accept ADR-006.
+
+Known semantic components do not prove a formal wire payload schema. Sub-game/role
+sealing, field names/types, error envelopes, and acknowledgement transport are linked
+to ADR-001/002/006 and contract tests.
+
+This milestone may provide fixtures and typed contract models only; it implements no
+commit-reveal runtime.

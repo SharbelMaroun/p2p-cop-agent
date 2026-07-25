@@ -1,13 +1,18 @@
 # Official JSON Artifact Template Baseline
 
-Status: the four supplied JSON examples are directly inspected and valid JSON. They confirm the
-artifact families, schema version, exemplar key sets, cross-file identifiers, and filename
-patterns. They are examples, not formal JSON Schema documents: required/optional status, complete
-type constraints, enums, conditional rules, and compatibility behavior remain `UNKNOWN` until
-the referenced in-code schemas or validation fixtures are available.
+Status: the four supplied official examples were directly inspected and are valid
+JSON. They establish artifact families, exemplar key sets, observed identifiers,
+schema value `1.1`, and filename patterns. They are **not** formal JSON Schema
+documents: required/optional status, exhaustive types/enums, conditional rules, and
+compatibility behavior remain unproven until the referenced code schemas or
+validation fixtures are obtained.
 
-Source directory inspected:
-`C:\Users\amrsa\OneDrive\Desktop\OrchAI\FinalProject\SimulatorEXM-Repo\Json-examples`
+Source inspected:
+`C:\Users\amrsa\OneDrive\Desktop\OrchAI\FinalProject\SimulatorEXM-Repo\Json-examples`.
+The local Git history and hashes establish the exact inspected bytes; their
+designation as course-provided official examples comes from the supplied course
+handoff, not an independently verified publisher signature. This is template
+provenance, not permission to copy lecturer simulator source.
 
 | Template | Bytes | SHA-256 | Scope |
 |---|---:|---|---|
@@ -16,28 +21,49 @@ Source directory inspected:
 | `3-game-log.json` | 29631 | `00e783628585e85d9f7716faf337917090d5e4a5530d4bd10c239647002e71c2` | Per-peer, per-sub-game audit/replay log |
 | `4-final-result.json` | 3075 | `397bf9f00cf5aa4dfc609b6add10336d267056f8c2ef333e4b32a03a85d8d204` | Whole-series final result |
 
-All four examples use `schema_version: "1.1"` and join through `game_id`, `game_uid`, and the
-`links` object. Match-level declaration/result filenames derive from `game_id`; config/log names
-also include `sub_game_number`.
+## Confirmed filename patterns
+
+- `declaration_<game_id>.json`
+- `config_<game_id>_g<NN>.json`
+- `log_<game_id>_g<NN>.json`
+- `result_<game_id>.json`
+
+These patterns are also stated in the official book, PDF p. 157, table 20.
 
 ## Confirmed exemplar structure
 
-- Declaration: identity, links, timezone/times, series counts/token cap, and two group objects
-  containing members, Cop/Thief repositories, MCP server URLs, LLM model, hardware, and signature.
-- Agreed config: board/agents, world/hints, movement/barriers, scoring, pheromones,
-  network/league, Gatekeeper, identifiers, links, config filename, and `config_sha256`.
-- Game log: identifiers/links, per-peer summary and audit, committed records containing payload,
-  nonce, and commit, plus mutual agreement.
-- Final result: identifiers/links, groups, sub-game results/roles/commits/tokens/scores/logs/audit,
-  aggregate result, and mutual agreement.
+All four examples use `schema_version: "1.1"` and connect through observed
+`game_id`, `game_uid`, and `links` members.
+
+- Declaration: identity, links, timezone/times, series counts/token cap, and group
+  objects containing members, repositories, MCP URLs, LLM model, hardware, and
+  signature.
+- Agreed config: board/agents, world/hints, movement/barriers, scoring, scent,
+  network/league, Gatekeeper, identifiers, links, filename, and `config_sha256`.
+- Game log: identifiers/links, per-peer summary/audit, committed records containing
+  payload, nonce, and commit, plus mutual-agreement data.
+- Final result: identifiers/links, groups, sub-game results, roles, commits, tokens,
+  scores, logs/audit, aggregate result, and mutual-agreement data.
+
+These are observed keys and groupings, not a claim that every observed member is
+formally required. In the safe fixtures, `["*"]` represents redacted/dynamic map
+member names rather than a literal key.
+
+## Schema-version boundary
+
+Appendix B’s shared `config/game.json` example uses `schema_version: "1.2"`
+(official PDF p. 129), while all four artifact examples use `1.1`. ADR-003 keeps the
+active shared game/rate contract at `1.2` and the preserved artifact key-set fixtures
+at `1.1`. Neither is silently rewritten into the other.
 
 ## Authority boundaries
 
-- Appendix F remains authoritative for binding parameter values and statuses.
-- `network_and_league.num_games: 1` records this example run; it does not override Appendix F's
-  fixed six-game series.
-- `pheromone_min_center_intensity: 0.5` is present in the template but absent from Appendix F.
-  It is recorded as template/simulator-specific, not promoted to a binding requirement.
-- Exact MCP message names and wire payloads are not established by these reporting artifacts.
-- No simulator behavior beyond what the templates directly encode is inferred.
-
+- Appendix F controls binding values and statuses.
+- Example `network_and_league.num_games: 1` is a one-sub-game example and does not
+  override the fixed six-sub-game series.
+- Observed `pheromone_min_center_intensity: 0.5` has no Appendix F status. Preserve
+  it as an exemplar-only template field; do not promote it to shared runtime physics
+  without formal evidence or an accepted ADR.
+- Reporting artifacts do not establish MCP tool names, envelope fields, or commit
+  byte canonicalization.
+- Simulator behavior is not inferred from the templates.

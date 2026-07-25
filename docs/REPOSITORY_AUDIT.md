@@ -1,41 +1,56 @@
 # Repository Audit
 
-Remediation date: 2026-07-24. No implementation or dependency files were added, and no teammate work was deleted.
+## Inspected baseline
 
-## Status versus disposition
+At commit `72c05a18ba7a9a7fe14dad2ecb85034c64fa310a`, there were no Python package,
+tests, `pyproject.toml`, or lockfile. That is historical baseline evidence, not the
+state this M0–M1 branch is intended to leave.
 
-`CONFIRMED`, `CONFLICT`, and `UNKNOWN` describe the certainty of a requirement. `KEEP`, `QUARANTINE`, `ARCHIVE`, and `REMOVE LATER` describe what should happen to a file. A file’s disposition does not make its contents authoritative.
+The baseline also contained false parity claims, stale Appendix-F candidate wording,
+overbroad schema unknowns, a missing schema 1.1/1.2 conflict, and blanket
+“all development blocked” wording. Those active claims are corrected and the exact
+baseline hashes are preserved in [PARITY_REPORT.md](PARITY_REPORT.md).
 
 ## Current disposition
 
-| Path/scope | Purpose | Classification | Current state | Required action |
-|---|---|---|---|---|
-| `README.md` | Project entry point | KEEP | Verified-requirements phase | Keep synchronized with the ledger |
-| `LICENSE` | Team code license | KEEP WITH WARNING | Retained; does not automatically relicense lecturer material | Complete licensing review later |
-| `.env-example` | Secret-file template | KEEP | Neutral; contains no selected provider or credential variable | Add placeholders only after decisions are confirmed |
-| `.gitignore` | Secret and generated-file exclusions | KEEP WITH WARNING | Existing exclusions retained | Recheck when integrations are confirmed |
-| `config/README.md` | Configuration status | KEEP | Confirms there is no runtime configuration | Controlling config notice |
-| `config/drafts/cop/*` | Historical Cop config drafts | QUARANTINE | Unverified drafts outside active-looking role paths | Never load |
-| `archive/pre-audit/opposite-role-config/thief/*` | Opposite-role drafts | ARCHIVE | Preserved outside active config tree | Cop implementation must ignore |
-| `archive/pre-audit/documentation/*` | Complete legacy PRD/PLAN/TODO/mechanism documents | ARCHIVE | Unsupported pre-verification plans preserved with history | History and idea recovery only |
-| Active `docs/PRD.md`, `PLAN.md`, `TODO.md` | Current product/plan/task status | KEEP | Short verified-phase stubs | Update only from direct evidence |
-| Active mechanism PRDs | Subsystem status | KEEP | Short blocked/unknown stubs | Add requirements only when confirmed |
-| `docs/PROMPT_LOG.md` | Development provenance | KEEP WITH WARNING | Historical prompts retained; warning states they are nonauthoritative | Continue maintaining provenance |
-| `docs/REQUIREMENTS_LEDGER.md` | Evidence ledger | KEEP | Canonical confirmed baseline and runtime unknowns | Direct evidence required for changes |
-| `docs/SHARED_REQUIREMENT_BASELINE.md` | Cross-repository baseline | KEEP | Shared confirmed structural/professional requirements | Synchronize separately with Thief repository |
-| `docs/UNKNOWN_REQUIREMENTS.md` | Blocker register | KEEP | Runtime details remain unknown | Resolve field by field |
-| `docs/SPECIFICATION_CONFLICTS.md` | Conflict register | KEEP | Required conflicts/discrepancies preserved | Do not resolve silently |
-| `docs/PARAMETERS_BASELINE.md`, `SUBMISSION_CHECKLIST.md`, `DOCS_COMPLETENESS.md` | Candidate parameters, submission and completeness records | KEEP | Candidates flagged pending official confirmation; numbers must not enter runtime config |
-| `docs/PRD_gui.md`, `docs/PRD_replay.md` | Mandatory GUI + replay deliverable PRDs | KEEP | Confirmed structural shape; framework is a later implementation choice |
-| `Material/` | Untracked source/reference material | KEEP WITH WARNING | Preserved; summaries/translations remain nonbinding | Do not stage as implementation |
+| Scope | Disposition |
+|---|---|
+| Active README/PRD/PLAN/TODO and seven mechanism PRDs | Governing M0–M1 documentation |
+| `PARAMETERS_BASELINE.md` | Direct Appendix-F values/statuses; not candidates |
+| `ARTIFACT_TEMPLATE_BASELINE.md` | Observed official key sets/patterns with formal-schema caveat |
+| Proposed shared bundle | `0.1.0-proposed`, UNFROZEN pending Thief parity |
+| Cop private example config | Local only; never parity-controlled |
+| `config/drafts/` | Quarantined historical material; never loaded |
+| `archive/pre-audit/` | Historical coverage only; never restored as active plan |
+| Lecturer simulator | Pinned learning/interoperability reference under separate EULA |
+| `.env-example` / `.gitignore` | Safe placeholders and exclusions; verified by quality gate |
 
-## Remediation results
+## M1 verification evidence
 
-- Legacy PRD, PLAN, TODO, and mechanism documents are archived intact.
-- Active planning documents are verified-phase stubs.
-- The former 600-plus-task backlog is not active or executable-looking.
-- `.env-example` is neutral and provider-independent.
-- Active runtime configuration: **none**.
-- No gameplay, FastMCP runtime, cryptography, strategy, Gmail, GUI, replay, reporting, package, or test implementation is authorized.
-- No teammate work was deleted.
-- Phase 1 remains blocked by the active TODO and unknown-requirements ledger.
+The final clean-state gates were run on 2026-07-25 against CPython 3.12.13:
+
+| Check | Actual result |
+|---|---|
+| `uv lock --check` | PASS; 19 packages resolved |
+| `uv sync --frozen` after deleting `.venv` | PASS; clean environment created and 16 packages installed |
+| `uv run ruff check .` | PASS; zero violations |
+| `uv run pytest --cov --cov-branch --cov-fail-under=85` | PASS; 45 tests, 89.29% branch coverage |
+| `uv run python scripts/check_file_lengths.py` | PASS; 19 source/script files and 15 test files |
+| `uv run python scripts/check_secrets.py` | PASS; 108 text files, zero findings |
+| deterministic manifest regeneration and verification | PASS; 13 controlled files; manifest SHA-256 `4b828705e173cc061c2f19924b4b0b2fc5652c383ce1d8d2b5cf3d004a89106c` |
+
+A read-only provenance comparison used the pinned simulator commit
+`960499fd5e8777b4929625f5d8fdcf2ab4677b54`: 15 Cop source files were compared
+with all 101 tracked simulator Python files. It found zero identical whole-file
+SHA-256 hashes, zero identical normalized eight-line windows of at least 160
+characters, and zero simulator-specific source markers. This is strong negative
+copying evidence for the current scaffold, not a general proof of authorship.
+
+## Milestone authorization
+
+Authorized now: documentation, shared contract/config fixtures, typed validation
+models, package/SDK smoke scaffold, tests, and quality/parity scripts.
+
+Not authorized now: game engine, FastMCP handlers/client, live peer process, LLM,
+Gmail, GUI, replay, or league behavior. Later runtime gates are deferred rather than
+blocking the behavior-free scaffold.

@@ -1,71 +1,27 @@
-# Documentation Completeness Check
+# Documentation Completeness
 
-Purpose: inventory every documentation artifact required by the Professional Software Submission
-Guidelines v3.0 (§2). A complete documentation inventory does **not** mean the project or
-submission is complete, compliant, or ready to submit.
+File presence and content readiness are separate. All mandatory planning-document
+families are present; runtime/result sections remain incomplete by design.
 
-Two things are tracked separately:
+| Document | Present | Current content status |
+|---|---|---|
+| `README.md` | Yes | M0–M1 status, install/check commands, configuration, six-section report mapping |
+| `docs/PRD.md` | Yes | Behavior-free milestone goals/non-goals/acceptance |
+| `docs/PLAN.md` | Yes | Explicit gates with owner/status/priority/DoD/traceability |
+| `docs/TODO.md` | Yes | Active M0–M2 tasks with owner/status/priority/DoD |
+| `docs/PRD_commit_reveal.md` | Yes | Confirmed semantics; ADR-006 byte details unfrozen |
+| `docs/PRD_scent_belief.md` | Yes | Book multiplicative model; runtime deferred |
+| `docs/PRD_strategy.md` | Yes | Deterministic default; rule-25 status correct |
+| `docs/PRD_p2p_mcp.md` | Yes | Candidate names separated from mandates |
+| `docs/PRD_gatekeeper_reporting.md` | Yes | Limits/address/attachment confirmed; runtime deferred |
+| `docs/PRD_gui.md` | Yes | Local-truth boundary; runtime deferred |
+| `docs/PRD_replay.md` | Yes | Verified/tampered semantics; runtime deferred |
+| `docs/PROMPT_LOG.md` | Yes | Historical provenance plus correction entry |
+| `docs/adr/ADR-001`–`ADR-010` | Yes | Proposed placeholders; none falsely frozen |
 
-- **Present** — the required file exists in the repository.
-- **Content status** — during the current verified-requirements phase, requirement-dependent
-  documents are intentionally short **verified-phase stubs**. They are filled only from
-  `CONFIRMED` evidence (Appendix E/F, official templates, lecturer announcements) and are never
-  populated with invented values. A stub is a deliberate state, not a missing document.
+The graded six-section academic report is not complete until runtime/results exist.
+Only the companion link can be completed now.
 
-Requirement source: `software_submission_guidelines-V3_Summary.md` §2.1–2.5 (book pages 7–9).
-This is a shared, byte-identical file in both the Cop and Thief repositories.
-
-## Mandatory documents (guidelines §2)
-
-| # | Required document | Guidelines ref | Present | Content status | Remaining to complete |
-|---|---|---|---|---|---|
-| 1 | `README.md` at repository root | §2.1, p.7 | Yes | Partial — requirements-status page | Installation, usage, examples, configuration guide, contribution guidelines, and the academic report sections — added when runtime and results exist |
-| 2 | `docs/PRD.md` | §2.2, p.7 | Yes | Stub | Goals/KPIs, acceptance criteria, functional + non-functional requirements, user stories, timeline — after requirements are `CONFIRMED` |
-| 3 | `docs/PLAN.md` | §2.2, p.7 | Yes | Stub | C4 diagrams, UML, ADRs, API/data schemas and contracts — after the architecture is frozen |
-| 4 | `docs/TODO.md` | §2.2, p.8 | Yes | Stub (active remediation tasks) | Full phased task list with priorities, status, and Definition-of-Done — restored, verified, when implementation is authorized (see TODO scale note) |
-| 5 | `docs/PRD_commit_reveal.md` | §2.3, p.8 | Yes | Stub | Theory, I/O contract, metrics, constraints, alternatives, success criteria, test scenarios — after Appendix E/F crypto details are `CONFIRMED` |
-| 6 | `docs/PRD_scent_belief.md` | §2.3, p.8 | Yes | Stub | As above, for the scent/belief mechanism |
-| 7 | `docs/PRD_strategy.md` | §2.3, p.8 | Yes | Stub | As above, for the strategy mechanism |
-| 8 | `docs/PRD_p2p_mcp.md` | §2.3, p.8 | Yes | Stub | As above, for the FastMCP peer contract (tool names/schemas pending) |
-| 9 | `docs/PRD_gatekeeper_reporting.md` | §2.3, p.8 | Yes | Stub | As above, for the gatekeeper + Gmail reporting mechanism |
-| 10 | `docs/PROMPT_LOG.md` (prompt book) | §8.3, p.19 | Yes | Maintained (living) | Append an entry per significant AI-assisted step |
-| 11 | README ↔ companion cross-link | book Ch.9 / `SR-002` | Yes | Done | Kept in sync with the companion repository URL |
-
-**Documentation-inventory verdict: no mandatory documentation file is missing.** This is limited
-to file presence. It does not certify content completeness, implementation, tests, runtime
-evidence, league play, Moodle deliverables, release tagging, or overall submission readiness.
-
-## Deferred to the implementation phase (not documentation gaps)
-
-The recommended project tree (guidelines §2.4) also lists code-phase artifacts that are
-**intentionally absent** during requirements verification and are tracked by `PS-002` and the
-TODO: `pyproject.toml`, `uv.lock`, `src/`, `tests/`, `.gitignore` review, `assets/`, `results/`,
-`data/`, `notebooks/`. `.env-example` is a placeholder template governed by `PS-006`.
-
-## Academic README report (graded)
-
-The book's academic-report requirement (Ch.9.4.2 / `DEV-SPEC.md` §17) — six sections:
-(1) Dec-POMDP model, (2) FastMCP communication dilemma, (3) implemented strategy,
-(4) learning curves if RL is used, (5) screenshots (live belief map + "Verified OK" replay),
-(6) companion-repository link — is **pending** the runtime and results it describes. Only the
-companion link (6) currently applies and is present. Tracked in the TODO.
-
-## TODO scale note
-
-The active `docs/TODO.md` is intentionally a **short remediation stub**, not the full work
-breakdown. The complete 600+-task plan (T001–T635) is preserved in
-`archive/pre-audit/documentation/TODO.md` and will be restored — verified against `CONFIRMED`
-requirements — when implementation is authorized. A short active list is correct for the current
-phase; it is neither a missing nor a truncated document.
-
-## Additional verified-phase documents
-
-Also maintained this phase: `PARAMETERS_BASELINE.md` (directly confirmed Appendix-F values),
-`SUBMISSION_CHECKLIST.md` (submission/league obligations), `PRD_gui.md` and
-`PRD_replay.md` (the mandatory GUI and replay deliverables, per guidelines §2.3), and the
-requirements registers (ledger, conflicts, unknowns). The academic six-section report is now
-recorded as `SR-008` (resolves `C-002`).
-
----
-
-_Last updated 2026-07-25 by the Repos agent (pending Supervisor review)._
+The archived T001–T635 file is historical coverage only. It will not be restored as
+the active plan. This document makes no cross-repository parity claim; baseline
+differences are in [PARITY_REPORT.md](PARITY_REPORT.md).

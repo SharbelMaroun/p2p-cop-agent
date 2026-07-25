@@ -21,7 +21,7 @@ Report every game's result to the lecturer automatically and safely. An autonomo
 
 ### 3.2 Reporting (`email_sender.py`, `report/*`)
 - **RP-1** Emit the **4 JSON artifacts**: `declaration_*`, `config_*_g<NN>`, `log_*_g<NN>`, `result_*` (shared `game_uid`, names from `game_id`).
-- **RP-2** Email the **result JSON as an attachment** (not plaintext) to `rimesegal+uoh26finalgame@gmail.com`.
+- **RP-2** Email the **result JSON as an attachment** (not plaintext) to `rmisegal+uoh26finalgame@gmail.com`.
 - **RP-3** OAuth send-only (`gmail.send`); `credentials.json`/`token.json` git-ignored; `mode=draft` for testing.
 - **RP-4** **Both teams send separately**; a missing report → no points even for a winner.
 - **RP-5** Report includes **all four GitHub links** — two per team, ours **and** the opponent's (rule 49: "four links in the JSON files of the two teams"; opponent's repos come from the handshake identity exchange) — plus per-game commit hash and total tokens consumed.

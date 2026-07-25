@@ -1,21 +1,18 @@
 # PRD — Live GUI
 
-Status: requirement `CONFIRMED` (`SR-010`); exact framework/layout is an implementation choice.
+Status: deliverable and truth boundary confirmed; framework/layout deferred.
 
-## Confirmed structure (cited — book Ch.7; Appendix E rules 8, 9)
+## Confirmed behavior
 
-- A **live GUI** displays **local information only**: own position, own belief **heatmap** of the
-  opponent (deeper = higher probability), and received clues.
-- It **must never** show the full objective board or the opponent's private state — doing so is a
-  **disqualification** (rule 9).
-- A **turn banner** reflects the async state machine: **YOUR TURN** when the MCP server hands
-  over, **LOCKED** (input disabled) after Commit.
-- A **screenshot of the belief-map GUI is a submission requirement** (README section 5, `SR-008`).
+- The live GUI shows local truth only: own position, own belief heatmap of the
+  opponent, and received clues.
+- It never displays the objective full board or the opponent’s private state;
+  violating that boundary is disqualifying.
+- The turn banner shows `YOUR TURN` when action is enabled and `LOCKED` after Commit.
+- The README submission report includes a live belief-map screenshot.
 
-## Pending / UNKNOWN
+Sources: book Ch. 7; Appendix E rules 8/9; `SR-008`/`SR-010`.
 
-- GUI framework (Tkinter/PyQt) and exact layout are a team implementation choice, not an official
-  mandate; decided during the implementation phase behind the SDK boundary (`PS-007`).
-
-No GUI code is authorized during the requirements phase. This PRD exists so the mandatory GUI
-deliverable is tracked (guidelines §2.3 requires a PRD per complex component).
+ADR-009 records the local-truth model. Framework, layout, accessibility, and event
+wiring remain later SDK-boundary implementation choices. This milestone adds no GUI
+behavior.
