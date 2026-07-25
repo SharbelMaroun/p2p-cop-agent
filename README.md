@@ -36,7 +36,10 @@ The shared baseline is maintained in [SHARED_REQUIREMENT_BASELINE.md](docs/SHARE
 
 Candidate Cop concerns are pursuit, belief about the Thief, Thief-scent observation, legal barrier placement, capture, Cop-local strategy, and Cop-local verbal behavior.
 
-Their exact mechanics, fields, values, proofs, and timing remain subject to direct Appendix E/F and official-template verification. This repository must not depend on the Thief repository filesystem or import its private runtime code.
+Appendix F numerical values are directly confirmed. Exact schemas, MCP messages,
+simulator-dependent behavior, proofs, and timing remain subject to official-template or
+direct-source verification. This repository must not depend on the Thief repository filesystem
+or import its private runtime code.
 
 ## Installation and usage
 
@@ -66,7 +69,8 @@ changes; summaries and derived references may point to evidence but cannot confi
 
 - **2026-07-24 — Documentation completeness pass.** Added
   [docs/DOCS_COMPLETENESS.md](docs/DOCS_COMPLETENESS.md), which verifies that every document
-  required by Professional Software Guidelines v3.0 §2 is present (no mandatory file missing).
+  required by Professional Software Guidelines v3.0 §2 is present (no mandatory documentation
+  file missing). This is file-presence evidence, not a claim that the submission is complete.
   Confirmed the active [docs/TODO.md](docs/TODO.md) is a short verified-phase stub (16 tasks) and
   that the full 600+-task plan (T001–T635) remains archived under
   `archive/pre-audit/documentation/TODO.md`. Added this Report section and the two-agent-workflow

@@ -1,6 +1,6 @@
 # PRD — Gatekeeper and Reporting
 
-Status: gatekeeper + reporting **shape `CONFIRMED`**; exact schemas/limits blocked by `UNKNOWN`.
+Status: shape, Appendix F limits, and addresses **CONFIRMED**; schemas/send mode `UNKNOWN`.
 
 ## Confirmed structure (cited — book Ch.9; Appendix A; Appendix E rules 28–30, 32–34; `PS-008`)
 
@@ -18,10 +18,10 @@ Status: gatekeeper + reporting **shape `CONFIRMED`**; exact schemas/limits block
 
 ## Pending / UNKNOWN
 
-- Exact **rate-limit numbers** (30 rpm, 2 concurrent, 5 s, 3 retries, queue 100) — candidates in
-  [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md), pending confirmation.
+- Rate-limit values (30 rpm, 2 concurrent, 5 s, 3 retries, queue 100) are directly confirmed in
+  [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md).
 - Exact **JSON template field schemas, filenames, and byte-equality rules** — `U-002` / `C-006`
   (need official Moodle templates).
-- Exact **Gmail address spelling** and draft/send mode — `C-004` (`rmisegal` vs `rimesegal`).
+- Both addresses are confirmed in `SR-012`; exact draft/send mode remains `UNKNOWN`.
 
 No gatekeeper or reporting code is authorized until schemas and limits are `CONFIRMED`.

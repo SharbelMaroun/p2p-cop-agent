@@ -3,8 +3,8 @@
 | Source | Availability | Status | Use |
 |---|---|---|---|
 | Official final-project book v3.0.0 | Local PDF directly extracted; hash recorded | CONFIRMED source | Structural requirements; later field-level game verification |
-| Appendix E | Present in official PDF | CONFIRMED source, partial extraction | `SR-006`; other rules remain unledgered |
-| Appendix F | Present in official PDF | CONFIRMED source, field-level work pending | Numerical/runtime values remain UNKNOWN until transcribed |
+| Appendix E | Present in official PDF | CONFIRMED source, targeted extraction | Includes direct verification of rule 25 wording/status |
+| Appendix F | Present in official PDF | CONFIRMED source, tables 13–19 extracted | Binding values/statuses recorded in `PARAMETERS_BASELINE.md` |
 | Official JSON templates | Not present | UNKNOWN | Schemas and artifact rules blocked |
 | Moodle instructions/announcements | Not present | UNKNOWN | Recency conflicts blocked |
 | Professional Software Submission Guidelines v3.0 | Direct 39-page PDF found in local course materials; hash recorded | CONFIRMED source | `PS-001`–`PS-009` |

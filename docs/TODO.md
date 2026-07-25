@@ -8,7 +8,7 @@
 - [x] Correct README and configuration status.
 - [x] Archive pre-audit PRD, PLAN, TODO, and mechanism documents.
 - [ ] Obtain direct Appendix E extraction.
-- [ ] Obtain direct Appendix F extraction.
+- [x] Extract Appendix F tables 13–19 directly from the original PDF.
 - [ ] Obtain official JSON templates.
 - [ ] Obtain newer Moodle instructions and lecturer announcements.
 - [ ] Import centralized simulator-analysis exports.
@@ -16,8 +16,10 @@
 - [x] Resolve exact README content mapping (`SR-008`: six sections, #6 = companion link).
 - [x] Resolve game, sub-game, series, and league terminology (`C-001`: num_games 1 vs series 6).
 - [x] Verify the annotated-tag requirement (`SR-007`; exact literal `v1.0-submission` pending Moodle).
-- [ ] Verify the final reporting-address spelling (`C-004`).
-- [ ] Byte-confirm Appendix E/F candidate values in `PARAMETERS_BASELINE.md`.
+- [x] Verify both official email addresses from original PDF p. 157 (`C-004`).
+- [x] Confirm Appendix F values/statuses directly in `PARAMETERS_BASELINE.md`.
+- [ ] Verify the neutral `.env-example` in the companion Thief repository; this Cop checkout
+      cannot establish the state of that separate repository.
 - [ ] Freeze architecture only after the related ledger entries are confirmed.
 
 ## Deferred deliverables (tracked, not yet authorized)

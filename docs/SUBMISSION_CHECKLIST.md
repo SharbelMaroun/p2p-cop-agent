@@ -20,11 +20,11 @@ implementation/submission, not during the requirements phase.
 ## Reporting (rules 32–35, 51–54) — exact templates pending
 - [ ] Each side auto-sends a signed JSON result at the end of every legal game (JSON only; free text rejected).
 - [ ] Both sides agree the result; conflicting reports → 0/0.
-- [ ] Reporting address (candidate, verify spelling — `C-004`): `rmisegal+uoh26finalgame@gmail.com`.
+- [ ] Send reports to `rmisegal+uoh26finalgame@gmail.com` (original PDF p. 157, table 20).
 - [ ] Every game's commit hash and total tokens are included in the JSON.
 
 ## League integrity (rules 31, 37, 38, 52) — league play pending
-- [ ] Play at least the minimum number of **different** teams (candidate min-to-pass 2 — PARAMETERS_BASELINE).
+- [ ] Play at least 2 **different** teams (Appendix F table 18, fixed).
 - [ ] Declare accurately how many games were played vs each opponent; false declaration = disqualification.
 - [ ] Only one scored game per opponent; warm-up games are uncounted.
 

@@ -1,13 +1,11 @@
-# Parameters Baseline — candidate values, pending official confirmation
+# Parameters Baseline — directly confirmed Appendix F values
 
-> **Confidence: MEDIUM. Not hard-locked. Must NOT enter runtime configuration.**
-> Every value below is transcribed from `DEV-SPEC.md` §3, which distills the Mandatory
-> Parameters Table (Appendix F) of the official book v3.0.0 through the page-by-page
-> translation `police_thief_p2p_Summary.md`. Those are **derived** sources. Each value is a
-> **candidate** pending byte-level confirmation against the original Appendix F PDF and the
-> official Moodle templates. No value here may be copied into `config/`, used as a hard-coded
-> constant, or promoted to bare `CONFIRMED` until it is verified and recorded in
-> [REQUIREMENTS_LEDGER.md](REQUIREMENTS_LEDGER.md).
+> **Confidence: HIGH. Directly confirmed from the original PDF.**
+> Every value and status below was checked directly against Appendix F, tables 13–19, in the
+> official project book v3.0.0 (PDF pp. 152–155 / printed pp. 136–139). The per-row derived-source
+> locators are retained only as secondary cross-checks. These binding values belong in
+> configuration rather than hard-coded constants. Official JSON schemas and field names remain
+> `UNKNOWN`.
 >
 > **Status meanings (book):** *Fixed* = cannot change; deviation = disqualification ·
 > *Minimum* = may be raised by mutual agreement, never lowered · *Negotiation* = any agreed
@@ -69,7 +67,6 @@
 | Minimum games to pass (per group) | 2 | Fixed | DEV-SPEC §3 T18; summary :3542 |
 | Estimated tokens per series (report in USD) | ~200000 | Negotiation | DEV-SPEC §3 T18; summary :3543 |
 | Max games per group | 10 | Fixed | DEV-SPEC §3 T18; summary :3544 |
-| `num_games` shared-config default (single game) | 1 | — | summary :2963, :2997 |
 
 ## Rate limiter / Gatekeeper (Appendix F Table 19)
 
@@ -85,6 +82,5 @@
 
 ---
 
-_Byte-identical in both repositories. Candidate values only — confirm against the original
-Appendix F PDF and the official Moodle templates before any value leaves this file._
-_Created 2026-07-25 by the Repos agent (pending Supervisor review)._
+_Directly verified 2026-07-25 against original PDF pp. 152–155. The official JSON templates,
+exact MCP messages, and simulator-specific defaults are outside Appendix F and remain UNKNOWN._

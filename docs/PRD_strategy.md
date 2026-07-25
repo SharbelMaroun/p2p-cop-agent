@@ -2,11 +2,13 @@
 
 Status: strategy **shape `CONFIRMED`**; exact interfaces/weights blocked by `UNKNOWN`.
 
-## Confirmed structure (cited — book Ch.6; Appendix E rule 25)
+## Confirmed structure and recommendation
 
-- **The move decision is always pure Python/algorithmic.** The LLM produces the **verbal layer
-  only** (bluff/hint text) — it never chooses moves (rule 25; an illegal LLM move causes a
-  technical loss).
+- Book chapter 6 describes movement decisions as algorithmic and the LLM as the verbal layer.
+  Appendix E rule 25 **recommends** not delegating move decisions to the LLM and using it only
+  for text processing and behavioral-profile generation. Rule 25 has no mandatory sanction; it
+  warns that blind reliance can cause illegal moves and technical loss (original PDF p. 146 /
+  printed p. 130).
 - The strategy module runs **after hint-decode, before Commit**:
   `incoming hint + scent → belief update (Bayes) → move choice → LLM bluff text → commit pack`.
 - Three permitted movement policies: (1) pure heuristics (Bayes + Manhattan, the default),
@@ -18,10 +20,10 @@ Status: strategy **shape `CONFIRMED`**; exact interfaces/weights blocked by `UNK
   (rules 46, 47).
 - Communication is **natural language only**; no coordinate/number protocols (rules 26, 27).
 
-## Pending / UNKNOWN — numbers in PARAMETERS_BASELINE (pending)
+## Confirmed values and remaining UNKNOWN details
 
-- Exact move-set, barrier quota (14), step/survival limits (35), and clue word limit (15) —
-  candidates in [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md), pending confirmation.
-- Exact strategy interfaces, weights, fallback behavior, and LLM deadline — `U-014` / `U-008`.
+- The move-set, barrier quota (14), step/survival limits (35), and clue word limit (15) are
+  directly confirmed in [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md).
+- Exact strategy interfaces, weights, fallback behavior, and provider/model choice remain UNKNOWN.
 
 Do not include Thief strategy in this repository.
