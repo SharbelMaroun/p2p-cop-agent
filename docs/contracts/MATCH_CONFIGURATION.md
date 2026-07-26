@@ -1,6 +1,6 @@
 # Proposed Negotiated Match Configuration
 
-Contract version: `0.1.0-proposed`  
+Contract version: `0.1.0-proposed`
 Status: **PROPOSED / UNFROZEN — P0 HASH BLOCKER**
 
 `config/game.json` and `config/rate_limits.json` are a neutral review fixture for one

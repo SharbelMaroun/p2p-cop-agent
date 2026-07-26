@@ -1,6 +1,6 @@
 # Proposed Stable League Contract
 
-Contract version: `0.1.0-proposed`  
+Contract version: `0.1.0-proposed`
 Status: **PROPOSED / UNFROZEN**
 
 This document separates stable public semantics from match-specific values and

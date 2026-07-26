@@ -19,11 +19,11 @@
     },
     {
       "path": "docs/contracts/LEAGUE_CONTRACT.md",
-      "sha256": "c621ea10a7bedcfd54eef018ab3cf93078e38f0f09d579ddfb73d12bf7369e35"
+      "sha256": "d808d743954f3fd09413860fe21d378728bb4b58171af0cf4c32fcede76ca1db"
     },
     {
       "path": "docs/contracts/MATCH_CONFIGURATION.md",
-      "sha256": "1cc9b27460a9c19c387837cfd4b27dd23424ccdf42234e4747ad16dfb279aa07"
+      "sha256": "b3df0b84a708c8ca44d6c608ba7dd7f49b35c68368304a1ced3f320677cc7c04"
     },
     {
       "path": "docs/contracts/PRIVATE_CONFIGURATION.md",
