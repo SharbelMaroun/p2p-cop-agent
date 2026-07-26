@@ -22,6 +22,7 @@ def test_sdk_loads_validated_values_from_repository_files() -> None:
 
     assert sdk.game_config["board_and_agents"]["grid_size"] == 7  # type: ignore[index]
     assert sdk.rate_limits_config["rate_limiter_gatekeeper"]["queue_depth"] == 100  # type: ignore[index]
+    assert sdk.game_config["agreed_between"] == ["neutral-group-alpha", "neutral-group-beta"]
     assert sdk.role == "cop"
     assert sdk.version == "1.00"
     assert sdk.contract_version == "0.1.0-proposed"
@@ -43,4 +44,12 @@ def test_sdk_reports_malformed_json(tmp_path: Path) -> None:
     path.write_text("{", encoding="utf-8")
 
     with pytest.raises(ConfigLoadError, match="Cannot load JSON configuration"):
+        load_json_object(path)
+
+
+def test_sdk_rejects_duplicate_json_members(tmp_path: Path) -> None:
+    path = tmp_path / "config.json"
+    path.write_text('{"same": 1, "same": 2}', encoding="utf-8")
+
+    with pytest.raises(ConfigLoadError, match="Duplicate JSON member 'same'"):
         load_json_object(path)

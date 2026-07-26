@@ -5,7 +5,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from p2p_cop_agent.shared import __version__
-from p2p_cop_agent.shared.contracts import load_shared_contract
+from p2p_cop_agent.shared.contracts import (
+    SharedContract,
+    load_shared_contract,
+    require_same_match_configuration,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,3 +31,13 @@ class CopSDK:
             rate_limits_config=contract.rate_limits,
             contract_version=contract.version,
         )
+
+    def validate_match_offer(self, root: str | Path) -> None:
+        """Validate and compare a proposed match pair without claiming hash verification."""
+        offered = load_shared_contract(root)
+        expected = SharedContract(
+            version=self.contract_version or "",
+            game=dict(self.game_config),
+            rate_limits=dict(self.rate_limits_config),
+        )
+        require_same_match_configuration(expected, offered)

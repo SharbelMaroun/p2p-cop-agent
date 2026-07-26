@@ -7,11 +7,11 @@
     },
     {
       "path": "config/game.json",
-      "sha256": "6d570ab49fa71e611cd717e5476f71be0b2c48e49433ca43c01661a0a8f47ec0"
+      "sha256": "a06fc6d316240f0f089a3d33966527082c5f6c229a1232b5d8e14987269472af"
     },
     {
       "path": "config/rate_limits.json",
-      "sha256": "c6b361d7e38fdfe2ca564c3fb850d8fefdca5f3bc0af647fdced5a8c161cc281"
+      "sha256": "f2d173e9bf6c31ea30a14d6b4b81801c46fa155eaefa04548eeedf26107c7814"
     },
     {
       "path": "docs/contracts/CONTRACT_VERSION",
@@ -35,15 +35,15 @@
     },
     {
       "path": "docs/schemas/artifact-keyset-fixture.schema.json",
-      "sha256": "ad776889da758a63cafb3603d3febd10e280289e3a0c919a4df9c8b122781078"
+      "sha256": "8e56b199fb6339a1d085422face33fac8313efd8b7d0d142774607b2febd7a3f"
     },
     {
       "path": "docs/schemas/game-config.schema.json",
-      "sha256": "4047ee6fee846fc1fbb9492a4dcf901066070f768b7e3b78cf1ec10a56b48022"
+      "sha256": "b4da34a2ffeb616bb36a3a3f18170b033818cb88632a5d154e44bd9f893b33ff"
     },
     {
       "path": "docs/schemas/rate-limits.schema.json",
-      "sha256": "a1fa7a1b9d44287f8d0a973bd9c005353ee1e226bfcb22c1d080119b800d0f09"
+      "sha256": "b4b837751e1a5ec75620cc877b511790c543d251c2ffd01fd0f0d81112418591"
     },
     {
       "path": "scripts/check_shared_contracts.py",
@@ -51,19 +51,19 @@
     },
     {
       "path": "tests/fixtures/contracts/agreed_config.keyset.json",
-      "sha256": "c790448ffa94de39086f7562481fb733111a96fd3250e881e582e87dcf391c3b"
+      "sha256": "a82c0f98a9eccb35d13dffb5287f1c74f65918008de4c178c3565540cb1ec1bf"
     },
     {
       "path": "tests/fixtures/contracts/declaration.keyset.json",
-      "sha256": "da02d26d846e63689178f37346500828729a84b47f1f57384cbcab28f38b0133"
+      "sha256": "fa80c357f5b9b1266ca8b22f9a588d7644735ef948ff26744e0e1b4e0232eeb4"
     },
     {
       "path": "tests/fixtures/contracts/final_result.keyset.json",
-      "sha256": "ccda03b785c02c9ac4a7d9fe223085fe9cdaf796fded61ed40567dc5926021d3"
+      "sha256": "032da7375bb220a298858d89d214a8504946cfa783e815940474bd354deec479"
     },
     {
       "path": "tests/fixtures/contracts/game_log.keyset.json",
-      "sha256": "30be7f2a6f21bbe8c88b614495e18071d9b41ee9bcb700acc00ae64dbcabfdd6"
+      "sha256": "d084554908c831f7924b8ce943470443f3ee82ef829e8f0b2b44dc0017c3639b"
     }
   ],
   "freeze_status": "proposed_unfrozen",

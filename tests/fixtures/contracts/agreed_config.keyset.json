@@ -3,7 +3,7 @@
   "source": {
     "filename": "2-agreed-config.json",
     "sha256": "4e7778d88bf53aa2d4dad0ad09c64764149d3ed0e521e578e77a3ab75773cba1",
-    "evidence": "supplied example; exact key-set observation only"
+    "evidence": "local simulator-generated artifact; NEEDS_MANUAL_REVIEW provenance"
   },
   "observed_schema_version": "1.1",
   "key_sets": {

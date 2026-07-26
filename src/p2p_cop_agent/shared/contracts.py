@@ -58,6 +58,33 @@ def _check_profile(version: str, schemas: list[JsonObject]) -> None:
         )
 
 
+def _check_match_binding(game: JsonObject, rate_limits: JsonObject) -> None:
+    """Check proposed cross-file identity without inventing canonical hash bytes."""
+    for field in ("game_id", "sub_game_number"):
+        if game.get(field) != rate_limits.get(field):
+            raise ContractValidationError(f"match binding differs for {field}")
+    game_id = game.get("game_id")
+    sub_game = game.get("sub_game_number")
+    expected_name = f"config_{game_id}_g{sub_game:02d}.json"
+    if game.get("config_name") != expected_name:
+        raise ContractValidationError(
+            f"game config $.config_name must be {expected_name!r} for its match identity"
+        )
+
+
+def require_same_match_configuration(
+    expected: SharedContract,
+    offered: SharedContract,
+) -> None:
+    """Reject an offer whose validated match terms differ semantically."""
+    if expected.version != offered.version:
+        raise ContractValidationError("match contract version differs")
+    if expected.game != offered.game:
+        raise ContractValidationError("negotiated game configuration differs")
+    if expected.rate_limits != offered.rate_limits:
+        raise ContractValidationError("negotiated rate-limit configuration differs")
+
+
 def load_shared_contract(root: str | Path) -> SharedContract:
     """Load and validate shared game and Gatekeeper files from one repository root."""
     repository = Path(root)
@@ -69,6 +96,7 @@ def load_shared_contract(root: str | Path) -> SharedContract:
     rate_limits = load_json_object(repository / "config/rate_limits.json")
     validate_instance(game, game_schema, "game config")
     validate_instance(rate_limits, rate_schema, "rate-limit config")
+    _check_match_binding(game, rate_limits)
     return SharedContract(version=version, game=game, rate_limits=rate_limits)
 
 

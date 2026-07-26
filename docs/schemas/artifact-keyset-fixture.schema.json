@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/p2p-contract/0.1.0-proposed/artifact-keyset-fixture.schema.json",
   "x-contract-version": "0.1.0-proposed",
+  "x-source-status": "LOCAL_OBSERVATION_NEEDS_MANUAL_REVIEW",
   "title": "Observed artifact key-set fixture descriptor",
-  "description": "Validates fixture metadata, not official artifact instances.",
+  "description": "Validates metadata for local simulator-generated observations, not official artifact instances.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -39,7 +39,7 @@
           "pattern": "^[0-9a-f]{64}$"
         },
         "evidence": {
-          "const": "supplied example; exact key-set observation only"
+          "const": "local simulator-generated artifact; NEEDS_MANUAL_REVIEW provenance"
         }
       }
     },

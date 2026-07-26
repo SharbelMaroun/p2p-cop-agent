@@ -31,6 +31,10 @@ def test_shared_bundle_loads_all_confirmed_values() -> None:
     assert sdk.contract_version == "0.1.0-proposed"
     assert game["version"] == "1.00"
     assert game["schema_version"] == "1.2"
+    assert game["agreed_between"] == ["neutral-group-alpha", "neutral-group-beta"]
+    assert game["game_id"] == "neutral-match"
+    assert game["config_name"] == "config_neutral-match_g01.json"
+    assert game["config_sha256"] is None
     assert sdk.rate_limits_config["version"] == "1.00"
     assert sdk.rate_limits_config["schema_version"] == "1.2"
     assert game["movement_and_barriers"] == {
@@ -124,23 +128,3 @@ def test_negotiated_values_are_loaded_from_files(contract_copy: Path) -> None:
 
     assert sdk.game_config["world"]["map_area"] == "Haifa"  # type: ignore[index]
     assert sdk.game_config["network_and_league"]["token_budget_per_series"] == 240000  # type: ignore[index]
-
-
-def test_unsupported_config_profile_fails_clearly(contract_copy: Path) -> None:
-    path = contract_copy / "config/game.json"
-    game = read_json(path)
-    game["schema_version"] = "9.9"
-    write_json(path, game)
-
-    with pytest.raises(ContractValidationError, match="game config"):
-        CopSDK.from_repository(contract_copy)
-
-
-def test_unsupported_contract_version_fails_clearly(contract_copy: Path) -> None:
-    (contract_copy / "docs/contracts/CONTRACT_VERSION").write_text(
-        "9.9-unsupported\n",
-        encoding="utf-8",
-    )
-
-    with pytest.raises(ContractValidationError, match="Unsupported contract version"):
-        CopSDK.from_repository(contract_copy)

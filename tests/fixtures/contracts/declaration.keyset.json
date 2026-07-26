@@ -3,7 +3,7 @@
   "source": {
     "filename": "1-pre-game-declaration.json",
     "sha256": "f0f54ada41b831fc666d18ba0605f656ec4ac21160a85653553bda8e574543e4",
-    "evidence": "supplied example; exact key-set observation only"
+    "evidence": "local simulator-generated artifact; NEEDS_MANUAL_REVIEW provenance"
   },
   "observed_schema_version": "1.1",
   "key_sets": {

@@ -3,7 +3,7 @@
   "source": {
     "filename": "3-game-log.json",
     "sha256": "00e783628585e85d9f7716faf337917090d5e4a5530d4bd10c239647002e71c2",
-    "evidence": "supplied example; exact key-set observation only"
+    "evidence": "local simulator-generated artifact; NEEDS_MANUAL_REVIEW provenance"
   },
   "observed_schema_version": "1.1",
   "key_sets": {

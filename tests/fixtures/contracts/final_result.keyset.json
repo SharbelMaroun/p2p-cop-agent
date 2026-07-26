@@ -3,7 +3,7 @@
   "source": {
     "filename": "4-final-result.json",
     "sha256": "397bf9f00cf5aa4dfc609b6add10336d267056f8c2ef333e4b32a03a85d8d204",
-    "evidence": "supplied example; exact key-set observation only"
+    "evidence": "local simulator-generated artifact; NEEDS_MANUAL_REVIEW provenance"
   },
   "observed_schema_version": "1.1",
   "key_sets": {

@@ -1,22 +1,36 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/p2p-contract/0.1.0-proposed/rate-limits.schema.json",
   "x-contract-version": "0.1.0-proposed",
-  "title": "Proposed shared Gatekeeper configuration",
-  "description": "M1 contract schema derived from Appendix F table 19 and ADR-004.",
+  "x-source-status": "PROPOSED",
+  "title": "Proposed negotiated match Gatekeeper configuration",
+  "description": "PROPOSED split companion to game.json; Appendix B embeds these values and the formal artifact split is unresolved.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "version",
     "schema_version",
-    "rate_limiter_gatekeeper"
+    "game_id",
+    "sub_game_number",
+    "rate_limiter_gatekeeper",
+    "extensions"
   ],
   "properties": {
     "version": {
-      "const": "1.00"
+      "const": "1.00",
+      "description": "PROPOSED root placement of the guidelines configuration revision."
     },
     "schema_version": {
-      "const": "1.2"
+      "const": "1.2",
+      "description": "PROPOSED reuse of the Appendix B game example profile."
+    },
+    "game_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sub_game_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
     },
     "rate_limiter_gatekeeper": {
       "type": "object",
@@ -33,31 +47,51 @@
       "properties": {
         "requests_per_minute": {
           "type": "integer",
-          "minimum": 30
+          "minimum": 30,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
         },
         "concurrent_requests": {
           "type": "integer",
-          "minimum": 2
+          "minimum": 2,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
         },
         "retry_backoff_sec": {
           "type": "number",
-          "minimum": 5
+          "minimum": 5,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
         },
         "max_retries": {
           "type": "integer",
-          "minimum": 3
+          "minimum": 3,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
         },
         "queue_depth": {
           "type": "integer",
-          "minimum": 100
+          "minimum": 100,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
         },
         "response_timeout_sec": {
-          "type": "number"
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
         },
         "watchdog_timeout_sec": {
-          "type": "number"
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
         }
       }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "PROPOSED explicit extension namespace; contents must be mutually agreed."
     }
   }
 }
