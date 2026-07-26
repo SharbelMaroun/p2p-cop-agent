@@ -27,15 +27,17 @@ M1 remains NO-GO while any of these conditions is unresolved:
 1. Authentic provenance and formal status of the four local JSON artifacts.
 2. Schema compatibility among book example 1.2, local observation 1.1, and simulator
    runtime 1.3.
-3. Unified versus split played-match configuration and timeout field placement.
-4. Exact `agreed_between` identifier representation and deterministic ordering.
-5. Required match identity fields and artifact lifecycle.
-6. Exact `config_sha256` scope, self-hash exclusion, and canonical bytes.
-7. Role assignment across the fixed six-sub-game series.
-8. Coordinator acceptance followed by Thief exact-byte consumption and independent
+3. Formal identifier syntax, UUID creation/version, and resolved-versus-pattern
+   `links` representation.
+4. Complete artifact required/optional/type/conditional rules.
+5. Coordinator decision on whether the operational `rate_limits.json` mirror remains
+   in exact-byte cross-repository parity.
+6. Coordinator acceptance followed by Thief exact-byte consumption and independent
    local/cross-root verification.
 
-`config_sha256: null` is an intentional stop marker, not an implementation default.
+Participant representation/order, unified shared config, artifact lifecycle, config
+hash scope/bytes, and the six-game role schedule are now incorporated with a
+reproducible vector.
 No gameplay work begins until the coordinator changes the M1 gate to GO.
 
 ## Continuous gates

@@ -18,7 +18,7 @@ baseline hashes are preserved in [PARITY_REPORT.md](PARITY_REPORT.md).
 | Active README/PRD/PLAN/TODO and seven mechanism PRDs | Governing M0–M9 Cop roadmap; runtime deferred |
 | `PARAMETERS_BASELINE.md` | Direct Appendix-F values/statuses; not candidates |
 | `ARTIFACT_TEMPLATE_BASELINE.md` | Local generated-artifact observations; official provenance `NEEDS_MANUAL_REVIEW` |
-| Proposed shared bundle | `0.1.0-proposed`, UNFROZEN; P0 evidence/canonicalization blockers remain |
+| Proposed shared bundle | `0.1.0-proposed`, UNFROZEN; config hash resolved, artifact evidence/parity blockers remain |
 | Cop private example config | Local only; never parity-controlled |
 | `config/drafts/` | Quarantined historical material; never loaded |
 | `archive/pre-audit/` | Historical coverage only; never restored as active plan |
@@ -27,18 +27,18 @@ baseline hashes are preserved in [PARITY_REPORT.md](PARITY_REPORT.md).
 
 ## Corrected M1 candidate verification
 
-The corrected candidate gates were run on 2026-07-26 against CPython 3.12.13:
+The corrected candidate gates were rerun on 2026-07-27 against CPython 3.12.13:
 
 | Check | Actual result |
 |---|---|
 | `uv lock --check` | PASS; 19 packages resolved |
 | `uv sync --frozen` after deleting `.venv` | PASS; clean environment created and 16 packages installed |
 | `uv run ruff check .` | PASS; zero violations |
-| `uv run pytest --cov --cov-branch --cov-fail-under=85` | PASS; 69 tests, 91.94% branch coverage |
-| `uv run python scripts/check_file_lengths.py` | PASS; 20 source/script files and 16 test files |
-| `uv run python scripts/check_secrets.py` | PASS; 115 text files, zero findings |
-| Cop-local manifest integrity | PASS; 17 controlled files |
-| manifest exact-byte SHA-256 | `6e769ac49f4ffd064ada3a5486d7c5b2768feace2fced2b16e7de09e12c65689` |
+| `uv run pytest --cov --cov-branch --cov-fail-under=85` | PASS; 77 tests, 92.72% branch coverage |
+| `uv run python scripts/check_file_lengths.py` | PASS; 20 source/script files and 17 test files |
+| `uv run python scripts/check_secrets.py` | PASS; 120 text files, zero findings |
+| Cop-local manifest integrity | PASS; 20 controlled files |
+| manifest exact-byte SHA-256 | `ed09244a6b05a4832b8f4d85bc5881ae9eaea139023cd0e946b2bf994b32ad2d` |
 | `git diff --check` | PASS |
 
 A read-only provenance comparison used the pinned simulator commit

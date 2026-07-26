@@ -19,9 +19,9 @@ evidence/review dependency. All M2–M9 work is `DEFERRED` by the controlling au
 | M1-08 | Distinguish local integrity from cross-root comparison | DONE | P0 | Checker reports local manifest result and optional exact-byte comparison separately |
 | M1-09 | Add reproducible CI | DONE | P0 | Required frozen sync, lint, tests, length, secret, integrity, and diff gates run |
 | M1-10 | Authenticate four local JSON artifacts | BLOCKED | P0 | Original Moodle/lecturer handoff or authenticated checksum is supplied |
-| M1-11 | Specify participant order and match canonicalization | BLOCKED | P0 | Lecturer evidence fixes IDs, hash scope, canonical bytes, and self-hash exclusion |
-| M1-12 | Reconcile config split, identity fields, and role schedule | BLOCKED | P0 | Lecturer evidence resolves artifact lifecycle and six-sub-game roles |
-| M1-13 | Incorporate accepted M1 answers and vectors | PENDING | P0 | Candidate and independent vectors reflect authoritative answers |
+| M1-11 | Specify participant order and match canonicalization | DONE | P0 | Ordered IDs, complete-object scope, canonical UTF-8 bytes, and external hash claim are tested |
+| M1-12 | Reconcile config split, identity fields, and role schedule | DONE | P0 | Unified shared authority, artifact lifecycle, identities, and odd/even roles are documented |
+| M1-13 | Incorporate accepted M1 answers and vectors | DONE | P0 | Candidate hash `adac9efe…82db` and rejection vectors pass |
 | M1-14 | Produce candidate handoff | DONE | P0 | Controlled paths/hashes, manifest self-hash, gates, and blockers are recorded |
 | M1-15 | Promote contract version after acceptance evidence | BLOCKED | P0 | Coordinator authorizes freeze after independent parity/interop proof |
 | M2-01 | Implement immutable coordinate and action types | DEFERRED | P1 | SDK-visible unit tests prove immutability and vocabulary |
@@ -52,7 +52,7 @@ evidence/review dependency. All M2–M9 work is `DEFERRED` by the controlling au
 | M6-04 | Add private strategy configuration | DEFERRED | P2 | Tuning stays local and SDK-loaded |
 | M6-05 | Add optional verbal/LLM adapter with zero-token fallback | DEFERRED | P2 | Provider failure always falls back deterministically |
 | M7-01 | Implement six-sub-game series orchestration | DEFERRED | P1 | Accepted role schedule and identities drive all six games |
-| M7-02 | Generate declaration and per-game config artifacts | DEFERRED | P1 | Authenticated schemas and filenames validate |
+| M7-02 | Generate declaration and per-game config artifacts | DEFERRED | P1 | Accepted artifact schemas and filenames validate |
 | M7-03 | Generate game logs and final result | DEFERRED | P1 | Audit links, commits, tokens, and scores are consistent |
 | M7-04 | Implement API Gatekeeper and token-bucket/FIFO limits | DEFERRED | P1 | Appendix F minimums and backpressure pass load tests |
 | M7-05 | Implement signed final JSON reporting adapter | DEFERRED | P1 | Attachment-only delivery uses least privilege |

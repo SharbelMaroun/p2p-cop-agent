@@ -14,10 +14,11 @@ Status: legal objective and safe default documented; runtime policy deferred.
   25 **recommends** not delegating movement to an LLM; it has no mandatory sanction
   and warns that unchecked spatial output can cause illegal moves/technical loss.
 
-The source-backed default is deterministic heuristics (belief update plus legal
-Manhattan pursuit). Combined deterministic look-ahead and optional RL are later
-alternatives. ADR-007 records this as a project policy, not as a falsely mandatory
-LLM ban.
+The graded mission is to replace the bundled simple baseline with a smarter
+pure-Python strategy. Deterministic belief-aware pursuit/look-ahead and optional RL
+are later alternatives. LLM movement remains disabled unless a future contract
+revision is mutually agreed; optional low-token banter is separate. ADR-007 records
+this project policy while preserving rule 25's recommendation status.
 
 Confirmed configuration values are in
 [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md). Interfaces, weights, tie-breaking,

@@ -1,7 +1,7 @@
 # PRD — Commit-Reveal
 
-Status: mandatory cryptographic semantics are confirmed; wire representation and
-byte canonicalization are **not frozen**.
+Status: config hashing is defined; move-commit wire representation and byte
+canonicalization are **not frozen**.
 
 ## Confirmed behavior
 
@@ -16,7 +16,8 @@ Sources: book Ch. 5; Appendix E rules 17–19/24.
 
 ## Proposed decision boundary
 
-ADR-006 must define deterministic bytes and nonce length. A Python expression such as
+The shared-config digest has its own accepted vector and does not define move
+commitments. ADR-006 must still define move bytes and nonce length. A Python expression such as
 `json.dumps(sort_keys=True, separators=(",", ":"))`, a delimiter, field spelling,
 encoding, and comparison helper are implementation proposals—not Appendix E rules.
 No cryptographic runtime behavior may depend on them until both peers accept ADR-006.

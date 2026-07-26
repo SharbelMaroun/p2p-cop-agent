@@ -10,7 +10,7 @@ families are present; runtime/result sections remain incomplete by design.
 | `docs/PLAN.md` | Yes | Common M0–M9 phase vocabulary, gates, dependencies, and M1 NO-GO |
 | `docs/TODO.md` | Yes | Cop-owned M0–M9 tasks only; M2–M9 explicitly deferred |
 | `docs/CONTRACT_CANDIDATE_HANDOFF.md` | Yes | Controlled hashes, manifest self-hash, decisions, blockers, and local gates |
-| `docs/PRD_commit_reveal.md` | Yes | Confirmed semantics; ADR-006 byte details unfrozen |
+| `docs/PRD_commit_reveal.md` | Yes | Config hash defined; move-commit bytes remain unfrozen in ADR-006 |
 | `docs/PRD_scent_belief.md` | Yes | Book multiplicative model; runtime deferred |
 | `docs/PRD_strategy.md` | Yes | Deterministic default; rule-25 status correct |
 | `docs/PRD_p2p_mcp.md` | Yes | Candidate names separated from mandates |
@@ -18,7 +18,7 @@ families are present; runtime/result sections remain incomplete by design.
 | `docs/PRD_gui.md` | Yes | Local-truth boundary; runtime deferred |
 | `docs/PRD_replay.md` | Yes | Verified/tampered semantics; runtime deferred |
 | `docs/PROMPT_LOG.md` | Yes | Historical provenance plus correction entry |
-| `docs/adr/ADR-001`–`ADR-010` | Yes | Proposed placeholders; none falsely frozen |
+| `docs/adr/ADR-001`–`ADR-010` | Yes | Config/strategy decisions updated; remaining runtime choices stay explicit |
 
 The graded six-section academic report is not complete until runtime/results exist.
 Only the companion link can be completed now.

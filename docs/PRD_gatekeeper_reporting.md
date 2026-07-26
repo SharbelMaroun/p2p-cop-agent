@@ -12,6 +12,7 @@ JSON-attachment rule are confirmed. Runtime delivery is not implemented.
 - Each side separately sends the signed final JSON as an attachment at the end of a
   legal game. A free-text final-report body is rejected; conflicting/missing reports
   yield zero for both.
+- Both attachments must be byte-identical to the mutually agreed aggregate result.
 - Required report **content** includes four repository links, each game’s commit
   hash, and total token consumption. This does not prove the exact JSON key
   requiredness/type schema.
