@@ -18,8 +18,20 @@
       "sha256": "9e061d4d08ca911d12915da01033a8a9f03cd0329a6ba33bbb953d6bba9edbda"
     },
     {
+      "path": "docs/contracts/LEAGUE_CONTRACT.md",
+      "sha256": "c621ea10a7bedcfd54eef018ab3cf93078e38f0f09d579ddfb73d12bf7369e35"
+    },
+    {
+      "path": "docs/contracts/MATCH_CONFIGURATION.md",
+      "sha256": "1cc9b27460a9c19c387837cfd4b27dd23424ccdf42234e4747ad16dfb279aa07"
+    },
+    {
+      "path": "docs/contracts/PRIVATE_CONFIGURATION.md",
+      "sha256": "32f8beb459c91942d44720d4b2151a05d26aebcfdef5aff62e90834113fed45b"
+    },
+    {
       "path": "docs/contracts/SHARED_RULES.md",
-      "sha256": "b2985ccd5c9cb82357ba6ccfb525af5d7802a872f2d39dd5e725847106570908"
+      "sha256": "a4af79de06b59eca945a074f4ed5d8c694cd30c5c8e7e83b8e4a282449fd7946"
     },
     {
       "path": "docs/schemas/artifact-keyset-fixture.schema.json",

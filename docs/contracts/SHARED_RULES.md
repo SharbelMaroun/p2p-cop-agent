@@ -10,20 +10,20 @@ selection, tunnel credentials, or provider keys.
 
 ## Authority and scope
 
-The source order is: project book v3.0.0; supplied artifact examples; lecturer simulator at
-`960499fd5e8777b4929625f5d8fdcf2ab4677b54`; dated lecturer/Moodle clarification; Professional
-Software Submission Guidelines v3.0; accepted cross-team ADR; repository documents.
+The source order is: Final Project Book v3.0.0; Appendix F; Appendix E;
+authenticated official JSON templates; current Moodle or dated lecturer
+clarification; Software Submission Guidelines v3.0; lecturer simulator at
+`960499fd5e8777b4929625f5d8fdcf2ab4677b54`; lecture/assignment material; team notes
+and AI reports.
 
-The shared configuration profile is the Appendix B `config/game.json` profile
-(`schema_version` 1.2). The supplied reporting-artifact examples use 1.1. These are distinct
-profiles, not a single silently normalized schema. See ADR-003. The simulator's runtime
-`game.json` 1.3 is reference behavior only and is not adopted.
+The book's Appendix B example uses profile 1.2. Local generated artifacts use 1.1,
+and the simulator runtime uses 1.3. No compatibility or normalization among these
+observations is frozen. The local artifacts remain `NEEDS_MANUAL_REVIEW`.
 
-Each shared configuration JSON also has revision `version: "1.00"`, as required by
-Professional Software Submission Guidelines v3.0, section 8.1. This revision is independent of
-the shared-config schema profile, the reporting-artifact schema profile, and the package's code
-version. Because this milestone splits the book's shared sections across two JSON files,
-ADR-004 places the required revision at the root of each file.
+The exact two-file match split, JSON Schema identifiers, root revision fields, and
+closed-object policy are project proposals, not source-backed formal requirements.
+See `LEAGUE_CONTRACT.md`, `MATCH_CONFIGURATION.md`, and
+`PRIVATE_CONFIGURATION.md` for the three-layer boundary.
 
 ## Mandatory shared rules
 
@@ -39,20 +39,23 @@ ADR-004 places the required revision at the root of each file.
 | A live GUI may display local truth only. | Appendix E rules 8-9 |
 | Final reports are JSON attachments; a free-text final-report body is prohibited. | Appendix E rules 32-35 |
 | The repository-sharing address is `rmisegal@gmail.com`; automated reports go to `rmisegal+uoh26finalgame@gmail.com`. | Appendix F table 20, PDF p.157 |
-| Official artifact names are `declaration_<game_id>.json`, `config_<game_id>_g<NN>.json`, `log_<game_id>_g<NN>.json`, and `result_<game_id>.json`. | Appendix F table 20, PDF p.157 |
+| Book-defined artifact names are `declaration_<game_id>.json`, `config_<game_id>_g<NN>.json`, `log_<game_id>_g<NN>.json`, and `result_<game_id>.json`. | Appendix F table 20, PDF p.157 |
 
 Rule 47's interaction with the fixed `STAY` action still needs a cross-team interpretation. This
 bundle does not invent trapping behavior.
 
 ## Shared field registry
 
-`Minimum` values may be raised by mutual agreement but not lowered. `Fixed` values cannot change.
-`Negotiation default` values may change by agreement; the listed value applies otherwise.
+`Minimum` values may be raised by mutual agreement but not lowered. `Fixed` values
+cannot change. `Negotiation default` values may change by agreement; the listed value
+applies otherwise. Ownership and status are normative semantics; repository values
+are a neutral proposed match instance.
 
 | JSON path | Proposed value | Status | Direct authority |
 |---|---|---|---|
-| `game.version` | `"1.00"` | Configuration revision | Professional Software Submission Guidelines v3.0 section 8.1; ADR-004 |
+| `game.version` | `"1.00"` | **PROPOSED** configuration revision | Software Submission Guidelines v3.0 section 8.1; exact root placement unconfirmed |
 | `game.schema_version` | `"1.2"` | Profile marker | Appendix B shared-config example, PDF p.129; ADR-003 |
+| `game.agreed_between` | two public participant IDs | **PROPOSED** representation of mandatory mutual agreement | Appendix B example and shared-agreement text; exact format/order unresolved |
 | `game.board_and_agents.grid_size` | `7` | Minimum | Appendix F table 13, PDF p.152 |
 | `game.board_and_agents.num_agents` | `2` | Fixed | Appendix F table 13, PDF p.152 |
 | `game.board_and_agents.axis_origin_corner` | `"top-left"` | Negotiation default | Appendix F table 13, PDF p.152 |
@@ -77,8 +80,8 @@ bundle does not invent trapping behavior.
 | `game.network_and_league.min_games_to_pass` | `2` | Fixed | Appendix F table 18, PDF p.154 |
 | `game.network_and_league.max_games_per_team` | `10` | Fixed | Appendix F table 18, PDF p.154 |
 | `game.network_and_league.token_budget_per_series` | `200000` | Negotiation default | Appendix F table 18, PDF p.154 |
-| `rate_limits.version` | `"1.00"` | Rate-limit configuration revision | Professional Software Submission Guidelines v3.0 section 8.1; ADR-004 |
-| `rate_limits.schema_version` | `"1.2"` | Profile marker | Appendix B shared-config example; ADR-003/ADR-004 split |
+| `rate_limits.version` | `"1.00"` | **PROPOSED** configuration revision | Software Submission Guidelines v3.0 section 8.1; exact root placement unconfirmed |
+| `rate_limits.schema_version` | `"1.2"` | **PROPOSED** split-profile marker | Appendix B example plus unaccepted ADR-003/ADR-004 split |
 | `rate_limits.rate_limiter_gatekeeper.requests_per_minute` | `30` | Minimum | Appendix F table 19, PDF p.155 |
 | `rate_limits.rate_limiter_gatekeeper.concurrent_requests` | `2` | Minimum | Appendix F table 19, PDF p.155 |
 | `rate_limits.rate_limiter_gatekeeper.retry_backoff_sec` | `5` | Minimum | Appendix F table 19, PDF p.155 |
@@ -87,17 +90,18 @@ bundle does not invent trapping behavior.
 | `rate_limits.rate_limiter_gatekeeper.response_timeout_sec` | `30` | Negotiation default | Appendix F table 19, PDF p.155 |
 | `rate_limits.rate_limiter_gatekeeper.watchdog_timeout_sec` | `60` | Negotiation default | Appendix F table 19, PDF p.155 |
 
-The field names are observed in Appendix B and the supplied agreed-config example. Separating
-Gatekeeper values into `config/rate_limits.json`, strict bundle schemas, and parity mechanics are
-proposed by ADR-004 and this milestone mandate.
+Field names are drawn from Appendix B where present and otherwise remain explicit
+project proposals or local-artifact observations. Separating Gatekeeper values into
+`config/rate_limits.json`, strict known-field schemas with an extension container,
+root revision placement, and parity mechanics are proposed by ADR-004.
 
 ## Artifact key-set evidence
 
-The four fixtures under `tests/fixtures/contracts/` are safe key-set snapshots of the supplied
-examples. Each records its source filename, byte hash, observed 1.1 profile, and object key sets.
-They deliberately omit all example values; `["*"]` denotes redacted/dynamic map-member names,
-not a literal required key. They do **not** establish formal required/optional status, complete
-types, enums, conditional constraints, or compatibility.
+Four key-set fixtures under `tests/fixtures/contracts/` preserve local generated
+artifact observations. Each records its source filename, byte hash, observed 1.1
+profile, and object key sets. They deliberately omit all example values; `["*"]`
+denotes redacted/dynamic map-member names, not a literal required key. Their official
+provenance and every formal schema constraint remain unproven.
 
 ## Decisions deliberately not frozen
 
@@ -105,6 +109,10 @@ types, enums, conditional constraints, or compatibility.
 - Message envelope and idempotency fields: ADR-002.
 - Cross-profile 1.1/1.2 compatibility: ADR-003.
 - Commit canonical bytes, Unicode treatment, and nonce length: ADR-006.
+- `config_sha256` scope and self-hash exclusion: ADR-006.
+- Participant identifier format/order and match identity fields.
+- Unified versus split played-match configuration.
+- Role assignment/alternation across the six sub-games.
 - Private Cop TOML fields: ADR-004.
 - Gmail draft/send workflow: ADR-010.
 

@@ -20,6 +20,10 @@ annotated tag, and email addresses are not unknown.
 | U-018 | Exact controlling Ruff course configuration if newer than the inspected guideline | Quality configuration | Current official course config |
 | U-019 | Thief acceptance and exact hashes for `0.1.0-proposed` | Contract freeze | Independent Thief review and matching parity runs |
 | U-020 | Permission/provenance for any substantial simulator-source reuse | Simulator reuse | ADR-008 review and, if necessary, written permission |
+| U-021 | Exact `agreed_between` identifier format and deterministic participant ordering | Match agreement and unknown-opponent interop | Lecturer clarification or authenticated formal schema |
+| U-022 | Exact match identity fields plus `config_sha256` scope, self-hash exclusion, and canonical bytes | P0 contract freeze and gameplay | Lecturer clarification plus independent test vectors |
+| U-023 | Unified agreed config versus split `game.json`/`rate_limits.json`, including timeout field placement | Match artifact lifecycle and parity scope | Lecturer clarification or authenticated formal schema |
+| U-024 | Role assignment or alternation across the fixed six sub-games | Series orchestration | Lecturer clarification; do not infer simulator schedule |
 
 Resolved: Appendix F values/statuses; multiplicative scent equation; report
 attachment/no-free-text rule; nonce secrecy until final reveal; semantic shared

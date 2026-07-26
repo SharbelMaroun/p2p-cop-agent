@@ -9,6 +9,10 @@ final reveal, and zero-point mismatch loss are confirmed. The book does not full
 fix JSON encoding, field spellings/order, delimiters, Unicode treatment, nonce
 length, or domain-separation data.
 
+The same P0 blocker applies to `config_sha256`: the exact field authority, semantic
+scope, self-hash exclusion, raw/canonical byte choice, and wrapper metadata are not
+fixed. Simulator serialization is not adopted as authority.
+
 ## Decision required
 
 Define deterministic bytes, encoding, domain/version binding, nonce generation and

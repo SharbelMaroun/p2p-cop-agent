@@ -1,5 +1,17 @@
-# Cop-private local overlay example.
-# This file is not parity-controlled, negotiated, signed, or loaded in M1.
-# Add values only after their private schema is accepted in an ADR.
+# Cop-private local overlay example. Never parity-control or share this file.
+# Values are inert placeholders; M1 does not load private runtime configuration.
 
 [local]
+bind_host = "127.0.0.1"
+bind_port = 0
+opponent_url = "https://opponent.invalid/mcp"
+
+[strategy]
+name = "private-unconfigured"
+
+[model]
+provider = "private-unconfigured"
+model = "private-unconfigured"
+
+# Credentials, tunnel tokens, API keys, signing secrets, and nonces belong in an
+# ignored .env/credential store, never in this example or any shared JSON.
