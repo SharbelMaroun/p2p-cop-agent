@@ -125,6 +125,24 @@
 
 ---
 
+## P-012 — Coordinator-directed M1 contract revision
+
+- **Date:** 2026-07-26 · **Tool:** Codex implementation agent
+- **Goal:** correct the Cop-owned shared-contract candidate from exact base
+  `84339c210c8e3293d972bccec5912abf519d502c` without merging PR #6 or beginning M2.
+- **Prompt (essence):** apply the controlling cross-repository audit; correct source
+  hierarchy/provenance; separate league, match, and private configuration; validate a
+  neutral participant agreement; distinguish local integrity from optional
+  cross-root comparison; add rejection vectors, CI, and an M0–M9 Cop roadmap.
+- **Output:** contract remains `0.1.0-proposed` and unfrozen; local artifacts are
+  `NEEDS_MANUAL_REVIEW`; `config_sha256` remains `null` behind a P0 canonicalization
+  blocker; 17 controlled files and a separate manifest self-hash are recorded in the
+  candidate handoff.
+- **Lesson:** local manifest success is not cross-repository parity, and structural
+  hash-shape validation is not semantic canonical-hash verification.
+
+---
+
 ## Best practices derived so far
 1. **Binding values live in one table** — quote Appendix F, never paraphrase numbers.
 2. **Decide, then generate** — architecture-defining choices go to the human first.

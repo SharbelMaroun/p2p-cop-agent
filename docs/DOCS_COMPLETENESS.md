@@ -5,10 +5,11 @@ families are present; runtime/result sections remain incomplete by design.
 
 | Document | Present | Current content status |
 |---|---|---|
-| `README.md` | Yes | M0–M1 status, install/check commands, configuration, six-section report mapping |
+| `README.md` | Yes | Corrected M1 candidate status, checks, configuration, and six-section report mapping |
 | `docs/PRD.md` | Yes | Behavior-free milestone goals/non-goals/acceptance |
-| `docs/PLAN.md` | Yes | Explicit gates with owner/status/priority/DoD/traceability |
-| `docs/TODO.md` | Yes | Active M0–M2 tasks with owner/status/priority/DoD |
+| `docs/PLAN.md` | Yes | Common M0–M9 phase vocabulary, gates, dependencies, and M1 NO-GO |
+| `docs/TODO.md` | Yes | Cop-owned M0–M9 tasks only; M2–M9 explicitly deferred |
+| `docs/CONTRACT_CANDIDATE_HANDOFF.md` | Yes | Controlled hashes, manifest self-hash, decisions, blockers, and local gates |
 | `docs/PRD_commit_reveal.md` | Yes | Confirmed semantics; ADR-006 byte details unfrozen |
 | `docs/PRD_scent_belief.md` | Yes | Book multiplicative model; runtime deferred |
 | `docs/PRD_strategy.md` | Yes | Deterministic default; rule-25 status correct |

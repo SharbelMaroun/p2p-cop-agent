@@ -7,14 +7,16 @@ Peer-to-Peer Network” final project.
 
 ## Current milestone
 
-This branch establishes the M0–M1 contract and package scaffold. The independently
-installable Python package is `p2p_cop_agent`; it deliberately contains no game,
-network, LLM, Gmail, GUI, or replay behavior.
+This branch provides a corrected, reviewable M1 contract candidate and the
+independently installable `p2p_cop_agent` scaffold. It deliberately contains no
+game, network, cryptographic runtime, LLM, Gmail, GUI, or replay behavior. The
+controlling audit keeps M2 blocked.
 
 The shared contract is `0.1.0-proposed` and **UNFROZEN**. It becomes frozen only
-after the Thief repository accepts the same controlled files byte-for-byte and both
-repositories pass the parity checks. Historical statements that parity was already
-achieved were disproved by the hash comparison in
+after P0 contract questions are resolved, the coordinator accepts the candidate,
+and Thief independently consumes and verifies identical controlled bytes. The local
+checker proves Cop-local integrity only unless `--compare-root` is explicitly used.
+Historical parity claims were disproved by
 [docs/PARITY_REPORT.md](docs/PARITY_REPORT.md).
 
 Evidence and decisions are tracked in:
@@ -23,6 +25,7 @@ Evidence and decisions are tracked in:
 - [unknown requirements](docs/UNKNOWN_REQUIREMENTS.md);
 - [specification conflicts](docs/SPECIFICATION_CONFLICTS.md);
 - [source inventory](docs/SOURCE_INVENTORY.md);
+- [candidate handoff](docs/CONTRACT_CANDIDATE_HANDOFF.md);
 - [ADRs](docs/adr/).
 
 ## Confirmed project boundary
@@ -66,15 +69,14 @@ displays the equivalent PEP 440 form `1.0`.
 
 ## Configuration
 
-- `config/game.json` and `config/rate_limits.json` are proposed shared files.
+- `config/game.json` and `config/rate_limits.json` are a neutral proposed match pair.
 - `config/game.toml.example` is Cop-local and is not parity-controlled.
 - `.env-example` contains dummy, provider-neutral placeholders only.
 
-The shared configuration uses schema `1.2`; the observed reporting-artifact fixtures
-remain schema `1.1`. They are separate contracts under
-[ADR-003](docs/adr/ADR-003-schema-version-discrepancy.md), not silently normalized.
-Both shared JSON files also carry the independent configuration revision `1.00`
-required by the submission guidelines.
+The candidate accepts only book-example profile `1.2`. Local generated artifacts
+observe `1.1`, and the simulator runtime observes `1.3`; no translation or
+compatibility is inferred. Root revision `1.00`, the two-file split, field placement,
+and closed known-field schemas remain explicitly proposed.
 
 ## Cop scope
 
@@ -100,7 +102,8 @@ link at the top of this README.
 
 ## Planning history
 
-The active [plan](docs/PLAN.md) and [TODO](docs/TODO.md) govern this branch. The
+The active M0–M9 [plan](docs/PLAN.md) and Cop-only [TODO](docs/TODO.md) govern this
+branch. The
 635-task pre-audit backlog under `archive/pre-audit/documentation/` is historical
 coverage only and will not be restored as an executable plan.
 
