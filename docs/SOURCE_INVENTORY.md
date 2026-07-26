@@ -3,7 +3,7 @@
 | Source | Availability / identity | Use and limit |
 |---|---|---|
 | Official project book `police_thief_p2p.pdf` v3.0.0 | Directly inspected; SHA-256 `7C9E1D7527582C3AEF9AFD71709981CEA50EA60B8FABEFE85EFCCAB0A5FDD02E` | Highest authority for rules; Appendix B/E/F and table 20 directly checked |
-| Project-owner transcription of current lecturer direction, 2026-07-27 | Recorded in `LECTURER_DIRECTION_2026-07-27.md`; no authenticated Moodle export or signed original attached | Actionable owner direction with explicit provenance limits; independently corroborated items are linked to book/files/simulator |
+| Project-owner transcriptions of current lecturer direction, 2026-07-27 | Recorded in `LECTURER_DIRECTION_2026-07-27.md` and `BLOCKER_RESOLUTION_AUDIT_2026-07-27.md`; no authenticated Moodle export or signed original attached | Actionable owner direction with explicit provenance limits and conflict audit |
 | Professional Software Submission Guidelines v3.0 | Direct 39-page PDF previously inspected; SHA-256 `3F02DF37767C745EFC47646140C2E6AC7CAE3B9C87C92073DAF4EEF74BE09EBB` | `PS-001`–`PS-010` |
 | Lecturer simulator | Public upstream pinned to `960499fd5e8777b4929625f5d8fdcf2ab4677b54` | Lower-priority learning/interoperability reference; behavior is not automatically mandatory |
 | Simulator educational-use EULA | Present upstream; redistribution/adaptation restricted | ADR-008/license review before substantial reuse; no source-copy authority inferred |
@@ -16,6 +16,7 @@
 Direct verification already closes Appendix F values/statuses, the rule-25
 recommendation status, six README sections, annotated-tag requirement, both email
 addresses, the semantic shared-JSON/private-TOML override, and artifact filename
-patterns stated in book table 20. The 2026-07-27 transcription additionally resolves
-the project role schedule and config-hash algorithm. The formal artifact schemas and
-provenance of the four local files remain open.
+patterns stated in book table 20. The 2026-07-27 transcriptions additionally resolve
+the project role schedule, config hash, logical-link pattern, and local rate-limit
+boundary. Artifact authenticity metadata and exhaustive schemas remain later-phase
+questions rather than M1 shared-config blockers.

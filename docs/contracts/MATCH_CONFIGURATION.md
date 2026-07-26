@@ -5,8 +5,12 @@ Status: **PROPOSED / UNFROZEN — CONFIG HASH DEFINED**
 
 `config/game.json` is the neutral review fixture for the single authoritative shared
 constitution. It contains all opponent-relevant terms, including response/watchdog
-timeouts and Gatekeeper limits. `config/rate_limits.json` is an operational
-enforcement mirror; its values must match the signed game section exactly.
+timeouts and Gatekeeper limits. Its source bytes must be identical between peers in
+addition to producing the same canonical digest.
+
+`config/rate_limits.json` is a local operational enforcement file beside private
+TOML. This repository checks that its shared Gatekeeper mirror does not contradict
+`game.json`, but its complete bytes and local extensions are not match terms.
 
 ## Participant agreement
 
@@ -40,6 +44,7 @@ the exact candidate vector.
 ## Agreement comparison
 
 This package validates the proposed structure and Appendix F semantics, verifies the
-operational rate-limit mirror, calculates/verifies the config hash, compares offers
-semantically, and compares controlled files by exact bytes. Any participant,
-negotiated value, timeout, or Gatekeeper mismatch must be rejected before play.
+operational rate-limit mirror, calculates/verifies the canonical config hash,
+compares the exact source bytes, and compares offers semantically. Any participant,
+negotiated value, timeout, Gatekeeper, hash, or source-byte mismatch must reject the
+offer before play.

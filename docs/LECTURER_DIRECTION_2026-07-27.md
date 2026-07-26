@@ -55,14 +55,19 @@ separate domains; it does not establish compatibility between them.
 
 ## Still unresolved
 
-- Authentic official provenance and complete required/optional/type/conditional
-  rules for the four supplied JSON files.
+- The owner designates the sibling `Json-examples/` files as the course examples,
+  but an original Moodle checksum/handoff remains unavailable.
+- Exhaustive required/optional/type/conditional rules beyond the core artifact
+  lifecycle.
 - A complete artifact compatibility policy beyond source config `1.2`, observed
   artifact `1.1`, and simulator runtime/source `1.3`.
-- Exact allowed `game_id` characters and the UUID version/creation method.
-- Whether `links.config` and `links.log` must contain a literal `<NN>` pattern or a
-  resolved per-sub-game filename in every artifact family.
+- Exact allowed `game_id` characters and the conflicting UUID version/creation
+  methods described in `BLOCKER_RESOLUTION_AUDIT_2026-07-27.md`.
 - Commit-reveal payload canonicalization, delimiter/domain binding, and nonce size;
   the config-hash decision does not resolve the move-commit protocol.
 - Current Moodle announcements, deadline, exact PDF filename, and the original
   artifact-template handoff.
+
+Resolved by the second clarification audit: JSON `links.config` and `links.log`
+retain literal `<NN>` logical patterns, while physical per-sub-game filenames resolve
+the two-digit number; local `rate_limits.json` bytes are not shared match terms.

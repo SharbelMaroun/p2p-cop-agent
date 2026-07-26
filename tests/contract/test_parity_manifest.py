@@ -39,7 +39,7 @@ def test_changed_bytes_are_detected(contract_copy: Path) -> None:
 
 
 def test_missing_controlled_file_is_detected(contract_copy: Path) -> None:
-    (contract_copy / "config/rate_limits.json").unlink()
+    (contract_copy / "docs/contracts/CONTRACT_VERSION").unlink()
 
     with pytest.raises(ContractIntegrityError, match="missing controlled files"):
         verify_manifest(contract_copy)
@@ -55,6 +55,10 @@ def test_unexpected_controlled_file_is_detected(contract_copy: Path) -> None:
 
 def test_private_files_are_not_parity_controlled(contract_copy: Path) -> None:
     (contract_copy / "config/game.toml.example").write_text("[local]\n", encoding="utf-8")
+    (contract_copy / "config/rate_limits.json").write_text("{}\n", encoding="utf-8")
+    (contract_copy / "docs/schemas/rate-limits.schema.json").write_text(
+        "{}\n", encoding="utf-8"
+    )
     (contract_copy / ".env").write_text("OPTIONAL=dummy\n", encoding="utf-8")
 
     assert verify_manifest(contract_copy) > 0
@@ -78,7 +82,7 @@ def test_read_only_cross_root_comparison_accepts_exact_copy(contract_copy: Path)
 
 
 def test_cross_root_comparison_reports_missing_paths(contract_copy: Path) -> None:
-    (contract_copy / "config/rate_limits.json").unlink()
+    (contract_copy / "docs/contracts/CONTRACT_VERSION").unlink()
 
     with pytest.raises(ContractIntegrityError, match="comparison root missing paths"):
         compare_repository_roots(PROJECT_ROOT, contract_copy)

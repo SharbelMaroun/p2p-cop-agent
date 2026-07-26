@@ -19,6 +19,7 @@ class CopSDK:
     game_config: Mapping[str, object]
     rate_limits_config: Mapping[str, object]
     config_sha256: str
+    config_file_sha256: str
     role: str = field(default="cop", init=False)
     version: str = field(default=__version__, init=False)
     contract_version: str | None = None
@@ -31,6 +32,7 @@ class CopSDK:
             game_config=contract.game,
             rate_limits_config=contract.rate_limits,
             config_sha256=contract.config_sha256,
+            config_file_sha256=contract.config_file_sha256,
             contract_version=contract.version,
         )
 
@@ -42,5 +44,6 @@ class CopSDK:
             game=dict(self.game_config),
             rate_limits=dict(self.rate_limits_config),
             config_sha256=self.config_sha256,
+            config_file_sha256=self.config_file_sha256,
         )
         require_same_match_configuration(expected, offered)

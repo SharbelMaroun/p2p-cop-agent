@@ -1,6 +1,6 @@
 # ADR-004 — Shared JSON and Private TOML
 
-Status: **PARTIALLY ACCEPTED — SHARED AUTHORITY DEFINED; MIRROR SCOPE OPEN**
+Status: **ACCEPTED BOUNDARY — SHARED GAME JSON; LOCAL TOML/RATE FILE**
 
 ## Context
 
@@ -12,9 +12,9 @@ sharing a runtime filesystem.
 
 - Use `config/game.json` as the single authoritative shared constitution, including
   timeouts and Gatekeeper limits.
-- Keep `config/rate_limits.json` as a validated operational enforcement mirror. It
-  cannot override the shared values; its cross-repository byte-parity status remains
-  open.
+- Keep `config/rate_limits.json` as a local validated operational file. It cannot
+  override/contradict shared Gatekeeper values and is excluded from match-byte
+  parity.
 - Put the guidelines-required configuration revision `version: "1.00"` at the root
   of each split shared JSON file and validate it independently of `schema_version`.
 - Keep only Cop-local `config/game.toml.example`; never add Thief-private config here.

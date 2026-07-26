@@ -5,8 +5,9 @@ all opponent-relevant terms and is the complete object hashed by `config_sha256`
 The hash is written later into each per-sub-game agreed-config artifact; it is not a
 self-member of this source file.
 
-`rate_limits.json` is the file-backed enforcement mirror. Its Gatekeeper values must
-match `game.json` exactly; it does not create a second negotiated match identity.
+`rate_limits.json` is local file-backed enforcement beside private TOML. This
+repository validates that its shared Gatekeeper block matches `game.json`, but local
+extensions and exact file bytes are not opponent match terms or parity-controlled.
 
 Stable public semantics and Appendix F status/ownership are specified separately in
 `docs/contracts/LEAGUE_CONTRACT.md`. The per-match model is documented in

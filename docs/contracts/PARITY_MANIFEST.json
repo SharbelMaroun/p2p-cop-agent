@@ -10,12 +10,8 @@
       "sha256": "70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06"
     },
     {
-      "path": "config/rate_limits.json",
-      "sha256": "0445c96a1ea23ce9c79dcb1ae3151e5d02f5aa78f765bf5bc995d7ddbfbda3e2"
-    },
-    {
       "path": "docs/contracts/ARTIFACT_CONTRACT.md",
-      "sha256": "12db7ed7a7aee26a9ebd2cc3e58abfff6a909fc330fad3eaafc8ced5b716f1e3"
+      "sha256": "33d218b9d071ae40b7cd90f802c75a170cb30e9fd0c43eb61c2622140f034337"
     },
     {
       "path": "docs/contracts/CONTRACT_VERSION",
@@ -27,15 +23,15 @@
     },
     {
       "path": "docs/contracts/MATCH_CONFIGURATION.md",
-      "sha256": "a09ec11c1f0ce30593777fd93870c7781fc7d305689f4dacc2a988e23e0ed86d"
+      "sha256": "e476ebafeed0d66522a7d96535d43dfc7f598413b0b1553d6d5e8c973afd2f23"
     },
     {
       "path": "docs/contracts/PRIVATE_CONFIGURATION.md",
-      "sha256": "8d11cf5ed43c760c8d4adbdddb9066fb9b987911c8bc6a08f25624f17662dbf6"
+      "sha256": "16b13bc8e8dd3cf17234a27e36623970153961d322b4895d3be9241931eeb745"
     },
     {
       "path": "docs/contracts/SHARED_RULES.md",
-      "sha256": "7860f208d582dd1a9a639c58f93dd43ca7b4f2e0548c22adac13b114e911813a"
+      "sha256": "ce080c2edc9b9965f0b2601144a425d22a25623f305af1a16a7c9aa39733a643"
     },
     {
       "path": "docs/schemas/artifact-keyset-fixture.schema.json",
@@ -50,16 +46,12 @@
       "sha256": "fda84cf295788fda09e93e0e56d8876ae549ff7f1e99391d03552e86f04860d9"
     },
     {
-      "path": "docs/schemas/rate-limits.schema.json",
-      "sha256": "fb44c9c94dfaeedd146fbca47458503ee9bc4939bf8cda19512e719dece50078"
-    },
-    {
       "path": "scripts/check_shared_contracts.py",
       "sha256": "b29bd3c978baf7b1b988e7a37c644cdc3b3e5fb548e852e0238fa95bac855b39"
     },
     {
       "path": "scripts/shared_contract_integrity.py",
-      "sha256": "2a3d1dfcb532aaca4c38c5a9ba21f28045f130588626d9d2981ccce06dc1e06f"
+      "sha256": "3f9dc0eb48a8ca9c5de83a287ffffb88bcc27aec7aeb6e64fe59140e6591b78b"
     },
     {
       "path": "tests/fixtures/contracts/agreed_config.keyset.json",
@@ -87,15 +79,15 @@
   "policy": {
     "exact_paths": [
       ".gitattributes",
+      "config/game.json",
       "scripts/check_shared_contracts.py",
       "scripts/shared_contract_integrity.py"
     ],
     "excluded_paths": [
-      "docs/contracts/PARITY_MANIFEST.json"
+      "docs/contracts/PARITY_MANIFEST.json",
+      "docs/schemas/rate-limits.schema.json"
     ],
-    "glob_paths": [
-      "config/*.json"
-    ],
+    "glob_paths": [],
     "recursive_roots": [
       "docs/contracts",
       "docs/schemas",

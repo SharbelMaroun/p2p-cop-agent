@@ -9,10 +9,11 @@ No original Moodle download, lecturer message, signed archive, or authenticated
 checksum was found. Their byte content is known; their provenance as official course
 templates is not.
 
-On 2026-07-27 the project owner identified these files as lecturer-provided examples
-and supplied a transcription of current lecturer direction. That is recorded in
-`LECTURER_DIRECTION_2026-07-27.md`, but it is not the original authenticated
-handoff required to remove this provenance status.
+On 2026-07-27 the project owner designated these sibling `Json-examples/` files as
+the course examples and supplied two transcriptions of current lecturer direction.
+That makes them the project-selected artifact baseline. It is still not an original
+Moodle checksum/handoff, so the narrower authenticity claim remains under manual
+review.
 
 The files therefore establish only observed artifact families, exemplar key sets,
 identifiers, and schema value `1.1`. They are not formal JSON Schema documents and

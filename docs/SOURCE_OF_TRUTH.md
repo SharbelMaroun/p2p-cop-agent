@@ -41,6 +41,10 @@ may select among permitted designs but cannot weaken a confirmed rule or minimum
   current lecturer direction as supplied by the owner and distinguishes direct
   book/file corroboration from claims still needing an original Moodle/lecturer
   source.
+- Second-clarification audit:
+  [BLOCKER_RESOLUTION_AUDIT_2026-07-27.md](BLOCKER_RESOLUTION_AUDIT_2026-07-27.md).
+  It resolves the rate/link boundaries and records UUID, identifier, Step-0, and
+  table-20 conflicts without silently choosing a simulator default.
 
 The observed key sets are useful non-authoritative evidence. They do not establish
 formal required/optional, type/enum, conditional, or compatibility rules. Only an

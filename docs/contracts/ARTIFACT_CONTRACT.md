@@ -28,8 +28,13 @@ Every artifact root must carry:
 - `links`: names linking the declaration, config, log, and result families.
 
 The same values bind the whole series. Config/log artifacts additionally carry a
-one-based sub-game number from 1 through 6. Exact `game_id` characters, UUID version
-or derivation, and resolved-versus-`<NN>` link representation remain open.
+one-based sub-game number from 1 through 6. The JSON `links.config` and `links.log`
+values retain literal `g<NN>` logical patterns; physical artifact filenames resolve
+the number as `g01` through `g06`.
+
+Exact `game_id` characters and UUID generation remain open for M7. In particular,
+the simulator's UUIDv4 upgrade-plan statement conflicts with its current
+SHA-256-derived implementation and the non-v4 supplied example.
 
 ## Role schedule
 
@@ -49,10 +54,13 @@ source object and are not part of its digest.
 
 ## Declaration and audit
 
-Before play, the declaration records both groups and their host CPU, RAM, GPU/VRAM,
-and related system data. The sealed step-0 evidence binds the runtime system
-declaration before ordinary moves. Static declaration data and per-sub-game
-step-0 evidence must refer to the same group and series.
+Before play, Step-0 seals the host OS, CPU, RAM, GPU/VRAM, model, code/group/game
+identity, and exact running Git commit. Static declaration data and per-sub-game
+Step-0 evidence must refer to the same group and series.
+
+The supplied example seals hardware and `code_version` but omits the required Git
+commit and later reports `"unknown"` commits. M7 must correct that reference-example
+gap; a passing simulator stub alone is insufficient evidence.
 
 ## Result agreement
 

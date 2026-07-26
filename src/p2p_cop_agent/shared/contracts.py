@@ -27,6 +27,7 @@ class SharedContract:
     game: JsonObject
     rate_limits: JsonObject
     config_sha256: str
+    config_file_sha256: str
 
 
 def canonical_config_bytes(config: JsonObject) -> bytes:
@@ -47,6 +48,15 @@ def canonical_config_bytes(config: JsonObject) -> bytes:
 def shared_config_sha256(config: JsonObject) -> str:
     """Hash the complete shared source config; the artifact claim is external."""
     return hashlib.sha256(canonical_config_bytes(config)).hexdigest()
+
+
+def _file_sha256(path: Path) -> str:
+    """Hash exact source bytes for the separate byte-identity rule."""
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise ContractValidationError(f"Cannot hash shared config {path}: {exc}") from exc
+    return hashlib.sha256(raw).hexdigest()
 
 
 def verify_config_sha256(config: JsonObject, claimed: object) -> None:
@@ -107,10 +117,10 @@ def require_same_match_configuration(
         raise ContractValidationError("match contract version differs")
     if expected.game != offered.game:
         raise ContractValidationError("negotiated game configuration differs")
-    if expected.rate_limits != offered.rate_limits:
-        raise ContractValidationError("negotiated rate-limit configuration differs")
     if expected.config_sha256 != offered.config_sha256:
         raise ContractValidationError("shared configuration hash differs")
+    if expected.config_file_sha256 != offered.config_file_sha256:
+        raise ContractValidationError("shared game.json source bytes differ")
 
 
 def load_shared_contract(root: str | Path) -> SharedContract:
@@ -120,7 +130,8 @@ def load_shared_contract(root: str | Path) -> SharedContract:
     game_schema = _load_schema(repository, "game-config.schema.json")
     rate_schema = _load_schema(repository, "rate-limits.schema.json")
     _check_profile(version, [game_schema, rate_schema])
-    game = load_json_object(repository / "config/game.json")
+    game_path = repository / "config/game.json"
+    game = load_json_object(game_path)
     rate_limits = load_json_object(repository / "config/rate_limits.json")
     validate_instance(game, game_schema, "game config")
     validate_instance(rate_limits, rate_schema, "rate-limit config")
@@ -130,6 +141,7 @@ def load_shared_contract(root: str | Path) -> SharedContract:
         game=game,
         rate_limits=rate_limits,
         config_sha256=shared_config_sha256(game),
+        config_file_sha256=_file_sha256(game_path),
     )
 
 

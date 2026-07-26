@@ -33,6 +33,7 @@ def test_shared_bundle_loads_all_confirmed_values() -> None:
     assert game["schema_version"] == "1.2"
     assert game["agreed_between"] == ["neutral-group-alpha", "neutral-group-beta"]
     assert sdk.config_sha256 == "adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db"
+    assert sdk.config_file_sha256 == "70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06"
     assert sdk.rate_limits_config["version"] == "1.00"
     assert game["movement_and_barriers"] == {
         "move_set": ["N", "S", "E", "W", "STAY"],

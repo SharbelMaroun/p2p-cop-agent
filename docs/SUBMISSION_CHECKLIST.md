@@ -51,5 +51,7 @@ Thief repository.
 - [ ] Include an honest self-assigned grade for engineering/code quality, not league
       wins.
 - [ ] No secrets committed; `.gitignore` covers `.env`, credentials, tokens, and keys.
+- [x] `credentials.json`, `token.json`, and wildcard variants are explicitly ignored;
+      create/use them only in the future local Gmail runtime.
 - [ ] No substantial lecturer-simulator source copied without ADR-008
       provenance/license resolution or permission.

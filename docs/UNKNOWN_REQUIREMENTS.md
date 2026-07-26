@@ -6,8 +6,8 @@ annotated tag, and email addresses are not unknown.
 
 | ID | Narrow unresolved question | Blocks | Resolution evidence |
 |---|---|---|---|
-| U-001 | Whether the four local generated JSON artifacts are authentic official course templates | Promotion beyond non-authoritative key-set observations | Original Moodle/lecturer download, message, archive, or authenticated checksum |
-| U-002 | Complete formal artifact required/optional, type/enum, conditional, and compatibility rules | Full artifact validation | Referenced official code schemas/fixtures or dated clarification |
+| U-001 | Original Moodle checksum/provenance beyond the owner's designation of `Json-examples/` as the course examples | Provenance claim only; no longer the M1 shared-config gate | Original Moodle/lecturer download, message, archive, or checksum |
+| U-002 | Exhaustive artifact required/optional, type/enum, conditional, and compatibility rules beyond the established core lifecycle | M7 full artifact validation | Referenced official schemas/fixtures or accepted project schema |
 | U-003 | Accepted MCP tool names and signatures | Network contract freeze | ADR-001 plus Thief acceptance |
 | U-004 | Envelope, acknowledgement, sequencing, errors, and idempotency fields | Network contract freeze | ADR-002 plus interop tests |
 | U-005 | Commit canonical bytes, text encoding/delimiters, and nonce length | Crypto contract freeze | ADR-006 plus cross-language test vectors |
@@ -20,14 +20,14 @@ annotated tag, and email addresses are not unknown.
 | U-018 | Exact controlling Ruff course configuration if newer than the inspected guideline | Quality configuration | Current official course config |
 | U-019 | Thief acceptance and exact hashes for `0.1.0-proposed` | Contract freeze | Independent Thief review and matching parity runs |
 | U-020 | Permission/provenance for any substantial simulator-source reuse | Simulator reuse | ADR-008 review and, if necessary, written permission |
-| U-021 | Allowed `group_id` character/length rules beyond non-empty JSON text | Formal identifier validation | Authenticated schema or lecturer clarification |
-| U-022 | Exact `game_id` character rules, UUID version/derivation, and resolved-versus-pattern `links` values | Full artifact identity validation | Authenticated schema or lecturer clarification |
-| U-023 | Whether the separate `rate_limits.json` operational mirror must be byte-identical across repositories, beyond its values matching the signed `game.json` Gatekeeper section | Parity scope, not shared game semantics | Coordinator/Thief acceptance or lecturer clarification |
-| U-024 | Complete artifact required/optional/type/conditional rules and compatibility beyond the common identity/lifecycle requirements | Full artifact validation | Authenticated templates/schemas or dated clarification |
+| U-021 | Allowed runtime `group_id` syntax beyond non-empty JSON text; the Moodle team code is a separate eight-character identifier | M7 formal identifier validation | Authenticated schema or lecturer clarification |
+| U-022 | UUIDv4 proposal versus current deterministic non-versioned simulator UUID; exact `game_id` syntax | M7 artifact identity protocol | Accepted ADR/vector or higher-authority clarification |
+| U-024 | Complete artifact constraints and compatibility beyond common identities/lifecycle | M7 full artifact validation | Authenticated templates/schemas or accepted project schema |
 
 Resolved: Appendix F values/statuses; multiplicative scent equation; report
 attachment/no-free-text rule; nonce secrecy until final reveal; unified authoritative
 `game.json`/private TOML boundary; two-ID `agreed_between` representation; config
 hash scope and serialization; role alternation; common artifact identities and
-lifecycle; book-defined artifact filename patterns; rule-25 recommendation status;
+lifecycle; literal `<NN>` logical links/resolved physical filenames; local
+`rate_limits.json` boundary; book-defined artifact filename patterns; rule-25 recommendation status;
 six README sections; tag requirement; both addresses.

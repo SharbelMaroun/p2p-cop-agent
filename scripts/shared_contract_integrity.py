@@ -9,16 +9,20 @@ from pathlib import Path
 MANIFEST_PATH = "docs/contracts/PARITY_MANIFEST.json"
 EXACT_PATHS = (
     ".gitattributes",
+    "config/game.json",
     "scripts/check_shared_contracts.py",
     "scripts/shared_contract_integrity.py",
 )
-GLOB_PATHS = ("config/*.json",)
+GLOB_PATHS: tuple[str, ...] = ()
 RECURSIVE_ROOTS = (
     "docs/contracts",
     "docs/schemas",
     "tests/fixtures/contracts",
 )
-EXCLUDED_PATHS = (MANIFEST_PATH,)
+EXCLUDED_PATHS = (
+    MANIFEST_PATH,
+    "docs/schemas/rate-limits.schema.json",
+)
 
 
 class ContractIntegrityError(RuntimeError):

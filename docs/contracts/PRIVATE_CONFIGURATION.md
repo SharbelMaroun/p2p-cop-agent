@@ -21,8 +21,7 @@ Real `config/game.toml` and `.env` files remain ignored. A public field later pr
 mandatory by an authenticated course schema must be reviewed explicitly rather than
 silently copied from private configuration.
 
-`config/rate_limits.json` is a file-backed operational mirror, not a second source
-of negotiated truth. Its Gatekeeper values must equal the authoritative signed
-`config/game.json` section. Whether both repositories must retain the mirror with
-identical bytes is still a parity-policy question, not permission for local values
-to weaken the shared limits.
+`config/rate_limits.json` is file-backed local operation, not a second source of
+negotiated truth. This repository mirrors the authoritative signed Gatekeeper values
+and rejects a weaker/conflicting local mirror, while permitting local extension
+metadata. The file is excluded from exact-byte cross-repository parity.

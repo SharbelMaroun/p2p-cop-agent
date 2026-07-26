@@ -22,8 +22,9 @@ The book's Appendix B example uses profile 1.2. Local generated artifacts use 1.
 and the simulator runtime uses 1.3. No compatibility or normalization among these
 observations is frozen. The local artifacts remain `NEEDS_MANUAL_REVIEW`.
 
-JSON Schema identifiers, root revision fields, the operational-mirror parity scope,
-and closed-object policy remain project proposals rather than formal artifact rules.
+JSON Schema identifiers, root revision fields, and closed-object policy remain
+project proposals rather than formal artifact rules. Local `rate_limits.json` is
+outside match-byte parity.
 See `LEAGUE_CONTRACT.md`, `MATCH_CONFIGURATION.md`, and
 `PRIVATE_CONFIGURATION.md` for the three-layer boundary.
 
@@ -90,12 +91,12 @@ are a neutral proposed match instance.
 | `game.rate_limiter_gatekeeper.max_retries` | `3` | Minimum | Appendix F table 19, PDF p.155 |
 | `game.rate_limiter_gatekeeper.queue_depth` | `100` | Minimum | Appendix F table 19, PDF p.155 |
 | `rate_limits.version` | `"1.00"` | **PROPOSED** operational-config revision | Software Submission Guidelines v3.0 section 8.1 |
-| `rate_limits.rate_limiter_gatekeeper.*` | exact mirror of the five shared Gatekeeper values | Operational mirror | Appendix B classifies `rate_limits.json` as cross-language JSON; parity scope remains U-023 |
+| `rate_limits.rate_limiter_gatekeeper.*` | local non-weakening mirror of the five shared Gatekeeper values | Local operation | Simulator `ConfigManager`; shared authority remains `game.json` |
 
 Field names are drawn from Appendix B where present and otherwise remain explicit
 project proposals or local-artifact observations. Strict known-field schemas with
-an extension container, root revision placement, operational-mirror parity, and
-manifest mechanics remain proposed.
+an extension container, root revision placement, and manifest mechanics remain
+proposed. The operational rate-limit file is local and outside parity.
 
 ## Artifact key-set evidence
 
@@ -113,7 +114,7 @@ provenance and every formal schema constraint remain unproven.
 - Commit-reveal canonical bytes, Unicode treatment, and nonce length: ADR-006.
 - Allowed participant-ID syntax beyond ordered non-empty text.
 - Detailed artifact identity formats and complete formal schemas.
-- Operational `rate_limits.json` cross-repository parity scope.
+- Exact game-ID/UUID protocol and exhaustive artifact schemas, deferred to M7.
 - Private Cop TOML fields: ADR-004.
 - Gmail draft/send workflow: ADR-010.
 

@@ -7,8 +7,6 @@ import pytest
 from p2p_cop_agent import CopSDK
 from p2p_cop_agent.shared.contracts import (
     ContractValidationError,
-    SharedContract,
-    require_same_match_configuration,
     verify_config_sha256,
 )
 from tests.contract.conftest import read_json, write_json
@@ -108,32 +106,6 @@ def test_participant_order_is_byte_significant(contract_copy: Path) -> None:
     sdk = CopSDK.from_repository(PROJECT_ROOT)
     with pytest.raises(ContractValidationError, match="game configuration differs"):
         sdk.validate_match_offer(contract_copy)
-
-
-def test_semantic_match_comparison_rejects_each_contract_layer() -> None:
-    base = SharedContract("candidate", {"field": "game"}, {"field": "rates"}, "hash")
-
-    with pytest.raises(ContractValidationError, match="contract version differs"):
-        require_same_match_configuration(
-            base,
-            SharedContract("different", {"field": "game"}, {"field": "rates"}, "hash"),
-        )
-    with pytest.raises(ContractValidationError, match="game configuration differs"):
-        require_same_match_configuration(
-            base,
-            SharedContract("candidate", {"field": "changed"}, {"field": "rates"}, "changed"),
-        )
-    with pytest.raises(ContractValidationError, match="rate-limit configuration differs"):
-        require_same_match_configuration(
-            base,
-            SharedContract("candidate", {"field": "game"}, {"field": "changed"}, "hash"),
-        )
-    with pytest.raises(ContractValidationError, match="configuration hash differs"):
-        require_same_match_configuration(
-            base,
-            SharedContract("candidate", {"field": "game"}, {"field": "rates"}, "changed"),
-        )
-
 
 @pytest.mark.parametrize("unsupported", ["1.1", "1.3", "9.9"])
 def test_unsupported_config_profile_fails_clearly(
