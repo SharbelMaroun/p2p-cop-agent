@@ -1,86 +1,94 @@
 # Parameters Baseline — directly confirmed Appendix F values
 
-> **Confidence: HIGH. Directly confirmed from the original PDF.**
-> Every value and status below was checked directly against Appendix F, tables 13–19, in the
-> official project book v3.0.0 (PDF pp. 152–155 / printed pp. 136–139). The per-row derived-source
-> locators are retained only as secondary cross-checks. These binding values belong in
-> configuration rather than hard-coded constants. Official JSON schemas and field names remain
-> `UNKNOWN`.
+> **Confidence: HIGH.** Values and statuses were checked directly against the
+> official project book v3.0.0, Appendix F tables 13–19 (PDF pp. 152–155 /
+> printed pp. 136–139).
 >
-> **Status meanings (book):** *Fixed* = cannot change; deviation = disqualification ·
-> *Minimum* = may be raised by mutual agreement, never lowered · *Negotiation* = any agreed
-> value; the listed value is the default.
+> `Fixed` cannot change. `Minimum` may be made stricter by mutual agreement but
+> never relaxed below the listed value. `Negotiation` may be agreed freely; the
+> listed value is the default.
 >
-> ⚠️ **Board-size trap (DEV-SPEC §2):** the binding board is **7×7**. The `10×10` and `5×5`
-> values elsewhere in the source are **illustrations only** — never build to them.
+> Four inspected local simulator-generated artifacts expose observed field names and
+> key sets, but their official provenance is `NEEDS_MANUAL_REVIEW`. They do not
+> establish formal required/optional, type/enum, conditional, or compatibility rules.
 
-## Board, coordinates, opening positions (Appendix F Table 13)
+## Board, coordinates, and opening positions — Table 13
 
-| Parameter | Value | Status | Provenance |
+| Parameter | Value | Status | Direct source |
 |---|---|---|---|
-| Board size (square side) | 7×7 | Minimum | DEV-SPEC §3 T13; summary :3483 |
-| Number of agents | 2 | Fixed | DEV-SPEC §3 T13; summary :3484 |
-| Coordinate origin corner | top-left | Negotiation | DEV-SPEC §3 T13; summary :3485 |
-| Coordinate start index | 0 | Negotiation | DEV-SPEC §3 T13; summary :3486 |
-| Opening position — Thief | (3,3) center | Negotiation | DEV-SPEC §3 T13; summary :3487 |
-| Opening position — Police | (0,0) corner | Negotiation | DEV-SPEC §3 T13; summary :3488 |
+| Square board side | 7 | Minimum | Appendix F table 13, PDF p. 152 |
+| Number of agents | 2 | Fixed | Appendix F table 13, PDF p. 152 |
+| Coordinate origin | top-left | Negotiation default | Appendix F table 13, PDF p. 152 |
+| Coordinate start index | 0 | Negotiation default | Appendix F table 13, PDF p. 152 |
+| Thief opening position | `(3, 3)` center | Negotiation default | Appendix F table 13, PDF p. 152 |
+| Cop opening position | `(0, 0)` corner | Negotiation default | Appendix F table 13, PDF p. 152 |
 
-## Arena & verbal clues (Appendix F Table 14)
+Seven is a minimum, not an immutable board size. Do not hard-code unrelated 5×5 or
+10×10 illustrations; a larger board is legal only when the parties agree and all
+derived positions validate.
 
-| Parameter | Value | Status | Provenance |
+## Arena and verbal clues — Table 14
+
+| Parameter | Value | Status | Direct source |
 |---|---|---|---|
-| Game arena (real-world map) | New York (empty ⇒ generic) | Negotiation | DEV-SPEC §3 T14; summary :3494 |
-| Word limit per clue | 15 | Negotiation | DEV-SPEC §3 T14; summary :3495 |
+| Real-world map area | New York; empty means generic | Negotiation default | Appendix F table 14, PDF p. 152 |
+| Words per clue | 15 | Negotiation default | Appendix F table 14, PDF p. 152 |
 
-## Movement & obstacles (Appendix F Table 15)
+## Movement and barriers — Table 15
 
-| Parameter | Value | Status | Provenance |
+| Parameter | Value | Status | Direct source |
 |---|---|---|---|
-| Movement array | N/S/E/W + STAY (no diagonals) | Fixed | DEV-SPEC §3 T15; summary :3507 |
-| Obstacle quota (cop barriers) | 14 | Minimum | DEV-SPEC §3 T15; summary :3508 |
-| Step limit | 35 | Minimum | DEV-SPEC §3 T15; summary :3509 |
-| Survival threshold | 35 | Minimum | DEV-SPEC §3 T15; summary :3510 |
+| Move set | `N`, `S`, `E`, `W`, `STAY`; no diagonals | Fixed | Appendix F table 15, PDF p. 153 |
+| Cop barrier quota | 14 | Minimum | Appendix F table 15, PDF p. 153 |
+| Step limit | 35 | Minimum | Appendix F table 15, PDF p. 153 |
+| Survival threshold | 35 | Minimum | Appendix F table 15, PDF p. 153 |
 
-## Pheromones / scent (Appendix F Table 16 — all Fixed)
+## Scent — Table 16
 
-| Parameter | Value | Status | Provenance |
+| Parameter | Value | Status | Direct source |
 |---|---|---|---|
-| Scent intensity at source | 0.9 | Fixed | DEV-SPEC §3 T16; summary :3516 |
-| Scent decay rate ρ | 0.10 | Fixed | DEV-SPEC §3 T16; summary :3517 |
-| Scent field size | 5×5 | Fixed | DEV-SPEC §3 T16; summary :3518 |
+| Center intensity | 0.9 | Fixed | Appendix F table 16, PDF p. 153 |
+| Per-turn decay rate `ρ` | 0.10 | Fixed | Appendix F table 16, PDF p. 153 |
+| Emission field | 5×5 | Fixed | Appendix F table 16, PDF p. 153 |
 
-## Scoring (Appendix F Table 17 — all Fixed)
+## Scoring — Table 17 plus Appendix E sanctions
 
-| Outcome | Police | Thief | Provenance |
+| Outcome | Cop | Thief | Status / direct source |
+|---|---:|---:|---|
+| Capture | 20 | 5 | Fixed; Appendix F table 17, PDF p. 154 |
+| Survival to threshold | 5 | 10 | Fixed; Appendix F table 17, PDF p. 154 |
+| Tie | 2 | 2 | Fixed; Appendix F table 17, PDF p. 154 |
+| Technical loss | 0 | 0 | Mandatory sanction; Appendix E rules 19/48, PDF pp. 145/149 |
+
+Technical-loss scoring is directly confirmed, but it is not a row in Appendix F
+table 17 and must not be cited as one.
+
+## Network and league — Table 18
+
+| Parameter | Value | Status | Direct source |
 |---|---|---|---|
-| Capture | 20 | 5 | DEV-SPEC §3 T17; summary :3530–3531 |
-| Survival to threshold | 5 | 10 | DEV-SPEC §3 T17; summary :3532–3533 |
-| Draw / tie | 2 | 2 | DEV-SPEC §3 T17; summary :3534 |
-| Technical loss | 0 | 0 | DEV-SPEC §3 T17; summary :2953 |
+| Sub-games in one series against an opponent | 6 | Fixed | Appendix F table 18, PDF p. 154 |
+| Diversity reward for a new opponent | 10 | Fixed | Appendix F table 18, PDF p. 154 |
+| Minimum counted opponents/games to pass | 2 | Fixed | Appendix F table 18 plus Appendix E rule 31 |
+| Estimated LLM-token budget per series | ~200000 | Negotiation default | Appendix F table 18, PDF p. 154 |
+| Maximum counted games per group | 10 | Fixed | Appendix F table 18, PDF p. 154 |
 
-## Network & league (Appendix F Table 18)
+The actual token consumption is reported by email; the original text does not say
+to convert this row to USD. A counted opponent encounter is a six-sub-game series;
+the separate minimum of two concerns league participation, not series length.
 
-| Parameter | Value | Status | Provenance |
+## Rate limiter / Gatekeeper — Table 19
+
+| Parameter | Value | Status | Direct source |
 |---|---|---|---|
-| Games in a series vs one opponent | 6 | Fixed | DEV-SPEC §3 T18; summary :3540 |
-| Diversity/bonus reward (beat a new opponent) | 10 | Fixed | DEV-SPEC §3 T18; summary :3541 |
-| Minimum games to pass (per group) | 2 | Fixed | DEV-SPEC §3 T18; summary :3542 |
-| Estimated tokens per series (report in USD) | ~200000 | Negotiation | DEV-SPEC §3 T18; summary :3543 |
-| Max games per group | 10 | Fixed | DEV-SPEC §3 T18; summary :3544 |
+| Outgoing API requests per minute | 30 | Minimum | Appendix F table 19, PDF p. 155 |
+| Concurrent requests | 2 | Minimum | Appendix F table 19, PDF p. 155 |
+| Base retry delay | 5 seconds | Minimum | Appendix F table 19, PDF p. 155 |
+| Retry attempts | 3 | Minimum | Appendix F table 19, PDF p. 155 |
+| Queue depth | 100 | Minimum | Appendix F table 19, PDF p. 155 |
+| Response timeout | 30 seconds | Negotiation default | Appendix F table 19, PDF p. 155 |
+| Watchdog threshold | 60 seconds | Negotiation default | Appendix F table 19, PDF p. 155 |
 
-## Rate limiter / Gatekeeper (Appendix F Table 19)
-
-| Parameter | Value | Status | Provenance |
-|---|---|---|---|
-| API request rate (per minute) | 30 | Minimum | DEV-SPEC §3 T19; summary :3556 |
-| Concurrent requests | 2 | Minimum | DEV-SPEC §3 T19; summary :3557 |
-| Retry delay (backoff) | 5 s | Minimum | DEV-SPEC §3 T19; summary :3558 |
-| Retry attempts | 3 | Minimum | DEV-SPEC §3 T19; summary :3559 |
-| Queue depth | 100 | Minimum | DEV-SPEC §3 T19; summary :3560 |
-| Response timeout | 30 s | Negotiation | DEV-SPEC §3 T19; summary :3561 |
-| Watchdog threshold | 60 s | Negotiation | DEV-SPEC §3 T19; summary :3562 |
-
----
-
-_Directly verified 2026-07-25 against original PDF pp. 152–155. The official JSON templates,
-exact MCP messages, and simulator-specific defaults are outside Appendix F and remain UNKNOWN._
+The values belong in configuration, not hard-coded runtime constants. Exact MCP
+names, envelope fields, commit canonical bytes, and simulator defaults are separate
+ADR/contract questions.

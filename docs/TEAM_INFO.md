@@ -1,18 +1,18 @@
 # Team Information
 
-Team identity remains `UNKNOWN` (team input). Both official addresses were directly confirmed
-from the original project-book PDF.
+Team identity remains verified team input. Official addresses and repository roles
+are directly confirmed.
 
-| Field | Status | Value/evidence needed |
+| Field | Status | Value / evidence |
 |---|---|---|
 | Team/group name | UNKNOWN | Team confirmation |
 | Group ID/number | UNKNOWN | Official course record |
-| Member names | UNKNOWN | Team confirmation |
-| Member IDs | UNKNOWN | Team confirmation |
+| Member names/IDs | UNKNOWN | Team confirmation |
+| Eight-character team code | UNKNOWN | Team input; Appendix E rule 45 |
 | Cop repository | CONFIRMED | <https://github.com/SharbelMaroun/p2p-cop-agent> |
 | Thief repository | CONFIRMED | <https://github.com/SharbelMaroun/p2p-thief-agent> |
-| Lecturer sharing address | CONFIRMED | `rmisegal@gmail.com` — original PDF p. 157, table 20 |
-| Automated reporting address | CONFIRMED | `rmisegal+uoh26finalgame@gmail.com` — original PDF p. 157, table 20 |
-| Team code (8 characters, no spaces) | UNKNOWN | Team input (rule 45) |
+| General/repository-sharing address | CONFIRMED | `rmisegal@gmail.com` — book PDF p. 157, table 20 |
+| Automated-report address | CONFIRMED | `rmisegal+uoh26finalgame@gmail.com` — book PDF p. 157, table 20 |
+| Proposed contract | PROPOSED | `0.1.0-proposed`, UNFROZEN pending Thief acceptance |
 
-Do not put secrets, OAuth credentials, private keys, or tokens in this file.
+Do not place secrets, credentials, keys, tokens, private ports, or nonces here.

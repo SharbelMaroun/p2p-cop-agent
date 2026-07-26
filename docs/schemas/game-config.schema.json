@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.1.0-proposed",
+  "x-source-status": "PROPOSED",
+  "title": "Proposed negotiated match game configuration",
+  "description": "Project schema for a neutral 1.2 match candidate, not an official artifact schema. Closed known fields plus extensions are PROPOSED.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "schema_version",
+    "agreed_between",
+    "game_id",
+    "sub_game_number",
+    "config_name",
+    "config_sha256",
+    "board_and_agents",
+    "world",
+    "movement_and_barriers",
+    "scoring",
+    "pheromones",
+    "network_and_league",
+    "extensions"
+  ],
+  "properties": {
+    "version": {
+      "const": "1.00",
+      "description": "PROPOSED root placement of the guidelines configuration revision."
+    },
+    "schema_version": {
+      "const": "1.2",
+      "description": "Appendix B example profile; compatibility with 1.1/1.3 is unresolved."
+    },
+    "agreed_between": {
+      "type": "array",
+      "description": "PROPOSED ordered representation of Appendix B participant agreement.",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/participant"
+        },
+        {
+          "$ref": "#/$defs/participant"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true
+    },
+    "game_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identity used by the book-defined artifact filename pattern."
+    },
+    "sub_game_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6,
+      "description": "PROPOSED one-based number within the fixed six-sub-game series."
+    },
+    "config_name": {
+      "type": "string",
+      "pattern": "^config_.+_g[0-9]{2}\\.json$",
+      "description": "Book table 20 filename shape; exact identity character rules are unresolved."
+    },
+    "config_sha256": {
+      "description": "P0 BLOCKER: null until canonical scope is defined; a string check validates shape only.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    },
+    "board_and_agents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grid_size",
+        "num_agents",
+        "thief_start",
+        "cop_start",
+        "axis_origin_corner",
+        "axis_start_index"
+      ],
+      "properties": {
+        "grid_size": {
+          "type": "integer",
+          "minimum": 7,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
+        },
+        "num_agents": {
+          "const": 2,
+          "x-appendix-f-status": "fixed",
+          "x-value-owner": "appendix_f"
+        },
+        "thief_start": {
+          "$ref": "#/$defs/coordinate",
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        },
+        "cop_start": {
+          "$ref": "#/$defs/coordinate",
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        },
+        "axis_origin_corner": {
+          "type": "string",
+          "minLength": 1,
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        },
+        "axis_start_index": {
+          "type": "integer",
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        }
+      }
+    },
+    "world": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "map_area",
+        "hint_max_words"
+      ],
+      "properties": {
+        "map_area": {
+          "type": "string",
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        },
+        "hint_max_words": {
+          "type": "integer",
+          "minimum": 0,
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        }
+      }
+    },
+    "movement_and_barriers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "move_set",
+        "max_barriers",
+        "max_moves",
+        "survival_threshold"
+      ],
+      "properties": {
+        "move_set": {
+          "const": [
+            "N",
+            "S",
+            "E",
+            "W",
+            "STAY"
+          ],
+          "x-appendix-f-status": "fixed",
+          "x-value-owner": "appendix_f"
+        },
+        "max_barriers": {
+          "type": "integer",
+          "minimum": 14,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
+        },
+        "max_moves": {
+          "type": "integer",
+          "minimum": 35,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
+        },
+        "survival_threshold": {
+          "type": "integer",
+          "minimum": 35,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capture_cop",
+        "capture_thief",
+        "survival_cop",
+        "survival_thief",
+        "tie_score",
+        "technical_loss"
+      ],
+      "properties": {
+        "capture_cop": {
+          "const": 20
+        },
+        "capture_thief": {
+          "const": 5
+        },
+        "survival_cop": {
+          "const": 5
+        },
+        "survival_thief": {
+          "const": 10
+        },
+        "tie_score": {
+          "const": 2
+        },
+        "technical_loss": {
+          "const": 0
+        }
+      },
+      "x-appendix-f-status": "fixed",
+      "x-value-owner": "appendix_f"
+    },
+    "pheromones": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pheromone_center_intensity",
+        "pheromone_decay",
+        "pheromone_grid_size"
+      ],
+      "properties": {
+        "pheromone_center_intensity": {
+          "const": 0.9
+        },
+        "pheromone_decay": {
+          "const": 0.1
+        },
+        "pheromone_grid_size": {
+          "const": 5
+        }
+      },
+      "x-appendix-f-status": "fixed",
+      "x-value-owner": "appendix_f"
+    },
+    "network_and_league": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "num_games",
+        "diversity_reward",
+        "min_games_to_pass",
+        "max_games_per_team",
+        "token_budget_per_series"
+      ],
+      "properties": {
+        "num_games": {
+          "const": 6,
+          "x-appendix-f-status": "fixed",
+          "x-value-owner": "appendix_f"
+        },
+        "diversity_reward": {
+          "const": 10,
+          "x-appendix-f-status": "fixed",
+          "x-value-owner": "appendix_f"
+        },
+        "min_games_to_pass": {
+          "const": 2,
+          "x-appendix-f-status": "fixed",
+          "x-value-owner": "appendix_f"
+        },
+        "max_games_per_team": {
+          "const": 10,
+          "x-appendix-f-status": "fixed",
+          "x-value-owner": "appendix_f"
+        },
+        "token_budget_per_series": {
+          "type": "integer",
+          "minimum": 0,
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "PROPOSED explicit extension namespace; contents must be mutually agreed."
+    }
+  },
+  "$defs": {
+    "participant": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coordinate": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    }
+  }
+}

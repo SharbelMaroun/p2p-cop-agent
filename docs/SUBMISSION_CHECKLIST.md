@@ -1,37 +1,52 @@
-# Submission Checklist (mandatory process requirements)
+# Submission Checklist
 
-Shared, byte-identical in both repositories. Captures the mandatory **submission and league-
-integrity** requirements from the book so none is forgotten at submission time. Confirmed
-obligations are also recorded in [REQUIREMENTS_LEDGER.md](REQUIREMENTS_LEDGER.md); items needing
-team or Moodle input are tracked in [TEAM_INFO.md](TEAM_INFO.md) and
-[UNKNOWN_REQUIREMENTS.md](UNKNOWN_REQUIREMENTS.md). The boxes are completed during
-implementation/submission, not during the requirements phase.
+This checklist is source-backed but is not claimed to be byte-identical with the
+Thief repository.
 
-## Repository & release (Appendix E rules 41, 49, 50; Appendix C)
-- [ ] Two separate repos (Cop + Thief); each README cross-links the other — `SR-001/002`.
-- [ ] Both repos accessible to the lecturer (public, or shared with the lecturer address) — `SR-003`.
-- [ ] Annotated Git tag marks the submission commit (book example `v1.0-submission`; confirm on Moodle) — `SR-007`.
-- [ ] Each repo contains README, `/config`, PRD(s), PLAN, TODO, and code — `SR-006`.
+## Repository and release
 
-## Academic report in README (rule 42; Ch.9.4.2) — `SR-008`
-- [ ] Six sections: (1) Dec-POMDP model, (2) FastMCP dilemma, (3) strategy, (4) learning curves if RL,
-      (5) screenshots (belief-map GUI + "Verified OK" replay), (6) companion-repository link.
+- [ ] Separate Cop and Thief repositories; reciprocal README links.
+- [ ] Both repositories accessible to the lecturer/general address
+      `rmisegal@gmail.com`.
+- [ ] Annotated Git tag marks the final submission commit; confirm the literal name
+      against current Moodle guidance.
+- [ ] Each repository contains README, config, PRDs, PLAN, TODO, code,
+      `pyproject.toml`, and committed `uv.lock`.
+- [x] Cop clean `uv sync --frozen`, Ruff, tests/coverage, length, secret, and
+      contract-parity checks pass for M1.
+- [ ] Thief independently runs its frozen install and matching parity checks after
+      accepting the proposed bundle.
 
-## Reporting (rules 32–35, 51–54) — exact templates pending
-- [ ] Each side auto-sends a signed JSON result at the end of every legal game (JSON only; free text rejected).
-- [ ] Both sides agree the result; conflicting reports → 0/0.
-- [ ] Send reports to `rmisegal+uoh26finalgame@gmail.com` (original PDF p. 157, table 20).
-- [ ] Every game's commit hash and total tokens are included in the JSON.
+## Six-section README report
 
-## League integrity (rules 31, 37, 38, 52) — league play pending
-- [ ] Play at least 2 **different** teams (Appendix F table 18, fixed).
-- [ ] Declare accurately how many games were played vs each opponent; false declaration = disqualification.
-- [ ] Only one scored game per opponent; warm-up games are uncounted.
+- [ ] Dec-POMDP model.
+- [ ] FastMCP communication dilemma and orchestration choices.
+- [ ] Implemented strategy.
+- [ ] RL learning curves, if RL is used.
+- [ ] Live belief-map and `Verified OK` replay screenshots.
+- [x] Companion-repository link.
 
-## Moodle (rules 43, 44, 45)
-- [ ] Fill the Moodle Word/PDF template without moving fields; submit as PDF.
-- [ ] Each team member submits separately in Moodle.
-- [ ] Provide the unique **8-character team code** (no spaces) — team input (`U-016`).
+## Reporting
 
-## Secrets (rules 39, 40) — `PS-006`
-- [ ] No secrets committed; `.gitignore` excludes `.env`, `credentials.json`, `token.json`, `*.key`.
+- [ ] Each side independently sends the signed final JSON as an attachment; no
+      free-text final-report body.
+- [ ] Destination is `rmisegal+uoh26finalgame@gmail.com`.
+- [ ] Both sides agree the result; missing/conflicting reports yield zero for both.
+- [ ] Required report content includes four repository links, each game’s commit
+      hash, and total token use, without inventing unsupported formal key rules.
+
+## League integrity
+
+- [ ] Each counted opponent encounter uses the fixed six-sub-game series.
+- [ ] Complete the required minimum against at least two different opponents/teams.
+- [ ] Count only one series/match per opponent; warm-ups are uncounted.
+- [ ] Declare counts accurately; false declaration is disqualifying.
+
+## Moodle, secrets, and provenance
+
+- [ ] Complete the supplied Moodle form without moving fields; submit PDF as directed.
+- [ ] Every team member submits separately.
+- [ ] Provide the eight-character team code.
+- [ ] No secrets committed; `.gitignore` covers `.env`, credentials, tokens, and keys.
+- [ ] No substantial lecturer-simulator source copied without ADR-008
+      provenance/license resolution or permission.

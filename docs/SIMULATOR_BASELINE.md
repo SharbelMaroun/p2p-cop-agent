@@ -1,11 +1,30 @@
-# Simulator Baseline Dependency
+# Lecturer Simulator Baseline
 
 - Upstream: <https://github.com/rmisegal/Game-P2P-Cop-Chase>
-- Previously recorded commit: `960499fd5e8777b4929625f5d8fdcf2ab4677b54`
-- Inspection date: 2026-07-24
+- Required reference commit: `960499fd5e8777b4929625f5d8fdcf2ab4677b54`
+- Role: learning and interoperability reference, **not** a submission skeleton
 
-The central planning repository is responsible for simulator reverse engineering. No distinct verified simulator-analysis export was found in the planning checkout inspected at commit `0c751942fc133a4bbd7a1a3348f95800e73c81e3`.
+Any simulator observation used here must be tied to that exact commit, file/symbol,
+command, and observed result. The Final Project Book, Appendix F, Appendix E,
+authenticated official templates, current Moodle/lecturer clarification, and the
+Software Submission Guidelines all outrank the simulator.
 
-This repository therefore records a pending dependency and does not derive protocol tools, message fields, schemas, defaults, or requirements from the simulator. Previously noted names and behaviors are not an implementation baseline. No simulator files were copied here.
+## Candidate observations, not book mandates
 
-Import a future centralized export only when it records the upstream URL, full commit hash, exact file/symbol evidence, verification commands, and observed results. Official requirements still control over simulator behavior.
+- `negotiate`, `receive_turn`, `submit_audit`, and `receive_control` are candidate
+  tool names for ADR-001.
+- The one-game demo/default does not replace the official six-sub-game series.
+- The simulator’s subtractive scent decay must not replace the book’s multiplicative
+  update; ADR-005 records that boundary.
+
+## License and reuse
+
+The upstream repository carries an educational-use EULA rather than this
+repository’s MIT license. Reading, running, and inspecting its behavior/tests may
+support coursework, but substantial copying, adaptation, redistribution, or
+publication in this public repository requires the provenance/license decision in
+ADR-008 and, where needed, lecturer permission. No simulator runtime source is an
+implementation baseline.
+
+No MCP name, message field, schema rule, provider, port, or default becomes mandatory
+merely because the simulator uses it.

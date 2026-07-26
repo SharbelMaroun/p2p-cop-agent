@@ -1,22 +1,20 @@
 # Source Inventory
 
-| Source | Availability | Status | Use |
-|---|---|---|---|
-| Official final-project book v3.0.0 | Local PDF directly extracted; hash recorded | CONFIRMED source | Structural requirements; later field-level game verification |
-| Appendix E | Present in official PDF | CONFIRMED source, targeted extraction | Includes direct verification of rule 25 wording/status |
-| Appendix F | Present in official PDF | CONFIRMED source, tables 13–19 extracted | Binding values/statuses recorded in `PARAMETERS_BASELINE.md` |
-| Four official JSON examples, schema version 1.1 | Supplied from external local `SimulatorEXM-Repo/Json-examples` | DIRECTLY INSPECTED | Artifact families and exemplar key sets confirmed; formal validation constraints remain UNKNOWN |
-| Moodle instructions/announcements | Not present | UNKNOWN | Recency conflicts blocked |
-| Professional Software Submission Guidelines v3.0 | Direct 39-page PDF found in local course materials; hash recorded | CONFIRMED source | `PS-001`–`PS-009` |
-| Planning repository | Read at `0c751942fc133a4bbd7a1a3348f95800e73c81e3` | Navigation only | Source and simulator-export inventory |
-| `CHATGPT_PROJECT_INSTRUCTIONS.md` | Not present in planning checkout | UNKNOWN | No claims inferred from absence |
-| `PROJECT_CONTEXT(1).md` | Present | KEEP WITH WARNING | Secondary planning material |
-| `SUBMISSION_CHECKLIST(1).md` | Present | KEEP WITH WARNING | Navigation/checklist only |
-| `LECTURER_REPO_OVERVIEW.md` | Present | KEEP WITH WARNING | Secondary simulator summary |
-| Centralized simulator-analysis exports | No distinct verified export found | UNKNOWN | Simulator-dependent details remain pending |
-| Unverified translation | Present | QUARANTINE | Navigation only |
-| `DEV-SPEC.md` (planning) | Present | MEDIUM (derived distillation) | Navigation + candidate parameters; points to official locations, cannot confirm alone |
-| `police_thief_p2p_Summary.md` (planning) | Present | MEDIUM (book translation) | Page-anchored navigation to the official book; cannot confirm alone |
-| `software_submission_guidelines-V3_Summary.md` (planning) | Present | MEDIUM (guidelines translation) | Page-anchored navigation to the guidelines; cannot confirm alone |
+| Source | Availability / identity | Use and limit |
+|---|---|---|
+| Official project book `police_thief_p2p.pdf` v3.0.0 | Directly inspected; SHA-256 `7C9E1D7527582C3AEF9AFD71709981CEA50EA60B8FABEFE85EFCCAB0A5FDD02E` | Highest authority for rules; Appendix B/E/F and table 20 directly checked |
+| Dated lecturer/Moodle clarifications | Not present in this checkout | Needed only for recency-sensitive unresolved questions |
+| Professional Software Submission Guidelines v3.0 | Direct 39-page PDF previously inspected; SHA-256 `3F02DF37767C745EFC47646140C2E6AC7CAE3B9C87C92073DAF4EEF74BE09EBB` | `PS-001`–`PS-010` |
+| Lecturer simulator | Public upstream pinned to `960499fd5e8777b4929625f5d8fdcf2ab4677b54` | Lower-priority learning/interoperability reference; behavior is not automatically mandatory |
+| Simulator educational-use EULA | Present upstream; redistribution/adaptation restricted | ADR-008/license review before substantial reuse; no source-copy authority inferred |
+| Four local JSON artifacts | Directly inspected and hashed in `ARTIFACT_TEMPLATE_BASELINE.md`; byte-identical to generated simulator logs | `NEEDS_MANUAL_REVIEW`; observed 1.1 key sets only, with no authenticated official provenance |
+| Cross-team ADR accepted by both peers | None accepted for the proposed bundle yet | Project design evidence only; may decide permitted choices, never override an external authority |
+| Planning repository at `0c751942fc133a4bbd7a1a3348f95800e73c81e3` | Inspected for navigation | Secondary inventory only |
+| `DEV-SPEC.md`, summaries, translations, NotebookLM/AI output | Available as derived material | Navigation/cross-check only; cannot independently confirm a requirement |
+| Archived repository documents | Preserved under `archive/pre-audit/` | Historical coverage only; never active implementation authority |
 
-Inspection date: 2026-07-24 (Asia/Jerusalem).
+Direct verification already closes Appendix F values/statuses, the rule-25
+recommendation status, six README sections, annotated-tag requirement, both email
+addresses, the semantic shared-JSON/private-TOML override, and artifact filename
+patterns stated in book table 20. The formal artifact shapes and provenance of the
+four local files remain open.

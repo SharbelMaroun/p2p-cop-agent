@@ -1,0 +1,93 @@
+{
+  "contract_version": "0.1.0-proposed",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "f9eaec26456d492ccc58aec75ce3a8e6e7680fb158b23da3977bcfa02b22c1ba"
+    },
+    {
+      "path": "config/game.json",
+      "sha256": "a06fc6d316240f0f089a3d33966527082c5f6c229a1232b5d8e14987269472af"
+    },
+    {
+      "path": "config/rate_limits.json",
+      "sha256": "f2d173e9bf6c31ea30a14d6b4b81801c46fa155eaefa04548eeedf26107c7814"
+    },
+    {
+      "path": "docs/contracts/CONTRACT_VERSION",
+      "sha256": "9e061d4d08ca911d12915da01033a8a9f03cd0329a6ba33bbb953d6bba9edbda"
+    },
+    {
+      "path": "docs/contracts/LEAGUE_CONTRACT.md",
+      "sha256": "d808d743954f3fd09413860fe21d378728bb4b58171af0cf4c32fcede76ca1db"
+    },
+    {
+      "path": "docs/contracts/MATCH_CONFIGURATION.md",
+      "sha256": "b3df0b84a708c8ca44d6c608ba7dd7f49b35c68368304a1ced3f320677cc7c04"
+    },
+    {
+      "path": "docs/contracts/PRIVATE_CONFIGURATION.md",
+      "sha256": "32f8beb459c91942d44720d4b2151a05d26aebcfdef5aff62e90834113fed45b"
+    },
+    {
+      "path": "docs/contracts/SHARED_RULES.md",
+      "sha256": "4d73fa8a7a9e31cbf4243e9ea0b7858769db17854516a99be6c5fdf920f6d7d5"
+    },
+    {
+      "path": "docs/schemas/artifact-keyset-fixture.schema.json",
+      "sha256": "8e56b199fb6339a1d085422face33fac8313efd8b7d0d142774607b2febd7a3f"
+    },
+    {
+      "path": "docs/schemas/game-config.schema.json",
+      "sha256": "b4da34a2ffeb616bb36a3a3f18170b033818cb88632a5d154e44bd9f893b33ff"
+    },
+    {
+      "path": "docs/schemas/rate-limits.schema.json",
+      "sha256": "b4b837751e1a5ec75620cc877b511790c543d251c2ffd01fd0f0d81112418591"
+    },
+    {
+      "path": "scripts/check_shared_contracts.py",
+      "sha256": "b29bd3c978baf7b1b988e7a37c644cdc3b3e5fb548e852e0238fa95bac855b39"
+    },
+    {
+      "path": "scripts/shared_contract_integrity.py",
+      "sha256": "2a3d1dfcb532aaca4c38c5a9ba21f28045f130588626d9d2981ccce06dc1e06f"
+    },
+    {
+      "path": "tests/fixtures/contracts/agreed_config.keyset.json",
+      "sha256": "a82c0f98a9eccb35d13dffb5287f1c74f65918008de4c178c3565540cb1ec1bf"
+    },
+    {
+      "path": "tests/fixtures/contracts/declaration.keyset.json",
+      "sha256": "fa80c357f5b9b1266ca8b22f9a588d7644735ef948ff26744e0e1b4e0232eeb4"
+    },
+    {
+      "path": "tests/fixtures/contracts/final_result.keyset.json",
+      "sha256": "032da7375bb220a298858d89d214a8504946cfa783e815940474bd354deec479"
+    },
+    {
+      "path": "tests/fixtures/contracts/game_log.keyset.json",
+      "sha256": "d084554908c831f7924b8ce943470443f3ee82ef829e8f0b2b44dc0017c3639b"
+    }
+  ],
+  "freeze_status": "proposed_unfrozen",
+  "hash_algorithm": "sha256",
+  "policy": {
+    "exact_paths": [
+      ".gitattributes",
+      "scripts/check_shared_contracts.py",
+      "scripts/shared_contract_integrity.py"
+    ],
+    "excluded_paths": [
+      "docs/contracts/PARITY_MANIFEST.json"
+    ],
+    "glob_paths": [
+      "config/*.json"
+    ],
+    "recursive_roots": [
+      "docs/contracts",
+      "docs/schemas",
+      "tests/fixtures/contracts"
+    ]
+  }
+}

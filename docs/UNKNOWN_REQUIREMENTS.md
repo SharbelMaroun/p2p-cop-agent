@@ -1,27 +1,31 @@
-# Unknown Requirements
+# Unknown Requirements and Decisions
 
-Each item remains `UNKNOWN` and blocks only its affected area. Appendix F numerical values are
-directly confirmed in [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md); schemas and protocol
-details are separate and are not inferred from those values.
+These items block only the affected runtime/freeze decision. Confirmed values,
+filename patterns, shared/private split, report attachment, six README sections,
+annotated tag, and email addresses are not unknown.
 
-| ID | Unknown | Blocks | Evidence needed |
+| ID | Narrow unresolved question | Blocks | Resolution evidence |
 |---|---|---|---|
-| U-002 | Formal JSON validation rules: required/optional fields, complete types/enums, conditional constraints, and compatibility behavior | Configuration/reporting | Referenced `artifact_schemas.py`, validation fixtures, or formal JSON Schema; exemplar key sets are confirmed |
-| U-003 | Exact MCP tool names and message fields | Networking | Official protocol evidence or centralized verified simulator export |
-| U-004 | Exact Step-0 sequence and payload ordering | Handshake | Direct official section (mandatory content confirmed as `SR-009`) |
-| U-005 | Exact commit payload field-set and nonce reveal time | Cryptography | Direct official protocol text/templates |
-| U-008 | Exact model or provider | LLM integration | Team choice; no official mandate found (default template = 0 tokens) |
-| U-009 | Exact Gmail draft/send mode and reporting attachments | Reporting | Official templates or newer announcement; both addresses are confirmed |
-| U-010 | Whether independently duplicated stateless shared packages are permitted | Shared contracts | Official rule or lecturer clarification (see `C-007`) |
-| U-013 | Exact private TOML schema and mapping into the confirmed agreed-config artifact | Configuration | In-code schema/configuration evidence |
-| U-015 | Centralized lecturer-simulator reverse engineering | Simulator-dependent interpretation | Import a verified export from the planning repository when available |
-| U-016 | Team/group/member identifiers and 8-character team code | Identity/reporting | Verified team input |
-| U-017 | Newer Moodle instructions and lecturer announcements | Potentially all areas | Obtain dated official posts |
-| U-018 | Exact official Ruff course configuration | Quality tooling | Obtain current official configuration |
+| U-001 | Whether the four local generated JSON artifacts are authentic official course templates | Promotion beyond non-authoritative key-set observations | Original Moodle/lecturer download, message, archive, or authenticated checksum |
+| U-002 | Complete formal artifact required/optional, type/enum, conditional, and compatibility rules | Full artifact validation | Referenced official code schemas/fixtures or dated clarification |
+| U-003 | Accepted MCP tool names and signatures | Network contract freeze | ADR-001 plus Thief acceptance |
+| U-004 | Envelope, acknowledgement, sequencing, errors, and idempotency fields | Network contract freeze | ADR-002 plus interop tests |
+| U-005 | Commit canonical bytes, text encoding/delimiters, and nonce length | Crypto contract freeze | ADR-006 plus cross-language test vectors |
+| U-006 | Exact peer ports and tunnel provider | Private runtime config | Team choice; must remain private/provider-neutral |
+| U-007 | Artifact-version compatibility beyond observed 1.1 and shared config 1.2 | Compatibility policy | ADR-003 plus authoritative schema evidence |
+| U-009 | Gmail client/delivery implementation details beyond confirmed destination and JSON attachment | Reporting runtime | ADR-010 plus dated official guidance if needed |
+| U-010 | Whether generic stateless runtime code may be duplicated across repositories | Shared runtime architecture | Direct rule/lecturer clarification and accepted ADR |
+| U-016 | Team/group/member identifiers and eight-character team code | Declaration/reporting | Verified team input |
+| U-017 | Newer Moodle/lecturer instructions | Recency-sensitive submission choices | Obtain dated official post |
+| U-018 | Exact controlling Ruff course configuration if newer than the inspected guideline | Quality configuration | Current official course config |
+| U-019 | Thief acceptance and exact hashes for `0.1.0-proposed` | Contract freeze | Independent Thief review and matching parity runs |
+| U-020 | Permission/provenance for any substantial simulator-source reuse | Simulator reuse | ADR-008 review and, if necessary, written permission |
+| U-021 | Exact `agreed_between` identifier format and deterministic participant ordering | Match agreement and unknown-opponent interop | Lecturer clarification or authenticated formal schema |
+| U-022 | Exact match identity fields plus `config_sha256` scope, self-hash exclusion, and canonical bytes | P0 contract freeze and gameplay | Lecturer clarification plus independent test vectors |
+| U-023 | Unified agreed config versus split `game.json`/`rate_limits.json`, including timeout field placement | Match artifact lifecycle and parity scope | Lecturer clarification or authenticated formal schema |
+| U-024 | Role assignment or alternation across the fixed six sub-games | Series orchestration | Lecturer clarification; do not infer simulator schedule |
 
-Resolved and removed from this list: **U-001**, **U-006**, **U-007**, and **U-014** (direct
-Appendix F extraction); **U-011** (README section count → `SR-008`); **U-012** (submission tag
-requirement → `SR-007`). The address portion of **U-009** is also resolved.
-
-Simulator-dependent protocol details remain pending on verified exports from the central
-planning repository. This repository will not duplicate simulator reverse engineering.
+Resolved: Appendix F values/statuses; multiplicative scent equation; report
+attachment/no-free-text rule; nonce secrecy until final reveal; semantic shared
+JSON/private TOML boundary; book-defined artifact filename patterns; rule-25
+recommendation status; six README sections; tag requirement; both addresses.

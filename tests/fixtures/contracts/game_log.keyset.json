@@ -1,0 +1,97 @@
+{
+  "artifact_family": "game_log",
+  "source": {
+    "filename": "3-game-log.json",
+    "sha256": "00e783628585e85d9f7716faf337917090d5e4a5530d4bd10c239647002e71c2",
+    "evidence": "local simulator-generated artifact; NEEDS_MANUAL_REVIEW provenance"
+  },
+  "observed_schema_version": "1.1",
+  "key_sets": {
+    "$": [
+      "_schema",
+      "schema_version",
+      "game_id",
+      "game_uid",
+      "links",
+      "summary",
+      "records",
+      "mutual_agreement"
+    ],
+    "$.links": [
+      "_remark",
+      "declaration",
+      "config",
+      "log",
+      "result"
+    ],
+    "$.summary": [
+      "sub_game_number",
+      "group_id",
+      "role",
+      "opponent_group_id",
+      "result",
+      "winner_role",
+      "steps",
+      "timezone",
+      "started_at",
+      "ended_at",
+      "duration_seconds",
+      "tokens_total",
+      "audit"
+    ],
+    "$.summary.audit": [
+      "passed",
+      "verified_steps",
+      "failed_steps"
+    ],
+    "$.records[]": [
+      "payload",
+      "nonce",
+      "commit"
+    ],
+    "$.records[].payload[system_spec]": [
+      "step",
+      "type",
+      "spec",
+      "model",
+      "code_version",
+      "group_name",
+      "sub_game_number"
+    ],
+    "$.records[].payload[system_spec].spec": [
+      "os",
+      "cpu_type",
+      "cpu_cores",
+      "cpu_freq_mhz",
+      "ram_gb",
+      "gpu_type",
+      "gpu_cores_or_cuda",
+      "vram_gb"
+    ],
+    "$.records[].payload[move]": [
+      "step",
+      "state",
+      "position",
+      "move",
+      "intent",
+      "verdict",
+      "hint",
+      "prompt_discussion",
+      "model",
+      "tokens_step",
+      "tokens_total",
+      "response_seconds",
+      "random_move"
+    ],
+    "$.records[].payload[move].prompt_discussion": [
+      "llm_prompt",
+      "llm_reasoning",
+      "bluff_classification"
+    ],
+    "$.mutual_agreement": [
+      "opponent_group_id",
+      "sha256",
+      "confirmed"
+    ]
+  }
+}

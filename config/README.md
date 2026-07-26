@@ -1,12 +1,23 @@
 # Configuration Status
 
-There is currently **no approved runtime configuration** in this repository.
+`game.json` and `rate_limits.json` are a neutral **proposed, unfrozen** negotiated
+match fixture. The two-file split, field placement, root revision fields, JSON Schema
+shape, and extension policy are project proposals. They are not signed game artifacts
+and cannot authorize gameplay while `config_sha256` canonicalization is unresolved.
 
-All files under `config/drafts/` are unverified historical drafts preserved for audit purposes. No implementation may load, validate, copy, or treat them as active configuration.
+Stable public semantics and Appendix F status/ownership are specified separately in
+`docs/contracts/LEAGUE_CONTRACT.md`. The per-match model is documented in
+`docs/contracts/MATCH_CONFIGURATION.md`.
 
-Appendix F values are directly confirmed in `docs/PARAMETERS_BASELINE.md`, and the agreed-config
-example structure is recorded in `docs/ARTIFACT_TEMPLATE_BASELINE.md`. The private TOML schema,
-formal JSON validation constraints, shared/private mapping, and exact agreement mechanics remain
-`UNKNOWN`; they must be verified before runtime configuration is created.
+`game.toml.example` is Cop-private. A real `config/game.toml` is ignored and must
+never be shared, signed, or added to the parity manifest. Ports, local opponent URL
+storage, models, credentials, strategies, secrets, and nonces remain private.
 
-The former Thief-role drafts were moved outside the active configuration tree to `archive/pre-audit/opposite-role-config/thief/`.
+The candidate accepts only Appendix B example profile 1.2. Local generated artifacts
+use 1.1 and the simulator runtime uses 1.3; the code does not translate among them.
+
+Files under `config/drafts/` remain quarantined historical drafts and are never loaded. Former
+Thief-role drafts remain archived under `archive/pre-audit/opposite-role-config/thief/`.
+
+See `docs/contracts/SHARED_RULES.md`, ADR-003/004/006, and
+`scripts/check_shared_contracts.py`.

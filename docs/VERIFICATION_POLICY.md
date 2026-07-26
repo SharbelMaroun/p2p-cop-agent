@@ -2,31 +2,34 @@
 
 ## Admission rule
 
-A requirement becomes `CONFIRMED` only when its wording and scope can be checked directly in an authoritative source, with version plus an exact page, table, section, announcement, template path, or commit-pinned code location.
+A requirement is `CONFIRMED` only when its wording and scope are tied to an
+authoritative source version and an exact page/table/section/template path or
+commit-pinned symbol. A design choice unsupported by such wording must be marked
+`PROPOSED` and owned by an ADR.
 
-Numerical values require direct Appendix F evidence. Mandatory rules require direct Appendix E evidence. JSON fields and filenames require the official Moodle templates unless the book directly and unambiguously defines them. Professional packaging and README rules require the official Professional Software Submission Guidelines v3.0.
+- Appendix F confirms numeric values and `Fixed`/`Minimum`/`Negotiation` status.
+- Appendix E and the book body confirm mandatory/recommended behavior.
+- Book table 20 confirms artifact filename patterns. Four local simulator-generated
+  JSON files preserve observed key sets only; their official provenance is
+  `NEEDS_MANUAL_REVIEW` and they do not establish formal-schema constraints.
+- A simulator observation requires the exact pinned commit and remains a candidate
+  when the book does not mandate it.
 
-## Evidence records
+## Evidence record
 
-Each record must state:
+Each record states status, authority/version, exact locator, peer/scope,
+repository/test impact, and interpretation limit. Conflicts are recorded rather than
+silently normalized.
 
-- status (`CONFIRMED`, `CONFLICT`, or `UNKNOWN`);
-- authoritative source and version;
-- exact location;
-- applicable peer or shared concern;
-- repository and test impact;
-- conflicts or interpretation limits.
+## Change gates
 
-Secondary material may identify where to look, but cannot close an item. Examples and simulator defaults remain illustrative unless the official sources make them binding.
+1. Confirm the source-backed portion of the affected subsystem.
+2. Isolate unresolved evidence and design decisions in the unknown register/ADR.
+3. Add tests that assert only proven constraints.
+4. For shared files, generate deterministic hashes and obtain independent Thief
+   acceptance.
+5. Freeze only after cross-repository parity succeeds.
 
-## Change gate
-
-Before Phase 1:
-
-1. obtain readable official sources and templates;
-2. resolve ledger unknowns for the subsystem;
-3. record conflicts without silently choosing a side;
-4. agree any permitted shared contract independently in both repositories;
-5. implement only the confirmed scope.
-
-No active configuration loader or validator may be built against the current draft files.
+Unresolved runtime details block only their affected runtime behavior. They do not
+block source-backed documentation, fixtures, configuration models, or the
+behavior-free package scaffold.

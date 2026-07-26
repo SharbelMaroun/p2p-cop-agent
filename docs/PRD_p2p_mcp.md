@@ -1,29 +1,32 @@
 # PRD — Peer-to-Peer FastMCP
 
-Status: structural architecture `CONFIRMED`; exact runtime contract blocked by `UNKNOWN`.
+Status: architecture is confirmed; names, envelope, idempotency, and transport
+details are proposed only through ADR-001/002.
 
-## Confirmed structure (cited)
+## Confirmed behavior
 
-- Each peer is simultaneously a **FastMCP server and client** (`SR-005`; book Ch.2 §2.3).
-- Runtime is coordinated by a **single Orchestrator gateway**; subsystems (MCP connector,
-  decision module, log manager, deadline tracker, watchdog) never link directly — all traffic
-  passes through the gateway (`SR-009`; Appendix E rule 3).
-- Game state is driven by an explicit **state machine** that **rejects illegal transitions**
-  (`SR-009`; rules 4, 5). A disconnect mid-turn routes to a terminal technical-loss state
-  rather than deadlocking.
-- A **watchdog** and **deadline tracker** guard against freezes: past a deadline a request is a
-  failure (retry or technical loss); the watchdog persists state and shuts down cleanly on
-  silence (rules 6, 7).
-- The local server is exposed publicly through a **tunnel** (ngrok/Localtonet) (rule 10).
-- Every incoming move is verified before it is accepted; an unverified move is never trusted.
+- Each peer is both a FastMCP server and client.
+- A single Orchestrator gateway coordinates the local connector, decision service,
+  log manager, deadline tracker, and watchdog.
+- An explicit state machine rejects illegal transitions. Deadline/disconnect paths
+  cannot silently deadlock.
+- A watchdog monitors silence and terminal failure handling.
+- Each local server is exposed through a public tunnel. `ngrok` and `Localtonet` are
+  examples, not mandated providers.
+- Incoming moves are verified before acceptance.
 
-## Pending / UNKNOWN
+Sources: book Ch. 2/8; Appendix E rules 3–7/10; `SR-005`/`SR-009`/`SR-017`.
 
-- Exact MCP **tool names**, message fields, acknowledgement flow, and ordering — `U-003`
-  (needs official protocol evidence or the centralized simulator export).
-- Response timeout (30 s) and watchdog threshold (60 s) are directly confirmed in
-  [PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md). Exact ports, retry semantics, and schemas
-  remain `UNKNOWN`.
-- Concrete transport/serialization schema — pending official templates.
+## Contract boundary
 
-No FastMCP runtime, tool, or transport code is authorized until the above are `CONFIRMED`.
+The pinned simulator names `negotiate`, `receive_turn`, `submit_audit`, and
+`receive_control` are interoperability candidates, not book-mandated names.
+ADR-001 selects tool names; ADR-002 selects envelope/idempotency semantics. Official
+reporting-artifact templates do not define the MCP wire schema.
+
+Appendix F confirms 30-second response and 60-second watchdog negotiation defaults.
+Ports, retry semantics, error/ack fields, ordering, serialization, and duplicate
+handling remain unfrozen.
+
+Contract fixtures/models are allowed now; no FastMCP handler, client, tunnel, or
+transport runtime is implemented.

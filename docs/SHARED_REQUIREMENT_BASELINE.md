@@ -1,29 +1,30 @@
 # Shared Requirement Baseline
 
-This file contains only shared, directly confirmed structural and professional-software
-requirements. It intentionally contains no gameplay values or simulator-specific names, and is
-byte-identical in both repositories. Candidate numeric values live in
-[PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md) (directly confirmed Appendix F values).
+This is a source-backed baseline, not proof of cross-repository byte parity. The
+proposed contract is `0.1.0-proposed` and **UNFROZEN** until the Thief repository
+accepts the controlled files and matching hashes are demonstrated.
 
-| ID | Status | Requirement | Direct source location |
-|---|---|---|---|
-| SR-001 | CONFIRMED | The final project uses one Cop repository and one Thief repository. | Project book v3.0.0, Ch. 9 §9.4; Appendix C |
-| SR-002 | CONFIRMED | Each repository README links to the other team repository. | Project book v3.0.0, Ch. 9 §9.4; Appendix C checklist |
-| SR-003 | CONFIRMED | Both repositories are public or otherwise accessible to the lecturer. | Project book v3.0.0, Appendix C §1, PDF p. 133 / printed p. 117 |
-| SR-004 | CONFIRMED | Cop and Thief run in separate processes and configuration environments without shared live mutable state or access to private opponent truth. | Project book v3.0.0, Ch. 2 §2.4.2 |
-| SR-005 | CONFIRMED | Each peer acts as a FastMCP server and FastMCP client. | Project book v3.0.0, Ch. 2 §2.3, PDF pp. 25–26 / printed pp. 9–10 |
-| SR-006 | CONFIRMED | Each repository contains at minimum a root README, configuration directory, PRD documents, PLAN, TODO, and code. | Project book v3.0.0, Ch. 9 §9.4; Appendix E rule 50 |
-| SR-007 | CONFIRMED | The submission version is marked with an annotated Git tag. | Project book v3.0.0, Appendix E rule 41; Ch. version control (exact literal is the book example only) |
-| SR-008 | CONFIRMED | The README academic report has six mandatory sections; section 6 is the companion-repository link. | Project book v3.0.0, Ch. 9.4.2; Appendix E rule 42 |
-| SR-009 | CONFIRMED | Runtime uses a single Orchestrator gateway, an explicit state machine that rejects illegal transitions, and a watchdog/deadline monitor. | Project book v3.0.0, Ch. 2 / Ch. 8; Appendix E rules 3–7 |
-| SR-010 | CONFIRMED | The project ships a live GUI showing local information only and a mandatory replay + SHA-256 verification viewer. | Project book v3.0.0, Appendix E rules 8, 9, 20 |
-| PS-001 | CONFIRMED | Maintain the root README, core PRD/PLAN/TODO documents, and dedicated mechanism PRDs. | Professional Guidelines v3.0, pp. 7–9 |
-| PS-002 | CONFIRMED | Use `uv`, `pyproject.toml` as dependency source of truth, and commit `uv.lock`. | Professional Guidelines v3.0, pp. 19–20 |
-| PS-003 | CONFIRMED | Code and test files stay within 150 code lines excluding blanks/comments. | Professional Guidelines v3.0, p. 10 |
-| PS-004 | CONFIRMED | Follow TDD, test public and failure behavior, mock live services, and maintain at least 85% global coverage. | Professional Guidelines v3.0, pp. 15–16 |
-| PS-005 | CONFIRMED | Ruff passes with zero violations under the controlling course configuration. | Professional Guidelines v3.0, p. 17 |
-| PS-006 | CONFIRMED | Do not hard-code configurable values or commit secrets; maintain placeholders and ignores. | Professional Guidelines v3.0, pp. 17–18 |
-| PS-007 | CONFIRMED | External entry points delegate business logic through an SDK/service boundary. | Professional Guidelines v3.0, p. 11 |
-| PS-008 | CONFIRMED | External APIs use a centralized gatekeeper with limiting, FIFO queueing, backpressure, retries, and monitoring. | Professional Guidelines v3.0, pp. 13–14 |
-| PS-009 | CONFIRMED | Maintain `docs/PROMPT_LOG.md`. | Professional Guidelines v3.0, p. 19 |
-| PS-010 | CONFIRMED | Code and configuration carry explicit version tracking starting at 1.00, with runtime version validation. | Professional Guidelines v3.0, version-control section |
+| ID | Confirmed shared requirement | Direct source |
+|---|---|---|
+| SR-001–003 | Separate Cop/Thief repositories, reciprocal README links, and lecturer access | Book Ch. 9 §9.4; Appendix C |
+| SR-004 | Separate processes/configuration environments; no shared live state or opponent private truth | Book Ch. 2 §2.4.2 |
+| SR-005 | Each peer is both a FastMCP server and client | Book Ch. 2 §2.3 |
+| SR-006–008 | Required repository content, annotated submission tag, and six README report sections | Book Ch. 9; Appendix C; Appendix E rules 41/42/50 |
+| SR-009 | Single Orchestrator gateway, explicit illegal-transition rejection, deadlines, and watchdog | Book Ch. 2/8; Appendix E rules 3–7 |
+| SR-010 | Live local-truth GUI and replay/SHA-256 verification viewer | Book Ch. 7; Appendix E rules 8/9/20 |
+| SR-011 | Binding values/statuses are those directly recorded in `PARAMETERS_BASELINE.md` | Appendix F tables 13–19 |
+| SR-012 | Canonical general and automated-report addresses are distinct | Book PDF p. 157, table 20 |
+| SR-013 | Four artifact families and book-defined filename patterns are known; local generated artifacts expose non-authoritative 1.1 key-set observations | Book table 20; local files classified `NEEDS_MANUAL_REVIEW` |
+| SR-014 | Moves are N/S/E/W/STAY only; barriers are disclosed; current-cell barrier and trapped-Thief conditions capture | Appendix E rules 13–16/46/47; book Ch. 3 |
+| SR-015 | SHA-256 commit-reveal is mandatory; nonce stays secret until final reveal; mismatch is a technical loss worth zero | Book Ch. 5; Appendix E rules 17–19 |
+| SR-016 | Played-game shared JSON is byte-identical and locked; private per-peer TOML remains local | Appendix B; Appendix E rules 11/12 |
+| SR-017 | Each local server is exposed through a public tunnel; no provider is mandated here | Appendix E rule 10 |
+| SR-018 | Final report is a JSON attachment with no free-text final-report body | Book Ch. 9; Appendix E rules 32–34 |
+| SR-019 | Scent update is multiplicative, not the simulator’s subtractive variant | Book Ch. 4, PDF pp. 43/47 |
+| AE-025 | Algorithmic movement is the safe default; rule 25 is a recommendation without a mandatory sanction | Appendix E rule 25, PDF p. 146 |
+| PS-001–010 | Mandatory docs; `uv`; line/TDD/coverage/Ruff/secrets/SDK/Gatekeeper/prompt-log/version gates | Professional Software Submission Guidelines v3.0 |
+
+Exact MCP names, envelope fields, crypto serialization/nonce length, and other
+non-obvious design choices require the corresponding ADR. Confirmed numeric values
+are not “candidates”; their mapping into the proposed shared contract remains subject
+to parity and acceptance.

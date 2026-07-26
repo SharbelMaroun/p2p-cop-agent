@@ -33,7 +33,7 @@
 - [ ] **T016** (P0) Create Thief GitHub repo *(role-specific)*
 - [ ] **T017** (P0) `git init` + initial commit in each
 - [ ] **T018** (P0) Add remotes; push `main`
-- [ ] **T019** (P0) Share both repos with `rimesegal@gmail.com` (or make public)
+- [ ] **T019** (P0) Share both repos with `rmisegal@gmail.com` (or make public)
 - [ ] **T020** (P0) Cross-link: Cop README → Thief repo and vice-versa
 - [ ] **T021** (P0) Add `LICENSE` file to each repo
 - [ ] **T022** (P0) Add `.gitignore` (exclude `.env`, `token.json`, `credentials.json`, `*.key`, `*.pem`, `logs/`, `__pycache__/`)

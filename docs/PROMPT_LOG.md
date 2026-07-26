@@ -1,6 +1,8 @@
 > **KEEP WITH WARNING.**
 > This document records development provenance.
 > Prompts and AI outputs are not authoritative requirement evidence and cannot independently change a requirement to `CONFIRMED`.
+> Historical output statements are time-scoped. P-011 records corrections where later
+> direct evidence disproved parity/candidate/schema claims.
 
 # PROMPTS — Prompt Engineering Log ("Prompt Book")
 
@@ -82,7 +84,7 @@
 - **Date:** 2026-07-24 · **Tool:** Claude (agentic CLI)
 - **Goal:** confirm the `docs/` folder satisfies the guidelines' mandatory-documentation list, and stand up the two-agent (Repos + Supervisor) workflow requested by the team.
 - **Prompt (essence):** "Check the docs folder and all its md files against `software_submission_guidelines-V3_Summary.md` so the lecturer will not deduct points; verify the TODO is not the 600+-task version; add a Report section to the README noting the supervisor + repos agents."
-- **Output:** `docs/DOCS_COMPLETENESS.md` — a §2-by-§2 matrix showing every mandatory document is present (README, PRD, PLAN, TODO, five mechanism PRDs, PROMPT_LOG, companion cross-link) with per-file content status. Confirmed the active `docs/TODO.md` is a 16-task verified-phase stub while the full 635-task plan stays under `archive/pre-audit/documentation/TODO.md`. Added a `## Report` section to `README.md` (development work log + Supervisor/Repos two-agent note).
+- **Output:** `docs/DOCS_COMPLETENESS.md` — a §2-by-§2 matrix showing every mandatory document is present (README, PRD, PLAN, TODO, five mechanism PRDs, PROMPT_LOG, companion cross-link) with per-file content status. At that commit the active `docs/TODO.md` was described as a 16-task verified-phase stub while the full 635-task plan stayed under `archive/pre-audit/documentation/TODO.md`; the active count later changed and P-011 supersedes the count claim. Added a `## Report` section to `README.md` (development work log + Supervisor/Repos two-agent note).
 - **Refinement:** kept requirement-dependent stubs unchanged rather than padding them — a stub is a deliberate verified-phase state, and inventing content would break the source hierarchy.
 - **Lesson:** "completeness" for a submission means *every mandatory file exists*; content depth is a separate, later gate driven by `CONFIRMED` evidence. Prove presence explicitly in a checked-in matrix so the grader sees nothing is missing.
 
@@ -92,9 +94,52 @@
 - **Date:** 2026-07-25 · **Tool:** Claude (agentic CLI, Repos agent)
 - **Goal:** stage confirmed structure and candidate parameters from the three sources, resolve open conflicts, and close the mandatory-requirement gaps found by a full guidelines/book scan — without inventing any value.
 - **Prompt (essence):** "Fix everything needed" after a two-agent scan of `software_submission_guidelines-V3_Summary.md` and `police_thief_p2p_Summary.md` surfaced ~12 mandatory items missing from the active docs.
-- **Output (six commits):** (1) `PARAMETERS_BASELINE.md` — Appendix F candidates, flagged pending; (2) resolved `C-001`/`C-002`, pruned `U-011`/`U-012`, added `SR-007`–`SR-010` + `PS-010`, converged shared registers byte-identical; (3) enriched the five mechanism PRDs with cited confirmed structure and added `PRD_gui.md` + `PRD_replay.md` (the missing mandatory GUI/replay deliverables); (4) `SUBMISSION_CHECKLIST.md`, Tier-2 deferred deliverables into the TODO, methodology-doc updates, fixed the false `.env-example` "neutral" claim; (5) neutralized the Thief `.env-example`; (6) this log.
-- **Refinement:** every numeric value routed to `PARAMETERS_BASELINE.md` with a "pending official confirmation" flag; only structural/rule shapes carrying an Appendix E rule citation were promoted to `CONFIRMED` (Rule A); externals (MCP tool names, JSON schemas, Ruff, team identity) stayed `UNKNOWN` (Rule C).
+- **Output (six commits):** (1) `PARAMETERS_BASELINE.md` — Appendix F candidates, flagged pending at that time; (2) resolved `C-001`/`C-002`, pruned `U-011`/`U-012`, added `SR-007`–`SR-010` + `PS-010`, and claimed the shared registers had converged byte-identically; P-011 later disproved that parity claim with Git-blob hashes; (3) enriched the five mechanism PRDs with cited confirmed structure and added `PRD_gui.md` + `PRD_replay.md` (the missing mandatory GUI/replay deliverables); (4) `SUBMISSION_CHECKLIST.md`, Tier-2 deferred deliverables into the TODO, methodology-doc updates, fixed the false `.env-example` "neutral" claim; (5) neutralized the Thief `.env-example`; (6) this log.
+- **Refinement:** every numeric value was initially routed to `PARAMETERS_BASELINE.md` with a "pending official confirmation" flag; the later direct Appendix-F pass closed that status. Only structural/rule shapes carrying an Appendix E rule citation were promoted to `CONFIRMED` (Rule A); externals (MCP tool names, formal JSON schemas, Ruff, team identity) stayed `UNKNOWN` (Rule C).
 - **Lesson:** the 635-task backlog archived earlier hid mandatory deliverables (architecture, GUI, replay, version tracking) from the active set; re-audit the *active* docs against the primary rule list, not just the file inventory.
+
+---
+
+## P-011 — M0–M1 contract/scaffold correction
+
+- **Date:** 2026-07-25 · **Tool:** Codex multi-agent implementation
+- **Goal:** correct active documentation, create a source-backed proposed shared
+  contract, and add a behavior-free independently installable Cop scaffold.
+- **Prompt (essence):** verify primary sources and current Git state; do not invent
+  requirements; keep the contract unfrozen until Thief acceptance and hash parity.
+- **Output:** corrected the false cross-repository parity claims; promoted directly
+  verified Appendix-F values from “candidate” status; separated known 1.1 artifact
+  key sets from unknown formal constraints and Appendix-B shared config 1.2; added
+  ADR-001–010; replaced blanket blocking with explicit gates.
+- **Correction to P-009/P-010:** the active TODO had grown beyond the earlier
+  “16-task” description, the active mechanism inventory is seven PRDs, and Git-blob
+  hashes proved that the named shared documents were not byte-identical. Exact
+  baseline evidence is in `docs/PARITY_REPORT.md`.
+- **Simulator boundary:** pinned behavior is a candidate/reference only; the
+  educational-use EULA prevents treating it as an MIT submission skeleton.
+- **Refinement:** contract `0.1.0-proposed` remains **UNFROZEN**; no MCP,
+  envelope/idempotency, or commit-canonicalization runtime choice was silently
+  frozen.
+- **Lesson:** distinguish confirmed rule/value, observed template key, simulator
+  candidate, ADR proposal, and byte-parity evidence as five different claim types.
+
+---
+
+## P-012 — Coordinator-directed M1 contract revision
+
+- **Date:** 2026-07-26 · **Tool:** Codex implementation agent
+- **Goal:** correct the Cop-owned shared-contract candidate from exact base
+  `84339c210c8e3293d972bccec5912abf519d502c` without merging PR #6 or beginning M2.
+- **Prompt (essence):** apply the controlling cross-repository audit; correct source
+  hierarchy/provenance; separate league, match, and private configuration; validate a
+  neutral participant agreement; distinguish local integrity from optional
+  cross-root comparison; add rejection vectors, CI, and an M0–M9 Cop roadmap.
+- **Output:** contract remains `0.1.0-proposed` and unfrozen; local artifacts are
+  `NEEDS_MANUAL_REVIEW`; `config_sha256` remains `null` behind a P0 canonicalization
+  blocker; 17 controlled files and a separate manifest self-hash are recorded in the
+  candidate handoff.
+- **Lesson:** local manifest success is not cross-repository parity, and structural
+  hash-shape validation is not semantic canonical-hash verification.
 
 ---
 
