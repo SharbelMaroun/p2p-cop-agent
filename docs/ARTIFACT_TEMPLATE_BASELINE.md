@@ -9,6 +9,11 @@ No original Moodle download, lecturer message, signed archive, or authenticated
 checksum was found. Their byte content is known; their provenance as official course
 templates is not.
 
+On 2026-07-27 the project owner identified these files as lecturer-provided examples
+and supplied a transcription of current lecturer direction. That is recorded in
+`LECTURER_DIRECTION_2026-07-27.md`, but it is not the original authenticated
+handoff required to remove this provenance status.
+
 The files therefore establish only observed artifact families, exemplar key sets,
 identifiers, and schema value `1.1`. They are not formal JSON Schema documents and
 cannot establish required/optional status, exhaustive types/enums, conditional
@@ -62,6 +67,13 @@ Appendix B’s shared `config/game.json` example uses `schema_version: "1.2"`
 (book PDF p. 129), while all four local artifacts use `1.1`; the pinned simulator
 also uses `1.3` in runtime configuration. These versions are separate observations.
 No compatibility or normalization rule is inferred among them.
+
+The supplied config artifact's `config_sha256`
+`f6e2262d58b09ce4a514d90727e841502b7c21f3a906c64455bad00fe3c44e64`
+was reproduced only when hashing the simulator source shared terms with source
+profile `1.3`. The emitted artifact overrides its displayed profile to `1.1`.
+This is direct evidence that source-config and artifact profiles must not be treated
+as the same compatibility domain.
 
 ## Authority boundaries
 

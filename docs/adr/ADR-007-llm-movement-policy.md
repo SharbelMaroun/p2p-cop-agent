@@ -1,6 +1,6 @@
 # ADR-007 — LLM Movement Policy
 
-Status: **PROPOSED — UNACCEPTED**
+Status: **ACCEPTED PROJECT BASELINE; EXTERNAL RULE STATUS PRESERVED**
 
 ## Context
 
@@ -8,14 +8,17 @@ Book Ch. 6 uses algorithmic movement and an LLM verbal layer. Appendix E rule 25
 recommends not delegating movement to an LLM and warns about illegal spatial output,
 but explicitly provides no mandatory sanction.
 
-## Proposed decision
+## Decision
 
 Use deterministic Python movement as the default Cop policy. An LLM may contribute
 only to the verbal/behavioral layer in the baseline. This is a safety,
 reproducibility, latency, and cost choice—not a falsely mandatory rule.
 
-Any later exception requires an explicit accepted revision, mutual compatibility,
-and a deterministic local legality filter; the party remains responsible for errors.
+The owner-supplied lecturer direction dated 2026-07-27 also identifies the graded
+mission as replacing the simple strategy with smarter pure-Python logic. Any later
+LLM-movement exception requires an explicit shared-contract revision, mutual prior
+agreement, and a deterministic local legality filter; the party remains responsible
+for errors.
 
 ## Acceptance
 

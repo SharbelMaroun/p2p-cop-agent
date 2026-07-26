@@ -8,8 +8,8 @@ Thief repository.
 - [ ] Separate Cop and Thief repositories; reciprocal README links.
 - [ ] Both repositories accessible to the lecturer/general address
       `rmisegal@gmail.com`.
-- [ ] Annotated Git tag marks the final submission commit; confirm the literal name
-      against current Moodle guidance.
+- [ ] Annotated Git tag `v1.0-submission` marks the final submission commit; perform
+      a final current-Moodle check before creating it.
 - [ ] Each repository contains README, config, PRDs, PLAN, TODO, code,
       `pyproject.toml`, and committed `uv.lock`.
 - [x] Cop clean `uv sync --frozen`, Ruff, tests/coverage, length, secret, and
@@ -32,6 +32,7 @@ Thief repository.
       free-text final-report body.
 - [ ] Destination is `rmisegal+uoh26finalgame@gmail.com`.
 - [ ] Both sides agree the result; missing/conflicting reports yield zero for both.
+- [ ] Each side's attached result is byte-identical to the mutually agreed outcome.
 - [ ] Required report content includes four repository links, each game’s commit
       hash, and total token use, without inventing unsupported formal key rules.
 
@@ -47,6 +48,8 @@ Thief repository.
 - [ ] Complete the supplied Moodle form without moving fields; submit PDF as directed.
 - [ ] Every team member submits separately.
 - [ ] Provide the eight-character team code.
+- [ ] Include an honest self-assigned grade for engineering/code quality, not league
+      wins.
 - [ ] No secrets committed; `.gitignore` covers `.env`, credentials, tokens, and keys.
 - [ ] No substantial lecturer-simulator source copied without ADR-008
       provenance/license resolution or permission.

@@ -16,6 +16,8 @@ baseline; see [PARITY_REPORT.md](PARITY_REPORT.md).
 | C-009 | CONFIRMED | Simulator subtractive scent versus book multiplicative scent | Book Ch. 4 controls; use `max(0,(1-ρ)τ+Δτ)`. ADR-005 records the decision. |
 | C-010 | UNKNOWN | Whether simulator source may be copied into this public MIT repository | Educational-use EULA/provenance review or lecturer permission is required. ADR-008 defaults to no substantial copying. |
 | C-011 | UNKNOWN | Four local JSON files were called official templates but are byte-identical to generated simulator logs | Keep them as `NEEDS_MANUAL_REVIEW` observations until the original authenticated course handoff is supplied. |
-| C-012 | UNKNOWN | Appendix B names `game.json` and `rate_limits.json` but embeds Gatekeeper values; local generated config embeds Gatekeeper and timeout values | Treat the current two-file split and field placement as `PROPOSED`; obtain lecturer/schema evidence before freeze. |
+| C-012 | RESOLVED / SCOPE OPEN | Appendix B names `game.json` and `rate_limits.json` but embeds Gatekeeper values in the signed game file | `game.json` is the authoritative shared constitution and contains timeouts/Gatekeeper terms. `rate_limits.json` is an operational mirror whose values must match; whether its bytes belong in cross-repository parity remains U-023. |
+| C-013 | RESOLVED | Supplied agreed-config artifact reports schema `1.1`, while its recorded hash was produced from source shared terms with schema `1.3` | Source-config and emitted-artifact schema domains are distinct. This repository accepts source config `1.2`; it does not translate artifact 1.1 or simulator 1.3. |
+| C-014 | RESOLVED | “Four JSON files” can be read as four physical files despite per-sub-game config/log names | It means four artifact families. A six-game series emits one declaration, six configs, six logs, and one aggregate result per reporting peer. |
 
 No unresolved row is closed by selecting a simulator/example default.

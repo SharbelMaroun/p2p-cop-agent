@@ -20,12 +20,14 @@ annotated tag, and email addresses are not unknown.
 | U-018 | Exact controlling Ruff course configuration if newer than the inspected guideline | Quality configuration | Current official course config |
 | U-019 | Thief acceptance and exact hashes for `0.1.0-proposed` | Contract freeze | Independent Thief review and matching parity runs |
 | U-020 | Permission/provenance for any substantial simulator-source reuse | Simulator reuse | ADR-008 review and, if necessary, written permission |
-| U-021 | Exact `agreed_between` identifier format and deterministic participant ordering | Match agreement and unknown-opponent interop | Lecturer clarification or authenticated formal schema |
-| U-022 | Exact match identity fields plus `config_sha256` scope, self-hash exclusion, and canonical bytes | P0 contract freeze and gameplay | Lecturer clarification plus independent test vectors |
-| U-023 | Unified agreed config versus split `game.json`/`rate_limits.json`, including timeout field placement | Match artifact lifecycle and parity scope | Lecturer clarification or authenticated formal schema |
-| U-024 | Role assignment or alternation across the fixed six sub-games | Series orchestration | Lecturer clarification; do not infer simulator schedule |
+| U-021 | Allowed `group_id` character/length rules beyond non-empty JSON text | Formal identifier validation | Authenticated schema or lecturer clarification |
+| U-022 | Exact `game_id` character rules, UUID version/derivation, and resolved-versus-pattern `links` values | Full artifact identity validation | Authenticated schema or lecturer clarification |
+| U-023 | Whether the separate `rate_limits.json` operational mirror must be byte-identical across repositories, beyond its values matching the signed `game.json` Gatekeeper section | Parity scope, not shared game semantics | Coordinator/Thief acceptance or lecturer clarification |
+| U-024 | Complete artifact required/optional/type/conditional rules and compatibility beyond the common identity/lifecycle requirements | Full artifact validation | Authenticated templates/schemas or dated clarification |
 
 Resolved: Appendix F values/statuses; multiplicative scent equation; report
-attachment/no-free-text rule; nonce secrecy until final reveal; semantic shared
-JSON/private TOML boundary; book-defined artifact filename patterns; rule-25
-recommendation status; six README sections; tag requirement; both addresses.
+attachment/no-free-text rule; nonce secrecy until final reveal; unified authoritative
+`game.json`/private TOML boundary; two-ID `agreed_between` representation; config
+hash scope and serialization; role alternation; common artifact identities and
+lifecycle; book-defined artifact filename patterns; rule-25 recommendation status;
+six README sections; tag requirement; both addresses.

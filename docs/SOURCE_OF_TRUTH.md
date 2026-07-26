@@ -36,6 +36,11 @@ may select among permitted designs but cannot weaken a confirmed rule or minimum
   [ARTIFACT_TEMPLATE_BASELINE.md](ARTIFACT_TEMPLATE_BASELINE.md). They are
   byte-identical to generated simulator output, so their claimed official provenance
   is `NEEDS_MANUAL_REVIEW`.
+- Project-owner transcription dated 2026-07-27:
+  [LECTURER_DIRECTION_2026-07-27.md](LECTURER_DIRECTION_2026-07-27.md). It records
+  current lecturer direction as supplied by the owner and distinguishes direct
+  book/file corroboration from claims still needing an original Moodle/lecturer
+  source.
 
 The observed key sets are useful non-authoritative evidence. They do not establish
 formal required/optional, type/enum, conditional, or compatibility rules. Only an

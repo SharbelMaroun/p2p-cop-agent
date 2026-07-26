@@ -14,6 +14,9 @@ commit-pinned symbol. A design choice unsupported by such wording must be marked
   `NEEDS_MANUAL_REVIEW` and they do not establish formal-schema constraints.
 - A simulator observation requires the exact pinned commit and remains a candidate
   when the book does not mandate it.
+- A dated project-owner transcription may direct this implementation when clearly
+  labeled. It does not authenticate an original file or fill formal schema details
+  that the transcription does not state.
 
 ## Evidence record
 
