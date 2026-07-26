@@ -18,6 +18,7 @@ class CopSDK:
 
     game_config: Mapping[str, object]
     rate_limits_config: Mapping[str, object]
+    config_sha256: str
     role: str = field(default="cop", init=False)
     version: str = field(default=__version__, init=False)
     contract_version: str | None = None
@@ -29,15 +30,17 @@ class CopSDK:
         return cls(
             game_config=contract.game,
             rate_limits_config=contract.rate_limits,
+            config_sha256=contract.config_sha256,
             contract_version=contract.version,
         )
 
     def validate_match_offer(self, root: str | Path) -> None:
-        """Validate and compare a proposed match pair without claiming hash verification."""
+        """Validate and compare a proposed shared match bundle and its hash."""
         offered = load_shared_contract(root)
         expected = SharedContract(
             version=self.contract_version or "",
             game=dict(self.game_config),
             rate_limits=dict(self.rate_limits_config),
+            config_sha256=self.config_sha256,
         )
         require_same_match_configuration(expected, offered)

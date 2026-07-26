@@ -7,11 +7,15 @@
     },
     {
       "path": "config/game.json",
-      "sha256": "a06fc6d316240f0f089a3d33966527082c5f6c229a1232b5d8e14987269472af"
+      "sha256": "70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06"
     },
     {
       "path": "config/rate_limits.json",
-      "sha256": "f2d173e9bf6c31ea30a14d6b4b81801c46fa155eaefa04548eeedf26107c7814"
+      "sha256": "0445c96a1ea23ce9c79dcb1ae3151e5d02f5aa78f765bf5bc995d7ddbfbda3e2"
+    },
+    {
+      "path": "docs/contracts/ARTIFACT_CONTRACT.md",
+      "sha256": "12db7ed7a7aee26a9ebd2cc3e58abfff6a909fc330fad3eaafc8ced5b716f1e3"
     },
     {
       "path": "docs/contracts/CONTRACT_VERSION",
@@ -19,31 +23,35 @@
     },
     {
       "path": "docs/contracts/LEAGUE_CONTRACT.md",
-      "sha256": "d808d743954f3fd09413860fe21d378728bb4b58171af0cf4c32fcede76ca1db"
+      "sha256": "fac906032ac8a7138b177d2512940d84692ebec23f5377b8c0ccc0bb53b9af78"
     },
     {
       "path": "docs/contracts/MATCH_CONFIGURATION.md",
-      "sha256": "b3df0b84a708c8ca44d6c608ba7dd7f49b35c68368304a1ced3f320677cc7c04"
+      "sha256": "a09ec11c1f0ce30593777fd93870c7781fc7d305689f4dacc2a988e23e0ed86d"
     },
     {
       "path": "docs/contracts/PRIVATE_CONFIGURATION.md",
-      "sha256": "32f8beb459c91942d44720d4b2151a05d26aebcfdef5aff62e90834113fed45b"
+      "sha256": "8d11cf5ed43c760c8d4adbdddb9066fb9b987911c8bc6a08f25624f17662dbf6"
     },
     {
       "path": "docs/contracts/SHARED_RULES.md",
-      "sha256": "4d73fa8a7a9e31cbf4243e9ea0b7858769db17854516a99be6c5fdf920f6d7d5"
+      "sha256": "7860f208d582dd1a9a639c58f93dd43ca7b4f2e0548c22adac13b114e911813a"
     },
     {
       "path": "docs/schemas/artifact-keyset-fixture.schema.json",
       "sha256": "8e56b199fb6339a1d085422face33fac8313efd8b7d0d142774607b2febd7a3f"
     },
     {
+      "path": "docs/schemas/config-hash-vector.schema.json",
+      "sha256": "6477d028ac010cd5ae288f6d469ba8ca89055fe7681f8937fbcedc52f3878d86"
+    },
+    {
       "path": "docs/schemas/game-config.schema.json",
-      "sha256": "b4da34a2ffeb616bb36a3a3f18170b033818cb88632a5d154e44bd9f893b33ff"
+      "sha256": "fda84cf295788fda09e93e0e56d8876ae549ff7f1e99391d03552e86f04860d9"
     },
     {
       "path": "docs/schemas/rate-limits.schema.json",
-      "sha256": "b4b837751e1a5ec75620cc877b511790c543d251c2ffd01fd0f0d81112418591"
+      "sha256": "fb44c9c94dfaeedd146fbca47458503ee9bc4939bf8cda19512e719dece50078"
     },
     {
       "path": "scripts/check_shared_contracts.py",
@@ -64,6 +72,10 @@
     {
       "path": "tests/fixtures/contracts/final_result.keyset.json",
       "sha256": "032da7375bb220a298858d89d214a8504946cfa783e815940474bd354deec479"
+    },
+    {
+      "path": "tests/fixtures/contracts/game-config-sha256.vector.json",
+      "sha256": "116f790324b0bdfd28cc38926c2667ae6c9feabaea7b4e2e74662e5fc8dbea54"
     },
     {
       "path": "tests/fixtures/contracts/game_log.keyset.json",

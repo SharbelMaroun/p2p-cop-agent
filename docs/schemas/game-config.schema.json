@@ -2,24 +2,21 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "x-contract-version": "0.1.0-proposed",
   "x-source-status": "PROPOSED",
-  "title": "Proposed negotiated match game configuration",
-  "description": "Project schema for a neutral 1.2 match candidate, not an official artifact schema. Closed known fields plus extensions are PROPOSED.",
+  "title": "Proposed authoritative shared game configuration",
+  "description": "Project schema for the byte-identical source config/game.json, not the emitted agreed-config artifact schema.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "version",
     "schema_version",
     "agreed_between",
-    "game_id",
-    "sub_game_number",
-    "config_name",
-    "config_sha256",
     "board_and_agents",
     "world",
     "movement_and_barriers",
     "scoring",
     "pheromones",
     "network_and_league",
+    "rate_limiter_gatekeeper",
     "extensions"
   ],
   "properties": {
@@ -33,7 +30,7 @@
     },
     "agreed_between": {
       "type": "array",
-      "description": "PROPOSED ordered representation of Appendix B participant agreement.",
+      "description": "The two agreed group IDs. Array order is byte-significant and preserved; it is never silently sorted.",
       "prefixItems": [
         {
           "$ref": "#/$defs/participant"
@@ -45,34 +42,6 @@
       "minItems": 2,
       "maxItems": 2,
       "uniqueItems": true
-    },
-    "game_id": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Identity used by the book-defined artifact filename pattern."
-    },
-    "sub_game_number": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 6,
-      "description": "PROPOSED one-based number within the fixed six-sub-game series."
-    },
-    "config_name": {
-      "type": "string",
-      "pattern": "^config_.+_g[0-9]{2}\\.json$",
-      "description": "Book table 20 filename shape; exact identity character rules are unresolved."
-    },
-    "config_sha256": {
-      "description": "P0 BLOCKER: null until canonical scope is defined; a string check validates shape only.",
-      "oneOf": [
-        {
-          "type": "null"
-        },
-        {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-        }
-      ]
     },
     "board_and_agents": {
       "type": "object",
@@ -242,6 +211,8 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "response_timeout_sec",
+        "watchdog_timeout_sec",
         "num_games",
         "diversity_reward",
         "min_games_to_pass",
@@ -249,6 +220,18 @@
         "token_budget_per_series"
       ],
       "properties": {
+        "response_timeout_sec": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        },
+        "watchdog_timeout_sec": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        },
         "num_games": {
           "const": 6,
           "x-appendix-f-status": "fixed",
@@ -273,6 +256,49 @@
           "type": "integer",
           "minimum": 0,
           "x-appendix-f-status": "negotiated",
+          "x-value-owner": "mutual_agreement"
+        }
+      }
+    },
+    "rate_limiter_gatekeeper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requests_per_minute",
+        "concurrent_requests",
+        "retry_backoff_sec",
+        "max_retries",
+        "queue_depth"
+      ],
+      "properties": {
+        "requests_per_minute": {
+          "type": "integer",
+          "minimum": 30,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
+        },
+        "concurrent_requests": {
+          "type": "integer",
+          "minimum": 2,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
+        },
+        "retry_backoff_sec": {
+          "type": "number",
+          "minimum": 5,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 3,
+          "x-appendix-f-status": "minimum",
+          "x-value-owner": "mutual_agreement"
+        },
+        "queue_depth": {
+          "type": "integer",
+          "minimum": 100,
+          "x-appendix-f-status": "minimum",
           "x-value-owner": "mutual_agreement"
         }
       }

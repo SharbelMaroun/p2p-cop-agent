@@ -22,8 +22,8 @@ The book's Appendix B example uses profile 1.2. Local generated artifacts use 1.
 and the simulator runtime uses 1.3. No compatibility or normalization among these
 observations is frozen. The local artifacts remain `NEEDS_MANUAL_REVIEW`.
 
-The exact two-file match split, JSON Schema identifiers, root revision fields, and
-closed-object policy are project proposals, not source-backed formal requirements.
+JSON Schema identifiers, root revision fields, the operational-mirror parity scope,
+and closed-object policy remain project proposals rather than formal artifact rules.
 See `LEAGUE_CONTRACT.md`, `MATCH_CONFIGURATION.md`, and
 `PRIVATE_CONFIGURATION.md` for the three-layer boundary.
 
@@ -57,7 +57,7 @@ are a neutral proposed match instance.
 |---|---|---|---|
 | `game.version` | `"1.00"` | **PROPOSED** configuration revision | Software Submission Guidelines v3.0 section 8.1; exact root placement unconfirmed |
 | `game.schema_version` | `"1.2"` | Profile marker | Appendix B shared-config example, PDF p.129; ADR-003 |
-| `game.agreed_between` | two public participant IDs | **PROPOSED** representation of mandatory mutual agreement | Appendix B example and shared-agreement text; exact format/order unresolved |
+| `game.agreed_between` | two ordered public group IDs | Mandatory representation; agreed order preserved | Appendix B example; owner-supplied lecturer direction dated 2026-07-27 |
 | `game.board_and_agents.grid_size` | `7` | Minimum | Appendix F table 13, PDF p.152 |
 | `game.board_and_agents.num_agents` | `2` | Fixed | Appendix F table 13, PDF p.152 |
 | `game.board_and_agents.axis_origin_corner` | `"top-left"` | Negotiation default | Appendix F table 13, PDF p.152 |
@@ -77,25 +77,25 @@ are a neutral proposed match instance.
 | `game.scoring.survival_cop` / `survival_thief` | `5` / `10` | Fixed | Appendix F table 17, PDF p.154 |
 | `game.scoring.tie_score` | `2` each | Fixed | Appendix F table 17, PDF p.154 |
 | `game.scoring.technical_loss` | `0` | Mandatory outcome | Appendix E rules 19 and 48 |
+| `game.network_and_league.response_timeout_sec` | `30` | Negotiation default | Appendix F table 19, PDF p.155 |
+| `game.network_and_league.watchdog_timeout_sec` | `60` | Negotiation default | Appendix F table 19, PDF p.155 |
 | `game.network_and_league.num_games` | `6` | Fixed | Appendix F table 18, PDF p.154 |
 | `game.network_and_league.diversity_reward` | `10` | Fixed | Appendix F table 18, PDF p.154 |
 | `game.network_and_league.min_games_to_pass` | `2` | Fixed | Appendix F table 18, PDF p.154 |
 | `game.network_and_league.max_games_per_team` | `10` | Fixed | Appendix F table 18, PDF p.154 |
 | `game.network_and_league.token_budget_per_series` | `200000` | Negotiation default | Appendix F table 18, PDF p.154 |
-| `rate_limits.version` | `"1.00"` | **PROPOSED** configuration revision | Software Submission Guidelines v3.0 section 8.1; exact root placement unconfirmed |
-| `rate_limits.schema_version` | `"1.2"` | **PROPOSED** split-profile marker | Appendix B example plus unaccepted ADR-003/ADR-004 split |
-| `rate_limits.rate_limiter_gatekeeper.requests_per_minute` | `30` | Minimum | Appendix F table 19, PDF p.155 |
-| `rate_limits.rate_limiter_gatekeeper.concurrent_requests` | `2` | Minimum | Appendix F table 19, PDF p.155 |
-| `rate_limits.rate_limiter_gatekeeper.retry_backoff_sec` | `5` | Minimum | Appendix F table 19, PDF p.155 |
-| `rate_limits.rate_limiter_gatekeeper.max_retries` | `3` | Minimum | Appendix F table 19, PDF p.155 |
-| `rate_limits.rate_limiter_gatekeeper.queue_depth` | `100` | Minimum | Appendix F table 19, PDF p.155 |
-| `rate_limits.rate_limiter_gatekeeper.response_timeout_sec` | `30` | Negotiation default | Appendix F table 19, PDF p.155 |
-| `rate_limits.rate_limiter_gatekeeper.watchdog_timeout_sec` | `60` | Negotiation default | Appendix F table 19, PDF p.155 |
+| `game.rate_limiter_gatekeeper.requests_per_minute` | `30` | Minimum | Appendix F table 19, PDF p.155 |
+| `game.rate_limiter_gatekeeper.concurrent_requests` | `2` | Minimum | Appendix F table 19, PDF p.155 |
+| `game.rate_limiter_gatekeeper.retry_backoff_sec` | `5` | Minimum | Appendix F table 19, PDF p.155 |
+| `game.rate_limiter_gatekeeper.max_retries` | `3` | Minimum | Appendix F table 19, PDF p.155 |
+| `game.rate_limiter_gatekeeper.queue_depth` | `100` | Minimum | Appendix F table 19, PDF p.155 |
+| `rate_limits.version` | `"1.00"` | **PROPOSED** operational-config revision | Software Submission Guidelines v3.0 section 8.1 |
+| `rate_limits.rate_limiter_gatekeeper.*` | exact mirror of the five shared Gatekeeper values | Operational mirror | Appendix B classifies `rate_limits.json` as cross-language JSON; parity scope remains U-023 |
 
 Field names are drawn from Appendix B where present and otherwise remain explicit
-project proposals or local-artifact observations. Separating Gatekeeper values into
-`config/rate_limits.json`, strict known-field schemas with an extension container,
-root revision placement, and parity mechanics are proposed by ADR-004.
+project proposals or local-artifact observations. Strict known-field schemas with
+an extension container, root revision placement, operational-mirror parity, and
+manifest mechanics remain proposed.
 
 ## Artifact key-set evidence
 
@@ -110,11 +110,10 @@ provenance and every formal schema constraint remain unproven.
 - MCP tool names and payloads: ADR-001.
 - Message envelope and idempotency fields: ADR-002.
 - Cross-profile 1.1/1.2 compatibility: ADR-003.
-- Commit canonical bytes, Unicode treatment, and nonce length: ADR-006.
-- `config_sha256` scope and self-hash exclusion: ADR-006.
-- Participant identifier format/order and match identity fields.
-- Unified versus split played-match configuration.
-- Role assignment/alternation across the six sub-games.
+- Commit-reveal canonical bytes, Unicode treatment, and nonce length: ADR-006.
+- Allowed participant-ID syntax beyond ordered non-empty text.
+- Detailed artifact identity formats and complete formal schemas.
+- Operational `rate_limits.json` cross-repository parity scope.
 - Private Cop TOML fields: ADR-004.
 - Gmail draft/send workflow: ADR-010.
 
