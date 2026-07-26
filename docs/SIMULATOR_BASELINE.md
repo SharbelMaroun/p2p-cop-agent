@@ -5,8 +5,9 @@
 - Role: learning and interoperability reference, **not** a submission skeleton
 
 Any simulator observation used here must be tied to that exact commit, file/symbol,
-command, and observed result. Official book/templates and accepted cross-team ADRs
-control when they disagree with the simulator.
+command, and observed result. The Final Project Book, Appendix F, Appendix E,
+authenticated official templates, current Moodle/lecturer clarification, and the
+Software Submission Guidelines all outrank the simulator.
 
 ## Candidate observations, not book mandates
 

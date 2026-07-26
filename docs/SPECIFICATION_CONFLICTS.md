@@ -12,8 +12,9 @@ baseline; see [PARITY_REPORT.md](PARITY_REPORT.md).
 | C-005 | CONFIRMED | Earlier text cited Appendix G for GitHub submission | Book v3.0.0 uses Appendix C. |
 | C-006 | CONFIRMED | Existing docs claimed cross-repository byte parity | Baseline hashes differ and two claimed files are absent on Thief main. New contract remains unfrozen pending evidence. |
 | C-007 | UNKNOWN | Duplicated stateless shared runtime package versus separate peers | A parity-controlled docs/config/fixture bundle is proposed; generic duplicated runtime code is not authorized by that proposal. |
-| C-008 | CONFLICT | Appendix B shared config uses schema 1.2; official artifact examples use 1.1 | ADR-003 isolates shared game/rate 1.2 from reporting-artifact fixture 1.1; no silent normalization. |
+| C-008 | CONFLICT | Appendix B shared config uses schema 1.2; local generated artifacts use 1.1; simulator runtime uses 1.3 | Record all three observations; do not normalize or claim compatibility without authoritative evidence. |
 | C-009 | CONFIRMED | Simulator subtractive scent versus book multiplicative scent | Book Ch. 4 controls; use `max(0,(1-ρ)τ+Δτ)`. ADR-005 records the decision. |
 | C-010 | UNKNOWN | Whether simulator source may be copied into this public MIT repository | Educational-use EULA/provenance review or lecturer permission is required. ADR-008 defaults to no substantial copying. |
+| C-011 | UNKNOWN | Four local JSON files were called official templates but are byte-identical to generated simulator logs | Keep them as `NEEDS_MANUAL_REVIEW` observations until the original authenticated course handoff is supplied. |
 
 No unresolved row is closed by selecting a simulator/example default.

@@ -14,7 +14,7 @@ accepts the controlled files and matching hashes are demonstrated.
 | SR-010 | Live local-truth GUI and replay/SHA-256 verification viewer | Book Ch. 7; Appendix E rules 8/9/20 |
 | SR-011 | Binding values/statuses are those directly recorded in `PARAMETERS_BASELINE.md` | Appendix F tables 13–19 |
 | SR-012 | Canonical general and automated-report addresses are distinct | Book PDF p. 157, table 20 |
-| SR-013 | Four artifact families, exemplar 1.1 key sets, and official filename patterns are known; formal schema constraints are not | Supplied official examples; book table 20 |
+| SR-013 | Four artifact families and book-defined filename patterns are known; local generated artifacts expose non-authoritative 1.1 key-set observations | Book table 20; local files classified `NEEDS_MANUAL_REVIEW` |
 | SR-014 | Moves are N/S/E/W/STAY only; barriers are disclosed; current-cell barrier and trapped-Thief conditions capture | Appendix E rules 13–16/46/47; book Ch. 3 |
 | SR-015 | SHA-256 commit-reveal is mandatory; nonce stays secret until final reveal; mismatch is a technical loss worth zero | Book Ch. 5; Appendix E rules 17–19 |
 | SR-016 | Played-game shared JSON is byte-identical and locked; private per-peer TOML remains local | Appendix B; Appendix E rules 11/12 |

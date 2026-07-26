@@ -12,10 +12,10 @@ matching checks in both repositories. A statement in prose is not parity evidenc
 - Played-game shared JSON is byte-identical and cryptographically locked.
 - Role-private TOML, `.env`, secrets, ports, tokens, providers, tunnel credentials,
   nonces, and local strategy never enter the parity bundle.
-- Known official template key sets may be preserved as fixtures while unknown formal
-  constraints remain explicitly unclaimed.
-- Shared config schema `1.2` and artifact key-set fixture schema `1.1` remain separate
-  under ADR-003.
+- Local generated-artifact key sets may be preserved as non-authoritative observation
+  fixtures while provenance and formal constraints remain explicitly unresolved.
+- Book example `1.2`, local-artifact observation `1.1`, and simulator runtime `1.3`
+  remain separate; no normalization or compatibility is inferred.
 - Missing, unexpected, or changed controlled files fail the checker; the manifest
   does not hash itself.
 

@@ -17,7 +17,7 @@ baseline hashes are preserved in [PARITY_REPORT.md](PARITY_REPORT.md).
 |---|---|
 | Active README/PRD/PLAN/TODO and seven mechanism PRDs | Governing M0–M1 documentation |
 | `PARAMETERS_BASELINE.md` | Direct Appendix-F values/statuses; not candidates |
-| `ARTIFACT_TEMPLATE_BASELINE.md` | Observed official key sets/patterns with formal-schema caveat |
+| `ARTIFACT_TEMPLATE_BASELINE.md` | Local generated-artifact observations; official provenance `NEEDS_MANUAL_REVIEW` |
 | Proposed shared bundle | `0.1.0-proposed`, UNFROZEN pending Thief parity |
 | Cop private example config | Local only; never parity-controlled |
 | `config/drafts/` | Quarantined historical material; never loaded |

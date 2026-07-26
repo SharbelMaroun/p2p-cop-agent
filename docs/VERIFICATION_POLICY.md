@@ -9,8 +9,9 @@ commit-pinned symbol. A design choice unsupported by such wording must be marked
 
 - Appendix F confirms numeric values and `Fixed`/`Minimum`/`Negotiation` status.
 - Appendix E and the book body confirm mandatory/recommended behavior.
-- Official course JSON examples confirm observed key sets and filename patterns, not
-  unobserved formal-schema constraints.
+- Book table 20 confirms artifact filename patterns. Four local simulator-generated
+  JSON files preserve observed key sets only; their official provenance is
+  `NEEDS_MANUAL_REVIEW` and they do not establish formal-schema constraints.
 - A simulator observation requires the exact pinned commit and remains a candidate
   when the book does not mandate it.
 

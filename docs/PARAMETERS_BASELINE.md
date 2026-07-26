@@ -8,9 +8,9 @@
 > never relaxed below the listed value. `Negotiation` may be agreed freely; the
 > listed value is the default.
 >
-> The inspected official artifact examples confirm exemplar field names and key
-> sets. Formal required/optional, complete type/enum, conditional, and compatibility
-> constraints remain unresolved.
+> Four inspected local simulator-generated artifacts expose observed field names and
+> key sets, but their official provenance is `NEEDS_MANUAL_REVIEW`. They do not
+> establish formal required/optional, type/enum, conditional, or compatibility rules.
 
 ## Board, coordinates, and opening positions — Table 13
 

@@ -40,9 +40,10 @@ Evidence and decisions are tracked in:
 - The live GUI may display local truth only.
 
 Confirmed values and their `Fixed`, `Minimum`, or `Negotiation` status are recorded
-in [docs/PARAMETERS_BASELINE.md](docs/PARAMETERS_BASELINE.md). The four inspected
-official artifact templates establish exemplar key sets and filename patterns, not a
-complete formal JSON Schema; see
+in [docs/PARAMETERS_BASELINE.md](docs/PARAMETERS_BASELINE.md). Four inspected local
+JSON artifacts preserve generated key-set observations, but their claimed official
+provenance is `NEEDS_MANUAL_REVIEW`; book table 20 independently establishes the
+filename patterns. See
 [docs/ARTIFACT_TEMPLATE_BASELINE.md](docs/ARTIFACT_TEMPLATE_BASELINE.md).
 
 ## Installation and checks

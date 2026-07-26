@@ -18,7 +18,7 @@ accepted ADR.
 | SR-010 | Live local-truth GUI and replay/SHA-256 verification viewer are mandatory | Book Ch. 7; Appendix E rules 8/9/20 | Later GUI/replay tests and screenshots |
 | SR-011 | Confirmed game/scoring/league/Gatekeeper values and statuses are those in `PARAMETERS_BASELINE.md` | Appendix F tables 13–19, PDF pp. 152–155 | File-backed configuration validation |
 | SR-012 | General/repository email is `rmisegal@gmail.com`; automated-report email is `rmisegal+uoh26finalgame@gmail.com` | Book PDF p. 157, table 20 | Address tests |
-| SR-013 | Four artifact families use the official filename patterns; supplied examples expose 1.1 exemplar key sets but not complete formal schemas | Official JSON examples; book PDF p. 157, table 20 | Fixture/key-set tests only |
+| SR-013 | Four artifact families use the book-defined filename patterns; local simulator-generated artifacts expose non-authoritative 1.1 key-set observations | Book PDF p. 157, table 20; local files classified `NEEDS_MANUAL_REVIEW` | Filename checks plus observation-fixture metadata only |
 | SR-014 | Legal actions are N/S/E/W/STAY; barriers are disclosed; current-cell barrier and trapped-Thief states capture | Book Ch. 3; Appendix E rules 13–16/46/47 | Later movement/barrier/capture tests |
 | SR-015 | SHA-256 commit-reveal is mandatory; nonces stay secret until final reveal; mismatch is a zero-point technical loss | Book Ch. 5; Appendix E rules 17–19 | ADR-006 plus later crypto tests |
 | SR-016 | Played-game shared JSON is byte-identical and locked; per-peer TOML stays private | Appendix B, PDF pp. 126–130; Appendix E rules 11/12 | ADR-003/004; parity/config tests |

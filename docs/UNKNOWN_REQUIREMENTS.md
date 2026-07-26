@@ -6,6 +6,7 @@ annotated tag, and email addresses are not unknown.
 
 | ID | Narrow unresolved question | Blocks | Resolution evidence |
 |---|---|---|---|
+| U-001 | Whether the four local generated JSON artifacts are authentic official course templates | Promotion beyond non-authoritative key-set observations | Original Moodle/lecturer download, message, archive, or authenticated checksum |
 | U-002 | Complete formal artifact required/optional, type/enum, conditional, and compatibility rules | Full artifact validation | Referenced official code schemas/fixtures or dated clarification |
 | U-003 | Accepted MCP tool names and signatures | Network contract freeze | ADR-001 plus Thief acceptance |
 | U-004 | Envelope, acknowledgement, sequencing, errors, and idempotency fields | Network contract freeze | ADR-002 plus interop tests |
@@ -21,6 +22,6 @@ annotated tag, and email addresses are not unknown.
 | U-020 | Permission/provenance for any substantial simulator-source reuse | Simulator reuse | ADR-008 review and, if necessary, written permission |
 
 Resolved: Appendix F values/statuses; multiplicative scent equation; report
-attachment/no-free-text rule; nonce secrecy until final reveal; shared JSON/private
-TOML boundary; official artifact patterns; rule-25 recommendation status; six README
-sections; tag requirement; both addresses.
+attachment/no-free-text rule; nonce secrecy until final reveal; semantic shared
+JSON/private TOML boundary; book-defined artifact filename patterns; rule-25
+recommendation status; six README sections; tag requirement; both addresses.
