@@ -1,0 +1,50 @@
+name: Repository quality
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.16"
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install locked dependencies
+        run: uv sync --frozen
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Test with branch coverage
+        run: uv run pytest --cov --cov-branch --cov-fail-under=85
+
+      - name: Enforce file lengths
+        run: uv run python scripts/check_file_lengths.py
+
+      - name: Scan for secrets
+        run: uv run python scripts/check_secrets.py
+
+      - name: Verify Cop-local contract integrity
+        run: uv run python scripts/check_shared_contracts.py
+
+      - name: Check patch whitespace
+        run: git diff --check
