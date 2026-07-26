@@ -4,13 +4,13 @@ The active roadmap uses the common M0–M9 phase vocabulary. It decomposes only 
 owned in this Cop repository. External review, Thief consumption, and lecturer
 clarifications are exit dependencies, not Cop implementation tasks.
 
-Current state: **M1 corrected candidate ready for review; CONTRACT FREEZE NO-GO; M2
-BLOCKED.**
+Current state: **M1 technically ready for external parity review; CONTRACT FREEZE
+NO-GO; M2 BLOCKED.**
 
 | Phase | Status | Cop outcome | Exit gate |
 |---|---|---|---|
 | M0 Evidence and source reconciliation | DONE | Authority order, provenance, conflicts, and unknowns are evidence-backed | Coordinator audit corrections are reflected |
-| M1 Public contract, match configuration, parity and freeze | IN PROGRESS / BLOCKED | Cop-authored stable semantics, neutral match proposal, local integrity, cross-root comparison, CI, and handoff | P0 questions resolved; coordinator acceptance; Thief byte consumption and independent proof |
+| M1 Public contract, match configuration, parity and freeze | READY FOR EXTERNAL REVIEW / BLOCKED | Cop-authored stable semantics, neutral match proposal, local integrity, cross-root comparison, CI, and handoff | Coordinator acceptance; Thief byte consumption and independent proof |
 | M2 Core domain rules | DEFERRED | Immutable board/actions, legal moves, barriers, and capture rules through SDK | M1 freeze GO plus complete unit suite |
 | M3 Local state, scoring and deterministic baseline | DEFERRED | Cop-only state/history, scoring, harness, and deterministic policy | Full local series simulation without private-truth leakage |
 | M4 Protocol, canonicalization and commit-reveal | DEFERRED | Accepted messages, exact canonical vectors, commit/reveal/audit state machine | Independent vectors and tamper/failure tests pass |
@@ -22,22 +22,19 @@ BLOCKED.**
 
 ## M1 freeze gate
 
-M1 remains NO-GO while any of these conditions is unresolved:
+The Cop-owned M1 implementation gate passes locally. Contract freeze remains NO-GO
+until both external conditions are satisfied:
 
-1. Authentic provenance and formal status of the four local JSON artifacts.
-2. Schema compatibility among book example 1.2, local observation 1.1, and simulator
-   runtime 1.3.
-3. Formal identifier syntax, UUID creation/version, and resolved-versus-pattern
-   `links` representation.
-4. Complete artifact required/optional/type/conditional rules.
-5. Coordinator decision on whether the operational `rate_limits.json` mirror remains
-   in exact-byte cross-repository parity.
-6. Coordinator acceptance followed by Thief exact-byte consumption and independent
-   local/cross-root verification.
+1. The coordinator accepts the exact `0.1.0-proposed` candidate scope.
+2. Thief consumes the accepted bundle byte-for-byte and independently reproduces
+   local and cross-root verification.
 
-Participant representation/order, unified shared config, artifact lifecycle, config
-hash scope/bytes, and the six-game role schedule are now incorporated with a
-reproducible vector.
+Participant representation/order, unified shared config, exact source-byte and
+canonical config locks, artifact lifecycle, logical `<NN>` links, local rate-limit
+boundary, and the six-game role schedule are incorporated with reproducible vectors.
+Artifact provenance wording, complete artifact schemas, `game_id`/UUID policy,
+Step-0 wire evidence, and six-game runtime verification are tracked in M4/M7; they
+do not expand the behavior-free M1 shared-config gate.
 No gameplay work begins until the coordinator changes the M1 gate to GO.
 
 ## Continuous gates

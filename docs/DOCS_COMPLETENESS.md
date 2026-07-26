@@ -7,10 +7,10 @@ families are present; runtime/result sections remain incomplete by design.
 |---|---|---|
 | `README.md` | Yes | Corrected M1 candidate status, checks, configuration, and six-section report mapping |
 | `docs/PRD.md` | Yes | Behavior-free milestone goals/non-goals/acceptance |
-| `docs/PLAN.md` | Yes | Common M0–M9 phase vocabulary, gates, dependencies, and M1 NO-GO |
+| `docs/PLAN.md` | Yes | Common M0–M9 phases; M1 locally ready, externally unfrozen, and M2 blocked |
 | `docs/TODO.md` | Yes | Cop-owned M0–M9 tasks only; M2–M9 explicitly deferred |
-| `docs/CONTRACT_CANDIDATE_HANDOFF.md` | Yes | Controlled hashes, manifest self-hash, decisions, blockers, and local gates |
-| `docs/PRD_commit_reveal.md` | Yes | Config hash defined; move-commit bytes remain unfrozen in ADR-006 |
+| `docs/CONTRACT_CANDIDATE_HANDOFF.md` | Yes | Controlled hashes, manifest self-hash, external freeze dependencies, and local gates |
+| `docs/PRD_commit_reveal.md` | Yes | Config hash defined; Step-0 and move-commit wire protocols remain M4 work |
 | `docs/PRD_scent_belief.md` | Yes | Book multiplicative model; runtime deferred |
 | `docs/PRD_strategy.md` | Yes | Deterministic default; rule-25 status correct |
 | `docs/PRD_p2p_mcp.md` | Yes | Candidate names separated from mandates |

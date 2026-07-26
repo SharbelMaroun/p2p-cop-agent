@@ -8,7 +8,8 @@ JSON-attachment rule are confirmed. Runtime delivery is not implemented.
 - All external API calls go through one Gatekeeper providing limiting, FIFO queueing,
   backpressure, retries, monitoring, and DOS protection.
 - Gmail reporting uses least-privilege send authorization; credentials and tokens are
-  secrets and stay out of Git.
+  runtime-local secrets and stay out of Git. `credentials.json` and generated
+  `token.json` are required for the documented OAuth flow and are already ignored.
 - Each side separately sends the signed final JSON as an attachment at the end of a
   legal game. A free-text final-report body is rejected; conflicting/missing reports
   yield zero for both.
@@ -32,5 +33,7 @@ required/optional, exhaustive type/enum, conditional, and compatibility constrai
 remain unresolved. ADR-003 isolates these fixtures from shared config schema 1.2;
 ADR-010 owns Gmail delivery choices.
 
-The behavior-free milestone may validate configuration and fixtures. It does not
-implement a Gatekeeper or Gmail/reporting runtime.
+The behavior-free milestone may validate configuration and fixtures. The local
+`rate_limits.json` enforcement file may not weaken shared terms but is not a
+byte-identical peer contract. This milestone does not implement a Gatekeeper or
+Gmail/reporting runtime.
