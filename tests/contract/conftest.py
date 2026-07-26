@@ -17,10 +17,8 @@ def contract_copy(tmp_path: Path) -> Path:
     for relative in ("config", "docs/contracts", "docs/schemas", "tests/fixtures/contracts"):
         shutil.copytree(PROJECT_ROOT / relative, tmp_path / relative)
     (tmp_path / "scripts").mkdir()
-    shutil.copy2(
-        PROJECT_ROOT / "scripts/check_shared_contracts.py",
-        tmp_path / "scripts/check_shared_contracts.py",
-    )
+    for filename in ("check_shared_contracts.py", "shared_contract_integrity.py"):
+        shutil.copy2(PROJECT_ROOT / "scripts" / filename, tmp_path / "scripts" / filename)
     shutil.copy2(PROJECT_ROOT / ".gitattributes", tmp_path / ".gitattributes")
     return tmp_path
 

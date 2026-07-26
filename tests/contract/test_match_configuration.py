@@ -37,6 +37,57 @@ def test_identical_neutral_offer_is_accepted(contract_copy: Path) -> None:
     sdk.validate_match_offer(contract_copy)
 
 
+def test_missing_participant_agreement_is_rejected(contract_copy: Path) -> None:
+    path = contract_copy / "config/game.json"
+    game = read_json(path)
+    del game["agreed_between"]
+    write_json(path, game)
+
+    with pytest.raises(ContractValidationError, match="agreed_between.*required property"):
+        CopSDK.from_repository(contract_copy)
+
+
+def test_changed_negotiated_value_is_rejected_before_play(contract_copy: Path) -> None:
+    path = contract_copy / "config/game.json"
+    game = read_json(path)
+    world = game["world"]
+    assert isinstance(world, dict)
+    world["map_area"] = "Different agreed area"
+    write_json(path, game)
+
+    sdk = CopSDK.from_repository(PROJECT_ROOT)
+    with pytest.raises(ContractValidationError, match="game configuration differs"):
+        sdk.validate_match_offer(contract_copy)
+
+
+@pytest.mark.parametrize("malformed", ["bad", "A" * 64, "0" * 63])
+def test_malformed_configuration_hash_is_rejected(
+    contract_copy: Path,
+    malformed: str,
+) -> None:
+    path = contract_copy / "config/game.json"
+    game = read_json(path)
+    game["config_sha256"] = malformed
+    write_json(path, game)
+
+    with pytest.raises(ContractValidationError, match="config_sha256"):
+        CopSDK.from_repository(contract_copy)
+
+
+@pytest.mark.parametrize(
+    "private_field",
+    ["port", "opponent_url", "model", "credentials", "strategy", "nonce", "secret"],
+)
+def test_private_field_leakage_is_rejected(contract_copy: Path, private_field: str) -> None:
+    path = contract_copy / "config/game.json"
+    game = read_json(path)
+    game[private_field] = "must-stay-private"
+    write_json(path, game)
+
+    with pytest.raises(ContractValidationError, match="Additional properties are not allowed"):
+        CopSDK.from_repository(contract_copy)
+
+
 def test_cross_file_match_identity_must_agree(contract_copy: Path) -> None:
     path = contract_copy / "config/rate_limits.json"
     rates = read_json(path)
@@ -77,21 +128,15 @@ def test_semantic_match_comparison_rejects_each_contract_layer() -> None:
         )
 
 
-def test_unsupported_config_profile_fails_clearly(contract_copy: Path) -> None:
+@pytest.mark.parametrize("unsupported", ["1.1", "1.3", "9.9"])
+def test_unsupported_config_profile_fails_clearly(
+    contract_copy: Path,
+    unsupported: str,
+) -> None:
     path = contract_copy / "config/game.json"
     game = read_json(path)
-    game["schema_version"] = "9.9"
+    game["schema_version"] = unsupported
     write_json(path, game)
 
     with pytest.raises(ContractValidationError, match="game config"):
-        CopSDK.from_repository(contract_copy)
-
-
-def test_unsupported_contract_version_fails_clearly(contract_copy: Path) -> None:
-    (contract_copy / "docs/contracts/CONTRACT_VERSION").write_text(
-        "9.9-unsupported\n",
-        encoding="utf-8",
-    )
-
-    with pytest.raises(ContractValidationError, match="Unsupported contract version"):
         CopSDK.from_repository(contract_copy)

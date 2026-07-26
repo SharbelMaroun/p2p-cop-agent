@@ -3,9 +3,10 @@
 The Cop repository remains independently installable and runnable. It never imports,
 mounts, or reads the Thief repository at runtime.
 
-Contract `0.1.0-proposed` is **UNFROZEN**. Repository parity is established only by
-an explicit controlled-file manifest, SHA-256 verification, Thief acceptance, and
-matching checks in both repositories. A statement in prose is not parity evidence.
+Contract `0.1.0-proposed` is **UNFROZEN**. Cop-local manifest integrity establishes
+only that Cop files match Cop's recorded hashes. Cross-repository parity additionally
+requires Thief acceptance and optional read-only comparison reporting identical
+controlled bytes and an identical separately computed manifest hash.
 
 ## Boundaries
 
@@ -16,8 +17,8 @@ matching checks in both repositories. A statement in prose is not parity evidenc
   fixtures while provenance and formal constraints remain explicitly unresolved.
 - Book example `1.2`, local-artifact observation `1.1`, and simulator runtime `1.3`
   remain separate; no normalization or compatibility is inferred.
-- Missing, unexpected, or changed controlled files fail the checker; the manifest
-  does not hash itself.
+- Missing, unexpected, or changed controlled files fail local integrity; the manifest
+  remains outside its own file list and its exact-byte SHA-256 is reported separately.
 
 ## Prohibited claims/designs
 

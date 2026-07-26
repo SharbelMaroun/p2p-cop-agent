@@ -3,9 +3,11 @@
 Contract version: `0.1.0-proposed`
 Freeze status: **PROPOSED / UNFROZEN**
 
-This bundle is a review candidate for the Cop and Thief repositories. It becomes frozen only
-after the Thief team accepts the same files byte-for-byte and both repositories pass the parity
-checker. The bundle contains no peer-private settings, ports, credentials, tokens, nonces, model
+This bundle is a Cop-authored review candidate. Local manifest verification proves
+only Cop-local integrity. It becomes frozen only after Thief accepts the same files
+byte-for-byte, both repositories verify locally, and read-only cross-root comparison
+reports identical controlled bytes plus an identical separate manifest hash. The
+bundle contains no peer-private settings, ports, credentials, tokens, nonces, model
 selection, tunnel credentials, or provider keys.
 
 ## Authority and scope

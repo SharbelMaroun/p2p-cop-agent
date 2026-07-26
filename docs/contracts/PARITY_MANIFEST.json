@@ -31,7 +31,7 @@
     },
     {
       "path": "docs/contracts/SHARED_RULES.md",
-      "sha256": "a4af79de06b59eca945a074f4ed5d8c694cd30c5c8e7e83b8e4a282449fd7946"
+      "sha256": "4d73fa8a7a9e31cbf4243e9ea0b7858769db17854516a99be6c5fdf920f6d7d5"
     },
     {
       "path": "docs/schemas/artifact-keyset-fixture.schema.json",
@@ -47,7 +47,11 @@
     },
     {
       "path": "scripts/check_shared_contracts.py",
-      "sha256": "14b4ba2fa3e7e2e516f295bfa06b4d95893dd0c75a601d1fc1092894721f965d"
+      "sha256": "b29bd3c978baf7b1b988e7a37c644cdc3b3e5fb548e852e0238fa95bac855b39"
+    },
+    {
+      "path": "scripts/shared_contract_integrity.py",
+      "sha256": "2a3d1dfcb532aaca4c38c5a9ba21f28045f130588626d9d2981ccce06dc1e06f"
     },
     {
       "path": "tests/fixtures/contracts/agreed_config.keyset.json",
@@ -71,7 +75,8 @@
   "policy": {
     "exact_paths": [
       ".gitattributes",
-      "scripts/check_shared_contracts.py"
+      "scripts/check_shared_contracts.py",
+      "scripts/shared_contract_integrity.py"
     ],
     "excluded_paths": [
       "docs/contracts/PARITY_MANIFEST.json"

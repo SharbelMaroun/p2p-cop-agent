@@ -46,7 +46,9 @@ configuration or runtime code belongs in this repository.
 
 - Gate 1 in [PLAN.md](PLAN.md) establishes a deterministic proposed bundle and
   behavior-free package scaffold.
-- Missing, unexpected, or byte-changed parity files fail the parity checker.
+- Missing, unexpected, or byte-changed controlled files fail Cop-local integrity.
+- Optional read-only comparison against another repository root reports missing,
+  unexpected, and byte-different paths separately.
 - `uv sync --frozen`, Ruff, pytest with branch coverage at least 85%, file-length
   checks, and secret scanning pass from a clean state.
 - Private TOML and `.env` data are not parity-controlled.

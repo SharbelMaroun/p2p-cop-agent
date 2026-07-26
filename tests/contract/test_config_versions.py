@@ -21,3 +21,13 @@ def test_unsupported_configuration_revision_fails_clearly(
 
     with pytest.raises(ContractValidationError, match="1.00.*was expected"):
         CopSDK.from_repository(contract_copy)
+
+
+def test_unsupported_contract_version_fails_clearly(contract_copy: Path) -> None:
+    (contract_copy / "docs/contracts/CONTRACT_VERSION").write_text(
+        "9.9-unsupported\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ContractValidationError, match="Unsupported contract version"):
+        CopSDK.from_repository(contract_copy)
