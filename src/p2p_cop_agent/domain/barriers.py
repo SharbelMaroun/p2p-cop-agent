@@ -70,7 +70,11 @@ class BarrierField:
         return cell in self.placements
 
     def place(self, board: Board, cell: Coordinate) -> BarrierField:
-        """Return a new field with a disclosed barrier or reject the placement."""
+        """Return a new field with a disclosed barrier or reject the placement.
+
+        This low-level primitive enforces board bounds, uniqueness, and the quota.
+        Police-turn placement legality is enforced by :meth:`place_adjacent`.
+        """
         if not board.contains(cell):
             raise BarrierError(f"barrier at {cell.as_pair()} is outside board bounds")
         if self.has_barrier(cell):
@@ -78,6 +82,25 @@ class BarrierField:
         if self.remaining <= 0:
             raise BarrierError(f"barrier quota {self.max_barriers} is exhausted")
         return BarrierField(self.max_barriers, (*self.placements, cell))
+
+    def place_adjacent(
+        self, board: Board, police: Coordinate, target: Coordinate
+    ) -> BarrierField:
+        """Place a barrier exactly one orthogonal step from the Police cell.
+
+        Enforces the full Police-turn placement rule: the target may not be the
+        Police's own cell and must be one orthogonal step away, in addition to the
+        board, uniqueness, and quota checks of :meth:`place`. Placing on the
+        Thief's cell is allowed (it is the barrier-capture mechanism).
+        """
+        if target == police:
+            raise BarrierError("barrier cannot be placed on the Police's own cell")
+        if abs(target.row - police.row) + abs(target.col - police.col) != 1:
+            raise BarrierError(
+                f"barrier {target.as_pair()} must be one orthogonal step "
+                f"from the Police at {police.as_pair()}"
+            )
+        return self.place(board, target)
 
     @classmethod
     def from_config(cls, game_config: Mapping[str, object]) -> BarrierField:

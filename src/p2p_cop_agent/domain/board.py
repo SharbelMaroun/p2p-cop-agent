@@ -91,3 +91,23 @@ class Board:
                 f"[{self.min_index}, {self.max_index}]"
             )
         return cell
+
+
+def validate_start_coordinates(
+    game_config: Mapping[str, object],
+) -> tuple[Coordinate, Coordinate]:
+    """Validate configured cop/thief starts against the board and return them.
+
+    Both start cells must parse, lie on the board defined by ``grid_size``,
+    ``axis_start_index``, and ``axis_origin_corner``, and be distinct so play does
+    not begin in an immediate capture. Returns ``(cop_start, thief_start)``.
+    """
+    section = game_config.get("board_and_agents")
+    if not isinstance(section, Mapping):
+        raise BoardError("game config is missing a board_and_agents object")
+    board = Board.from_config(game_config)
+    cop = board.require_on_board(Coordinate.from_pair(section.get("cop_start")))
+    thief = board.require_on_board(Coordinate.from_pair(section.get("thief_start")))
+    if cop == thief:
+        raise BoardError("cop_start and thief_start must be different cells")
+    return cop, thief

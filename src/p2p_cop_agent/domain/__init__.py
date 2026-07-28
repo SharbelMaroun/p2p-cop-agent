@@ -2,7 +2,7 @@
 
 from p2p_cop_agent.domain.actions import Action, ActionError
 from p2p_cop_agent.domain.barriers import BarrierError, BarrierField
-from p2p_cop_agent.domain.board import Board, BoardError
+from p2p_cop_agent.domain.board import Board, BoardError, validate_start_coordinates
 from p2p_cop_agent.domain.capture import (
     CaptureReason,
     capture_reason,
@@ -40,4 +40,5 @@ __all__ = [
     "is_legal_move",
     "is_trapped",
     "legal_moves",
+    "validate_start_coordinates",
 ]

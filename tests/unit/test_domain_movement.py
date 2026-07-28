@@ -92,5 +92,5 @@ def test_apply_move_returns_destination_when_legal() -> None:
 
 
 def test_apply_move_rejects_move_off_board() -> None:
-    with pytest.raises(MovementError, match=r"N from \(0, 0\) leaves the board"):
+    with pytest.raises(MovementError, match=r"N from \(0, 0\) is not a legal move"):
         apply_move(top_left_board(), Coordinate(0, 0), Action.NORTH)
