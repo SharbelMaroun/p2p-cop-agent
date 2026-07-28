@@ -2,9 +2,15 @@
 
 Barriers are placed on board cells up to the negotiated ``max_barriers`` quota
 (Appendix F Minimum 14). Every placement is disclosed truthfully: the ordered
-``placements`` tuple is the public disclosure log. This module enforces board
-legality, uniqueness, and the quota only; the capture effect of a barrier on the
-Thief's cell is applied by capture work.
+``placements`` tuple is the public disclosure log. The low-level :meth:`place`
+enforces board legality, uniqueness, and the quota only; the capture effect of a
+barrier on the Thief's cell is applied by capture work.
+
+The Police-turn rule (:meth:`BarrierField.place_adjacent`) additionally allows the
+target to be either the Police's own current cell or one orthogonally adjacent
+cell. Placing a barrier represents giving up Police movement for that turn. This
+module models placement legality only; live-turn event ordering and capture-reason
+precedence remain provisional and are decided elsewhere.
 """
 
 from __future__ import annotations
@@ -86,19 +92,19 @@ class BarrierField:
     def place_adjacent(
         self, board: Board, police: Coordinate, target: Coordinate
     ) -> BarrierField:
-        """Place a barrier exactly one orthogonal step from the Police cell.
+        """Place a barrier for the Police turn: on the own cell or one step away.
 
-        Enforces the full Police-turn placement rule: the target may not be the
-        Police's own cell and must be one orthogonal step away, in addition to the
-        board, uniqueness, and quota checks of :meth:`place`. Placing on the
-        Thief's cell is allowed (it is the barrier-capture mechanism).
+        Implements the official Police-turn placement rule: the Police may give up
+        its movement for the turn to place a barrier either on its own current cell
+        or on exactly one orthogonally adjacent cell. Diagonal and more distant
+        targets are rejected here; off-board, duplicate, and over-quota placements
+        are rejected by :meth:`place`. Placing on the Thief's cell is allowed (it is
+        the barrier-capture mechanism). Live-turn event ordering is not modelled.
         """
-        if target == police:
-            raise BarrierError("barrier cannot be placed on the Police's own cell")
-        if abs(target.row - police.row) + abs(target.col - police.col) != 1:
+        if abs(target.row - police.row) + abs(target.col - police.col) > 1:
             raise BarrierError(
-                f"barrier {target.as_pair()} must be one orthogonal step "
-                f"from the Police at {police.as_pair()}"
+                f"barrier {target.as_pair()} must be on the Police cell or one "
+                f"orthogonal step from the Police at {police.as_pair()}"
             )
         return self.place(board, target)
 

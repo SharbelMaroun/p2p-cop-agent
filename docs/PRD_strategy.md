@@ -6,6 +6,10 @@ Status: legal objective and safe default documented; runtime policy deferred.
 
 - Legal movement is `N`, `S`, `E`, `W`, or `STAY`; no diagonals.
 - The Cop may place only legal barriers and must disclose every placement.
+- Placing a barrier replaces the Police's movement for that turn: the Police gives
+  up moving and instead places a barrier on either its own current cell or one
+  orthogonally adjacent cell. Diagonal, more distant, off-board, duplicate, and
+  over-quota targets are rejected.
 - A barrier placed on the Thief’s current cell captures the Thief.
 - A Thief with no legal move is captured.
 - Communication is natural language only; direct numeric location protocols are
