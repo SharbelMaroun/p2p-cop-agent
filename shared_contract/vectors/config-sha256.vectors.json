@@ -1,0 +1,27 @@
+{
+  "x-contract-version": "0.2.0-proposed",
+  "description": "config_sha256 hashes the complete parsed per-match game object with sorted keys, compact separators, unescaped Unicode, and UTF-8. The claim is stored outside the hashed object. This is distinct from config_file_sha256 (exact file bytes) and from the move commitment (which mixes a nonce and the '|' delimiter).",
+  "vectors": [
+    {
+      "name": "example_match_object",
+      "source": "fixtures/match_config.example.json",
+      "config_sha256": "adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db",
+      "config_file_sha256": "70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06"
+    },
+    {
+      "name": "minimal",
+      "object": {"z": 1, "a": 2},
+      "config_sha256": "c2985c5ba6f7d2a55e768f92490ca09388e95bc4cccb9fdf11b15f4d42f93e73"
+    },
+    {
+      "name": "nested_arrays",
+      "object": {"board": {"size": 7, "starts": [[0, 0], [3, 3]]}, "moves": ["N", "S"]},
+      "config_sha256": "8c92a4ac7f60eda8166bfde99cb536c73f9a3679ef171839d9f6fbe6fceb5145"
+    }
+  ],
+  "not_adopted_lecturer_hashes": {
+    "note": "These lecturer-supplied values are not adopted as universal hashes.",
+    "invalid_length_65": "9f2c is a 65-character value and cannot be a SHA-256 digest.",
+    "bd23_sample": "Retained only as a labeled sample; not reproduced here because its exact source object was not supplied."
+  }
+}

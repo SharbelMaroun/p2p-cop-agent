@@ -7,17 +7,20 @@ Peer-to-Peer Network” final project.
 
 ## Current milestone
 
-This branch provides an M1 contract candidate that is technically ready for
-external parity review and an independently installable `p2p_cop_agent` scaffold.
-It deliberately contains no game, network, cryptographic runtime, LLM, Gmail, GUI,
-or replay behavior. M2 remains blocked until the external M1 freeze gate passes.
+This branch implements the M2 core domain rules (coordinates, board geometry,
+barrier-aware movement, barriers, and capture) and the M1.5 Option-B contract
+repair: a role-neutral `shared_contract/` bundle at `0.2.0-proposed`. The
+`0.1.0-proposed` bundle was rejected and is superseded. There is still no network,
+cryptographic transport, LLM, Gmail, GUI, or replay runtime.
 
-The shared contract is `0.1.0-proposed` and **UNFROZEN**. The Cop-owned checks pass;
-it becomes frozen only after the coordinator accepts the candidate and Thief
-independently consumes and verifies identical controlled bytes. The local checker
-proves Cop-local integrity only unless `--compare-root` is explicitly used.
-Historical parity claims were disproved by
-[docs/PARITY_REPORT.md](docs/PARITY_REPORT.md).
+The shared contract is `0.2.0-proposed` and **UNFROZEN**. It becomes frozen only
+after the coordinator accepts it and Thief independently consumes and verifies
+identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
+a documented academic-freedom interoperability choice pinned to simulator commit
+`960499fd5e8777b4929625f5d8fdcf2ab4677b54`; see
+[docs/OPTION_B_DECISION.md](docs/OPTION_B_DECISION.md) and
+[docs/OPTION_B_HANDOFF.md](docs/OPTION_B_HANDOFF.md). Historical parity claims were
+disproved by [docs/PARITY_REPORT.md](docs/PARITY_REPORT.md).
 
 Evidence and decisions are tracked in:
 
@@ -61,8 +64,11 @@ uv run ruff check .
 uv run pytest --cov --cov-branch --cov-fail-under=85
 uv run python scripts/check_file_lengths.py
 uv run python scripts/check_secrets.py
-uv run python scripts/check_shared_contracts.py
+uv run python shared_contract/verify.py
 ```
+
+`shared_contract/verify.py` is the role-neutral, read-only bundle verifier;
+`scripts/generate_shared_manifest.py` is the Cop-owner-only manifest generator.
 
 These are verification commands, not claims that a live Cop peer is runnable yet.
 The code/CLI version is exactly `1.00` from
@@ -71,22 +77,27 @@ displays the equivalent PEP 440 form `1.0`.
 
 ## Configuration
 
-- `config/game.json` is the authoritative byte-identical shared constitution. Its
+- The stable, role-neutral shared contract is the top-level `shared_contract/`
+  bundle at `0.2.0-proposed` (Option B). It holds specifications, schemas,
+  fixtures, vectors, and the read-only verifier only — no active match.
+- A per-match shared game object is supplied at runtime by explicit path.
+  `shared_contract/fixtures/match_config.example.json` is an example template; its
   exact file SHA-256 is
-  `70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06`;
-  its complete parsed object has canonical SHA-256
-  `adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db`.
+  `70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06` and its
+  canonical object SHA-256 is
+  `adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db`. Changing
+  opponent IDs or game identity never edits a stable controlled file.
 - `config/rate_limits.json` is local enforcement. Its shared Gatekeeper values may
-  not weaken or contradict the signed game configuration, but its bytes and local
+  not weaken or contradict the agreed match configuration, but its bytes and local
   extensions are not parity-controlled.
 - `config/game.toml.example` is Cop-local and is not parity-controlled.
 - `.env-example` contains dummy, provider-neutral placeholders only.
 
-The candidate accepts only book-example profile `1.2`. Local generated artifacts
-observe `1.1`, and the simulator runtime observes `1.3`; no translation or
-compatibility is inferred. Root revision `1.00` and closed known-field schemas
-remain explicitly proposed. Exact artifact identity/schema rules and Step-0
-attestation are M4/M7 work, not claims made by this behavior-free M1 scaffold.
+The bundle accepts only source profile `1.2`. Local generated artifacts observe
+`1.1`, and the simulator runtime observes `1.3`; no translation or compatibility is
+inferred. Exact artifact identity/schema rules and Step-0 attestation remain M7
+work. See [docs/OPTION_B_HANDOFF.md](docs/OPTION_B_HANDOFF.md) for the controlled
+inventory and hashes.
 
 ## Cop scope
 

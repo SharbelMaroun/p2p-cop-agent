@@ -1,4 +1,11 @@
-"""Source-file loading and validation for the proposed shared contract."""
+"""Load and validate a per-match shared game object against the stable bundle.
+
+The stable contract lives in the role-neutral ``shared_contract`` bundle. A match
+configuration is supplied at runtime by an explicit path (defaulting to the bundle
+example template) rather than a permanent in-repository match file. Three hash
+domains are kept distinct: the canonical object ``config_sha256``, the exact-byte
+``config_file_sha256``, and (elsewhere) the move/negotiation commitment.
+"""
 
 from __future__ import annotations
 
@@ -14,14 +21,20 @@ from jsonschema.validators import validator_for
 
 from p2p_cop_agent.shared.config import JsonObject, load_json_object
 
+BUNDLE_DIR = "shared_contract"
+MATCH_SCHEMA = "schemas/match-config.schema.json"
+EXAMPLE_MATCH_CONFIG = "fixtures/match_config.example.json"
+RATE_LIMITS_SCHEMA = "config/rate_limits.schema.json"
+RATE_LIMITS_CONFIG = "config/rate_limits.json"
+
 
 class ContractValidationError(ValueError):
-    """Raised when proposed contract files are missing or incompatible."""
+    """Raised when the match config or stable bundle is missing or incompatible."""
 
 
 @dataclass(frozen=True, slots=True)
 class SharedContract:
-    """Validated shared configuration loaded entirely from repository files."""
+    """A validated per-match shared configuration and its two config hashes."""
 
     version: str
     game: JsonObject
@@ -46,7 +59,7 @@ def canonical_config_bytes(config: JsonObject) -> bytes:
 
 
 def shared_config_sha256(config: JsonObject) -> str:
-    """Hash the complete shared source config; the artifact claim is external."""
+    """Hash the complete parsed match object; the artifact claim stays external."""
     return hashlib.sha256(canonical_config_bytes(config)).hexdigest()
 
 
@@ -55,7 +68,7 @@ def _file_sha256(path: Path) -> str:
     try:
         raw = path.read_bytes()
     except OSError as exc:
-        raise ContractValidationError(f"Cannot hash shared config {path}: {exc}") from exc
+        raise ContractValidationError(f"Cannot hash match config {path}: {exc}") from exc
     return hashlib.sha256(raw).hexdigest()
 
 
@@ -69,7 +82,7 @@ def verify_config_sha256(config: JsonObject, claimed: object) -> None:
 
 
 def _read_version(root: Path) -> str:
-    path = root / "docs/contracts/CONTRACT_VERSION"
+    path = root / BUNDLE_DIR / "CONTRACT_VERSION"
     try:
         version = path.read_text(encoding="utf-8").strip()
     except OSError as exc:
@@ -77,10 +90,6 @@ def _read_version(root: Path) -> str:
     if not version:
         raise ContractValidationError("Contract version must not be empty")
     return version
-
-
-def _load_schema(root: Path, filename: str) -> JsonObject:
-    return load_json_object(root / "docs/schemas" / filename)
 
 
 def validate_instance(instance: object, schema: JsonObject, label: str) -> None:
@@ -93,19 +102,18 @@ def validate_instance(instance: object, schema: JsonObject, label: str) -> None:
         raise ContractValidationError(f"{label} {error.json_path}: {error.message}")
 
 
-def _check_profile(version: str, schemas: list[JsonObject]) -> None:
-    profiles = {schema.get("x-contract-version") for schema in schemas}
-    if profiles != {version}:
-        shown = ", ".join(sorted(str(item) for item in profiles))
+def _check_profile(version: str, schema: JsonObject) -> None:
+    profile = schema.get("x-contract-version")
+    if profile != version:
         raise ContractValidationError(
-            f"Unsupported contract version {version!r}; schema profiles are {shown}"
+            f"Unsupported contract version {version!r}; match schema profile is {profile!r}"
         )
 
 
 def _check_rate_limit_mirror(game: JsonObject, rate_limits: JsonObject) -> None:
-    """Require the operational file to mirror signed Gatekeeper terms exactly."""
+    """Require the local operational file to mirror signed Gatekeeper terms exactly."""
     if game.get("rate_limiter_gatekeeper") != rate_limits.get("rate_limiter_gatekeeper"):
-        raise ContractValidationError("rate-limit mirror differs from shared game configuration")
+        raise ContractValidationError("rate-limit mirror differs from shared match configuration")
 
 
 def require_same_match_configuration(
@@ -120,20 +128,31 @@ def require_same_match_configuration(
     if expected.config_sha256 != offered.config_sha256:
         raise ContractValidationError("shared configuration hash differs")
     if expected.config_file_sha256 != offered.config_file_sha256:
-        raise ContractValidationError("shared game.json source bytes differ")
+        raise ContractValidationError("shared match source bytes differ")
 
 
-def load_shared_contract(root: str | Path) -> SharedContract:
-    """Load and validate shared game and Gatekeeper files from one repository root."""
+def load_match_contract(
+    root: str | Path,
+    match_config_path: str | Path | None = None,
+) -> SharedContract:
+    """Load and validate a per-match game object supplied by explicit path.
+
+    ``match_config_path`` defaults to the role-neutral example template inside the
+    stable bundle. A real match supplies its own path outside the stable bundle.
+    """
     repository = Path(root)
     version = _read_version(repository)
-    game_schema = _load_schema(repository, "game-config.schema.json")
-    rate_schema = _load_schema(repository, "rate-limits.schema.json")
-    _check_profile(version, [game_schema, rate_schema])
-    game_path = repository / "config/game.json"
+    match_schema = load_json_object(repository / BUNDLE_DIR / MATCH_SCHEMA)
+    _check_profile(version, match_schema)
+    game_path = (
+        Path(match_config_path)
+        if match_config_path is not None
+        else repository / BUNDLE_DIR / EXAMPLE_MATCH_CONFIG
+    )
     game = load_json_object(game_path)
-    rate_limits = load_json_object(repository / "config/rate_limits.json")
-    validate_instance(game, game_schema, "game config")
+    validate_instance(game, match_schema, "match config")
+    rate_schema = load_json_object(repository / RATE_LIMITS_SCHEMA)
+    rate_limits = load_json_object(repository / RATE_LIMITS_CONFIG)
     validate_instance(rate_limits, rate_schema, "rate-limit config")
     _check_rate_limit_mirror(game, rate_limits)
     return SharedContract(
@@ -143,27 +162,3 @@ def load_shared_contract(root: str | Path) -> SharedContract:
         config_sha256=shared_config_sha256(game),
         config_file_sha256=_file_sha256(game_path),
     )
-
-
-def load_artifact_keysets(root: str | Path) -> dict[str, JsonObject]:
-    """Load all safe key-set snapshots and validate only their descriptor format."""
-    repository = Path(root)
-    version = _read_version(repository)
-    schema = _load_schema(repository, "artifact-keyset-fixture.schema.json")
-    _check_profile(version, [schema])
-    fixtures: dict[str, JsonObject] = {}
-    directory = repository / "tests/fixtures/contracts"
-    for path in sorted(directory.glob("*.keyset.json")):
-        fixture = load_json_object(path)
-        validate_instance(fixture, schema, path.name)
-        family = fixture["artifact_family"]
-        if not isinstance(family, str):
-            raise ContractValidationError(f"{path.name} artifact_family must be text")
-        if family in fixtures:
-            raise ContractValidationError(f"duplicate artifact family: {family}")
-        fixtures[family] = fixture
-    expected = set(schema["properties"]["artifact_family"]["enum"])  # type: ignore[index]
-    missing = sorted(expected - set(fixtures))
-    if missing:
-        raise ContractValidationError(f"missing artifact key-set fixtures: {', '.join(missing)}")
-    return fixtures

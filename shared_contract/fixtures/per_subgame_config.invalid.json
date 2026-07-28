@@ -1,0 +1,13 @@
+{
+  "game_id": "demo-series",
+  "game_uid": "b1946ac92492d2347c6235b4d2611184",
+  "links": {
+    "config": "config_demo-series_g<NN>.json",
+    "log": "log_demo-series_g<NN>.json"
+  },
+  "sub_game": 7,
+  "config": {
+    "grid_size": 7
+  },
+  "config_sha256": "adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db"
+}

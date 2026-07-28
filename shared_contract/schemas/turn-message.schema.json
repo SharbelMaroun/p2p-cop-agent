@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.0-proposed",
+  "x-role-neutral": true,
+  "title": "Option-B TurnMessage",
+  "description": "Public per-turn event. Extra fields are tolerated, but true position, move, intent/verdict, and nonce must never appear before the post-game audit.",
+  "type": "object",
+  "required": ["step", "sender", "hint", "smell_grid", "commit", "timestamp"],
+  "additionalProperties": true,
+  "properties": {
+    "step": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sender": {
+      "enum": ["police", "thief"]
+    },
+    "hint": {
+      "type": "string"
+    },
+    "smell_grid": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        }
+      }
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "minLength": 1
+    },
+    "barrier_placed": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "capture_claim": {
+      "type": "boolean"
+    },
+    "claim_response": {
+      "type": "object"
+    },
+    "win_claim": {
+      "type": "boolean"
+    }
+  },
+  "not": {
+    "anyOf": [
+      {
+        "required": ["position"]
+      },
+      {
+        "required": ["move"]
+      },
+      {
+        "required": ["nonce"]
+      },
+      {
+        "required": ["intent"]
+      },
+      {
+        "required": ["verdict"]
+      }
+    ]
+  }
+}

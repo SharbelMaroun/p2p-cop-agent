@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.0-proposed",
+  "x-role-neutral": true,
+  "title": "Option-B negotiate message",
+  "description": "Public per-match agreement message passed to the negotiate tool.",
+  "type": "object",
+  "required": ["terms", "nonce", "signature", "identity"],
+  "additionalProperties": true,
+  "properties": {
+    "terms": {
+      "type": "object",
+      "description": "Projection of the per-match game object; not the full object."
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 1
+    },
+    "identity": {
+      "type": "object",
+      "required": ["role", "group_id"],
+      "additionalProperties": true,
+      "properties": {
+        "role": {
+          "enum": ["police", "thief"]
+        },
+        "group_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

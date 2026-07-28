@@ -1,0 +1,5 @@
+{
+  "sender": "police",
+  "kind": "ready",
+  "note": "peer is ready to start the sub-game"
+}

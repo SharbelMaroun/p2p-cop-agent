@@ -4,14 +4,16 @@ The active roadmap uses the common M0–M9 phase vocabulary. It decomposes only 
 owned in this Cop repository. External review, Thief consumption, and lecturer
 clarifications are exit dependencies, not Cop implementation tasks.
 
-Current state: **M1 technically ready for external parity review; CONTRACT FREEZE
-NO-GO; M2 BLOCKED.**
+Current state: **`0.1.0-proposed` rejected; M1.5 Option-B repair in progress toward
+`0.2.0-proposed`; M2 core domain implemented and being hardened; contract freeze and
+`M2_GAMEPLAY: GO` remain later coordinator gates.**
 
 | Phase | Status | Cop outcome | Exit gate |
 |---|---|---|---|
 | M0 Evidence and source reconciliation | DONE | Authority order, provenance, conflicts, and unknowns are evidence-backed | Coordinator audit corrections are reflected |
-| M1 Public contract, match configuration, parity and freeze | READY FOR EXTERNAL REVIEW / BLOCKED | Cop-authored stable semantics, neutral match proposal, local integrity, cross-root comparison, CI, and handoff | Coordinator acceptance; Thief byte consumption and independent proof |
-| M2 Core domain rules | DEFERRED | Immutable board/actions, legal moves, barriers, and capture rules through SDK | M1 freeze GO plus complete unit suite |
+| M1 Public contract, match configuration, parity and freeze | SUPERSEDED | `0.1.0-proposed` was rejected; the stable-semantics work carries into M1.5 | Replaced by the M1.5 Option-B gate |
+| M1.5 Option-B contract repair and conformance | IN PROGRESS | Option-B decision recorded, role-neutral `0.2.0-proposed` bundle, protocol/message schemas, hash-domain vectors, and unknown-opponent conformance | Green conformance suite and a published `0.2.0-proposed` handoff |
+| M2 Core domain rules | IMPLEMENTED (hardening in M1.5) | Immutable board/actions, legal moves, barriers, and capture rules through the SDK | Complete hardened unit suite (barrier-aware moves, adjacency, capture) |
 | M3 Local state, scoring and deterministic baseline | DEFERRED | Cop-only state/history, scoring, harness, and deterministic policy | Full local series simulation without private-truth leakage |
 | M4 Protocol, canonicalization and commit-reveal | DEFERRED | Accepted messages, exact canonical vectors, commit/reveal/audit state machine | Independent vectors and tamper/failure tests pass |
 | M5 FastMCP runtime and resilience | DEFERRED | Server/client peer, negotiation, deadlines, idempotency, retry, watchdog, tunnel boundary | Two independent local processes complete a resilient game |
@@ -20,22 +22,30 @@ NO-GO; M2 BLOCKED.**
 | M8 GUI, replay, interoperability and security hardening | DEFERRED | Local-truth GUI, verified/tampered replay, unknown-opponent interop, security/failure hardening | Remote rehearsal and evidence screenshots pass |
 | M9 League evidence, submission and release | DEFERRED | League runs, academic report, cost/evidence package, annotated release | Submission checklist and current Moodle instructions satisfied |
 
-## M1 freeze gate
+## M1.5 Option-B contract repair and conformance gate
 
-The Cop-owned M1 implementation gate passes locally. Contract freeze remains NO-GO
-until both external conditions are satisfied:
+The 2026-07-28 coordinator decision rejected `0.1.0-proposed`, authorized
+contract-independent M2 domain work, and selected Option B (the `simulator-v3`
+interoperability profile pinned to `960499fd5e8777b4929625f5d8fdcf2ab4677b54`) as a
+documented academic-freedom choice where the book leaves wire details open. It did
+**not** rank the simulator above the book in general.
 
-1. The coordinator accepts the exact `0.1.0-proposed` candidate scope.
-2. Thief consumes the accepted bundle byte-for-byte and independently reproduces
-   local and cross-root verification.
+M1.5 replaces the old freeze gate. It delivers, as focused green milestones:
 
-Participant representation/order, unified shared config, exact source-byte and
-canonical config locks, artifact lifecycle, logical `<NN>` links, local rate-limit
-boundary, and the six-game role schedule are incorporated with reproducible vectors.
-Artifact provenance wording, complete artifact schemas, `game_id`/UUID policy,
-Step-0 wire evidence, and six-game runtime verification are tracked in M4/M7; they
-do not expand the behavior-free M1 shared-config gate.
-No gameplay work begins until the coordinator changes the M1 gate to GO.
+1. the recorded Option-B decision (ledger, conflicts, ADR-001/006, TODO, PLAN);
+2. hardened barrier-aware M2 domain semantics;
+3. a role-neutral top-level `shared_contract/` bundle at `0.2.0-proposed` that
+   separates the stable specification/schema/fixture/verifier set from any
+   per-match configuration;
+4. Option-B protocol and message schemas with positive/negative fixtures;
+5. separated hash domains (move-commit, `config_sha256`, `config_file_sha256`) with
+   canonicalization vectors;
+6. unknown-opponent conformance against a neutral stub plus LF/controlled-byte
+   hardening.
+
+Exit gate: a green conformance suite and a published `0.2.0-proposed` handoff.
+Copying or freezing the rejected `0.1.0-proposed` bundle is not authorized, and
+contract freeze plus a separate `M2_GAMEPLAY: GO` remain later coordinator gates.
 
 ## Continuous gates
 

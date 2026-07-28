@@ -1,0 +1,38 @@
+{
+  "x-contract-version": "0.2.0-proposed",
+  "description": "Maps one complete per-match game object to the exact negotiation-terms projection carried in a negotiate message. The projection is a strict subset; config_sha256 is always computed over the complete game_object, never over the projection.",
+  "game_object": {
+    "schema_version": "1.2",
+    "board_and_agents": {
+      "grid_size": 7,
+      "num_agents": 2,
+      "thief_start": [3, 3],
+      "cop_start": [0, 0],
+      "axis_origin_corner": "top-left",
+      "axis_start_index": 0
+    },
+    "movement_and_barriers": {
+      "move_set": ["N", "S", "E", "W", "STAY"],
+      "max_barriers": 14,
+      "max_moves": 35,
+      "survival_threshold": 35
+    },
+    "network_and_league": {
+      "num_games": 6
+    }
+  },
+  "negotiation_terms": {
+    "grid_size": 7,
+    "num_agents": 2,
+    "thief_start": [3, 3],
+    "cop_start": [0, 0],
+    "axis_origin_corner": "top-left",
+    "axis_start_index": 0,
+    "move_set": ["N", "S", "E", "W", "STAY"],
+    "max_barriers": 14,
+    "max_moves": 35,
+    "survival_threshold": 35,
+    "num_games": 6
+  },
+  "game_object_config_sha256": "259a214af2516f2ab53cb180480b82023b89a1eb8d7d7497d8cea2256d824c15"
+}

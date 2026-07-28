@@ -1,6 +1,7 @@
 """Tests for the book-defined capture conditions."""
 
 from p2p_cop_agent.domain import (
+    Action,
     BarrierField,
     Board,
     CaptureReason,
@@ -10,6 +11,7 @@ from p2p_cop_agent.domain import (
     captured_by_cop,
     is_captured,
     is_trapped,
+    legal_moves,
 )
 
 
@@ -86,3 +88,14 @@ def test_is_captured_matches_capture_reason() -> None:
     empty = BarrierField(max_barriers=14)
     assert is_captured(board(), Coordinate(3, 3), Coordinate(3, 3), empty) is True
     assert is_captured(board(), Coordinate(0, 0), Coordinate(3, 3), empty) is False
+
+
+def test_stay_availability_does_not_prevent_trapped_capture() -> None:
+    """A trapped Thief still has STAY as a legal move but is captured anyway."""
+    field = barriers_at(
+        Coordinate(2, 3), Coordinate(4, 3), Coordinate(3, 2), Coordinate(3, 4)
+    )
+    thief = Coordinate(3, 3)
+    assert Action.STAY in legal_moves(board(), thief, field.cells)
+    assert is_trapped(board(), thief, field) is True
+    assert capture_reason(board(), Coordinate(6, 6), thief, field) is CaptureReason.THIEF_TRAPPED

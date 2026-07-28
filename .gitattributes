@@ -1,7 +1,12 @@
-* text=auto
+# Normalize all text to LF in the repository and on checkout, so the controlled
+# shared-contract bytes hash identically on Windows and Linux.
+* text=auto eol=lf
+
 .gitattributes text eol=lf
+
+# The stable, hash-controlled shared-contract bundle must always be LF.
+/shared_contract/** text eol=lf
+
+# Local operational configuration compared against shared Gatekeeper terms.
 /config/*.json text eol=lf
-/docs/contracts/** text eol=lf
-/docs/schemas/** text eol=lf
-/scripts/check_shared_contracts.py text eol=lf
-/tests/fixtures/contracts/** text eol=lf
+/config/*.schema.json text eol=lf
