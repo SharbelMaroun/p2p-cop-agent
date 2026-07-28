@@ -1,0 +1,39 @@
+{
+  "contract_version": "0.2.0-proposed",
+  "files": [
+    {
+      "path": "CONTRACT_VERSION",
+      "sha256": "24f07c6ba8013cb37ce947d2c35d023fa11e891482c45d4b3c5a7391c7c89993"
+    },
+    {
+      "path": "MATCH_CONFIGURATION.md",
+      "sha256": "dd511eeb1c6e0ae0cd5d1a9dce2ec8d9a0e9c386c13e9ba05e26918538035e30"
+    },
+    {
+      "path": "PROTOCOL_PROFILE.md",
+      "sha256": "639411ce150bcf874568e5f3ccb5405d547d86461000ae21064cf5294d68a411"
+    },
+    {
+      "path": "README.md",
+      "sha256": "3b2b38bf1e1147ed4309ff297dffce65b721b2f91a7e5f34fd64b9b4fec6b84e"
+    },
+    {
+      "path": "SHARED_RULES.md",
+      "sha256": "6941f1b1b33fcdec7d5e3107c5787c1a9498ead79e6a4c9bc17ca598ced78135"
+    },
+    {
+      "path": "fixtures/match_config.example.json",
+      "sha256": "70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06"
+    },
+    {
+      "path": "schemas/match-config.schema.json",
+      "sha256": "d22c536995b57559bce2eb350cace1a6814596c7de89f2cd548795efe7028fbb"
+    },
+    {
+      "path": "verify.py",
+      "sha256": "1e6cb9521e418c8b7ff162d20e1f383af7490504f28f704492d415d48f4a84da"
+    }
+  ],
+  "freeze_status": "proposed_unfrozen",
+  "hash_algorithm": "sha256"
+}

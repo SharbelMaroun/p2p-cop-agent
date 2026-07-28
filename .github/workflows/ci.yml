@@ -43,8 +43,13 @@ jobs:
       - name: Scan for secrets
         run: uv run python scripts/check_secrets.py
 
-      - name: Verify Cop-local contract integrity
-        run: uv run python scripts/check_shared_contracts.py
+      - name: Verify shared-contract bundle (read-only)
+        run: uv run python shared_contract/verify.py
+
+      - name: Confirm the manifest is up to date
+        run: |
+          uv run python scripts/generate_shared_manifest.py
+          git diff --exit-code shared_contract/PARITY_MANIFEST.json
 
       - name: Check patch whitespace
         run: git diff --check

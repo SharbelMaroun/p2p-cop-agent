@@ -1,9 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.1.0-proposed",
+  "x-contract-version": "0.2.0-proposed",
   "x-source-status": "PROPOSED",
-  "title": "Proposed authoritative shared game configuration",
-  "description": "Project schema for the byte-identical source config/game.json, not the emitted agreed-config artifact schema.",
+  "x-role-neutral": true,
+  "title": "Option-B per-match shared game configuration",
+  "description": "Role-neutral schema for a per-match shared game object supplied at runtime by explicit path. It is not an active match and not the emitted agreed-config artifact schema; fixtures/match_config.example.json is only an example template.",
   "type": "object",
   "additionalProperties": false,
   "required": [

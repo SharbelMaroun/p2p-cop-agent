@@ -29,7 +29,7 @@ def test_sdk_loads_validated_values_from_repository_files() -> None:
     )
     assert sdk.role == "cop"
     assert sdk.version == "1.00"
-    assert sdk.contract_version == "0.1.0-proposed"
+    assert sdk.contract_version == "0.2.0-proposed"
 
 
 @pytest.mark.parametrize("value", [[], "not-an-object", 7])

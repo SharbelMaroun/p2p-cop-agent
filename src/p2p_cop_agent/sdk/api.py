@@ -7,14 +7,14 @@ from pathlib import Path
 from p2p_cop_agent.shared import __version__
 from p2p_cop_agent.shared.contracts import (
     SharedContract,
-    load_shared_contract,
+    load_match_contract,
     require_same_match_configuration,
 )
 
 
 @dataclass(frozen=True, slots=True)
 class CopSDK:
-    """Hold validated shared configuration without implementing game behavior."""
+    """Hold a validated per-match configuration without implementing game behavior."""
 
     game_config: Mapping[str, object]
     rate_limits_config: Mapping[str, object]
@@ -25,9 +25,13 @@ class CopSDK:
     contract_version: str | None = None
 
     @classmethod
-    def from_repository(cls, root: str | Path) -> "CopSDK":
-        """Load the proposed shared bundle and always enforce its source-backed schemas."""
-        contract = load_shared_contract(root)
+    def from_repository(
+        cls,
+        root: str | Path,
+        match_config_path: str | Path | None = None,
+    ) -> "CopSDK":
+        """Load the stable bundle and a per-match config (default: example template)."""
+        contract = load_match_contract(root, match_config_path)
         return cls(
             game_config=contract.game,
             rate_limits_config=contract.rate_limits,
@@ -36,9 +40,13 @@ class CopSDK:
             contract_version=contract.version,
         )
 
-    def validate_match_offer(self, root: str | Path) -> None:
-        """Validate and compare a proposed shared match bundle and its hash."""
-        offered = load_shared_contract(root)
+    def validate_match_offer(
+        self,
+        root: str | Path,
+        match_config_path: str | Path | None = None,
+    ) -> None:
+        """Validate and compare a proposed per-match configuration and its hashes."""
+        offered = load_match_contract(root, match_config_path)
         expected = SharedContract(
             version=self.contract_version or "",
             game=dict(self.game_config),

@@ -1,8 +1,0 @@
-{
-  "vector_version": "1.0",
-  "source_path": "config/game.json",
-  "scope": "complete parsed root object; hash claim and artifact wrapper are external",
-  "serialization": "sorted keys; compact separators ',' and ':'; unescaped Unicode; UTF-8",
-  "canonical_utf8_length": 965,
-  "sha256": "adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db"
-}
