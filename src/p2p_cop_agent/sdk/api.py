@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from p2p_cop_agent.domain import Action, BarrierField, Board, Coordinate
+from p2p_cop_agent.protocol import TurnLedger
 from p2p_cop_agent.shared import __version__
 from p2p_cop_agent.shared.contracts import (
     SharedContract,
@@ -103,3 +104,13 @@ class CopSDK:
         stores objective opponent truth.
         """
         return choose_turn_intent(self.board(), cop, target, barriers)
+
+    def new_turn_ledger(self, sender: str, public_challenge: str | None = None) -> TurnLedger:
+        """Return a fresh transport-neutral commit-reveal ledger for one sub-game.
+
+        ``sender`` is the peer's wire role for this sub-game (``police``/``thief``),
+        not the fixed package role, because roles alternate. ``public_challenge`` is
+        the peer's own ``negotiate.nonce`` when known, recorded only to prove that a
+        secret commitment nonce never equals it.
+        """
+        return TurnLedger(sender=sender, public_challenge=public_challenge)
