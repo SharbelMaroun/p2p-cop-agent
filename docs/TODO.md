@@ -41,8 +41,8 @@ new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 | M2-03 | Implement legal orthogonal movement and `STAY` | DONE | P1 | Deterministic transitions; barrier-aware legality added in M1.5-02 |
 | M2-04 | Implement barrier inventory, placement, and disclosure rules | DONE | P1 | Quota, board legality, and disclosed events pass; police-adjacency and impassability added in M1.5-02 |
 | M2-05 | Implement capture conditions | DONE | P1 | Cop-on-thief, current-cell barrier, and trapped-Thief (STAY does not save) rules pass tests |
-| M3-01 | Implement Cop-local immutable state | DEFERRED | P1 | No opponent private truth is representable |
-| M3-02 | Implement deterministic state history | DEFERRED | P1 | Repeated input creates reproducible history |
+| M3-01 | Implement Cop-local immutable state | DONE | P1 | `CopState` has no field able to hold an opponent position; a field-inspection test enforces it and `opening()` discards the configured Thief start. Transitions are primitives that assert no turn ordering |
+| M3-02 | Implement deterministic state history | DONE | P1 | `CopHistory` is append-only; identical opening state and action sequence produce an equal history and identical positions; illegal actions record nothing |
 | M3-03 | Implement fixed scoring and technical loss | DONE | P1 | Appendix F table 17 awards and the Appendix E zero-point sanction pass table-driven tests; values are read from the negotiated config, not hard-coded. Counterpart award on a technical loss recorded as `U-026` |
 | M3-04 | Build single-process rules harness | DEFERRED | P1 | Full local sub-game completes without transport |
 | M3-05 | Implement SDK-reachable deterministic pursuit baseline (movement) | DONE | P1 | Policy emits only legal movement actions; barrier-aware BFS distance, fixed-order tie-breaking, SDK-reachable, contract-independent. See [PURSUIT_BASELINE.md](PURSUIT_BASELINE.md) |
