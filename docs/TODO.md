@@ -43,7 +43,8 @@ new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 | M3-02 | Implement deterministic state history | DEFERRED | P1 | Repeated input creates reproducible history |
 | M3-03 | Implement fixed scoring and technical loss | DEFERRED | P1 | Appendix F/E outcomes pass table-driven tests |
 | M3-04 | Build single-process rules harness | DEFERRED | P1 | Full local sub-game completes without transport |
-| M3-05 | Implement SDK-reachable deterministic pursuit baseline | DEFERRED | P1 | Policy emits only legal actions and barriers |
+| M3-05 | Implement SDK-reachable deterministic pursuit baseline (movement) | DONE | P1 | Policy emits only legal movement actions; barrier-aware BFS distance, fixed-order tie-breaking, SDK-reachable, contract-independent. See [PURSUIT_BASELINE.md](PURSUIT_BASELINE.md) |
+| M3-06 | Decide and implement baseline barrier placement | DEFERRED | P1 | Requires barrier-versus-movement turn exclusivity, which depends on the still-provisional live-turn state machine |
 | M4-01 | Finalize public message/envelope contract | DEFERRED | P0 | Accepted ADR-001/002 schemas and error semantics exist |
 | M4-02 | Finalize canonical JSON and nonce vectors | DEFERRED | P0 | Independent implementations reproduce exact hashes |
 | M4-03 | Implement commit, acknowledge, reveal, and final audit | DEFERRED | P0 | Valid state sequence round-trips through SDK |
