@@ -45,14 +45,33 @@ def test_invalid_fixture_fails_schema(schema_name: str, fixture_name: str) -> No
 def test_every_message_schema_is_role_neutral_and_versioned() -> None:
     for schema_name, _ in CASES:
         schema = _schema(schema_name)
-        assert schema["x-contract-version"] == "0.2.2-proposed"
+        assert schema["x-contract-version"] == "0.2.3-proposed"
         assert schema["x-role-neutral"] is True
 
 
-def test_turn_message_forbids_clear_position_and_nonce() -> None:
-    """The negative TurnMessage fixture carries clear position/nonce and must fail."""
+@pytest.mark.parametrize(
+    ("forbidden_field", "value"),
+    [("position", [1, 1]), ("nonce", "0" * 32)],
+)
+def test_turn_message_forbids_each_private_commitment_field(
+    forbidden_field: str,
+    value: object,
+) -> None:
     schema = _schema("turn-message")
-    leaky = load_json_object(FIXTURES / "turn_message.invalid.json")
-    assert "position" in leaky and "nonce" in leaky
+    leaky = load_json_object(FIXTURES / "turn_message.valid.json")
+    leaky[forbidden_field] = value
     with pytest.raises(ContractValidationError):
         validate_instance(leaky, schema, "turn-message")
+
+
+def test_nonce_schemas_distinguish_public_challenge_from_commitment_nonce() -> None:
+    challenge = _schema("negotiate")["properties"]["nonce"]
+    audit_record = _schema("audit-record")["properties"]["nonce"]
+    audit_payload = _schema("audit-payload")["properties"]["records"]["items"]
+    embedded_audit_nonce = audit_payload["properties"]["nonce"]
+
+    assert challenge["x-purpose"] == "negotiation-challenge"
+    assert challenge["x-visibility"] == "public"
+    for nonce_schema in (audit_record, embedded_audit_nonce):
+        assert nonce_schema["x-purpose"] == "per-turn-commitment-nonce"
+        assert nonce_schema["x-visibility"] == "audit-only"

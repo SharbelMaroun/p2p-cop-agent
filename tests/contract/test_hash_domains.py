@@ -11,10 +11,12 @@ from p2p_cop_agent.shared.contracts import load_match_contract, shared_config_sh
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 VECTORS = PROJECT_ROOT / "shared_contract" / "vectors"
 FIXTURES = PROJECT_ROOT / "shared_contract" / "fixtures"
+EXAMPLE = FIXTURES / "match_config.example.json"
+RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 
 def test_example_match_hash_domains_are_all_distinct() -> None:
-    contract = load_match_contract(PROJECT_ROOT)
+    contract = load_match_contract(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
     canonical_object_hash = contract.config_sha256
     raw_bytes_hash = contract.config_file_sha256
     commitment = move_commit(contract.game, "0" * 32)
@@ -31,7 +33,7 @@ def test_config_sha256_vectors_reproduce() -> None:
 
 
 def test_example_vector_matches_loaded_contract() -> None:
-    contract = load_match_contract(PROJECT_ROOT)
+    contract = load_match_contract(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
     data = load_json_object(VECTORS / "config-sha256.vectors.json")
     example = next(v for v in data["vectors"] if v["name"] == "example_match_object")  # type: ignore[union-attr]
     assert contract.config_sha256 == example["config_sha256"]

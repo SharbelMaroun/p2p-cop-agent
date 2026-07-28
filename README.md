@@ -10,11 +10,11 @@ Peer-to-Peer Network” final project.
 This branch implements M2 core domain rules and M3 Cop-local state, history,
 scoring, transport-free rules harness, and deterministic move-or-barrier baseline.
 It also contains the M1.5 Option-B contract repair: a role-neutral
-`shared_contract/` bundle at `0.2.2-proposed`. The `0.1.0-proposed` bundle was
+`shared_contract/` bundle at `0.2.3-proposed`. The `0.1.0-proposed` bundle was
 rejected and is superseded. There is still no network, cryptographic transport,
 LLM, Gmail, GUI, or replay runtime.
 
-The shared contract is `0.2.2-proposed` and **UNFROZEN**. It becomes frozen only
+The shared contract is `0.2.3-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
 identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
 a documented academic-freedom interoperability choice pinned to simulator commit
@@ -44,8 +44,9 @@ Evidence and decisions are tracked in:
 - Legal movement is north, south, east, west, or stay; diagonals are illegal.
 - Barrier placement is disclosed. A barrier on the Thief’s current cell captures the
   Thief, and a Thief with no legal move is captured.
-- SHA-256 commit-reveal, secret nonces until final reveal, illegal-transition
-  rejection, public tunnels, deadlines, and watchdogs are mandatory.
+- SHA-256 commit-reveal, secret per-turn commitment nonces until final reveal,
+  illegal-transition rejection, public tunnels, deadlines, and watchdogs are
+  mandatory. The pre-play `negotiate.nonce` is a distinct public challenge.
 - The live GUI may display local truth only.
 
 Confirmed values and their `Fixed`, `Minimum`, or `Negotiation` status are recorded
@@ -79,18 +80,20 @@ displays the equivalent PEP 440 form `1.0`.
 ## Configuration
 
 - The stable, role-neutral shared contract is the top-level `shared_contract/`
-  bundle at `0.2.2-proposed` (Option B). It holds specifications, schemas,
+  bundle at `0.2.3-proposed` (Option B). It holds specifications, schemas,
   fixtures, vectors, and the read-only verifier only — no active match.
-- A per-match shared game object is supplied at runtime by explicit path.
+- A per-match shared game object and local rate-limit enforcement mirror are each
+  supplied at runtime by explicit path; neither loader has a repository or example
+  fallback.
   `shared_contract/fixtures/match_config.example.json` is an example template; its
   exact file SHA-256 is
   `70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06` and its
   canonical object SHA-256 is
   `adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db`. Changing
   opponent IDs or game identity never edits a stable controlled file.
-- `config/rate_limits.json` is local enforcement. Its shared Gatekeeper values may
-  not weaken or contradict the agreed match configuration, but its bytes and local
-  extensions are not parity-controlled.
+- `config/rate_limits.json` is an example local enforcement mirror. Its shared
+  Gatekeeper object must exactly equal the agreed match configuration, but its bytes
+  and local extensions are not parity-controlled.
 - `config/game.toml.example` is Cop-local and is not parity-controlled.
 - `.env-example` contains dummy, provider-neutral placeholders only.
 

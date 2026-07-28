@@ -1,6 +1,6 @@
 # Shared Gameplay Rules
 
-Contract version: `0.2.2-proposed`
+Contract version: `0.2.3-proposed`
 Status: **PROPOSED / UNFROZEN — role-neutral**
 
 These are the book-authoritative gameplay rules both peers implement. Exact
@@ -17,7 +17,7 @@ the Option-B profile in `PROTOCOL_PROFILE.md` selects the interoperable answer.
 | Legal movement is `N`, `S`, `E`, `W`, or `STAY`; diagonals are illegal. | Appendix E rules 13-14; Appendix F table 15 |
 | A barrier occupies either the placing peer's own current cell or a cell exactly one orthogonal step away; diagonal and more distant targets are illegal. Placing it gives up that turn's movement, it is disclosed truthfully, and it is impassable for both players thereafter. | Book §3.4; Appendix E rules 15-16, 46-47 |
 | Barriers respect the negotiated quota (`max_barriers`, Minimum 14). | Appendix F table 15 |
-| SHA-256 commit-reveal is mandatory; nonces stay secret until the end-game audit; a mismatch is a technical loss worth zero. | Appendix E rules 17-19 |
+| SHA-256 commit-reveal is mandatory; per-turn commitment nonces stay secret until the end-game audit; a mismatch is a technical loss worth zero. | Appendix E rules 17-19 |
 | Scent uses the multiplicative update `tau_ij(t+1) = max(0, (1-rho) * tau_ij(t) + delta_tau_ij)`. | Book Ch.4; ADR-005 |
 | A single orchestrator entry point, explicit state machine, illegal-transition rejection, deadlines, watchdog, and public tunnel are mandatory runtime requirements. | Appendix E rules 3-7, 10 |
 | A live GUI may display local truth only. | Appendix E rules 8-9 |

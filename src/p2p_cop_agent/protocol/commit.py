@@ -1,13 +1,14 @@
-"""Option-B move/negotiation commit-reveal — a distinct hash domain.
+"""Option-B per-turn commit-reveal — a distinct hash domain.
 
-The move/negotiation commitment binds a hidden payload to a secret nonce:
+The per-turn commitment binds a hidden payload to a secret commitment nonce:
 
     commit = SHA256( canonical_json(payload) + "|" + nonce )
 
 ``canonical_json`` uses sorted keys, ``ensure_ascii=False``, compact separators,
 and ``allow_nan=False``. This is kept separate from the config hash domains: it
-mixes in a nonce and the literal ``"|"`` delimiter, whereas ``config_sha256``
-hashes a bare object and ``config_file_sha256`` hashes exact file bytes.
+mixes in a commitment nonce and the literal ``"|"`` delimiter, whereas
+``config_sha256`` hashes a bare object and ``config_file_sha256`` hashes exact file
+bytes. The public ``negotiate.nonce`` challenge is a separate protocol value.
 """
 
 from __future__ import annotations
@@ -19,12 +20,12 @@ import re
 import secrets
 
 DELIMITER = "|"
-NONCE_BYTES = 16
-_NONCE_PATTERN = re.compile(r"^[0-9a-f]{32}$")
+COMMITMENT_NONCE_BYTES = 16
+_COMMITMENT_NONCE_PATTERN = re.compile(r"^[0-9a-f]{32}$")
 
 
 class CommitError(ValueError):
-    """Raised for a non-serializable payload or a malformed nonce."""
+    """Raised for a non-serializable payload or malformed commitment nonce."""
 
 
 def canonical_payload_bytes(payload: object) -> bytes:
@@ -42,26 +43,26 @@ def canonical_payload_bytes(payload: object) -> bytes:
     return text.encode("utf-8")
 
 
-def generate_nonce() -> str:
-    """Return a fresh nonce: 16 random bytes as 32 lowercase hex characters."""
-    return secrets.token_hex(NONCE_BYTES)
+def generate_commitment_nonce() -> str:
+    """Return a fresh secret commitment nonce as 32 lowercase hex characters."""
+    return secrets.token_hex(COMMITMENT_NONCE_BYTES)
 
 
-def _require_nonce(nonce: object) -> str:
-    if not isinstance(nonce, str) or _NONCE_PATTERN.fullmatch(nonce) is None:
-        raise CommitError("nonce must be 32 lowercase hexadecimal characters")
+def _require_commitment_nonce(nonce: object) -> str:
+    if not isinstance(nonce, str) or _COMMITMENT_NONCE_PATTERN.fullmatch(nonce) is None:
+        raise CommitError("commitment nonce must be 32 lowercase hexadecimal characters")
     return nonce
 
 
 def move_commit(payload: object, nonce: str) -> str:
-    """Return the commitment hash for a payload bound to a validated nonce."""
-    valid_nonce = _require_nonce(nonce)
+    """Return the hash for a payload bound to a validated commitment nonce."""
+    valid_nonce = _require_commitment_nonce(nonce)
     suffix = f"{DELIMITER}{valid_nonce}".encode("ascii")
     return hashlib.sha256(canonical_payload_bytes(payload) + suffix).hexdigest()
 
 
 def verify_commit(payload: object, nonce: str, commit: object) -> bool:
-    """Return whether payload and nonce reproduce a claimed commitment hash."""
+    """Return whether payload and commitment nonce reproduce a claimed hash."""
     if not isinstance(commit, str):
         return False
     try:

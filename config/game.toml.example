@@ -13,5 +13,5 @@ name = "private-unconfigured"
 provider = "private-unconfigured"
 model = "private-unconfigured"
 
-# Credentials, tunnel tokens, API keys, signing secrets, and nonces belong in an
+# Credentials, tunnel tokens, API keys, signing secrets, and commitment nonces belong in an
 # ignored .env/credential store, never in this example or any shared JSON.

@@ -3,7 +3,7 @@
 from p2p_cop_agent.protocol.commit import (
     CommitError,
     canonical_payload_bytes,
-    generate_nonce,
+    generate_commitment_nonce,
     move_commit,
     verify_commit,
 )
@@ -11,7 +11,7 @@ from p2p_cop_agent.protocol.commit import (
 __all__ = [
     "CommitError",
     "canonical_payload_bytes",
-    "generate_nonce",
+    "generate_commitment_nonce",
     "move_commit",
     "verify_commit",
 ]

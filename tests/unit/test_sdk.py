@@ -9,6 +9,8 @@ from p2p_cop_agent import CopSDK
 from p2p_cop_agent.shared.config import ConfigLoadError, load_json_object
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE = PROJECT_ROOT / "shared_contract" / "fixtures" / "match_config.example.json"
+RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 
 def write_json(path: Path, value: object) -> None:
@@ -18,7 +20,7 @@ def write_json(path: Path, value: object) -> None:
 
 def test_sdk_loads_validated_values_from_repository_files() -> None:
     """Load values from files instead of source constants."""
-    sdk = CopSDK.from_repository(PROJECT_ROOT)
+    sdk = CopSDK.from_repository(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
 
     assert sdk.game_config["board_and_agents"]["grid_size"] == 7  # type: ignore[index]
     assert sdk.rate_limits_config["rate_limiter_gatekeeper"]["queue_depth"] == 100  # type: ignore[index]
@@ -29,7 +31,7 @@ def test_sdk_loads_validated_values_from_repository_files() -> None:
     )
     assert sdk.role == "cop"
     assert sdk.version == "1.00"
-    assert sdk.contract_version == "0.2.2-proposed"
+    assert sdk.contract_version == "0.2.3-proposed"
 
 
 @pytest.mark.parametrize("value", [[], "not-an-object", 7])

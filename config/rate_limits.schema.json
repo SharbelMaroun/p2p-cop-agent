@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.1.0-proposed",
+  "x-contract-version": "0.2.3-proposed",
   "x-source-status": "PROPOSED",
   "title": "Operational Gatekeeper mirror configuration",
-  "description": "File-backed enforcement mirror. Values must equal the authoritative shared game.json Gatekeeper section.",
+  "description": "Per-run file-backed enforcement mirror. Values must equal the authoritative signed match configuration Gatekeeper section.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -61,7 +61,7 @@
     },
     "extensions": {
       "type": "object",
-      "description": "PROPOSED explicit extension namespace; contents must be mutually agreed."
+      "description": "Peer-local extension namespace; contents are not match terms and must not override the Gatekeeper mirror."
     }
   }
 }

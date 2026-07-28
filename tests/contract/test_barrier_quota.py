@@ -8,15 +8,17 @@ from p2p_cop_agent import CopSDK
 from p2p_cop_agent.domain import BarrierError, BarrierField, Board, Coordinate
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE = PROJECT_ROOT / "shared_contract" / "fixtures" / "match_config.example.json"
+RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 
 def _sdk_field_and_board() -> tuple[BarrierField, Board]:
-    sdk = CopSDK.from_repository(PROJECT_ROOT)
+    sdk = CopSDK.from_repository(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
     return BarrierField.from_config(sdk.game_config), Board.from_config(sdk.game_config)
 
 
 def test_barrier_quota_matches_shared_config() -> None:
-    """config/game.json sets the Appendix F Minimum-14 barrier quota."""
+    """The explicit example match sets the Appendix F Minimum-14 barrier quota."""
     field, _ = _sdk_field_and_board()
     assert field.max_barriers == 14
     assert field.remaining == 14

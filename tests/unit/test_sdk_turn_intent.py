@@ -7,11 +7,13 @@ from p2p_cop_agent.domain import BarrierField, Coordinate
 from p2p_cop_agent.strategy import BarrierIntent, MoveIntent
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE = PROJECT_ROOT / "shared_contract" / "fixtures" / "match_config.example.json"
+RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 
 def sdk() -> CopSDK:
     """Return an SDK bound to the example match configuration."""
-    return CopSDK.from_repository(PROJECT_ROOT)
+    return CopSDK.from_repository(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
 
 
 def test_sdk_exposes_the_barrier_aware_turn_decision() -> None:

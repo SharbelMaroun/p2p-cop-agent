@@ -6,11 +6,14 @@ decisions; the M4 runtime state machine and audit binding remain unimplemented.
 ## Confirmed behavior
 
 - Every live turn sends a commitment and receives transport acknowledgement.
-- Hidden payloads and nonces are revealed only in the post-game final audit; the
-  Option-B profile has no live reveal tool.
-- SHA-256 commits bind the semantic state, move, intent, and nonce before reveal.
+- Hidden payloads and per-turn commitment nonces are revealed only in the post-game
+  final audit; the Option-B profile has no live reveal tool.
+- SHA-256 commits bind the semantic state, move, intent, and commitment nonce before
+  reveal.
 - Only the hash is sent during Commit.
-- A fresh nonce remains secret until the end-of-game final reveal/audit.
+- A fresh commitment nonce remains secret until the end-of-game final reveal/audit.
+- The separate `negotiate.nonce` field is a public pre-play challenge, not a
+  commitment nonce.
 - Both peers recompute every commitment. Any mismatch is a technical loss worth zero.
 - Step 0 records and seals the required hardware/LLM/code/group/game declaration
   data plus the exact Git commit of the running code before moves begin.
@@ -21,9 +24,9 @@ Sources: book Ch. 5; Appendix E rules 17–19/24.
 
 The shared-config digest has its own accepted vector and does not define move
 commitments. ADR-006 fixes the project move-commit bytes: sorted keys, compact
-separators, unescaped Unicode, UTF-8, a literal `"|"` delimiter, and a 16-byte nonce
-rendered as 32 lowercase hexadecimal characters. This is an accepted Option-B project
-choice, not an Appendix E serialization rule.
+separators, unescaped Unicode, UTF-8, a literal `"|"` delimiter, and a 16-byte
+commitment nonce rendered as 32 lowercase hexadecimal characters. This is an
+accepted Option-B project choice, not an Appendix E serialization rule.
 
 Known semantic components do not prove a formal wire payload schema. Sub-game/role
 sealing, field names/types, error envelopes, and acknowledgement transport are linked

@@ -33,10 +33,16 @@ class CopSDK:
     def from_repository(
         cls,
         root: str | Path,
-        match_config_path: str | Path | None = None,
+        match_config_path: str | Path,
+        *,
+        rate_limits_path: str | Path,
     ) -> "CopSDK":
-        """Load the stable bundle and a per-match config (default: example template)."""
-        contract = load_match_contract(root, match_config_path)
+        """Load the stable bundle and explicit per-run configuration files."""
+        contract = load_match_contract(
+            root,
+            match_config_path,
+            rate_limits_path=rate_limits_path,
+        )
         return cls(
             game_config=contract.game,
             rate_limits_config=contract.rate_limits,
@@ -48,10 +54,16 @@ class CopSDK:
     def validate_match_offer(
         self,
         root: str | Path,
-        match_config_path: str | Path | None = None,
+        match_config_path: str | Path,
+        *,
+        rate_limits_path: str | Path,
     ) -> None:
         """Validate and compare a proposed per-match configuration and its hashes."""
-        offered = load_match_contract(root, match_config_path)
+        offered = load_match_contract(
+            root,
+            match_config_path,
+            rate_limits_path=rate_limits_path,
+        )
         expected = SharedContract(
             version=self.contract_version or "",
             game=dict(self.game_config),

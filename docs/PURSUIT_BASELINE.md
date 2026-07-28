@@ -9,7 +9,7 @@ This is the M3-05 movement policy, initially delivered as a narrowly scoped
 contract-independent increment and now part of completed M3. It uses only public
 domain APIs, defines no new game
 rule, performs no I/O, and changes no shared-contract byte. It is independent of
-the contract gate: nothing here waits on `0.2.2-proposed` review.
+the contract gate: nothing here waits on `0.2.3-proposed` review.
 
 ## What the policy does
 

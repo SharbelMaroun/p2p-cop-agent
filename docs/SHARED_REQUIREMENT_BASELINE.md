@@ -1,8 +1,8 @@
 # Shared Requirement Baseline
 
 This is a source-backed baseline, not proof of cross-repository byte parity. The
-proposed contract is `0.1.0-proposed` and **UNFROZEN** until the Thief repository
-accepts the controlled files and matching hashes are demonstrated.
+current proposed contract is `0.2.3-proposed` and **UNFROZEN** until independent peer
+acceptance and matching controlled hashes are demonstrated.
 
 | ID | Confirmed shared requirement | Direct source |
 |---|---|---|
@@ -16,7 +16,7 @@ accepts the controlled files and matching hashes are demonstrated.
 | SR-012 | Canonical general and automated-report addresses are distinct | Book PDF p. 157, table 20 |
 | SR-013 | Four artifact families and book-defined filename patterns are known; local generated artifacts expose non-authoritative 1.1 key-set observations | Book table 20; local files classified `NEEDS_MANUAL_REVIEW` |
 | SR-014 | Moves are N/S/E/W/STAY only; barriers are disclosed; current-cell barrier and trapped-Thief conditions capture | Appendix E rules 13–16/46/47; book Ch. 3 |
-| SR-015 | SHA-256 commit-reveal is mandatory; nonce stays secret until final reveal; mismatch is a technical loss worth zero | Book Ch. 5; Appendix E rules 17–19 |
+| SR-015 | SHA-256 commit-reveal is mandatory; each per-turn commitment nonce stays secret until final reveal; mismatch is a technical loss worth zero | Book Ch. 5; Appendix E rules 17–19 |
 | SR-016 | Played-game shared JSON is byte-identical and locked; private per-peer TOML remains local | Appendix B; Appendix E rules 11/12 |
 | SR-017 | Each local server is exposed through a public tunnel; no provider is mandated here | Appendix E rule 10 |
 | SR-018 | Final report is a JSON attachment with no free-text final-report body | Book Ch. 9; Appendix E rules 32–34 |
@@ -24,7 +24,8 @@ accepts the controlled files and matching hashes are demonstrated.
 | AE-025 | Algorithmic movement is the safe default; rule 25 is a recommendation without a mandatory sanction | Appendix E rule 25, PDF p. 146 |
 | PS-001–010 | Mandatory docs; `uv`; line/TDD/coverage/Ruff/secrets/SDK/Gatekeeper/prompt-log/version gates | Professional Software Submission Guidelines v3.0 |
 
-Exact MCP names, envelope fields, crypto serialization/nonce length, and other
-non-obvious design choices require the corresponding ADR. Confirmed numeric values
-are not “candidates”; their mapping into the proposed shared contract remains subject
-to parity and acceptance.
+Option B fixes the project MCP names and per-turn commitment serialization/nonce
+length; the public `negotiate.nonce` challenge is a separate domain. Remaining
+envelope/error details and other non-obvious choices require their corresponding
+ADR. Confirmed numeric values are not “candidates”; their mapping into the proposed
+shared contract remains subject to parity and acceptance.

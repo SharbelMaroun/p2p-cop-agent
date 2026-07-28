@@ -33,7 +33,8 @@ required/optional, exhaustive type/enum, conditional, and compatibility constrai
 remain unresolved. ADR-003 isolates these fixtures from shared config schema 1.2;
 ADR-010 owns Gmail delivery choices.
 
-The behavior-free milestone may validate configuration and fixtures. The local
-`rate_limits.json` enforcement file may not weaken shared terms but is not a
-byte-identical peer contract. This milestone does not implement a Gatekeeper or
-Gmail/reporting runtime.
+The behavior-free milestone may validate configuration and fixtures. Each run names
+its local rate-limit enforcement mirror explicitly; its Gatekeeper object must equal
+the authoritative shared match terms exactly, but its own bytes and local extensions
+are not a byte-identical peer contract. This milestone does not implement a
+Gatekeeper or Gmail/reporting runtime.

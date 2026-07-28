@@ -1,6 +1,6 @@
 # Option-B Protocol Profile
 
-Contract version: `0.2.2-proposed`
+Contract version: `0.2.3-proposed`
 Status: **PROPOSED / UNFROZEN**
 
 This is the normative wire specification for the Option-B interoperability profile,
@@ -33,8 +33,10 @@ Naming discipline:
 
 ### `negotiate` message
 
-Public per-match agreement: `terms` (the per-match game object projection),
-`nonce`, `signature`, and `identity`. See `schemas/negotiate.schema.json`.
+Public per-match agreement: `terms` (the per-match game object projection), a public
+`nonce` challenge, `signature`, and `identity`. The negotiation challenge is sent
+before play and is not a per-turn commitment nonce. See
+`schemas/negotiate.schema.json`.
 
 ### `TurnMessage` (`receive_turn`)
 
@@ -42,15 +44,15 @@ Public event only. Required: `step`, `sender`, `hint`, `smell_grid`, `commit`,
 `timestamp`. Optional public events: `barrier_placed`, `capture_claim`,
 `claim_response`, `win_claim`. See `schemas/turn-message.schema.json`.
 
-A `TurnMessage` never exposes the true position, the move, intent/verdict, or the
-nonce. Those are revealed only after the game in the `AuditPayload`. There is no
-separate live reveal tool.
+A `TurnMessage` never exposes the true position, the move, intent/verdict, or its
+per-turn commitment nonce. Those are revealed only after the game in the
+`AuditPayload`. There is no separate live reveal tool.
 
 ### `AuditPayload` (`submit_audit`)
 
 Post-game reveal: `sender`, `records`, and `result_claim`. Each audit `record`
-carries `payload`, `nonce`, and `commit`. See `schemas/audit-payload.schema.json`
-and `schemas/audit-record.schema.json`.
+carries `payload`, its revealed per-turn commitment `nonce`, and `commit`. See
+`schemas/audit-payload.schema.json` and `schemas/audit-record.schema.json`.
 
 ### `ControlMessage` (`receive_control`, optional)
 
@@ -58,7 +60,7 @@ Optional control channel; see `schemas/control-message.schema.json`.
 
 ## Commit-reveal
 
-A commitment binds a hidden payload with a secret nonce:
+A per-turn commitment binds a hidden payload with a secret commitment nonce:
 
 ```python
 canonical = json.dumps(
@@ -72,8 +74,9 @@ commit = sha256((canonical + "|" + nonce).encode("utf-8")).hexdigest()
 ```
 
 - The domain-separation delimiter is the single literal character `"|"`.
-- The nonce is 16 cryptographically random bytes rendered as 32 lowercase hex
-  characters, kept outside the JSON payload and never disclosed before the audit.
+- The commitment nonce is 16 cryptographically random bytes rendered as 32
+  lowercase hex characters, kept outside the JSON payload and never disclosed
+  before the audit. It is distinct from the public `negotiate.nonce` challenge.
 - At audit time, each record's `payload` + `nonce` must reproduce its `commit`.
 
 ## Duplicate safety (adapter behavior)

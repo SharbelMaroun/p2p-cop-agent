@@ -9,6 +9,8 @@ from tests.conformance.neutral_stub import TOOLS, ConformanceError, NeutralPeer,
 
 BUNDLE = Path(__file__).resolve().parents[2] / "shared_contract"
 VECTORS = BUNDLE / "vectors" / "move-commit.vectors.json"
+PUBLIC_NEGOTIATION_CHALLENGE = "0123456789abcdef0123456789abcdef"
+COMMITMENT_NONCE = "abcdefabcdefabcdefabcdefabcdefab"
 
 
 def police() -> NeutralPeer:
@@ -18,7 +20,7 @@ def police() -> NeutralPeer:
 def offer(group_id: str, role: str = "police") -> dict:
     return {
         "terms": {"grid_size": 7},
-        "nonce": "0123456789abcdef0123456789abcdef",
+        "nonce": PUBLIC_NEGOTIATION_CHALLENGE,
         "signature": "sig",
         "identity": {"role": role, "group_id": group_id},
     }
@@ -52,7 +54,14 @@ def test_neutral_stub_reproduces_move_commit_vectors() -> None:
         assert commit(vector["payload"], vector["nonce"]) == vector["commit"]
 
 
-def test_turn_message_with_clear_position_or_nonce_is_rejected() -> None:
+@pytest.mark.parametrize(
+    ("forbidden_field", "value"),
+    [("position", [1, 1]), ("nonce", COMMITMENT_NONCE)],
+)
+def test_turn_message_rejects_each_private_commitment_field(
+    forbidden_field: str,
+    value: object,
+) -> None:
     leaky = {
         "step": 1,
         "sender": "police",
@@ -60,7 +69,7 @@ def test_turn_message_with_clear_position_or_nonce_is_rejected() -> None:
         "smell_grid": [[0.0]],
         "commit": "a" * 64,
         "timestamp": "t",
-        "position": [1, 1],
+        forbidden_field: value,
     }
     with pytest.raises(ConformanceError):
         police().receive_turn(leaky)
@@ -110,7 +119,7 @@ def test_invalid_turn_fields_are_rejected(message: dict) -> None:
         police().receive_turn(message)
 
 
-def test_invalid_negotiation_nonce_is_rejected() -> None:
+def test_invalid_public_negotiation_challenge_is_rejected() -> None:
     bad = offer("group-beta", "thief")
     bad["nonce"] = "too-short"
     with pytest.raises(ConformanceError):
@@ -119,11 +128,16 @@ def test_invalid_negotiation_nonce_is_rejected() -> None:
 
 def test_audit_reproduction_is_checked() -> None:
     peer = police()
-    nonce = "0123456789abcdef0123456789abcdef"
     payload = {"step": 1, "move": "N"}
     valid = {
         "sender": "police",
-        "records": [{"payload": payload, "nonce": nonce, "commit": commit(payload, nonce)}],
+        "records": [
+            {
+                "payload": payload,
+                "nonce": COMMITMENT_NONCE,
+                "commit": commit(payload, COMMITMENT_NONCE),
+            }
+        ],
         "result_claim": {"outcome": "capture"},
     }
     assert peer.submit_audit(valid) == {"ok": True}

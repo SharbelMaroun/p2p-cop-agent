@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.2-proposed",
+  "x-contract-version": "0.2.3-proposed",
   "x-role-neutral": true,
   "title": "Option-B TurnMessage",
-  "description": "Public per-turn event. Extra fields are tolerated, but true position, move, intent/verdict, and nonce must never appear before the post-game audit.",
+  "description": "Public per-turn event. Extra fields are tolerated, but true position, move, intent/verdict, and the per-turn commitment nonce must never appear before the post-game audit.",
   "type": "object",
   "required": ["step", "sender", "hint", "smell_grid", "commit", "timestamp"],
   "additionalProperties": true,
