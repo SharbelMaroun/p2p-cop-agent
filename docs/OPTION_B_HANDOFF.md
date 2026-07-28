@@ -146,32 +146,29 @@ not prove semantic correctness or interoperability.
 3. Only after independent parity and conformance evidence: issue
    `CONTRACT_FREEZE: GO` and, separately, `M2_GAMEPLAY: GO`.
 
-## Still-open contract blockers
+## Decision reconciliation
 
-Four of the original blockers remain. None is resolved by a clean manifest.
+Two original objections are closed by the accepted Option-B decision:
 
-**Require an authoritative external answer — cannot be closed from this repository:**
+1. **Canonicalization profile — resolved.** Configuration hashing and per-turn
+   commitments use the recorded sorted-key, compact, unescaped-Unicode, UTF-8
+   profile. This is binding for the project without being claimed as a universal
+   book rule.
+2. **FastMCP profile — resolved.** The Option-B tool names and envelope are the
+   project's selected interoperability profile. Universal or book-mandated naming
+   is not an additional acceptance criterion.
 
-1. **Canonicalization profile.** Exact configuration hashing and per-turn commitment
-   canonicalization remain disputed. The current profile (sorted keys, compact
-   separators, unescaped Unicode, UTF-8) is `PROJECT-PROPOSED` under Option B and is
-   not frozen. Cross-language vectors covering Unicode escaping and number rendering
-   are still needed.
-2. **Universal FastMCP interoperability.** Not proven from the official book. The
-   Option-B tool names and envelope are a documented academic-freedom selection, not
-   a book requirement.
+Three owner confirmations remain:
 
-**Require coordinator confirmation of an existing design, not new code:**
-
-3. **Stable contract versus per-match identity.** The bundle now holds no active
-   match: `fixtures/match_config.example.json` is a template and real configurations
-   are supplied at runtime by explicit path. Whether this satisfies the original
-   objection is the coordinator's call.
-4. **Rate-limit relationship.** `config/rate_limits.json` is local and must mirror
-   the signed `rate_limiter_gatekeeper` block exactly, enforced by
-   `_check_rate_limit_mirror`. The coordinator asked for `rate_limits.json` to be
-   treated as shared match configuration; whether an enforced mirror satisfies that
-   requirement needs an explicit decision.
+3. **Stable contract versus per-match identity.** Confirm that the stable bundle
+   contains no active match, and require every real configuration to be supplied
+   explicitly outside the example fixtures.
+4. **Rate-limit relationship.** Reconcile the implemented local exact-mirror design
+   with the later request to treat `rate_limits.json` itself as shared match input.
+5. **Negotiation challenge versus secret nonce.** The negotiate schema exposes a
+   public `nonce`, while per-turn commitment nonces remain secret until final audit.
+   Confirm that the negotiate value is a separate public challenge rather than a
+   commitment nonce.
 
 ## Open items routed to later phases
 

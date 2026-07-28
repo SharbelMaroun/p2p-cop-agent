@@ -6,12 +6,14 @@ clarifications are exit dependencies, not Cop implementation tasks.
 
 Current state: **`0.1.0-proposed` rejected; M1.5 Option-B repair at
 `0.2.2-proposed`. All Cop-side semantic blockers are closed: barrier rule, role
-alternation, unsupported required root fields, and cross-field validation. Four
-blockers remain, none of them Cop-side code work — canonicalization profile and
-book-level FastMCP interoperability need an authoritative external answer;
-stable-versus-per-match separation and the rate-limit mirror need coordinator
-confirmation of an existing design. M2 core domain implemented and hardened;
-coordinator review, contract freeze, and `M2_GAMEPLAY: GO` remain later gates.**
+alternation, unsupported required root fields, and cross-field validation.
+Canonicalization and the FastMCP profile are closed by the accepted Option-B project
+decision. Stable-versus-per-match separation and the rate-limit mirror need owner
+confirmation of the implemented design; the public negotiation challenge must be
+distinguished from secret per-turn commit nonces. M2 core domain implemented and hardened;
+M3 local state, scoring, rules harness, and deterministic move-or-barrier baseline
+implemented. Coordinator review, contract freeze, and `M2_GAMEPLAY: GO` remain
+later gates.**
 
 M1.5 cannot be closed from inside this repository. Everything Cop-owned in the
 phase is delivered; the exit gate now waits on external decisions.
@@ -20,9 +22,9 @@ phase is delivered; the exit gate now waits on external decisions.
 |---|---|---|---|
 | M0 Evidence and source reconciliation | DONE | Authority order, provenance, conflicts, and unknowns are evidence-backed | Coordinator audit corrections are reflected |
 | M1 Public contract, match configuration, parity and freeze | SUPERSEDED | `0.1.0-proposed` was rejected; the stable-semantics work carries into M1.5 | Replaced by the M1.5 Option-B gate |
-| M1.5 Option-B contract repair and conformance | Cop-side work COMPLETE; blocked on external decisions | Option-B decision recorded, role-neutral `0.2.2-proposed` bundle, protocol/message schemas, hash-domain vectors, unknown-opponent conformance, Appendix B conformance, cross-field validation, and the barrier/alternation corrections | Green conformance suite, published `0.2.2-proposed` handoff, and coordinator resolution of the four remaining non-code blockers |
+| M1.5 Option-B contract repair and conformance | Cop-side work COMPLETE; pending three owner confirmations | Option-B decision recorded, role-neutral `0.2.2-proposed` bundle, protocol/message schemas, hash-domain vectors, unknown-opponent conformance, Appendix B conformance, cross-field validation, and the barrier/alternation corrections | Green conformance suite, published `0.2.2-proposed` handoff, and owner confirmation of stable/per-match separation, the rate-limit mirror boundary, and public negotiation-challenge semantics |
 | M2 Core domain rules | IMPLEMENTED (hardened in M1.5) | Immutable board/actions, legal moves, barriers, and capture rules through the SDK | Complete hardened unit suite (barrier-aware moves, adjacency, capture) |
-| M3 Local state, scoring and deterministic baseline | DONE | Cop-only state/history, Appendix F scoring, transport-free rules harness, and deterministic move/barrier policy | A full local sub-game runs to capture or survival with no private-truth leakage: `CopState` cannot represent an opponent position, and the referee's objective view is a separate object |
+| M3 Local state, scoring and deterministic baseline | DONE | Cop-only state/history, Appendix F scoring, transport-free rules harness, and deterministic move/barrier policy | A full local sub-game runs to capture or survival; the Cop policy receives no objective Thief cell, move/barrier intents are SDK-reachable and executable, and the provisional actor/check schedule is injected |
 | M4 Protocol, canonicalization and commit-reveal | DEFERRED | Accepted messages, exact canonical vectors, commit/reveal/audit state machine | Independent vectors and tamper/failure tests pass |
 | M5 FastMCP runtime and resilience | DEFERRED | Server/client peer, negotiation, deadlines, idempotency, retry, watchdog, tunnel boundary | Two independent local processes complete a resilient game |
 | M6 Scent, belief and private strategy | DEFERRED | Multiplicative scent, Cop-local belief, deterministic strategy, optional private verbal layer | Legal deterministic behavior under observation/fallback tests |

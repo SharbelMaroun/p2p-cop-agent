@@ -25,7 +25,7 @@ def state() -> CopState:
 
 def test_no_field_can_hold_an_opponent_position() -> None:
     names = {field.name for field in dataclasses.fields(CopState)}
-    assert not {name for name in names if "thief" in name or "opponent" in name}
+    assert names == {"board", "position", "barriers", "turn"}
 
 
 def test_opening_state_comes_from_the_negotiated_configuration() -> None:
@@ -38,9 +38,10 @@ def test_opening_state_comes_from_the_negotiated_configuration() -> None:
 
 
 def test_opening_discards_the_configured_thief_start() -> None:
-    config = base_config()
-    thief_start = Coordinate.from_pair(config["board_and_agents"]["thief_start"])
-    assert state().position != thief_start
+    first = base_config()
+    second = base_config()
+    second["board_and_agents"]["thief_start"] = [5, 6]
+    assert CopState.opening(first) == CopState.opening(second)
 
 
 def test_state_is_immutable() -> None:

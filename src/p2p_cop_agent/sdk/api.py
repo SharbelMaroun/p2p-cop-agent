@@ -5,14 +5,14 @@ from collections.abc import Set as AbstractSet
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from p2p_cop_agent.domain import Action, Board, Coordinate
+from p2p_cop_agent.domain import Action, BarrierField, Board, Coordinate
 from p2p_cop_agent.shared import __version__
 from p2p_cop_agent.shared.contracts import (
     SharedContract,
     load_match_contract,
     require_same_match_configuration,
 )
-from p2p_cop_agent.strategy import choose_action
+from p2p_cop_agent.strategy import TurnIntent, choose_action, choose_turn_intent
 
 _NO_BARRIERS: frozenset[Coordinate] = frozenset()
 
@@ -78,3 +78,16 @@ class CopSDK:
         does not infer it.
         """
         return choose_action(self.board(), cop, target, blocked)
+
+    def choose_turn_intent(
+        self,
+        cop: Coordinate,
+        target: Coordinate,
+        barriers: BarrierField,
+    ) -> TurnIntent:
+        """Return one deterministic move-or-barrier intent for this match.
+
+        The target remains caller-supplied local belief; the SDK never reads or
+        stores objective opponent truth.
+        """
+        return choose_turn_intent(self.board(), cop, target, barriers)

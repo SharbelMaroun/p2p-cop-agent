@@ -33,9 +33,10 @@ def base_config() -> dict:
     return json.loads(EXAMPLE.read_text(encoding="utf-8"))
 
 
-def pursuing_cop(state: CopState, target: Coordinate) -> Action:
-    """Cop policy under test: the deterministic pursuit baseline."""
-    return choose_action(state.board, state.position, target, state.blocked)
+def pursuing_cop(state: CopState) -> Action:
+    """Pursue a caller-supplied presumption without referee private truth."""
+    presumed_target = Coordinate(3, 3)
+    return choose_action(state.board, state.position, presumed_target, state.blocked)
 
 
 def motionless_thief(
@@ -77,19 +78,19 @@ def test_capture_records_a_reason_and_a_turn() -> None:
 
 
 def test_a_passive_cop_lets_the_thief_survive() -> None:
-    result = run_sub_game(base_config(), lambda state, target: Action.STAY, fleeing_thief)
+    result = run_sub_game(base_config(), lambda state: Action.STAY, fleeing_thief)
     assert result.outcome is Outcome.SURVIVAL
 
 
 def test_survival_awards_the_appendix_f_score() -> None:
-    result = run_sub_game(base_config(), lambda state, target: Action.STAY, fleeing_thief)
+    result = run_sub_game(base_config(), lambda state: Action.STAY, fleeing_thief)
     assert result.score.as_pair() == (5, 10)
 
 
 def test_survival_runs_to_the_configured_threshold() -> None:
     config = base_config()
     config["movement_and_barriers"]["survival_threshold"] = 3
-    result = run_sub_game(config, lambda state, target: Action.STAY, fleeing_thief)
+    result = run_sub_game(config, lambda state: Action.STAY, fleeing_thief)
     assert result.turns == 3
 
 

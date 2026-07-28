@@ -19,6 +19,8 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from enum import Enum, auto
+from typing import Final, TypeAlias
 
 from p2p_cop_agent.domain.actions import Action
 from p2p_cop_agent.domain.barriers import BarrierField
@@ -28,9 +30,27 @@ from p2p_cop_agent.domain.coordinates import Coordinate
 from p2p_cop_agent.domain.movement import apply_move
 from p2p_cop_agent.domain.scoring import Outcome, ScoreLine, ScoringTable
 from p2p_cop_agent.orchestration.state import CopState, StateError
+from p2p_cop_agent.strategy import BarrierIntent, MoveIntent, TurnIntent
 
-CopPolicy = Callable[[CopState, Coordinate], Action]
+CopPolicy = Callable[[CopState], Action | TurnIntent]
 ThiefPolicy = Callable[[Board, Coordinate, Coordinate, BarrierField], Action]
+
+
+class TurnEvent(Enum):
+    """One injectable event in a locally refereed turn."""
+
+    THIEF_ACTION = auto()
+    COP_ACTION = auto()
+    CAPTURE_CHECK = auto()
+
+
+TurnOrder: TypeAlias = tuple[TurnEvent, ...]
+PROJECT_PROPOSED_TURN_ORDER: Final[TurnOrder] = (
+    TurnEvent.THIEF_ACTION,
+    TurnEvent.CAPTURE_CHECK,
+    TurnEvent.COP_ACTION,
+    TurnEvent.CAPTURE_CHECK,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,34 +80,62 @@ def _thief_start(game_config: Mapping[str, object]) -> Coordinate:
     return Coordinate.from_pair(section.get("thief_start"))
 
 
+def _validate_turn_order(turn_order: TurnOrder) -> None:
+    """Reject schedules that cannot represent one complete local turn."""
+    if not isinstance(turn_order, tuple) or any(
+        not isinstance(event, TurnEvent) for event in turn_order
+    ):
+        raise StateError("turn_order must be a tuple containing only TurnEvent values")
+    if turn_order.count(TurnEvent.THIEF_ACTION) != 1:
+        raise StateError("turn_order must contain exactly one THIEF_ACTION")
+    if turn_order.count(TurnEvent.COP_ACTION) != 1:
+        raise StateError("turn_order must contain exactly one COP_ACTION")
+    if TurnEvent.CAPTURE_CHECK not in turn_order:
+        raise StateError("turn_order must contain at least one CAPTURE_CHECK")
+
+
+def _apply_cop_intent(cop: CopState, intent: Action | TurnIntent) -> CopState:
+    """Apply one exclusive Cop move-or-barrier intent and advance the turn."""
+    if isinstance(intent, Action):
+        intent = MoveIntent(intent)
+    if isinstance(intent, MoveIntent):
+        return cop.moved(intent.action).next_turn()
+    if isinstance(intent, BarrierIntent):
+        return cop.with_barrier_at(intent.cell).next_turn()
+    raise StateError(f"Cop policy must return an Action or TurnIntent, got {intent!r}")
+
+
 def run_sub_game(
     game_config: Mapping[str, object],
     cop_policy: CopPolicy,
     thief_policy: ThiefPolicy,
+    *,
+    turn_order: TurnOrder = PROJECT_PROPOSED_TURN_ORDER,
 ) -> SubGameResult:
     """Referee one sub-game to a terminal state and return the scored result.
 
-    The Cop policy receives its own ``CopState`` plus a presumed Thief cell. In
-    this harness the referee supplies the true cell, which is a **simulation
-    affordance for rules validation only**: without the M6 belief model there is
-    no principled presumption to supply, and the purpose here is to prove that
-    the rules terminate, not to measure strategy quality.
+    The Cop policy receives only ``CopState`` and returns one movement or barrier
+    intent. It never receives the referee's objective Thief position. The event
+    schedule is injectable because actor and capture-check ordering remain
+    provisional; the default merely preserves the documented project proposal.
     """
+    _validate_turn_order(turn_order)
     threshold = _survival_threshold(game_config)
     table = ScoringTable.from_config(game_config)
     cop = CopState.opening(game_config)
     thief = _thief_start(game_config)
 
     for turn in range(1, threshold + 1):
-        evasion = thief_policy(cop.board, thief, cop.position, cop.barriers)
-        thief = apply_move(cop.board, thief, evasion, cop.blocked)
-        decided = _decide(cop, thief, turn, table)
-        if decided is not None:
-            return decided
-        cop = cop.moved(cop_policy(cop, thief)).next_turn()
-        decided = _decide(cop, thief, turn, table)
-        if decided is not None:
-            return decided
+        for event in turn_order:
+            if event is TurnEvent.THIEF_ACTION:
+                evasion = thief_policy(cop.board, thief, cop.position, cop.barriers)
+                thief = apply_move(cop.board, thief, evasion, cop.blocked)
+            elif event is TurnEvent.COP_ACTION:
+                cop = _apply_cop_intent(cop, cop_policy(cop))
+            else:
+                decided = _decide(cop, thief, turn, table)
+                if decided is not None:
+                    return decided
     return SubGameResult(Outcome.SURVIVAL, table.award(Outcome.SURVIVAL), threshold, None)
 
 

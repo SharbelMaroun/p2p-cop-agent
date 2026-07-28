@@ -8,9 +8,7 @@ annotated tag, and email addresses are not unknown.
 |---|---|---|---|
 | U-001 | Original Moodle checksum/provenance beyond the owner's designation of `Json-examples/` as the course examples | Provenance claim only; no longer the M1 shared-config gate | Original Moodle/lecturer download, message, archive, or checksum |
 | U-002 | Exhaustive artifact required/optional, type/enum, conditional, and compatibility rules beyond the established core lifecycle | M7 full artifact validation | Referenced official schemas/fixtures or accepted project schema |
-| U-003 | Accepted MCP tool names and signatures | Network contract freeze | ADR-001 plus Thief acceptance |
 | U-004 | Envelope, acknowledgement, sequencing, errors, and idempotency fields | Network contract freeze | ADR-002 plus interop tests |
-| U-005 | Commit canonical bytes, text encoding/delimiters, and nonce length | Crypto contract freeze | ADR-006 plus cross-language test vectors |
 | U-006 | Exact peer ports and tunnel provider | Private runtime config | Team choice; must remain private/provider-neutral |
 | U-007 | Artifact-version compatibility beyond observed 1.1 and shared config 1.2 | Compatibility policy | ADR-003 plus authoritative schema evidence |
 | U-009 | Gmail client/delivery implementation details beyond confirmed destination and JSON attachment | Reporting runtime | ADR-010 plus dated official guidance if needed |
@@ -18,7 +16,7 @@ annotated tag, and email addresses are not unknown.
 | U-016 | Team/group/member identifiers and eight-character team code | Declaration/reporting | Verified team input |
 | U-017 | Newer Moodle/lecturer instructions | Recency-sensitive submission choices | Obtain dated official post |
 | U-018 | Exact controlling Ruff course configuration if newer than the inspected guideline | Quality configuration | Current official course config |
-| U-019 | Thief acceptance and exact hashes for `0.1.0-proposed` | Contract freeze | Independent Thief review and matching parity runs |
+| U-019 | Independent peer acceptance and exact hashes for `0.2.2-proposed` | Contract freeze | Independent peer review and matching parity runs |
 | U-020 | Permission/provenance for any substantial simulator-source reuse | Simulator reuse | ADR-008 review and, if necessary, written permission |
 | U-021 | Allowed runtime `group_id` syntax beyond non-empty JSON text; the Moodle team code is a separate eight-character identifier | M7 formal identifier validation | Authenticated schema or lecturer clarification |
 | U-022 | UUIDv4 proposal versus current deterministic non-versioned simulator UUID; exact `game_id` syntax | M7 artifact identity protocol | Accepted ADR/vector or higher-authority clarification |
@@ -32,4 +30,5 @@ attachment/no-free-text rule; nonce secrecy until final reveal; unified authorit
 hash scope and serialization; common artifact identities and
 lifecycle; literal `<NN>` logical links/resolved physical filenames; local
 `rate_limits.json` boundary; book-defined artifact filename patterns; rule-25 recommendation status;
-six README sections; tag requirement; both addresses.
+six README sections; tag requirement; both addresses; Option-B FastMCP tool names;
+Option-B move-commit canonical bytes, delimiter, and nonce profile.

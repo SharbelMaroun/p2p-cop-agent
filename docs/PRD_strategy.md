@@ -1,6 +1,7 @@
 # PRD — Cop Strategy
 
-Status: legal objective and safe default documented; runtime policy deferred.
+Status: deterministic M3 pursuit and move-or-barrier baseline implemented;
+belief-aware optimization remains M6 work.
 
 ## Confirmed rules and recommendation
 
@@ -25,8 +26,10 @@ revision is mutually agreed; optional low-token banter is separate. ADR-007 reco
 this project policy while preserving rule 25's recommendation status.
 
 Confirmed configuration values are in
-[PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md). Interfaces, weights, tie-breaking,
-fallback behavior, and any provider/model are future choices. All later business
-logic must be SDK-reachable.
+[PARAMETERS_BASELINE.md](PARAMETERS_BASELINE.md). M3 fixes barrier-aware BFS
+tie-breaking and exposes both pursuit and exclusive move-or-barrier decisions through
+the SDK. Belief weights, observation updates, verbal fallback behavior, and any
+provider/model remain later choices. All later business logic must stay SDK-reachable.
 
-This repository contains Cop strategy only and adds no strategy runtime in M0–M1.
+This repository contains Cop strategy only; opponent behavior is caller-supplied in
+the local rules harness and test stubs remain test-only.

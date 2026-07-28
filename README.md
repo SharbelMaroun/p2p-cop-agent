@@ -7,11 +7,12 @@ Peer-to-Peer Network” final project.
 
 ## Current milestone
 
-This branch implements the M2 core domain rules (coordinates, board geometry,
-barrier-aware movement, barriers, and capture) and the M1.5 Option-B contract
-repair: a role-neutral `shared_contract/` bundle at `0.2.2-proposed`. The
-`0.1.0-proposed` bundle was rejected and is superseded. There is still no network,
-cryptographic transport, LLM, Gmail, GUI, or replay runtime.
+This branch implements M2 core domain rules and M3 Cop-local state, history,
+scoring, transport-free rules harness, and deterministic move-or-barrier baseline.
+It also contains the M1.5 Option-B contract repair: a role-neutral
+`shared_contract/` bundle at `0.2.2-proposed`. The `0.1.0-proposed` bundle was
+rejected and is superseded. There is still no network, cryptographic transport,
+LLM, Gmail, GUI, or replay runtime.
 
 The shared contract is `0.2.2-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
@@ -38,8 +39,8 @@ Evidence and decisions are tracked in:
 - Each peer is both a FastMCP server and client; exact MCP names and envelope fields
   are proposed only through ADR-001 and ADR-002.
 - The played-game shared configuration must be byte-identical at both peers.
-- A counted series has six sub-games. Each peer plays its natural role on odd games
-  and the opposite role on even games.
+- A counted series has six sub-games. The within-series role schedule remains
+  unresolved under `U-025`; runtime orchestration must stay role-agnostic.
 - Legal movement is north, south, east, west, or stay; diagonals are illegal.
 - Barrier placement is disclosed. A barrier on the Thief’s current cell captures the
   Thief, and a Thief with no legal move is captured.

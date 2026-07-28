@@ -1,11 +1,13 @@
 # PRD — Commit-Reveal
 
-Status: config hashing is defined; move-commit wire representation and byte
-canonicalization are **not frozen**.
+Status: config hashing and the Option-B move-commit profile are accepted project
+decisions; the M4 runtime state machine and audit binding remain unimplemented.
 
 ## Confirmed behavior
 
-- Every turn follows Commit → Acknowledge → Reveal → Final Audit.
+- Every live turn sends a commitment and receives transport acknowledgement.
+- Hidden payloads and nonces are revealed only in the post-game final audit; the
+  Option-B profile has no live reveal tool.
 - SHA-256 commits bind the semantic state, move, intent, and nonce before reveal.
 - Only the hash is sent during Commit.
 - A fresh nonce remains secret until the end-of-game final reveal/audit.
@@ -18,10 +20,10 @@ Sources: book Ch. 5; Appendix E rules 17–19/24.
 ## Proposed decision boundary
 
 The shared-config digest has its own accepted vector and does not define move
-commitments. ADR-006 must still define move bytes and nonce length. A Python expression such as
-`json.dumps(sort_keys=True, separators=(",", ":"))`, a delimiter, field spelling,
-encoding, and comparison helper are implementation proposals—not Appendix E rules.
-No cryptographic runtime behavior may depend on them until both peers accept ADR-006.
+commitments. ADR-006 fixes the project move-commit bytes: sorted keys, compact
+separators, unescaped Unicode, UTF-8, a literal `"|"` delimiter, and a 16-byte nonce
+rendered as 32 lowercase hexadecimal characters. This is an accepted Option-B project
+choice, not an Appendix E serialization rule.
 
 Known semantic components do not prove a formal wire payload schema. Sub-game/role
 sealing, field names/types, error envelopes, and acknowledgement transport are linked
@@ -31,5 +33,6 @@ The simulator's `validate_agreement` presence check for nine normalized gameplay
 terms is not the Step-0 attestation gate and cannot substitute for it. M4 must define
 the signed payload and independent verification vector.
 
-This milestone may provide fixtures and typed contract models only; it implements no
-commit-reveal runtime.
+M4 implements the transport-neutral state machine, private pending-record storage,
+duplicate/conflict handling, final audit verification, and Step-0 gate through the
+SDK. FastMCP adapters remain M5.

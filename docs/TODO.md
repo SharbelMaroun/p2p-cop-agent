@@ -2,9 +2,10 @@
 
 Only Cop-owned work is decomposed here. `DONE` means implemented and locally
 verified; it does not imply cross-repository acceptance. `BLOCKED` names an external
-evidence/review dependency. The 2026-07-28 coordinator decision authorized
+evidence/review dependency; `PENDING` names a concrete owner decision. The 2026-07-28 coordinator decision authorized
 contract-independent M2 domain work and an Option-B contract revision, so M2 and the
-new M1.5 gate are active; M3–M9 remain `DEFERRED`.
+new M1.5 gate became active. Contract-independent M3 work was subsequently delivered;
+M4–M9 remain ordered future work until their preceding phase is complete.
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
@@ -35,19 +36,18 @@ new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 | M1.5-07 | Publish the `0.2.0-proposed` handoff | DONE | P0 | Handoff records controlled paths, per-file hashes, manifest hash, gates, and blockers |
 | M1.5-08 | Correct contract semantics and republish as `0.2.1-proposed` | DONE | P0 | Barrier rule allows the placing peer's own cell; the unauthenticated role-alternation schedule is removed from the bundle and recorded as `U-025`/`OB-005`; version, manifest, and handoff are regenerated |
 | M1.5-09 | Close the fixable semantic blockers and republish as `0.2.2-proposed` | DONE | P0 | Root `version`/`extensions` are optional and an Appendix B conformance fixture proves the official structure is accepted; cross-field start validation runs after schema validation and `axis_start_index` is bounded; 33 controlled files, manifest and handoff regenerated |
-| M1.5-10 | Resolve the four remaining semantic blockers | BLOCKED | P0 | Two need an authoritative external answer (canonicalization profile, book-level FastMCP interoperability); two need coordinator confirmation of an existing design (stable-versus-per-match separation, rate-limit mirror). None is Cop-side code work |
+| M1.5-10 | Reconcile the remaining semantic decisions | PENDING | P0 | Canonicalization and the FastMCP profile are closed by Option B; owner confirmation remains for stable-versus-per-match separation, the rate-limit mirror boundary, and distinguishing the public negotiation challenge from secret per-turn nonces |
 | M2-01 | Implement immutable coordinate and action types | DONE | P1 | SDK-visible unit tests prove immutability and vocabulary |
 | M2-02 | Implement board geometry and boundary validation | DONE | P1 | Negotiated board/origin semantics pass boundary tests; start-coordinate validation added in M1.5-02 |
 | M2-03 | Implement legal orthogonal movement and `STAY` | DONE | P1 | Deterministic transitions; barrier-aware legality added in M1.5-02 |
 | M2-04 | Implement barrier inventory, placement, and disclosure rules | DONE | P1 | Quota, board legality, and disclosed events pass; police-adjacency and impassability added in M1.5-02 |
 | M2-05 | Implement capture conditions | DONE | P1 | Cop-on-thief, current-cell barrier, and trapped-Thief (STAY does not save) rules pass tests |
-| M3-01 | Implement Cop-local immutable state | DONE | P1 | `CopState` has no field able to hold an opponent position; a field-inspection test enforces it and `opening()` discards the configured Thief start. Transitions are primitives that assert no turn ordering |
+| M3-01 | Implement Cop-local immutable state | DONE | P1 | `CopState` has exactly board/position/barriers/turn; tests whitelist those fields and prove changing only `thief_start` cannot change the state. Transitions are primitives that assert no turn ordering |
 | M3-02 | Implement deterministic state history | DONE | P1 | `CopHistory` is append-only; identical opening state and action sequence produce an equal history and identical positions; illegal actions record nothing |
 | M3-03 | Implement fixed scoring and technical loss | DONE | P1 | Appendix F table 17 awards and the Appendix E zero-point sanction pass table-driven tests; values are read from the negotiated config, not hard-coded. Counterpart award on a technical loss recorded as `U-026` |
-| M3-04 | Build single-process rules harness | DONE | P1 | `run_sub_game` referees a full local sub-game to capture or survival with no transport; both policies are caller-supplied so no opponent behaviour ships in source; turn order is `PROJECT-PROPOSED` (Thief first) and injectable, carrying no contract status |
+| M3-04 | Build single-process rules harness | DONE | P1 | `run_sub_game` referees a full local sub-game to capture or survival with no transport; no opponent behaviour ships in source; the Cop policy receives no referee-only Thief cell; actor and capture-check ordering is an injected event schedule whose default is explicitly `PROJECT-PROPOSED` |
 | M3-05 | Implement SDK-reachable deterministic pursuit baseline (movement) | DONE | P1 | Policy emits only legal movement actions; barrier-aware BFS distance, fixed-order tie-breaking, SDK-reachable, contract-independent. See [PURSUIT_BASELINE.md](PURSUIT_BASELINE.md) |
-| M3-06 | Decide and implement baseline barrier placement | DONE | P1 | `choose_turn_intent` returns one move or one barrier, exclusivity encoded in the return type; captures by moving in preference to spending quota, places the trapping barrier, and never wastes quota on an already-trapped Thief |
-| M6-06 | Implement predictive barrier squeezing | DEFERRED | P2 | The book's squeeze and corridor-blocking tactics cannot fire against a known Thief cell: a mobility-reducing barrier is only placeable within two steps of the Thief, where a distance-reducing move always exists. Requires the M6 belief model to predict where the Thief will go |
+| M3-06 | Decide and implement baseline barrier placement | DONE | P1 | SDK-reachable `choose_turn_intent` returns one move or one barrier, exclusivity encoded in the return type; the local harness executes either intent; policy captures by moving before spending quota, places a trapping barrier, and never wastes quota on an already-trapped Thief |
 | M4-01 | Finalize public message/envelope contract | DEFERRED | P0 | Accepted ADR-001/002 schemas and error semantics exist |
 | M4-02 | Finalize canonical JSON and nonce vectors | DEFERRED | P0 | Independent implementations reproduce exact hashes |
 | M4-03 | Implement commit, acknowledge, reveal, and final audit | DEFERRED | P0 | Valid state sequence round-trips through SDK |
@@ -66,6 +66,7 @@ new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 | M6-03 | Integrate belief into deterministic pursuit | DEFERRED | P1 | Policy improves target choice without illegal actions |
 | M6-04 | Add private strategy configuration | DEFERRED | P2 | Tuning stays local and SDK-loaded |
 | M6-05 | Add optional verbal/LLM adapter with zero-token fallback | DEFERRED | P2 | Provider failure always falls back deterministically |
+| M6-06 | Implement predictive barrier squeezing | DEFERRED | P2 | The book's squeeze and corridor-blocking tactics cannot fire against a known Thief cell: a mobility-reducing barrier is only placeable within two steps of the Thief, where a distance-reducing move always exists. Requires the M6 belief model to predict where the Thief will go |
 | M7-01 | Implement six-sub-game series orchestration | DEFERRED | P1 | Accepted role schedule and identities drive all six games |
 | M7-02 | Finalize artifact identity and generate declaration/per-game config artifacts | DEFERRED | P1 | Accepted `game_id`/UUID protocol, schemas, logical links, and resolved filenames validate |
 | M7-03 | Generate game logs and final result | DEFERRED | P1 | Audit links, commits, tokens, and scores are consistent |
