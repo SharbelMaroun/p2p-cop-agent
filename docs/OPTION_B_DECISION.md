@@ -75,19 +75,36 @@ Naming rules that must not be confused:
 - Kept outside the JSON payload.
 - Never disclosed before the final audit.
 
-## Role alternation
+## Role alternation — UNKNOWN, NOT BINDING
 
-A counted series has six sub-games. Group identity is stable; the played role
-alternates: each group plays its natural role on odd sub-games (1, 3, 5) and the
-opposite role on even sub-games (2, 4, 6). Scores aggregate per group.
+Status: **UNKNOWN** (`U-025`, `OB-005`). Withdrawn from the contract bundle in
+`0.2.1-proposed`.
+
+Confirmed: a counted series has six sub-games, group identity is stable, and
+scores aggregate per group (Appendix F table 18).
+
+**Not** confirmed: the role schedule within the series. The observed pattern —
+each group plays its natural role on odd sub-games (1, 3, 5) and the opposite
+role on even sub-games (2, 4, 6) — appears in the pinned simulator only. The
+book does not state it, and the recorded lecturer direction of 2026-07-27 is a
+transcription, not an authenticated Moodle announcement or original lecturer
+message. Under this project's own source-authority rules, simulator behaviour is
+a compatibility reference and cannot make a rule binding.
+
+Until an authenticated lecturer answer or a direct book citation arrives, series
+orchestration must stay role-agnostic and no normative test may assert the
+schedule.
 
 ## Acceptance scope
 
 - ADR-001 (FastMCP tool names) is **accepted for this project** under Option B.
 - The move-commit portion of ADR-006 (canonicalization, `"|"` delimiter, nonce
   profile) is **accepted for this project** under Option B.
-- The rejected `0.1.0-proposed` bundle is superseded by a new `0.2.0-proposed`
-  contract; copying or freezing `0.1.0-proposed` is not authorized.
+- The rejected `0.1.0-proposed` bundle is superseded by `0.2.0-proposed`, which is
+  in turn superseded by `0.2.1-proposed`; copying or freezing any earlier bundle is
+  not authorized.
+- Role alternation is **not** accepted under Option B. It is recorded as `U-025`
+  and carries no contract status.
 
 See [../shared_contract/PROTOCOL_PROFILE.md](../shared_contract/PROTOCOL_PROFILE.md)
 for the normative wire specification, [OPTION_B_HANDOFF.md](OPTION_B_HANDOFF.md) for
