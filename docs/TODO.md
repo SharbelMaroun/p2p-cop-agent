@@ -27,12 +27,12 @@ new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 | M1-14 | Produce candidate handoff | DONE | P0 | Controlled paths/hashes, manifest self-hash, gates, and blockers are recorded |
 | M1-15 | Promote contract version after acceptance evidence | SUPERSEDED | P0 | `0.1.0-proposed` rejected; superseded by the M1.5 Option-B `0.2.0-proposed` gate |
 | M1.5-01 | Record the Option-B interoperability decision | DONE | P0 | Ledger, conflicts, ADR-001/006, TODO, and PLAN record the accepted profile and pinned commit |
-| M1.5-02 | Harden barrier-aware M2 semantics | PLANNED | P1 | Police-adjacency placement, impassability, barrier-aware moves, and start-coordinate validation pass tests |
-| M1.5-03 | Separate stable contract from per-match configuration | PLANNED | P0 | Role-neutral `shared_contract` subtree exists; the neutral game config is a template, not an active match |
-| M1.5-04 | Define Option-B protocol and message schemas | PLANNED | P0 | negotiate/turn/audit/control/tool-response/config schemas and pos/neg fixtures validate |
-| M1.5-05 | Separate hash domains and add canonicalization vectors | PLANNED | P0 | Move-commit, `config_sha256`, and `config_file_sha256` are distinct and vector-tested |
-| M1.5-06 | Prove unknown-opponent conformance and LF safety | PLANNED | P0 | Neutral stub proves tool/argument names and rejections; controlled files are LF; verifier is read-only |
-| M1.5-07 | Publish the `0.2.0-proposed` handoff | PLANNED | P0 | Handoff records controlled paths, per-file hashes, manifest hash, gates, and blockers |
+| M1.5-02 | Harden barrier-aware M2 semantics | DONE | P1 | Police-adjacency placement, impassability, barrier-aware moves, and start-coordinate validation pass tests |
+| M1.5-03 | Separate stable contract from per-match configuration | DONE | P0 | Role-neutral `shared_contract` subtree exists; the neutral game config is a template, not an active match |
+| M1.5-04 | Define Option-B protocol and message schemas | DONE | P0 | negotiate/turn/audit/control/tool-response/config schemas and pos/neg fixtures validate |
+| M1.5-05 | Separate hash domains and add canonicalization vectors | DONE | P0 | Move-commit, `config_sha256`, and `config_file_sha256` are distinct and vector-tested |
+| M1.5-06 | Prove unknown-opponent conformance and LF safety | DONE | P0 | Neutral stub proves tool/argument names and rejections; controlled files are LF; verifier is read-only |
+| M1.5-07 | Publish the `0.2.0-proposed` handoff | DONE | P0 | Handoff records controlled paths, per-file hashes, manifest hash, gates, and blockers |
 | M2-01 | Implement immutable coordinate and action types | DONE | P1 | SDK-visible unit tests prove immutability and vocabulary |
 | M2-02 | Implement board geometry and boundary validation | DONE | P1 | Negotiated board/origin semantics pass boundary tests; start-coordinate validation added in M1.5-02 |
 | M2-03 | Implement legal orthogonal movement and `STAY` | DONE | P1 | Deterministic transitions; barrier-aware legality added in M1.5-02 |

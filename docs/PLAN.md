@@ -34,7 +34,7 @@ M1.5 replaces the old freeze gate. It delivers, as focused green milestones:
 
 1. the recorded Option-B decision (ledger, conflicts, ADR-001/006, TODO, PLAN);
 2. hardened barrier-aware M2 domain semantics;
-3. a role-neutral `docs/contracts/shared_contract` bundle at `0.2.0-proposed` that
+3. a role-neutral top-level `shared_contract/` bundle at `0.2.0-proposed` that
    separates the stable specification/schema/fixture/verifier set from any
    per-match configuration;
 4. Option-B protocol and message schemas with positive/negative fixtures;

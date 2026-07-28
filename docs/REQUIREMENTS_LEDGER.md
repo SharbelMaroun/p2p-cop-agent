@@ -51,7 +51,7 @@ accepted ADR.
 | OB-005 | Group role alternates across six sub-games: natural role on odd games, opposite role on even games; group identity is stable | Appendix F table 18; [OPTION_B_DECISION.md](OPTION_B_DECISION.md); pinned simulator | Series schedule contract; M7 runtime |
 
 The previous `0.1.0-proposed` bundle was rejected. The active proposed contract is
-`0.2.0-proposed`, **UNFROZEN**, built as the role-neutral `docs/contracts/shared_contract`
+`0.2.0-proposed`, **UNFROZEN**, built as the role-neutral top-level `shared_contract/`
 subtree. Remaining formal artifact schema constraints stay in
 [UNKNOWN_REQUIREMENTS.md](UNKNOWN_REQUIREMENTS.md) and the relevant ADRs. Freezing or
 copying `0.1.0-proposed` is not authorized.

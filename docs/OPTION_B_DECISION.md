@@ -89,5 +89,6 @@ opposite role on even sub-games (2, 4, 6). Scores aggregate per group.
 - The rejected `0.1.0-proposed` bundle is superseded by a new `0.2.0-proposed`
   contract; copying or freezing `0.1.0-proposed` is not authorized.
 
-See [contracts/PROTOCOL_PROFILE.md](contracts/PROTOCOL_PROFILE.md) once published
-for the normative wire specification, and the ADRs for the design rationale.
+See [../shared_contract/PROTOCOL_PROFILE.md](../shared_contract/PROTOCOL_PROFILE.md)
+for the normative wire specification, [OPTION_B_HANDOFF.md](OPTION_B_HANDOFF.md) for
+the controlled inventory, and the ADRs for the design rationale.
