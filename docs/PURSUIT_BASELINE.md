@@ -8,7 +8,7 @@ Scope: `src/p2p_cop_agent/strategy/pursuit.py`, reachable through
 This is the M3-05 movement policy, authorized as a narrowly scoped exception to
 the M3 block. It uses only existing public domain APIs, defines no new game
 rule, performs no I/O, and changes no shared-contract byte. It is independent of
-the contract gate: nothing here waits on `0.2.1-proposed` review.
+the contract gate: nothing here waits on `0.2.2-proposed` review.
 
 ## What the policy does
 
