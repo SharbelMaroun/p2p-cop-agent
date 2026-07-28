@@ -1,6 +1,6 @@
 # Shared Gameplay Rules
 
-Contract version: `0.2.1-proposed`
+Contract version: `0.2.2-proposed`
 Status: **PROPOSED / UNFROZEN — role-neutral**
 
 These are the book-authoritative gameplay rules both peers implement. Exact
