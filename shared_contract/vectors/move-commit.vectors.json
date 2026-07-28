@@ -1,5 +1,5 @@
 {
-  "x-contract-version": "0.2.0-proposed",
+  "x-contract-version": "0.2.1-proposed",
   "description": "Reproducible move/negotiation commit vectors. commit = SHA256(canonical_json(payload) + '|' + nonce). canonical_json uses sorted keys, ensure_ascii=False, compact separators, allow_nan=False. The nonce is 32 lowercase hex characters and lives outside the payload.",
   "delimiter": "|",
   "nonce_profile": {
