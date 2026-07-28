@@ -9,11 +9,11 @@ Peer-to-Peer Network” final project.
 
 This branch implements the M2 core domain rules (coordinates, board geometry,
 barrier-aware movement, barriers, and capture) and the M1.5 Option-B contract
-repair: a role-neutral `shared_contract/` bundle at `0.2.0-proposed`. The
+repair: a role-neutral `shared_contract/` bundle at `0.2.1-proposed`. The
 `0.1.0-proposed` bundle was rejected and is superseded. There is still no network,
 cryptographic transport, LLM, Gmail, GUI, or replay runtime.
 
-The shared contract is `0.2.0-proposed` and **UNFROZEN**. It becomes frozen only
+The shared contract is `0.2.1-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
 identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
 a documented academic-freedom interoperability choice pinned to simulator commit
@@ -78,7 +78,7 @@ displays the equivalent PEP 440 form `1.0`.
 ## Configuration
 
 - The stable, role-neutral shared contract is the top-level `shared_contract/`
-  bundle at `0.2.0-proposed` (Option B). It holds specifications, schemas,
+  bundle at `0.2.1-proposed` (Option B). It holds specifications, schemas,
   fixtures, vectors, and the read-only verifier only — no active match.
 - A per-match shared game object is supplied at runtime by explicit path.
   `shared_contract/fixtures/match_config.example.json` is an example template; its

@@ -1,15 +1,20 @@
 """Public SDK boundary for all future Cop business behavior."""
 
 from collections.abc import Mapping
+from collections.abc import Set as AbstractSet
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from p2p_cop_agent.domain import Action, Board, Coordinate
 from p2p_cop_agent.shared import __version__
 from p2p_cop_agent.shared.contracts import (
     SharedContract,
     load_match_contract,
     require_same_match_configuration,
 )
+from p2p_cop_agent.strategy import choose_action
+
+_NO_BARRIERS: frozenset[Coordinate] = frozenset()
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,3 +60,21 @@ class CopSDK:
             config_file_sha256=self.config_file_sha256,
         )
         require_same_match_configuration(expected, offered)
+
+    def board(self) -> Board:
+        """Return the board geometry negotiated for this match."""
+        return Board.from_config(self.game_config)
+
+    def choose_pursuit_action(
+        self,
+        cop: Coordinate,
+        target: Coordinate,
+        blocked: AbstractSet[Coordinate] = _NO_BARRIERS,
+    ) -> Action:
+        """Return the deterministic pursuit action for this match's board.
+
+        Delegates to the strategy layer so adapters never re-implement policy.
+        ``target`` is the presumed Thief cell supplied by the caller; the SDK
+        does not infer it.
+        """
+        return choose_action(self.board(), cop, target, blocked)

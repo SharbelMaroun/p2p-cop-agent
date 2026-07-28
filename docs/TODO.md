@@ -33,6 +33,7 @@ new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 | M1.5-05 | Separate hash domains and add canonicalization vectors | DONE | P0 | Move-commit, `config_sha256`, and `config_file_sha256` are distinct and vector-tested |
 | M1.5-06 | Prove unknown-opponent conformance and LF safety | DONE | P0 | Neutral stub proves tool/argument names and rejections; controlled files are LF; verifier is read-only |
 | M1.5-07 | Publish the `0.2.0-proposed` handoff | DONE | P0 | Handoff records controlled paths, per-file hashes, manifest hash, gates, and blockers |
+| M1.5-08 | Correct contract semantics and republish as `0.2.1-proposed` | DONE | P0 | Barrier rule allows the placing peer's own cell; the unauthenticated role-alternation schedule is removed from the bundle and recorded as `U-025`/`OB-005`; version, manifest, and handoff are regenerated |
 | M2-01 | Implement immutable coordinate and action types | DONE | P1 | SDK-visible unit tests prove immutability and vocabulary |
 | M2-02 | Implement board geometry and boundary validation | DONE | P1 | Negotiated board/origin semantics pass boundary tests; start-coordinate validation added in M1.5-02 |
 | M2-03 | Implement legal orthogonal movement and `STAY` | DONE | P1 | Deterministic transitions; barrier-aware legality added in M1.5-02 |
@@ -42,7 +43,8 @@ new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 | M3-02 | Implement deterministic state history | DEFERRED | P1 | Repeated input creates reproducible history |
 | M3-03 | Implement fixed scoring and technical loss | DEFERRED | P1 | Appendix F/E outcomes pass table-driven tests |
 | M3-04 | Build single-process rules harness | DEFERRED | P1 | Full local sub-game completes without transport |
-| M3-05 | Implement SDK-reachable deterministic pursuit baseline | DEFERRED | P1 | Policy emits only legal actions and barriers |
+| M3-05 | Implement SDK-reachable deterministic pursuit baseline (movement) | DONE | P1 | Policy emits only legal movement actions; barrier-aware BFS distance, fixed-order tie-breaking, SDK-reachable, contract-independent. See [PURSUIT_BASELINE.md](PURSUIT_BASELINE.md) |
+| M3-06 | Decide and implement baseline barrier placement | DEFERRED | P1 | Requires barrier-versus-movement turn exclusivity, which depends on the still-provisional live-turn state machine |
 | M4-01 | Finalize public message/envelope contract | DEFERRED | P0 | Accepted ADR-001/002 schemas and error semantics exist |
 | M4-02 | Finalize canonical JSON and nonce vectors | DEFERRED | P0 | Independent implementations reproduce exact hashes |
 | M4-03 | Implement commit, acknowledge, reveal, and final audit | DEFERRED | P0 | Valid state sequence round-trips through SDK |

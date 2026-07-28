@@ -18,7 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 def _contract(**overrides: object) -> SharedContract:
     base = {
-        "version": "0.2.0-proposed",
+        "version": "0.2.1-proposed",
         "game": {"a": 1},
         "rate_limits": {},
         "config_sha256": "a" * 64,

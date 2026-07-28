@@ -1,6 +1,6 @@
 # Shared Gameplay Rules
 
-Contract version: `0.2.0-proposed`
+Contract version: `0.2.1-proposed`
 Status: **PROPOSED / UNFROZEN — role-neutral**
 
 These are the book-authoritative gameplay rules both peers implement. Exact
@@ -15,7 +15,7 @@ the Option-B profile in `PROTOCOL_PROFILE.md` selects the interoperable answer.
 | The two peers are separate processes sharing no live memory, database, runtime filesystem, or private truth. | Book Ch.2; Appendix E rules 1-2 |
 | Both peers load a byte-identical per-match shared game object. | Appendix E rule 11; Appendix F mandatory rule 1 |
 | Legal movement is `N`, `S`, `E`, `W`, or `STAY`; diagonals are illegal. | Appendix E rules 13-14; Appendix F table 15 |
-| A barrier occupies one cell exactly one orthogonal step from the placing peer, is disclosed truthfully, and is impassable for both players thereafter. | Book §3.4; Appendix E rules 15-16, 46-47 |
+| A barrier occupies either the placing peer's own current cell or a cell exactly one orthogonal step away; diagonal and more distant targets are illegal. Placing it gives up that turn's movement, it is disclosed truthfully, and it is impassable for both players thereafter. | Book §3.4; Appendix E rules 15-16, 46-47 |
 | Barriers respect the negotiated quota (`max_barriers`, Minimum 14). | Appendix F table 15 |
 | SHA-256 commit-reveal is mandatory; nonces stay secret until the end-game audit; a mismatch is a technical loss worth zero. | Appendix E rules 17-19 |
 | Scent uses the multiplicative update `tau_ij(t+1) = max(0, (1-rho) * tau_ij(t) + delta_tau_ij)`. | Book Ch.4; ADR-005 |
@@ -35,9 +35,3 @@ The book (§3.4 and the §3.5 scoring table) defines three capture conditions:
 The book's precise wording of condition 3 resolves the `STAY` question: because a
 trapped peer's neighbours are all off-board or barriered, the always-available
 `STAY` action does not prevent the trapped capture.
-
-## Role alternation
-
-A counted series has six sub-games. Group identity is stable; the played role
-alternates — natural role on odd sub-games (1, 3, 5), opposite role on even
-sub-games (2, 4, 6). Scores aggregate per group across the series.

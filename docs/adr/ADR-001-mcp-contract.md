@@ -27,12 +27,12 @@ Naming discipline: `submit_audit` is the exposed endpoint, while `exchange_audit
 is only the client-side transport method (never an MCP tool). `receive_move` is
 not part of this profile. Wire role values are `"police"`/`"thief"`, never `"cop"`.
 A successful call returns `{"ok": true}`. Payloads are specified by the
-`0.2.0-proposed` schemas and fixtures.
+`0.2.1-proposed` schemas and fixtures.
 
 ## Acceptance
 
 - Accepted for this project by the 2026-07-28 coordinator decision.
 - Positive/unknown-tool/invalid-transition conformance tests pass against a
   role-neutral stub (WP6).
-- The accepted names/argument names are locked in the `0.2.0-proposed` bundle;
+- The accepted names/argument names are locked in the `0.2.1-proposed` bundle;
   contract freeze remains a separate, later gate.
