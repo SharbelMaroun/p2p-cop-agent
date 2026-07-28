@@ -2,10 +2,12 @@
 
 Status: **TECHNICALLY READY FOR EXTERNAL REVIEW — UNFROZEN — NO-GO UNTIL PARITY**
 
-Source base: `33b119baccee4ffe3fe4355e1edcea06f39b6fb1`
+Controlled-byte baseline: `e0df5ba530fd7c433d41a98c5976ca7e08cdfa53`
 
-Controlled-file bytes are identical at `e0df5ba530fd7c433d41a98c5976ca7e08cdfa53`
-and this commit; only the handoff document changed between them.
+No controlled file has changed after that baseline. The coordinator should use the
+full pushed branch HEAD as `PROVISIONAL_COP_COMMIT`; the baseline remains the stable
+reference for proving that later handoff-only documentation did not alter the
+candidate bundle.
 
 Branch: `agent/cop-m1-contract-revision`
 

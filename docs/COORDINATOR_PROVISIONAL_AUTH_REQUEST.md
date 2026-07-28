@@ -41,12 +41,13 @@ git rev-parse origin/agent/cop-m1-contract-revision
 [insert full 40-hex SHA returned by git rev-parse origin/agent/cop-m1-contract-revision after push]
 ```
 
-All controlled-file bytes are identical from commit `33b119baccee4ffe3fe4355e1edcea06f39b6fb1`
-through the pushed HEAD; only documentation files changed in the final two
-commits. The coordinator may verify this with:
+All controlled-file bytes are identical from baseline commit
+`e0df5ba530fd7c433d41a98c5976ca7e08cdfa53` through the pushed HEAD. Only
+non-controlled handoff documentation changed after that baseline. The coordinator
+may verify a conservative superset of the controlled paths with:
 
 ```
-git diff 33b119b <pushed-HEAD> -- $(git show 33b119b:docs/contracts/PARITY_MANIFEST.json | python -c "import sys,json;d=json.load(sys.stdin);[print(f[\"path\"]) for f in d[\"files\"]]")
+git diff --exit-code e0df5ba <pushed-HEAD> -- .gitattributes config/game.json docs/contracts docs/schemas scripts/check_shared_contracts.py scripts/shared_contract_integrity.py tests/fixtures/contracts
 ```
 
 ### 2. `PROVISIONAL_CONTRACT_VERSION`
