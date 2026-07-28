@@ -1,4 +1,4 @@
-# Shared Contract Bundle — `0.2.1-proposed`
+# Shared Contract Bundle — `0.2.2-proposed`
 
 Status: **PROPOSED / UNFROZEN — role-neutral**
 
@@ -23,7 +23,7 @@ bundle or its manifest.
 
 | Path | Purpose |
 |---|---|
-| `CONTRACT_VERSION` | `0.2.1-proposed` |
+| `CONTRACT_VERSION` | `0.2.2-proposed` |
 | `PROTOCOL_PROFILE.md` | Option-B FastMCP tools, messages, and commit-reveal |
 | `MATCH_CONFIGURATION.md` | how a per-match config is supplied and the three hash domains |
 | `SHARED_RULES.md` | book-authoritative gameplay rules |

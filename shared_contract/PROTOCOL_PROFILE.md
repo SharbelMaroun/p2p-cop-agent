@@ -1,6 +1,6 @@
 # Option-B Protocol Profile
 
-Contract version: `0.2.1-proposed`
+Contract version: `0.2.2-proposed`
 Status: **PROPOSED / UNFROZEN**
 
 This is the normative wire specification for the Option-B interoperability profile,

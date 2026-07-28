@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.1-proposed",
+  "x-contract-version": "0.2.2-proposed",
   "x-source-status": "PROPOSED",
   "x-role-neutral": true,
   "title": "Option-B per-match shared game configuration",
@@ -8,7 +8,6 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "version",
     "schema_version",
     "agreed_between",
     "board_and_agents",
@@ -17,13 +16,12 @@
     "scoring",
     "pheromones",
     "network_and_league",
-    "rate_limiter_gatekeeper",
-    "extensions"
+    "rate_limiter_gatekeeper"
   ],
   "properties": {
     "version": {
       "const": "1.00",
-      "description": "PROPOSED root placement of the guidelines configuration revision."
+      "description": "OPTIONAL. The guidelines configuration revision. Appendix B's game.json structure does not carry it, so requiring it would reject a conforming opponent; the internal contract version lives in CONTRACT_VERSION instead. Accepted when present."
     },
     "schema_version": {
       "const": "1.2",
@@ -85,8 +83,11 @@
         },
         "axis_start_index": {
           "type": "integer",
+          "minimum": 0,
+          "description": "PROJECT-PROPOSED lower bound. Appendix F gives the negotiated default 0 and states no bound; a negative start index has no defined meaning for a board addressed by inclusive non-negative indices, so it is rejected rather than silently accepted.",
           "x-appendix-f-status": "negotiated",
-          "x-value-owner": "mutual_agreement"
+          "x-value-owner": "mutual_agreement",
+          "x-bound-status": "PROJECT-PROPOSED"
         }
       }
     },
@@ -306,7 +307,7 @@
     },
     "extensions": {
       "type": "object",
-      "description": "PROPOSED explicit extension namespace; contents must be mutually agreed."
+      "description": "OPTIONAL. PROPOSED explicit extension namespace; contents must be mutually agreed. Not part of Appendix B's game.json structure, so it is never required of an opponent."
     }
   },
   "$defs": {

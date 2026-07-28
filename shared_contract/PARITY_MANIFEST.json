@@ -1,25 +1,25 @@
 {
-  "contract_version": "0.2.1-proposed",
+  "contract_version": "0.2.2-proposed",
   "files": [
     {
       "path": "CONTRACT_VERSION",
-      "sha256": "4ae4093c947bf964d364a2337861707301014c9cd395ba3555a2a81ce360d89e"
+      "sha256": "72f304bcc6a58333ea83bf917cc52d98d50bc6db6bc1b97387a61c4a35348eab"
     },
     {
       "path": "MATCH_CONFIGURATION.md",
-      "sha256": "0446b1756f754246230d690dceabdda11d35b44d055019a4a1bed84a50949f2d"
+      "sha256": "7a476b551f51f4d580de9789b091b56611dc5b0079a593723dcd85c8c3cdda3c"
     },
     {
       "path": "PROTOCOL_PROFILE.md",
-      "sha256": "1ac855d441f4a0f657449724c3a3f4601b24a26501a7570d5d461afc49ca1b48"
+      "sha256": "b73b17065e2fc8e2dcccc4049bd69c25c87c19ac3340a69ece2538e27f10b107"
     },
     {
       "path": "README.md",
-      "sha256": "c2fba76e4a465fea259655272b0524e027bcf7c94163de2cacaa9c6af3aebbdc"
+      "sha256": "3315e5c71f1baa9ca7eaf99765aeacf9edc0df2d9e70b3ea5189cc54dab429e4"
     },
     {
       "path": "SHARED_RULES.md",
-      "sha256": "180e1205f9e4ae00f6e055eff73a219f1340e7dbbe7c4ad5788fdcbf2f4b7d82"
+      "sha256": "a1f7ac100dc93996f7ed584da1a722b7f7489f80b10fa65831d1778784bbfa76"
     },
     {
       "path": "fixtures/audit_payload.invalid.json",
@@ -46,6 +46,10 @@
       "sha256": "3e218c045b79688892486ac9fa8f924ef3e1216b60f6fd3899b0ba8a26f6ad10"
     },
     {
+      "path": "fixtures/match_config.appendix_b.json",
+      "sha256": "2584d07627a44f7f27888c56e8c6beedc1e82532601e977774bf5858c538a711"
+    },
+    {
       "path": "fixtures/match_config.example.json",
       "sha256": "70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06"
     },
@@ -59,7 +63,7 @@
     },
     {
       "path": "fixtures/negotiation_terms.projection.json",
-      "sha256": "d208a670bd9ef62190e60dae5cce470b44d3043ee388d5037fb11243cb4acd60"
+      "sha256": "ef85355c0fe8ad3db96870bad2bc6df6d4c252840c2999c5a5241fbad7938838"
     },
     {
       "path": "fixtures/per_subgame_config.invalid.json",
@@ -87,43 +91,43 @@
     },
     {
       "path": "schemas/audit-payload.schema.json",
-      "sha256": "c576e2d02656d1abdb9fdcbf5a9b9677788fcdd26c5d907dbbf095723f337991"
+      "sha256": "b39315867f9d4548a0307af3b28963154d255bd7e5e1bf1c999d29a6c7548034"
     },
     {
       "path": "schemas/audit-record.schema.json",
-      "sha256": "b9e7da4e1ccd567cae7063fe705eb6246fd1865fcebe208409385ff5efe7b7cc"
+      "sha256": "e1c60ef2b38f451b223330e6fd90b6769fb844456180fdb4f1f4b65c5a16c105"
     },
     {
       "path": "schemas/control-message.schema.json",
-      "sha256": "10428efd316faff48f1767937c39c35d3634a2669a93291633459dff70da451c"
+      "sha256": "34960eef60e610ab3f9adb45e7aab6ddc9987a54fd08cac5700f8527b81c3edf"
     },
     {
       "path": "schemas/match-config.schema.json",
-      "sha256": "10c20c06da390cfce1f4b7be0a04d40799ed592e55ceb8b0960e07af84d2fe68"
+      "sha256": "c125aea3df0badf1bf38c013aa829b3b3c27c2d73c13141b45df2caa804a1be9"
     },
     {
       "path": "schemas/negotiate.schema.json",
-      "sha256": "528bfa3bf6e89b437cdb323715e8963e3d77334653eeff244ea18a11daa3d4af"
+      "sha256": "9d17a4b8467d4e003a09ef9b8b9ca1ebe16c186d957677f5cd37102bd0c2bad3"
     },
     {
       "path": "schemas/per-subgame-config.schema.json",
-      "sha256": "41bae03d676e59a0107ab2fa14a1536282e5095e97856c5c003fa946ea2c76a0"
+      "sha256": "cd334259ba4b52cb3539d892bdff51d8133f93e9d14596a4ba9bbfb75bdff529"
     },
     {
       "path": "schemas/tool-response.schema.json",
-      "sha256": "86cf880aac650a33d4887b291563663659eb4d4bd559e8d893d29f1547e24bd5"
+      "sha256": "6e3ac9d95a77319553a161a9ddd09029f0296f76760343f9101cddaf5a5036a2"
     },
     {
       "path": "schemas/turn-message.schema.json",
-      "sha256": "2a6f96ae40c2a8b5ad0731ff2714e6fb996ded3b8147786d98e05faef27a614d"
+      "sha256": "4582f85288bbc0973b48399a07d9a9f0954a1cb4e79510410695c2629c5929b9"
     },
     {
       "path": "vectors/config-sha256.vectors.json",
-      "sha256": "bf435553073cd7c10d69d873cbb86c92504e6c4ab1686c76fb7db0b261edcd38"
+      "sha256": "0a5cc1c872be1cc3e3a8960d0a0176d379ea8d5ca6ec70890598d60af5b34118"
     },
     {
       "path": "vectors/move-commit.vectors.json",
-      "sha256": "370136bd6019455dea5d7943afbc68747b00cf696d43ac0b6d5c38a580a85ebb"
+      "sha256": "a9254ef27531fde5844b1462ed9696d6cecd33828ef9d86158395de67ab4506d"
     },
     {
       "path": "verify.py",

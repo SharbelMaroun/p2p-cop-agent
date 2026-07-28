@@ -19,6 +19,7 @@ from pathlib import Path
 from jsonschema import ValidationError
 from jsonschema.validators import validator_for
 
+from p2p_cop_agent.domain.board import BoardError, validate_start_coordinates
 from p2p_cop_agent.shared.config import JsonObject, load_json_object
 
 BUNDLE_DIR = "shared_contract"
@@ -110,6 +111,20 @@ def _check_profile(version: str, schema: JsonObject) -> None:
         )
 
 
+def _check_start_coordinates(game: JsonObject) -> None:
+    """Apply cross-field board validation that JSON Schema alone cannot express.
+
+    Schema validation proves each coordinate is a well-formed integer pair. It
+    cannot prove a pair lies inside the negotiated board, because that depends on
+    ``grid_size`` and ``axis_start_index`` in a sibling object, nor that the two
+    starts differ. Both are checked here against the negotiated geometry.
+    """
+    try:
+        validate_start_coordinates(game)
+    except BoardError as exc:
+        raise ContractValidationError(f"match config board_and_agents: {exc}") from exc
+
+
 def _check_rate_limit_mirror(game: JsonObject, rate_limits: JsonObject) -> None:
     """Require the local operational file to mirror signed Gatekeeper terms exactly."""
     if game.get("rate_limiter_gatekeeper") != rate_limits.get("rate_limiter_gatekeeper"):
@@ -151,6 +166,7 @@ def load_match_contract(
     )
     game = load_json_object(game_path)
     validate_instance(game, match_schema, "match config")
+    _check_start_coordinates(game)
     rate_schema = load_json_object(repository / RATE_LIMITS_SCHEMA)
     rate_limits = load_json_object(repository / RATE_LIMITS_CONFIG)
     validate_instance(rate_limits, rate_schema, "rate-limit config")

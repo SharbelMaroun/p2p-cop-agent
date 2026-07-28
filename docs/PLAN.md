@@ -5,20 +5,22 @@ owned in this Cop repository. External review, Thief consumption, and lecturer
 clarifications are exit dependencies, not Cop implementation tasks.
 
 Current state: **`0.1.0-proposed` rejected; M1.5 Option-B repair at
-`0.2.1-proposed` with the barrier-rule and role-alternation blockers closed but
-four semantic blockers still open (unsupported required root fields, incomplete
-cross-field validation, canonicalization profile, and book-level FastMCP
-interoperability); M2 core domain implemented and hardened; coordinator review,
-contract freeze, and `M2_GAMEPLAY: GO` remain later gates.**
+`0.2.2-proposed`. All Cop-side semantic blockers are closed: barrier rule, role
+alternation, unsupported required root fields, and cross-field validation. Four
+blockers remain, none of them Cop-side code work — canonicalization profile and
+book-level FastMCP interoperability need an authoritative external answer;
+stable-versus-per-match separation and the rate-limit mirror need coordinator
+confirmation of an existing design. M2 core domain implemented and hardened;
+coordinator review, contract freeze, and `M2_GAMEPLAY: GO` remain later gates.**
 
-M1.5 is not complete. Two open blockers are Cop-side work; two require an
-authoritative external answer and cannot be closed from this repository.
+M1.5 cannot be closed from inside this repository. Everything Cop-owned in the
+phase is delivered; the exit gate now waits on external decisions.
 
 | Phase | Status | Cop outcome | Exit gate |
 |---|---|---|---|
 | M0 Evidence and source reconciliation | DONE | Authority order, provenance, conflicts, and unknowns are evidence-backed | Coordinator audit corrections are reflected |
 | M1 Public contract, match configuration, parity and freeze | SUPERSEDED | `0.1.0-proposed` was rejected; the stable-semantics work carries into M1.5 | Replaced by the M1.5 Option-B gate |
-| M1.5 Option-B contract repair and conformance | IN PROGRESS — semantic blockers open | Option-B decision recorded, role-neutral `0.2.1-proposed` bundle, protocol/message schemas, hash-domain vectors, unknown-opponent conformance, and the barrier/alternation semantic corrections | Green conformance suite, all semantic blockers closed or externally deferred, and a published `0.2.1-proposed` handoff |
+| M1.5 Option-B contract repair and conformance | Cop-side work COMPLETE; blocked on external decisions | Option-B decision recorded, role-neutral `0.2.2-proposed` bundle, protocol/message schemas, hash-domain vectors, unknown-opponent conformance, Appendix B conformance, cross-field validation, and the barrier/alternation corrections | Green conformance suite, published `0.2.2-proposed` handoff, and coordinator resolution of the four remaining non-code blockers |
 | M2 Core domain rules | IMPLEMENTED (hardened in M1.5) | Immutable board/actions, legal moves, barriers, and capture rules through the SDK | Complete hardened unit suite (barrier-aware moves, adjacency, capture) |
 | M3 Local state, scoring and deterministic baseline | DEFERRED (movement policy carved out and delivered) | Cop-only state/history, scoring, harness, and deterministic policy | Full local series simulation without private-truth leakage |
 | M4 Protocol, canonicalization and commit-reveal | DEFERRED | Accepted messages, exact canonical vectors, commit/reveal/audit state machine | Independent vectors and tamper/failure tests pass |
@@ -40,7 +42,7 @@ M1.5 replaces the old freeze gate. It delivers, as focused green milestones:
 
 1. the recorded Option-B decision (ledger, conflicts, ADR-001/006, TODO, PLAN);
 2. hardened barrier-aware M2 domain semantics;
-3. a role-neutral top-level `shared_contract/` bundle at `0.2.1-proposed` that
+3. a role-neutral top-level `shared_contract/` bundle at `0.2.2-proposed` that
    separates the stable specification/schema/fixture/verifier set from any
    per-match configuration;
 4. Option-B protocol and message schemas with positive/negative fixtures;
@@ -49,7 +51,7 @@ M1.5 replaces the old freeze gate. It delivers, as focused green milestones:
 6. unknown-opponent conformance against a neutral stub plus LF/controlled-byte
    hardening.
 
-Exit gate: a green conformance suite and a published `0.2.1-proposed` handoff.
+Exit gate: a green conformance suite and a published `0.2.2-proposed` handoff.
 Copying or freezing the rejected `0.1.0-proposed` bundle is not authorized, and
 contract freeze plus a separate `M2_GAMEPLAY: GO` remain later coordinator gates.
 
