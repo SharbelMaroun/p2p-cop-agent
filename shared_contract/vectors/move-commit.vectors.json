@@ -1,0 +1,35 @@
+{
+  "x-contract-version": "0.2.0-proposed",
+  "description": "Reproducible move/negotiation commit vectors. commit = SHA256(canonical_json(payload) + '|' + nonce). canonical_json uses sorted keys, ensure_ascii=False, compact separators, allow_nan=False. The nonce is 32 lowercase hex characters and lives outside the payload.",
+  "delimiter": "|",
+  "nonce_profile": {
+    "bytes": 16,
+    "hex_length": 32
+  },
+  "vectors": [
+    {
+      "name": "simple",
+      "payload": {"move": "N", "step": 1},
+      "nonce": "00000000000000000000000000000000",
+      "commit": "22eb75515b57651f654b199ccc8c27ca6b13cf8698a635db1d13bb9caba94ad9"
+    },
+    {
+      "name": "nested",
+      "payload": {"a": {"b": [1, 2, {"c": 3}]}, "d": []},
+      "nonce": "0123456789abcdef0123456789abcdef",
+      "commit": "ac7f52ff4bf1b46b131af98dabc255df98ee0526073bad155929146e83511ba6"
+    },
+    {
+      "name": "hebrew_unicode",
+      "payload": {"hint": "שלום עולם", "step": 2},
+      "nonce": "abcdefabcdefabcdefabcdefabcdefab",
+      "commit": "b0e86ed7456afd34624e4738bf732ee6e037607c7234778da2540663adeea2b8"
+    },
+    {
+      "name": "decimals_and_integers",
+      "payload": {"i": 7, "d": 2.5, "small": 0.1},
+      "nonce": "ffffffffffffffffffffffffffffffff",
+      "commit": "6bd4174f1c0100843124fafd28026db954823d0f0fbe58a0912a2fa345bf4429"
+    }
+  ]
+}

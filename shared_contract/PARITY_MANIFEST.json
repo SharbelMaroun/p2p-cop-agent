@@ -58,6 +58,10 @@
       "sha256": "f9ad3dcb751f30a63e34c0bf16512e9349e19c9dddbc93e2f80f5054f67569d9"
     },
     {
+      "path": "fixtures/negotiation_terms.projection.json",
+      "sha256": "76d2949129aee6344722cde4997863e89d6641ea24f110f647e3bcd2d4822949"
+    },
+    {
       "path": "fixtures/per_subgame_config.invalid.json",
       "sha256": "4f747aaeb24f18105434abbe9e4f5dccb1480dbecf4f1e8638f16218115f9096"
     },
@@ -112,6 +116,14 @@
     {
       "path": "schemas/turn-message.schema.json",
       "sha256": "2984e2a44afb730eb73db422cb2cc0b35ebd36a6ed31e965b61fc576b8b30585"
+    },
+    {
+      "path": "vectors/config-sha256.vectors.json",
+      "sha256": "e2bb860b92c08a09408f856dcdf2b9af2fef43d13ed788b71e01161794c3ddd5"
+    },
+    {
+      "path": "vectors/move-commit.vectors.json",
+      "sha256": "d277392033c6eb4dbaa519462435139ecd435797fa4f0527a971a524cce55985"
     },
     {
       "path": "verify.py",
