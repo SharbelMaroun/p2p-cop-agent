@@ -43,7 +43,7 @@ new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 | M2-05 | Implement capture conditions | DONE | P1 | Cop-on-thief, current-cell barrier, and trapped-Thief (STAY does not save) rules pass tests |
 | M3-01 | Implement Cop-local immutable state | DEFERRED | P1 | No opponent private truth is representable |
 | M3-02 | Implement deterministic state history | DEFERRED | P1 | Repeated input creates reproducible history |
-| M3-03 | Implement fixed scoring and technical loss | DEFERRED | P1 | Appendix F/E outcomes pass table-driven tests |
+| M3-03 | Implement fixed scoring and technical loss | DONE | P1 | Appendix F table 17 awards and the Appendix E zero-point sanction pass table-driven tests; values are read from the negotiated config, not hard-coded. Counterpart award on a technical loss recorded as `U-026` |
 | M3-04 | Build single-process rules harness | DEFERRED | P1 | Full local sub-game completes without transport |
 | M3-05 | Implement SDK-reachable deterministic pursuit baseline (movement) | DONE | P1 | Policy emits only legal movement actions; barrier-aware BFS distance, fixed-order tie-breaking, SDK-reachable, contract-independent. See [PURSUIT_BASELINE.md](PURSUIT_BASELINE.md) |
 | M3-06 | Decide and implement baseline barrier placement | DEFERRED | P1 | Requires barrier-versus-movement turn exclusivity, which depends on the still-provisional live-turn state machine |

@@ -19,6 +19,12 @@ from p2p_cop_agent.domain.movement import (
     is_legal_move,
     legal_moves,
 )
+from p2p_cop_agent.domain.scoring import (
+    Outcome,
+    ScoreLine,
+    ScoringError,
+    ScoringTable,
+)
 
 __all__ = [
     "Action",
@@ -31,6 +37,10 @@ __all__ = [
     "Coordinate",
     "CoordinateError",
     "MovementError",
+    "Outcome",
+    "ScoreLine",
+    "ScoringError",
+    "ScoringTable",
     "apply_move",
     "capture_reason",
     "captured_by_barrier",
