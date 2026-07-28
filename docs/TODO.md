@@ -2,7 +2,9 @@
 
 Only Cop-owned work is decomposed here. `DONE` means implemented and locally
 verified; it does not imply cross-repository acceptance. `BLOCKED` names an external
-evidence/review dependency. All M2–M9 work is `DEFERRED` by the controlling audit.
+evidence/review dependency. The 2026-07-28 coordinator decision authorized
+contract-independent M2 domain work and an Option-B contract revision, so M2 and the
+new M1.5 gate are active; M3–M9 remain `DEFERRED`.
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
@@ -23,12 +25,19 @@ evidence/review dependency. All M2–M9 work is `DEFERRED` by the controlling au
 | M1-12 | Reconcile config split, identity fields, and role schedule | DONE | P0 | Unified shared authority, artifact lifecycle, identities, and odd/even roles are documented |
 | M1-13 | Incorporate accepted M1 answers and vectors | DONE | P0 | Candidate hash `adac9efe…82db` and rejection vectors pass |
 | M1-14 | Produce candidate handoff | DONE | P0 | Controlled paths/hashes, manifest self-hash, gates, and blockers are recorded |
-| M1-15 | Promote contract version after acceptance evidence | BLOCKED | P0 | Coordinator authorizes freeze after independent parity/interop proof |
-| M2-01 | Implement immutable coordinate and action types | DEFERRED | P1 | SDK-visible unit tests prove immutability and vocabulary |
-| M2-02 | Implement board geometry and boundary validation | DEFERRED | P1 | Negotiated board/origin semantics pass boundary tests |
-| M2-03 | Implement legal orthogonal movement and `STAY` | DEFERRED | P1 | All legal/illegal transitions are deterministic |
-| M2-04 | Implement barrier inventory, placement, and disclosure rules | DEFERRED | P1 | Quota, legality, and disclosed events pass tests |
-| M2-05 | Implement capture conditions after `STAY` clarification | DEFERRED | P1 | Current-cell and trapped-Thief rules match accepted interpretation |
+| M1-15 | Promote contract version after acceptance evidence | SUPERSEDED | P0 | `0.1.0-proposed` rejected; superseded by the M1.5 Option-B `0.2.0-proposed` gate |
+| M1.5-01 | Record the Option-B interoperability decision | DONE | P0 | Ledger, conflicts, ADR-001/006, TODO, and PLAN record the accepted profile and pinned commit |
+| M1.5-02 | Harden barrier-aware M2 semantics | PLANNED | P1 | Police-adjacency placement, impassability, barrier-aware moves, and start-coordinate validation pass tests |
+| M1.5-03 | Separate stable contract from per-match configuration | PLANNED | P0 | Role-neutral `shared_contract` subtree exists; the neutral game config is a template, not an active match |
+| M1.5-04 | Define Option-B protocol and message schemas | PLANNED | P0 | negotiate/turn/audit/control/tool-response/config schemas and pos/neg fixtures validate |
+| M1.5-05 | Separate hash domains and add canonicalization vectors | PLANNED | P0 | Move-commit, `config_sha256`, and `config_file_sha256` are distinct and vector-tested |
+| M1.5-06 | Prove unknown-opponent conformance and LF safety | PLANNED | P0 | Neutral stub proves tool/argument names and rejections; controlled files are LF; verifier is read-only |
+| M1.5-07 | Publish the `0.2.0-proposed` handoff | PLANNED | P0 | Handoff records controlled paths, per-file hashes, manifest hash, gates, and blockers |
+| M2-01 | Implement immutable coordinate and action types | DONE | P1 | SDK-visible unit tests prove immutability and vocabulary |
+| M2-02 | Implement board geometry and boundary validation | DONE | P1 | Negotiated board/origin semantics pass boundary tests; start-coordinate validation added in M1.5-02 |
+| M2-03 | Implement legal orthogonal movement and `STAY` | DONE | P1 | Deterministic transitions; barrier-aware legality added in M1.5-02 |
+| M2-04 | Implement barrier inventory, placement, and disclosure rules | DONE | P1 | Quota, board legality, and disclosed events pass; police-adjacency and impassability added in M1.5-02 |
+| M2-05 | Implement capture conditions | DONE | P1 | Cop-on-thief, current-cell barrier, and trapped-Thief (STAY does not save) rules pass tests |
 | M3-01 | Implement Cop-local immutable state | DEFERRED | P1 | No opponent private truth is representable |
 | M3-02 | Implement deterministic state history | DEFERRED | P1 | Repeated input creates reproducible history |
 | M3-03 | Implement fixed scoring and technical loss | DEFERRED | P1 | Appendix F/E outcomes pass table-driven tests |

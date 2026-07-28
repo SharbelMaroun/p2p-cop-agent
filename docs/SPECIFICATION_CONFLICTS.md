@@ -7,7 +7,7 @@ baseline; see [PARITY_REPORT.md](PARITY_REPORT.md).
 |---|---|---|---|
 | C-001 | CONFIRMED | Example `num_games: 1` versus six sub-games | One is an example sub-game/default; Appendix F table 18 fixes a played series at six. Do not promote the demo default. |
 | C-002 | CONFIRMED | “Five components plus link” versus “six README sections” | They are the same mapping: five content sections plus section 6 companion link (book PDF p. 97; rule 42). |
-| C-003 | UNKNOWN | Exact MCP tool names | Simulator candidates are `negotiate`, `receive_turn`, `submit_audit`, `receive_control`; none is book-mandated. ADR-001 and Thief acceptance decide. |
+| C-003 | RESOLVED / OPTION B | Exact MCP tool names | The book leaves names open. The 2026-07-28 project decision selects the Option-B profile: `negotiate`, `receive_turn`, `submit_audit` (exposed), optional `receive_control`; `exchange_audit` is a client transport method only and `receive_move` is excluded. ADR-001 accepted for this project; see [OPTION_B_DECISION.md](OPTION_B_DECISION.md). |
 | C-004 | CONFIRMED | Lecturer/report address spellings differed | Canonical values are `rmisegal@gmail.com` and `rmisegal+uoh26finalgame@gmail.com` (book PDF p. 157). |
 | C-005 | CONFIRMED | Earlier text cited Appendix G for GitHub submission | Book v3.0.0 uses Appendix C. |
 | C-006 | CONFIRMED | Existing docs claimed cross-repository byte parity | Baseline hashes differ and two claimed files are absent on Thief main. New contract remains unfrozen pending evidence. |
@@ -23,5 +23,9 @@ baseline; see [PARITY_REPORT.md](PARITY_REPORT.md).
 | C-016 | CONFIRMED DISTINCTION | Eight-character Moodle team code was treated as runtime `group_id` syntax | Keep the administrative team code separate; runtime IDs remain non-empty text pending an artifact schema. |
 | C-017 | CONFIRMED DISTINCTION | Book table 20 was described as twenty controlled repository paths | Table 20 lists artifact variables, repository, and addresses. The parity manifest is an internal Cop-authored coordination tool. |
 | C-018 | CONFIRMED DISTINCTION | Simulator `validate_agreement`/stub success was treated as M1 contract acceptance | It checks nine required normalized terms. M1 review/parity and future runtime Step-0 are separate gates. |
+| C-019 | RESOLVED / OPTION B | Move-commit serialization and delimiter were undefined | The Option-B profile fixes `sha256(canonical_json(payload) + "\|" + nonce)` with a literal `\|` delimiter and a 16-byte/32-hex nonce revealed only in the post-game audit. ADR-006 move-commit accepted for this project. |
 
-No unresolved row is closed by selecting a simulator/example default.
+Rows marked `OPTION B` are closed by the documented 2026-07-28 academic-freedom
+project decision precisely because authoritative sources conflict or are silent;
+this is not the same as silently adopting a simulator/example default. All other
+unresolved rows still require their own authority and are not closed by a default.
