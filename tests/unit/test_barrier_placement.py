@@ -1,4 +1,4 @@
-"""Tests for Police-turn barrier placement legality (one orthogonal step)."""
+"""Tests for Police-turn barrier placement (own cell or one orthogonal step)."""
 
 import pytest
 
@@ -15,6 +15,19 @@ def field() -> BarrierField:
     return BarrierField(max_barriers=14)
 
 
+def test_place_low_level_api_places_a_barrier() -> None:
+    result = field().place(board(), Coordinate(2, 3))
+    assert result.has_barrier(Coordinate(2, 3))
+    assert result.count == 1
+
+
+def test_places_on_police_own_cell() -> None:
+    police = Coordinate(3, 3)
+    result = field().place_adjacent(board(), police, police)
+    assert result.has_barrier(police)
+    assert result.count == 1
+
+
 @pytest.mark.parametrize(
     "target",
     [Coordinate(2, 3), Coordinate(4, 3), Coordinate(3, 2), Coordinate(3, 4)],
@@ -24,12 +37,6 @@ def test_places_on_any_orthogonal_neighbour(target: Coordinate) -> None:
     result = field().place_adjacent(board(), police, target)
     assert result.has_barrier(target)
     assert result.count == 1
-
-
-def test_rejects_placement_on_police_own_cell() -> None:
-    police = Coordinate(3, 3)
-    with pytest.raises(BarrierError, match="Police's own cell"):
-        field().place_adjacent(board(), police, police)
 
 
 @pytest.mark.parametrize(
@@ -55,8 +62,33 @@ def test_allows_barrier_on_thief_cell_when_adjacent() -> None:
     assert result.has_barrier(thief)
 
 
-def test_respects_quota_and_uniqueness_through_adjacent_path() -> None:
+def test_rejects_duplicate_through_adjacent_path() -> None:
     police = Coordinate(3, 3)
     once = field().place_adjacent(board(), police, Coordinate(2, 3))
     with pytest.raises(BarrierError, match="already placed"):
         once.place_adjacent(board(), police, Coordinate(2, 3))
+
+
+def test_rejects_own_cell_after_quota_exhaustion() -> None:
+    police = Coordinate(3, 3)
+    full = BarrierField(max_barriers=1).place_adjacent(board(), police, police)
+    assert full.remaining == 0
+    with pytest.raises(BarrierError, match="quota 1 is exhausted"):
+        full.place_adjacent(board(), Coordinate(0, 0), Coordinate(0, 0))
+
+
+def test_place_does_not_mutate_the_original_field() -> None:
+    original = field()
+    original.place(board(), Coordinate(2, 3))
+    assert original.count == 0
+    assert original.placements == ()
+    assert not original.has_barrier(Coordinate(2, 3))
+
+
+def test_place_adjacent_does_not_mutate_the_original_field() -> None:
+    original = field()
+    police = Coordinate(3, 3)
+    original.place_adjacent(board(), police, police)
+    assert original.count == 0
+    assert original.placements == ()
+    assert not original.has_barrier(police)
