@@ -2,7 +2,7 @@
 
 Status: **TECHNICALLY READY FOR EXTERNAL REVIEW — UNFROZEN — NO-GO UNTIL PARITY**
 
-Source base: `84339c210c8e3293d972bccec5912abf519d502c`
+Source base: `e0df5ba530fd7c433d41a98c5976ca7e08cdfa53`
 
 Branch: `agent/cop-m1-contract-revision`
 
