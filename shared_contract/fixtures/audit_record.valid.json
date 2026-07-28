@@ -1,0 +1,9 @@
+{
+  "payload": {
+    "step": 3,
+    "position": [4, 4],
+    "move": "N"
+  },
+  "nonce": "0123456789abcdef0123456789abcdef",
+  "commit": "aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44"
+}

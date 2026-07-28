@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.0-proposed",
+  "x-role-neutral": true,
+  "title": "Option-B audit record",
+  "description": "One revealed record whose payload and nonce must reproduce commit.",
+  "type": "object",
+  "required": ["payload", "nonce", "commit"],
+  "additionalProperties": true,
+  "properties": {
+    "payload": {
+      "type": "object"
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

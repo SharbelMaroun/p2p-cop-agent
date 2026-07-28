@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.0-proposed",
+  "x-role-neutral": true,
+  "title": "Option-B AuditPayload",
+  "description": "Post-game reveal delivered to the submit_audit tool.",
+  "type": "object",
+  "required": ["sender", "records", "result_claim"],
+  "additionalProperties": true,
+  "properties": {
+    "sender": {
+      "enum": ["police", "thief"]
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["payload", "nonce", "commit"],
+        "additionalProperties": true,
+        "properties": {
+          "payload": {
+            "type": "object"
+          },
+          "nonce": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$"
+          },
+          "commit": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "result_claim": {
+      "type": "object"
+    }
+  }
+}

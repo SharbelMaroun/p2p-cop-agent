@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.0-proposed",
+  "x-role-neutral": true,
+  "title": "Option-B successful tool response",
+  "description": "The transport acknowledgement returned by a successful FastMCP tool call.",
+  "type": "object",
+  "required": ["ok"],
+  "additionalProperties": true,
+  "properties": {
+    "ok": {
+      "const": true
+    }
+  }
+}

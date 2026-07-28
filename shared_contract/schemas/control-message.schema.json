@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.0-proposed",
+  "x-role-neutral": true,
+  "x-optional-tool": true,
+  "title": "Option-B ControlMessage (optional)",
+  "description": "Optional out-of-band control channel for the optional receive_control tool.",
+  "type": "object",
+  "required": ["sender", "kind"],
+  "additionalProperties": true,
+  "properties": {
+    "sender": {
+      "enum": ["police", "thief"]
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}

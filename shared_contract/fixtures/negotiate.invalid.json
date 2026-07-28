@@ -1,0 +1,11 @@
+{
+  "terms": {
+    "grid_size": 7
+  },
+  "nonce": "0123456789abcdef0123456789abcdef",
+  "signature": "ed25519:example-signature-placeholder",
+  "identity": {
+    "role": "cop",
+    "group_id": "group-alpha"
+  }
+}

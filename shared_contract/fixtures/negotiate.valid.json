@@ -1,0 +1,13 @@
+{
+  "terms": {
+    "grid_size": 7,
+    "max_moves": 35,
+    "num_games": 6
+  },
+  "nonce": "0123456789abcdef0123456789abcdef",
+  "signature": "ed25519:example-signature-placeholder",
+  "identity": {
+    "role": "police",
+    "group_id": "group-alpha"
+  }
+}
