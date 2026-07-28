@@ -2,7 +2,10 @@
 
 Status: **TECHNICALLY READY FOR EXTERNAL REVIEW — UNFROZEN — NO-GO UNTIL PARITY**
 
-Source base: `e0df5ba530fd7c433d41a98c5976ca7e08cdfa53`
+Source base: `33b119baccee4ffe3fe4355e1edcea06f39b6fb1`
+
+Controlled-file bytes are identical at `e0df5ba530fd7c433d41a98c5976ca7e08cdfa53`
+and this commit; only the handoff document changed between them.
 
 Branch: `agent/cop-m1-contract-revision`
 
