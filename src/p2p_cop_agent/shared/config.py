@@ -21,12 +21,21 @@ def _object_without_duplicates(pairs: list[tuple[str, object]]) -> JsonObject:
     return value
 
 
+def _reject_non_json_number(value: str) -> object:
+    """Reject Python's non-standard NaN and infinity decoder extensions."""
+    raise ConfigLoadError(f"Non-finite JSON number {value!r} is not allowed")
+
+
 def load_json_object(path: str | Path) -> JsonObject:
     """Load one explicit path as a JSON object without supplying defaults."""
     config_path = Path(path)
     try:
         with config_path.open(encoding="utf-8") as stream:
-            value: object = json.load(stream, object_pairs_hook=_object_without_duplicates)
+            value: object = json.load(
+                stream,
+                object_pairs_hook=_object_without_duplicates,
+                parse_constant=_reject_non_json_number,
+            )
     except ConfigLoadError:
         raise
     except (OSError, JSONDecodeError) as exc:

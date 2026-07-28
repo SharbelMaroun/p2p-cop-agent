@@ -1,6 +1,6 @@
 # ADR-004 — Shared JSON and Private TOML
 
-Status: **PROPOSED — UNACCEPTED**
+Status: **ACCEPTED BOUNDARY — SHARED GAME JSON; LOCAL TOML/RATE FILE**
 
 ## Context
 
@@ -8,10 +8,13 @@ Appendix B directly separates byte-identical agreed JSON from local per-peer TOM
 The peers must enforce the same game physics without exposing private settings or
 sharing a runtime filesystem.
 
-## Proposed decision
+## Decision
 
-- Parity-control a neutral proposed match pair at `config/game.json` and
-  `config/rate_limits.json`; the split remains unaccepted.
+- Use `config/game.json` as the single authoritative shared constitution, including
+  timeouts and Gatekeeper limits.
+- Keep `config/rate_limits.json` as a local validated operational file. It cannot
+  override/contradict shared Gatekeeper values and is excluded from match-byte
+  parity.
 - Put the guidelines-required configuration revision `version: "1.00"` at the root
   of each split shared JSON file and validate it independently of `schema_version`.
 - Keep only Cop-local `config/game.toml.example`; never add Thief-private config here.
@@ -22,6 +25,6 @@ sharing a runtime filesystem.
 
 ## Acceptance
 
-- Config tests prove the shared/private boundary and overlay behavior.
+- Config tests prove the shared/private boundary and exact operational mirror.
 - Private TOML and `.env` are absent from the parity manifest.
 - Cop and Thief accept identical shared bytes independently.

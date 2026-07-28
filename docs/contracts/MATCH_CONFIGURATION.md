@@ -1,12 +1,16 @@
 # Proposed Negotiated Match Configuration
 
 Contract version: `0.1.0-proposed`
-Status: **PROPOSED / UNFROZEN — P0 HASH BLOCKER**
+Status: **PROPOSED / UNFROZEN — CONFIG HASH DEFINED**
 
-`config/game.json` and `config/rate_limits.json` are a neutral review fixture for one
-proposed match agreement. Their two-file split is a project proposal: Appendix B
-names both paths but also embeds Gatekeeper values in its shared game example. The
-lecturer must clarify whether the played agreement is one artifact or a split pair.
+`config/game.json` is the neutral review fixture for the single authoritative shared
+constitution. It contains all opponent-relevant terms, including response/watchdog
+timeouts and Gatekeeper limits. Its source bytes must be identical between peers in
+addition to producing the same canonical digest.
+
+`config/rate_limits.json` is a local operational enforcement file beside private
+TOML. This repository checks that its shared Gatekeeper mirror does not contradict
+`game.json`, but its complete bytes and local extensions are not match terms.
 
 ## Participant agreement
 
@@ -14,39 +18,33 @@ Appendix B's `schema_version: "1.2"` example contains `agreed_between`, and the 
 requires mutual per-match agreement and identical values. This candidate therefore
 requires an explicit two-participant `agreed_between` value.
 
-The proposed representation is an ordered array of two unique, non-empty public
-participant identifiers. Exact identifier format and deterministic ordering are not
-established. The repository fixture uses neutral identities and does not restrict
-valid opponents to this project's Cop and Thief.
+The representation is an ordered array of two unique, non-empty public `group_id`
+values. The mutually agreed array order is byte-significant and preserved exactly;
+implementations must not silently sort it. Exact character/length rules remain open.
 
 ## Match identity
 
-Book table 20 establishes `config_<game_id>_g<NN>.json`; six sub-games are fixed.
-The candidate therefore carries `game_id`, `sub_game_number`, and `config_name`, and
-checks that the filename follows the book pattern at the application boundary.
+`game_id`, `game_uid`, `links`, sub-game number, artifact filename, and the resulting
+`config_sha256` belong to emitted artifact wrappers, not the source constitution.
+Their common lifecycle is defined in `ARTIFACT_CONTRACT.md`.
 
-`game_uid` is observed only in local generated artifacts and is not required here.
-Which identity and link fields belong in the formal shared agreement still requires
-lecturer clarification.
+## Configuration hash
 
-## Configuration hash blocker
+Hash the complete parsed root object from `config/game.json`:
 
-Appendix F requires the agreement to be cryptographically locked, but the exact
-`config_sha256` field, hash scope, self-hash exclusion, encoding, normalization,
-number rendering, array ordering, whitespace, and final-newline rules are unresolved.
+1. serialize object keys in lexicographic order;
+2. use compact `,` and `:` separators with no insignificant whitespace;
+3. preserve Unicode characters and encode the string as UTF-8;
+4. compute SHA-256 and render 64 lowercase hexadecimal digits.
 
-The candidate requires the `config_sha256` member but permits only `null` until those
-rules are supplied. A non-null value must at least have a 64-lowercase-hex shape;
-shape validation is not semantic hash verification. The active fixture remains
-`null`, so it cannot authorize gameplay or contract freeze.
+The artifact hash claim is external to the source object, so there is no self-hash
+field to remove. `tests/fixtures/contracts/game-config-sha256.vector.json` records
+the exact candidate vector.
 
 ## Agreement comparison
 
-Before canonicalization is defined, this package can:
-
-1. validate the proposed structure and Appendix F fixed/minimum semantics;
-2. compare two loaded configurations for semantic equality;
-3. compare controlled contract files by exact bytes.
-
-It cannot claim a cross-language canonical match hash. Any changed participant,
-match identity, negotiated value, or Gatekeeper value must be rejected before play.
+This package validates the proposed structure and Appendix F semantics, verifies the
+operational rate-limit mirror, calculates/verifies the canonical config hash,
+compares the exact source bytes, and compares offers semantically. Any participant,
+negotiated value, timeout, Gatekeeper, hash, or source-byte mismatch must reject the
+offer before play.

@@ -1,7 +1,7 @@
 # PRD — Commit-Reveal
 
-Status: mandatory cryptographic semantics are confirmed; wire representation and
-byte canonicalization are **not frozen**.
+Status: config hashing is defined; move-commit wire representation and byte
+canonicalization are **not frozen**.
 
 ## Confirmed behavior
 
@@ -10,13 +10,15 @@ byte canonicalization are **not frozen**.
 - Only the hash is sent during Commit.
 - A fresh nonce remains secret until the end-of-game final reveal/audit.
 - Both peers recompute every commitment. Any mismatch is a technical loss worth zero.
-- Step 0 records the required hardware/LLM/code/group/game/commit declaration data.
+- Step 0 records and seals the required hardware/LLM/code/group/game declaration
+  data plus the exact Git commit of the running code before moves begin.
 
 Sources: book Ch. 5; Appendix E rules 17–19/24.
 
 ## Proposed decision boundary
 
-ADR-006 must define deterministic bytes and nonce length. A Python expression such as
+The shared-config digest has its own accepted vector and does not define move
+commitments. ADR-006 must still define move bytes and nonce length. A Python expression such as
 `json.dumps(sort_keys=True, separators=(",", ":"))`, a delimiter, field spelling,
 encoding, and comparison helper are implementation proposals—not Appendix E rules.
 No cryptographic runtime behavior may depend on them until both peers accept ADR-006.
@@ -24,6 +26,10 @@ No cryptographic runtime behavior may depend on them until both peers accept ADR
 Known semantic components do not prove a formal wire payload schema. Sub-game/role
 sealing, field names/types, error envelopes, and acknowledgement transport are linked
 to ADR-001/002/006 and contract tests.
+
+The simulator's `validate_agreement` presence check for nine normalized gameplay
+terms is not the Step-0 attestation gate and cannot substitute for it. M4 must define
+the signed payload and independent verification vector.
 
 This milestone may provide fixtures and typed contract models only; it implements no
 commit-reveal runtime.

@@ -7,8 +7,7 @@ import pytest
 from p2p_cop_agent import CopSDK
 from p2p_cop_agent.shared.contracts import (
     ContractValidationError,
-    SharedContract,
-    require_same_match_configuration,
+    verify_config_sha256,
 )
 from tests.contract.conftest import read_json, write_json
 
@@ -62,16 +61,12 @@ def test_changed_negotiated_value_is_rejected_before_play(contract_copy: Path) -
 
 @pytest.mark.parametrize("malformed", ["bad", "A" * 64, "0" * 63])
 def test_malformed_configuration_hash_is_rejected(
-    contract_copy: Path,
     malformed: str,
 ) -> None:
-    path = contract_copy / "config/game.json"
-    game = read_json(path)
-    game["config_sha256"] = malformed
-    write_json(path, game)
+    game = read_json(PROJECT_ROOT / "config/game.json")
 
     with pytest.raises(ContractValidationError, match="config_sha256"):
-        CopSDK.from_repository(contract_copy)
+        verify_config_sha256(game, malformed)
 
 
 @pytest.mark.parametrize(
@@ -88,45 +83,29 @@ def test_private_field_leakage_is_rejected(contract_copy: Path, private_field: s
         CopSDK.from_repository(contract_copy)
 
 
-def test_cross_file_match_identity_must_agree(contract_copy: Path) -> None:
+def test_rate_limit_mirror_must_agree(contract_copy: Path) -> None:
     path = contract_copy / "config/rate_limits.json"
     rates = read_json(path)
-    rates["game_id"] = "different-match"
+    limits = rates["rate_limiter_gatekeeper"]
+    assert isinstance(limits, dict)
+    limits["requests_per_minute"] = 31
     write_json(path, rates)
 
-    with pytest.raises(ContractValidationError, match="match binding differs for game_id"):
+    with pytest.raises(ContractValidationError, match="rate-limit mirror differs"):
         CopSDK.from_repository(contract_copy)
 
 
-def test_config_name_must_bind_book_filename_identity(contract_copy: Path) -> None:
+def test_participant_order_is_byte_significant(contract_copy: Path) -> None:
     path = contract_copy / "config/game.json"
     game = read_json(path)
-    game["config_name"] = "config_different_g01.json"
+    participants = game["agreed_between"]
+    assert isinstance(participants, list)
+    game["agreed_between"] = list(reversed(participants))
     write_json(path, game)
 
-    with pytest.raises(ContractValidationError, match="config_neutral-match_g01.json"):
-        CopSDK.from_repository(contract_copy)
-
-
-def test_semantic_match_comparison_rejects_each_contract_layer() -> None:
-    base = SharedContract("candidate", {"field": "game"}, {"field": "rates"})
-
-    with pytest.raises(ContractValidationError, match="contract version differs"):
-        require_same_match_configuration(
-            base,
-            SharedContract("different", {"field": "game"}, {"field": "rates"}),
-        )
+    sdk = CopSDK.from_repository(PROJECT_ROOT)
     with pytest.raises(ContractValidationError, match="game configuration differs"):
-        require_same_match_configuration(
-            base,
-            SharedContract("candidate", {"field": "changed"}, {"field": "rates"}),
-        )
-    with pytest.raises(ContractValidationError, match="rate-limit configuration differs"):
-        require_same_match_configuration(
-            base,
-            SharedContract("candidate", {"field": "game"}, {"field": "changed"}),
-        )
-
+        sdk.validate_match_offer(contract_copy)
 
 @pytest.mark.parametrize("unsupported", ["1.1", "1.3", "9.9"])
 def test_unsupported_config_profile_fails_clearly(

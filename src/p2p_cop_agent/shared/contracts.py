@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -22,6 +26,46 @@ class SharedContract:
     version: str
     game: JsonObject
     rate_limits: JsonObject
+    config_sha256: str
+    config_file_sha256: str
+
+
+def canonical_config_bytes(config: JsonObject) -> bytes:
+    """Return the defined sorted, compact, unescaped-Unicode UTF-8 config bytes."""
+    try:
+        text = json.dumps(
+            config,
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+    except (TypeError, ValueError) as exc:
+        raise ContractValidationError(f"Cannot canonicalize shared config: {exc}") from exc
+    return text.encode("utf-8")
+
+
+def shared_config_sha256(config: JsonObject) -> str:
+    """Hash the complete shared source config; the artifact claim is external."""
+    return hashlib.sha256(canonical_config_bytes(config)).hexdigest()
+
+
+def _file_sha256(path: Path) -> str:
+    """Hash exact source bytes for the separate byte-identity rule."""
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise ContractValidationError(f"Cannot hash shared config {path}: {exc}") from exc
+    return hashlib.sha256(raw).hexdigest()
+
+
+def verify_config_sha256(config: JsonObject, claimed: object) -> None:
+    """Reject malformed or incorrect config-artifact hash claims."""
+    if not isinstance(claimed, str) or re.fullmatch(r"[0-9a-f]{64}", claimed) is None:
+        raise ContractValidationError("config_sha256 must be 64 lowercase hexadecimal digits")
+    expected = shared_config_sha256(config)
+    if not hmac.compare_digest(expected, claimed):
+        raise ContractValidationError("config_sha256 does not match the shared config")
 
 
 def _read_version(root: Path) -> str:
@@ -58,18 +102,10 @@ def _check_profile(version: str, schemas: list[JsonObject]) -> None:
         )
 
 
-def _check_match_binding(game: JsonObject, rate_limits: JsonObject) -> None:
-    """Check proposed cross-file identity without inventing canonical hash bytes."""
-    for field in ("game_id", "sub_game_number"):
-        if game.get(field) != rate_limits.get(field):
-            raise ContractValidationError(f"match binding differs for {field}")
-    game_id = game.get("game_id")
-    sub_game = game.get("sub_game_number")
-    expected_name = f"config_{game_id}_g{sub_game:02d}.json"
-    if game.get("config_name") != expected_name:
-        raise ContractValidationError(
-            f"game config $.config_name must be {expected_name!r} for its match identity"
-        )
+def _check_rate_limit_mirror(game: JsonObject, rate_limits: JsonObject) -> None:
+    """Require the operational file to mirror signed Gatekeeper terms exactly."""
+    if game.get("rate_limiter_gatekeeper") != rate_limits.get("rate_limiter_gatekeeper"):
+        raise ContractValidationError("rate-limit mirror differs from shared game configuration")
 
 
 def require_same_match_configuration(
@@ -81,8 +117,10 @@ def require_same_match_configuration(
         raise ContractValidationError("match contract version differs")
     if expected.game != offered.game:
         raise ContractValidationError("negotiated game configuration differs")
-    if expected.rate_limits != offered.rate_limits:
-        raise ContractValidationError("negotiated rate-limit configuration differs")
+    if expected.config_sha256 != offered.config_sha256:
+        raise ContractValidationError("shared configuration hash differs")
+    if expected.config_file_sha256 != offered.config_file_sha256:
+        raise ContractValidationError("shared game.json source bytes differ")
 
 
 def load_shared_contract(root: str | Path) -> SharedContract:
@@ -92,12 +130,19 @@ def load_shared_contract(root: str | Path) -> SharedContract:
     game_schema = _load_schema(repository, "game-config.schema.json")
     rate_schema = _load_schema(repository, "rate-limits.schema.json")
     _check_profile(version, [game_schema, rate_schema])
-    game = load_json_object(repository / "config/game.json")
+    game_path = repository / "config/game.json"
+    game = load_json_object(game_path)
     rate_limits = load_json_object(repository / "config/rate_limits.json")
     validate_instance(game, game_schema, "game config")
     validate_instance(rate_limits, rate_schema, "rate-limit config")
-    _check_match_binding(game, rate_limits)
-    return SharedContract(version=version, game=game, rate_limits=rate_limits)
+    _check_rate_limit_mirror(game, rate_limits)
+    return SharedContract(
+        version=version,
+        game=game,
+        rate_limits=rate_limits,
+        config_sha256=shared_config_sha256(game),
+        config_file_sha256=_file_sha256(game_path),
+    )
 
 
 def load_artifact_keysets(root: str | Path) -> dict[str, JsonObject]:

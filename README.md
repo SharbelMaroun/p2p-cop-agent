@@ -7,15 +7,15 @@ Peer-to-Peer Network” final project.
 
 ## Current milestone
 
-This branch provides a corrected, reviewable M1 contract candidate and the
-independently installable `p2p_cop_agent` scaffold. It deliberately contains no
-game, network, cryptographic runtime, LLM, Gmail, GUI, or replay behavior. The
-controlling audit keeps M2 blocked.
+This branch provides an M1 contract candidate that is technically ready for
+external parity review and an independently installable `p2p_cop_agent` scaffold.
+It deliberately contains no game, network, cryptographic runtime, LLM, Gmail, GUI,
+or replay behavior. M2 remains blocked until the external M1 freeze gate passes.
 
-The shared contract is `0.1.0-proposed` and **UNFROZEN**. It becomes frozen only
-after P0 contract questions are resolved, the coordinator accepts the candidate,
-and Thief independently consumes and verifies identical controlled bytes. The local
-checker proves Cop-local integrity only unless `--compare-root` is explicitly used.
+The shared contract is `0.1.0-proposed` and **UNFROZEN**. The Cop-owned checks pass;
+it becomes frozen only after the coordinator accepts the candidate and Thief
+independently consumes and verifies identical controlled bytes. The local checker
+proves Cop-local integrity only unless `--compare-root` is explicitly used.
 Historical parity claims were disproved by
 [docs/PARITY_REPORT.md](docs/PARITY_REPORT.md).
 
@@ -35,6 +35,8 @@ Evidence and decisions are tracked in:
 - Each peer is both a FastMCP server and client; exact MCP names and envelope fields
   are proposed only through ADR-001 and ADR-002.
 - The played-game shared configuration must be byte-identical at both peers.
+- A counted series has six sub-games. Each peer plays its natural role on odd games
+  and the opposite role on even games.
 - Legal movement is north, south, east, west, or stay; diagonals are illegal.
 - Barrier placement is disclosed. A barrier on the Thief’s current cell captures the
   Thief, and a Thief with no legal move is captured.
@@ -69,30 +71,41 @@ displays the equivalent PEP 440 form `1.0`.
 
 ## Configuration
 
-- `config/game.json` and `config/rate_limits.json` are a neutral proposed match pair.
+- `config/game.json` is the authoritative byte-identical shared constitution. Its
+  exact file SHA-256 is
+  `70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06`;
+  its complete parsed object has canonical SHA-256
+  `adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db`.
+- `config/rate_limits.json` is local enforcement. Its shared Gatekeeper values may
+  not weaken or contradict the signed game configuration, but its bytes and local
+  extensions are not parity-controlled.
 - `config/game.toml.example` is Cop-local and is not parity-controlled.
 - `.env-example` contains dummy, provider-neutral placeholders only.
 
 The candidate accepts only book-example profile `1.2`. Local generated artifacts
 observe `1.1`, and the simulator runtime observes `1.3`; no translation or
-compatibility is inferred. Root revision `1.00`, the two-file split, field placement,
-and closed known-field schemas remain explicitly proposed.
+compatibility is inferred. Root revision `1.00` and closed known-field schemas
+remain explicitly proposed. Exact artifact identity/schema rules and Step-0
+attestation are M4/M7 work, not claims made by this behavior-free M1 scaffold.
 
 ## Cop scope
 
 Confirmed Cop concerns include legal pursuit, a Cop-local belief about the Thief,
 Thief-scent observation, legal and disclosed barrier placement, capture, and Cop-local
-strategy and verbal behavior. Exact runtime interfaces and strategy weights remain
-future decisions. The safe default is deterministic movement; Appendix E rule 25 is
-a recommendation, not a mandatory sanction against every LLM-assisted policy.
+strategy and verbal behavior. The graded strategy must replace the simple baseline
+with smarter pure-Python move logic. LLM movement is disabled unless a future shared
+contract revision is mutually agreed; optional banter remains a separate local
+layer. Exact runtime interfaces and strategy weights remain future decisions.
 
 ## Submission facts
 
-- The final release requires an annotated Git tag; the literal tag name remains
-  subject to current Moodle instructions.
+- The final release requires the annotated Git tag `v1.0-submission`, with a final
+  current-Moodle verification immediately before tagging.
 - Repository sharing/general contact: `rmisegal@gmail.com`.
 - Automated final-game reports: `rmisegal+uoh26finalgame@gmail.com`.
 - A final report is a JSON attachment; a free-text final-report body is not accepted.
+- Both teams independently send a byte-identical copy of their mutually agreed
+  result artifact.
 
 The graded README report has six sections: (1) Dec-POMDP model, (2) FastMCP
 communication dilemma, (3) implemented strategy, (4) learning curves if RL is used,

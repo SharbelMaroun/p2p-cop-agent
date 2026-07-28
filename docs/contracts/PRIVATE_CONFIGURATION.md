@@ -20,3 +20,8 @@ Private-only concerns include:
 Real `config/game.toml` and `.env` files remain ignored. A public field later proven
 mandatory by an authenticated course schema must be reviewed explicitly rather than
 silently copied from private configuration.
+
+`config/rate_limits.json` is file-backed local operation, not a second source of
+negotiated truth. This repository mirrors the authoritative signed Gatekeeper values
+and rejects a weaker/conflicting local mirror, while permitting local extension
+metadata. The file is excluded from exact-byte cross-repository parity.

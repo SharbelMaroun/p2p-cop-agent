@@ -18,7 +18,7 @@ baseline hashes are preserved in [PARITY_REPORT.md](PARITY_REPORT.md).
 | Active README/PRD/PLAN/TODO and seven mechanism PRDs | Governing M0–M9 Cop roadmap; runtime deferred |
 | `PARAMETERS_BASELINE.md` | Direct Appendix-F values/statuses; not candidates |
 | `ARTIFACT_TEMPLATE_BASELINE.md` | Local generated-artifact observations; official provenance `NEEDS_MANUAL_REVIEW` |
-| Proposed shared bundle | `0.1.0-proposed`, UNFROZEN; P0 evidence/canonicalization blockers remain |
+| Proposed shared bundle | `0.1.0-proposed`, locally complete and UNFROZEN; coordinator acceptance and Thief exact-byte parity remain external dependencies |
 | Cop private example config | Local only; never parity-controlled |
 | `config/drafts/` | Quarantined historical material; never loaded |
 | `archive/pre-audit/` | Historical coverage only; never restored as active plan |
@@ -27,19 +27,23 @@ baseline hashes are preserved in [PARITY_REPORT.md](PARITY_REPORT.md).
 
 ## Corrected M1 candidate verification
 
-The corrected candidate gates were run on 2026-07-26 against CPython 3.12.13:
+The corrected candidate gates were rerun on 2026-07-27 against CPython 3.12.13:
 
 | Check | Actual result |
 |---|---|
 | `uv lock --check` | PASS; 19 packages resolved |
 | `uv sync --frozen` after deleting `.venv` | PASS; clean environment created and 16 packages installed |
 | `uv run ruff check .` | PASS; zero violations |
-| `uv run pytest --cov --cov-branch --cov-fail-under=85` | PASS; 69 tests, 91.94% branch coverage |
-| `uv run python scripts/check_file_lengths.py` | PASS; 20 source/script files and 16 test files |
-| `uv run python scripts/check_secrets.py` | PASS; 115 text files, zero findings |
-| Cop-local manifest integrity | PASS; 17 controlled files |
-| manifest exact-byte SHA-256 | `6e769ac49f4ffd064ada3a5486d7c5b2768feace2fced2b16e7de09e12c65689` |
+| `uv run pytest --cov --cov-branch --cov-fail-under=85` | PASS; 79 tests, 92.09% branch coverage |
+| `uv run python scripts/check_file_lengths.py` | PASS; 20 source/script files and 18 test files |
+| `uv run python scripts/check_secrets.py` | PASS; 122 text files, zero findings |
+| Cop-local manifest integrity | PASS; 18 controlled files |
+| manifest exact-byte SHA-256 | `473982dc01594b1c7abee8fc7f20cf665a6b245e53114ed4a2732c115a35d86a` |
 | `git diff --check` | PASS |
+
+The read-only Thief comparison remains an expected NO-GO: 16 of 18 controlled
+paths and the manifest are absent, while `.gitattributes` and
+`scripts/check_shared_contracts.py` differ. No Thief file was changed.
 
 A read-only provenance comparison used the pinned simulator commit
 `960499fd5e8777b4929625f5d8fdcf2ab4677b54`: 15 Cop source files were compared

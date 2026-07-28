@@ -18,10 +18,10 @@ evidence/review dependency. All M2–M9 work is `DEFERRED` by the controlling au
 | M1-07 | Enforce match mismatch/private leakage failures | DONE | P0 | Participant, value, hash-shape, duplicate-key, and private-field vectors reject |
 | M1-08 | Distinguish local integrity from cross-root comparison | DONE | P0 | Checker reports local manifest result and optional exact-byte comparison separately |
 | M1-09 | Add reproducible CI | DONE | P0 | Required frozen sync, lint, tests, length, secret, integrity, and diff gates run |
-| M1-10 | Authenticate four local JSON artifacts | BLOCKED | P0 | Original Moodle/lecturer handoff or authenticated checksum is supplied |
-| M1-11 | Specify participant order and match canonicalization | BLOCKED | P0 | Lecturer evidence fixes IDs, hash scope, canonical bytes, and self-hash exclusion |
-| M1-12 | Reconcile config split, identity fields, and role schedule | BLOCKED | P0 | Lecturer evidence resolves artifact lifecycle and six-sub-game roles |
-| M1-13 | Incorporate accepted M1 answers and vectors | PENDING | P0 | Candidate and independent vectors reflect authoritative answers |
+| M1-10 | Classify the four designated JSON course examples without overclaiming provenance | DONE | P0 | Owner designation, exact hashes, observed key sets, and the remaining narrow provenance caveat are recorded |
+| M1-11 | Specify participant order and match canonicalization | DONE | P0 | Ordered IDs, complete-object scope, canonical UTF-8 bytes, and external hash claim are tested |
+| M1-12 | Reconcile config split, identity fields, and role schedule | DONE | P0 | Unified shared authority, artifact lifecycle, identities, and odd/even roles are documented |
+| M1-13 | Incorporate accepted M1 answers and vectors | DONE | P0 | Candidate hash `adac9efe…82db` and rejection vectors pass |
 | M1-14 | Produce candidate handoff | DONE | P0 | Controlled paths/hashes, manifest self-hash, gates, and blockers are recorded |
 | M1-15 | Promote contract version after acceptance evidence | BLOCKED | P0 | Coordinator authorizes freeze after independent parity/interop proof |
 | M2-01 | Implement immutable coordinate and action types | DEFERRED | P1 | SDK-visible unit tests prove immutability and vocabulary |
@@ -39,6 +39,7 @@ evidence/review dependency. All M2–M9 work is `DEFERRED` by the controlling au
 | M4-03 | Implement commit, acknowledge, reveal, and final audit | DEFERRED | P0 | Valid state sequence round-trips through SDK |
 | M4-04 | Reject illegal transitions, replay, and idempotency conflicts | DEFERRED | P0 | Failure vectors terminate deterministically |
 | M4-05 | Implement tamper and technical-loss audit outcomes | DEFERRED | P0 | Byte/field/nonce mutations are detected |
+| M4-06 | Implement Step-0 code and host attestation | DEFERRED | P0 | Both peers seal hardware/model/group/game data and the exact running Git commit before moves |
 | M5-01 | Implement transport-neutral peer interface | DEFERRED | P1 | SDK has no FastMCP-specific business logic |
 | M5-02 | Implement FastMCP server adapter | DEFERRED | P1 | Accepted tools validate inbound calls |
 | M5-03 | Implement FastMCP client connector | DEFERRED | P1 | Accepted calls work against a neutral stub |
@@ -52,11 +53,12 @@ evidence/review dependency. All M2–M9 work is `DEFERRED` by the controlling au
 | M6-04 | Add private strategy configuration | DEFERRED | P2 | Tuning stays local and SDK-loaded |
 | M6-05 | Add optional verbal/LLM adapter with zero-token fallback | DEFERRED | P2 | Provider failure always falls back deterministically |
 | M7-01 | Implement six-sub-game series orchestration | DEFERRED | P1 | Accepted role schedule and identities drive all six games |
-| M7-02 | Generate declaration and per-game config artifacts | DEFERRED | P1 | Authenticated schemas and filenames validate |
+| M7-02 | Finalize artifact identity and generate declaration/per-game config artifacts | DEFERRED | P1 | Accepted `game_id`/UUID protocol, schemas, logical links, and resolved filenames validate |
 | M7-03 | Generate game logs and final result | DEFERRED | P1 | Audit links, commits, tokens, and scores are consistent |
 | M7-04 | Implement API Gatekeeper and token-bucket/FIFO limits | DEFERRED | P1 | Appendix F minimums and backpressure pass load tests |
-| M7-05 | Implement signed final JSON reporting adapter | DEFERRED | P1 | Attachment-only delivery uses least privilege |
+| M7-05 | Implement signed final JSON reporting adapter | DEFERRED | P1 | Attachment-only delivery uses least privilege and local ignored OAuth files |
 | M7-06 | Validate series audit and mutual-result agreement | DEFERRED | P0 | Conflicts/missing reports produce defined failure |
+| M7-07 | Run a complete six-sub-game stub series | DEFERRED | P0 | Four artifact families are emitted, audited, and reconciled across all role alternations |
 | M8-01 | Implement local-truth live GUI | DEFERRED | P1 | No objective opponent state is exposed |
 | M8-02 | Implement replay verifier and tamper view | DEFERRED | P1 | `Verified OK` and `TAMPERED` paths are demonstrable |
 | M8-03 | Run neutral unknown-opponent interoperability suite | DEFERRED | P0 | Both proposal/acceptance directions pass remotely |

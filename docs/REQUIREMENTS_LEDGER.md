@@ -25,6 +25,13 @@ accepted ADR.
 | SR-017 | Each local peer server is reachable through a public tunnel | Appendix E rule 10 | Provider-neutral later integration |
 | SR-018 | Final result is a JSON attachment; no free-text final-report body | Book Ch. 9, PDF pp. 94–95; Appendix E rules 32–34 | ADR-010; reporting tests later |
 | SR-019 | Scent update is multiplicative: `max(0,(1-ρ)τ+Δτ)` | Book Ch. 4, PDF pp. 43/47 | ADR-005; later scent tests |
+| SR-020 | A played series has six sub-games; each peer uses its natural role on odd games and the opposite role on even games | Appendix F table 18 for length; owner-supplied lecturer direction dated 2026-07-27 for schedule, corroborated by pinned simulator | Series schedule contract now; runtime in M7 |
+| SR-021 | `agreed_between` is an ordered JSON list of the two participating group IDs; its mutually agreed order is preserved exactly | Appendix B example, printed p. 113; supplied agreed config; owner-supplied lecturer direction dated 2026-07-27 | Source-config schema and mismatch tests |
+| SR-022 | `config_sha256` hashes the complete shared `config/game.json` object using sorted keys, compact separators, unescaped Unicode as UTF-8, and SHA-256; the claim lives in the generated config artifact, outside the hashed object | Appendix B canonical-JSON text; owner-supplied lecturer direction dated 2026-07-27; pinned simulator and supplied vector corroborate | Canonical config vector and verification boundary |
+| SR-023 | Every artifact family carries `game_id`, a UUID `game_uid`, and `links`; hardware is declared before play and sealed in the step-0 evidence | Owner-supplied lecturer direction dated 2026-07-27; all four supplied files and step-0 record directly observed | Artifact identity/lifecycle contract; complete formal schemas remain open |
+| SR-024 | The graded strategy replaces the simple baseline with smarter pure-Python move logic; LLM movement stays disabled unless explicitly agreed in a future match-contract revision | Owner-supplied lecturer direction dated 2026-07-27; Appendix E rule 25 and pinned simulator strategy docs corroborate the safe default | Strategy work remains deferred to M6 |
+| SR-025 | Step-0 seals host OS/CPU/RAM/GPU/VRAM, model, code/group/game identity, and the exact running Git commit before moves | Book Ch. 5 §5.5; Appendix E rule 53 | M4 wire contract and M7 artifact propagation |
+| SR-026 | Gmail OAuth `credentials.json` and generated `token.json` stay runtime-local and ignored | Book Appendix A, printed pp. 105-109; Appendix E rules 39-40 | Ignore/secret checks now; runtime deferred |
 | AE-025 | Not delegating movement to an LLM is a recommendation without a mandatory sanction | Appendix E rule 25, PDF p. 146 | ADR-007 deterministic default |
 | COP-001 | This repository is Cop-only and never imports Thief private runtime code | Team role assignment plus SR-004 | Dependency/import scan |
 | PS-001 | Maintain README, PRD, PLAN, TODO, and mechanism PRDs | Professional Guidelines v3.0, pp. 7–9 | Documentation checks |
@@ -38,6 +45,6 @@ accepted ADR.
 | PS-009 | Maintain `docs/PROMPT_LOG.md` | Professional Guidelines v3.0, p. 19 | Presence/provenance check |
 | PS-010 | Code, shared JSON, and rate-limit configuration revisions begin at `1.00` and validate supported versions independently of schema profiles | Professional Guidelines v3.0 section 8.1, p. 19 | Version/config contract tests |
 
-The proposed contract is `0.1.0-proposed`, **UNFROZEN**. Formal schema constraints,
-MCP/envelope fields, and crypto bytes remain in
+The proposed contract is `0.1.0-proposed`, **UNFROZEN**. Formal artifact schema
+constraints, MCP/envelope fields, and commit-reveal crypto bytes remain in
 [UNKNOWN_REQUIREMENTS.md](UNKNOWN_REQUIREMENTS.md) and the relevant ADRs.

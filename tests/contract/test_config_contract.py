@@ -32,11 +32,9 @@ def test_shared_bundle_loads_all_confirmed_values() -> None:
     assert game["version"] == "1.00"
     assert game["schema_version"] == "1.2"
     assert game["agreed_between"] == ["neutral-group-alpha", "neutral-group-beta"]
-    assert game["game_id"] == "neutral-match"
-    assert game["config_name"] == "config_neutral-match_g01.json"
-    assert game["config_sha256"] is None
+    assert sdk.config_sha256 == "adac9efe6d51b9487c400a04c2e185af9fb3622e1a7d74f18d400425656d82db"
+    assert sdk.config_file_sha256 == "70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06"
     assert sdk.rate_limits_config["version"] == "1.00"
-    assert sdk.rate_limits_config["schema_version"] == "1.2"
     assert game["movement_and_barriers"] == {
         "move_set": ["N", "S", "E", "W", "STAY"],
         "max_barriers": 14,
@@ -57,15 +55,15 @@ def test_shared_bundle_loads_all_confirmed_values() -> None:
         "pheromone_grid_size": 5,
     }
     assert game["network_and_league"]["num_games"] == 6  # type: ignore[index]
+    assert game["network_and_league"]["response_timeout_sec"] == 30  # type: ignore[index]
     assert rates == {
         "requests_per_minute": 30,
         "concurrent_requests": 2,
         "retry_backoff_sec": 5,
         "max_retries": 3,
         "queue_depth": 100,
-        "response_timeout_sec": 30,
-        "watchdog_timeout_sec": 60,
     }
+    assert game["rate_limiter_gatekeeper"] == rates
 
 
 @pytest.mark.parametrize(
@@ -75,6 +73,7 @@ def test_shared_bundle_loads_all_confirmed_values() -> None:
         ("game.json", ("movement_and_barriers", "max_barriers"), 13),
         ("game.json", ("movement_and_barriers", "max_moves"), 34),
         ("game.json", ("movement_and_barriers", "survival_threshold"), 34),
+        ("game.json", ("rate_limiter_gatekeeper", "requests_per_minute"), 29),
         ("rate_limits.json", ("rate_limiter_gatekeeper", "requests_per_minute"), 29),
         ("rate_limits.json", ("rate_limiter_gatekeeper", "concurrent_requests"), 1),
         ("rate_limits.json", ("rate_limiter_gatekeeper", "retry_backoff_sec"), 4),

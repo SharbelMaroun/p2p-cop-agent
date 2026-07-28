@@ -14,12 +14,12 @@ cross-repository contract.
 | Isolation | Cop and Thief are independent peers with no shared live state or private truth. | Appendix E rules 1–2 |
 | Agreement | Both participants agree the played-match configuration and hold identical shared values. | Appendix B; Appendix E rule 11; Appendix F instructions |
 | Retention | A uniquely named configuration is retained for each game. | Appendix F instructions and table 20 |
-| Locking | The agreed configuration is cryptographically locked before play. | Appendix F instructions |
+| Locking | The complete shared `game.json` object is canonically hashed and cryptographically locked before play. | Appendix B; owner-supplied lecturer direction dated 2026-07-27 |
 | Series | A counted opponent encounter contains six sub-games. | Appendix F table 18 |
+| Roles | Natural role on odd sub-games; opposite role on even sub-games. | Owner-supplied lecturer direction dated 2026-07-27, corroborated by pinned simulator |
 | Private override | Agreed shared JSON overrides overlapping local peer TOML. | Appendix B |
 
-Role alternation across the six sub-games is not established by these sources. It
-remains a P0 clarification and is not part of this candidate.
+Artifact cardinality and identity are defined in `ARTIFACT_CONTRACT.md`.
 
 ## Appendix F status and ownership
 
