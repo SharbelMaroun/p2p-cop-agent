@@ -16,7 +16,7 @@ annotated tag, and email addresses are not unknown.
 | U-016 | Team/group/member identifiers and eight-character team code | Declaration/reporting | Verified team input |
 | U-017 | Newer Moodle/lecturer instructions | Recency-sensitive submission choices | Obtain dated official post |
 | U-018 | Exact controlling Ruff course configuration if newer than the inspected guideline | Quality configuration | Current official course config |
-| U-019 | Independent peer acceptance and exact hashes for `0.2.3-proposed` | Contract freeze | Independent peer review and matching parity runs |
+| U-019 | Independent peer acceptance and exact hashes for `0.2.4-proposed` | Contract freeze | Independent peer review and matching parity runs |
 | U-020 | Permission/provenance for any substantial simulator-source reuse | Simulator reuse | ADR-008 review and, if necessary, written permission |
 | U-021 | Allowed runtime `group_id` syntax beyond non-empty JSON text; the Moodle team code is a separate eight-character identifier | M7 formal identifier validation | Authenticated schema or lecturer clarification |
 | U-022 | UUIDv4 proposal versus current deterministic non-versioned simulator UUID; exact `game_id` syntax | M7 artifact identity protocol | Accepted ADR/vector or higher-authority clarification |

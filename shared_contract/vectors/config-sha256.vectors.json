@@ -1,5 +1,5 @@
 {
-  "x-contract-version": "0.2.3-proposed",
+  "x-contract-version": "0.2.4-proposed",
   "description": "config_sha256 hashes the complete parsed per-match game object with sorted keys, compact separators, unescaped Unicode, and UTF-8. The claim is stored outside the hashed object. This is distinct from config_file_sha256 (exact file bytes) and from the per-turn commitment (which mixes a secret commitment nonce and the '|' delimiter).",
   "vectors": [
     {

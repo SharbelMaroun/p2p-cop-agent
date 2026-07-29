@@ -9,7 +9,7 @@ current baseline includes an independently installable scaffold, a source-backed
 proposed shared-contract bundle, and transport-free local gameplay rules. It does
 not implement networking or external integrations.
 
-Contract version: `0.2.3-proposed` — **UNFROZEN** pending coordinator acceptance,
+Contract version: `0.2.4-proposed` — **UNFROZEN** pending coordinator acceptance,
 independent peer consumption, and byte-for-byte proof.
 
 ## Goals

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.3-proposed",
+  "x-contract-version": "0.2.4-proposed",
   "x-role-neutral": true,
   "x-compatibility-profile": "simulator-v3.0.0",
   "title": "simulator-v3.0.0 negotiate message",
@@ -17,7 +17,6 @@
         "smell_grid_size",
         "decay_per_step",
         "emit_intensity",
-        "min_center_intensity",
         "max_steps",
         "barriers_max",
         "setting",
@@ -48,7 +47,9 @@
         },
         "min_center_intensity": {
           "type": "number",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Optional simulator-profile scent floor; not an Appendix F parameter, so it is tolerated but never required.",
+          "x-authority": "simulator-profile-only"
         },
         "max_steps": {
           "type": "integer",

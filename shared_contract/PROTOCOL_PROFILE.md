@@ -1,6 +1,6 @@
 # `simulator-v3.0.0` Compatibility Profile
 
-Contract version: `0.2.3-proposed`
+Contract version: `0.2.4-proposed`
 Status: **PROPOSED / UNFROZEN**
 
 This document records the project's `simulator-v3.0.0 compatibility profile`,
@@ -20,7 +20,7 @@ returns `{"ok": true}` on successful transport acknowledgement.
 | `negotiate` | `message` | yes | agree per-match terms before play |
 | `receive_turn` | `message` | yes | deliver one opponent turn |
 | `submit_audit` | `payload` | yes | deliver the end-game audit (exposed endpoint) |
-| `receive_control` | `message` | yes | out-of-band control channel |
+| `receive_control` | `message` | optional | out-of-band control channel |
 
 Naming discipline:
 
@@ -37,10 +37,13 @@ Naming discipline:
 
 Public agreement: `terms` (the exact `terms_from_config()` projection), a public
 32-lowercase-hex `nonce` challenge, a 64-lowercase-hex SHA-256 `signature`, and
-`identity`. The term names are `board_size`, `smell_grid_size`, `decay_per_step`,
-`emit_intensity`, `min_center_intensity`, `max_steps`, `barriers_max`, `setting`,
+`identity`. The required term names are `board_size`, `smell_grid_size`,
+`decay_per_step`, `emit_intensity`, `max_steps`, `barriers_max`, `setting`,
 `hint_max_words`, `axis_origin_corner`, `axis_start_index`, `thief_start`,
-`cop_start`, and `num_games`.
+`cop_start`, and `num_games`. `min_center_intensity` is an optional
+simulator-profile field only: Appendix F table 16 fixes center intensity `0.9`,
+decay `0.10`, and the 5×5 field but defines no such floor, so it is tolerated when
+a peer sends it and never required.
 
 The source identity fields are `group_id`, `group_name`, `members`, `repos`,
 `mcp_servers`, `llm_model`, and `spec`; it does not carry a role. Identity is not
@@ -67,11 +70,15 @@ per-turn commitment nonce. Those are revealed only after the game in the
 Post-game reveal: `sender`, `records`, and `result_claim`. Each audit `record`
 carries `payload`, its revealed per-turn commitment `nonce`, and `commit`. See
 `schemas/audit-payload.schema.json` and `schemas/audit-record.schema.json`.
-`result_claim` is exactly one of the strings `capture`, `survival`, or `timeout`.
+`result_claim` is exactly one of the strings `capture`, `survival`, or `tie` —
+the self-declarable outcomes fixed by Appendix F table 17. Technical loss is
+adjudicated from a commit-reveal mismatch (Appendix E rules 19/48), not
+self-claimed, so it is not a `result_claim` value.
 
-### `ControlMessage` (`receive_control`)
+### `ControlMessage` (`receive_control`, optional)
 
-Out-of-band control channel; see `schemas/control-message.schema.json`.
+Optional out-of-band control channel; see `schemas/control-message.schema.json`.
+Per ADR-001 this tool is optional, not required.
 
 ## Commit-reveal
 
