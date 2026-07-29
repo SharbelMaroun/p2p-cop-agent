@@ -48,12 +48,12 @@ M5–M9 remain ordered future work until their preceding phase is complete.
 | M3-04 | Build single-process rules harness | DONE | P1 | `run_sub_game` referees a full local sub-game to capture or survival with no transport; no opponent behaviour ships in source; the Cop policy receives no referee-only Thief cell; actor and capture-check ordering is an injected event schedule whose default is explicitly `PROJECT-PROPOSED` |
 | M3-05 | Implement SDK-reachable deterministic pursuit baseline (movement) | DONE | P1 | Policy emits only legal movement actions; barrier-aware BFS distance, fixed-order tie-breaking, SDK-reachable, contract-independent. See [PURSUIT_BASELINE.md](PURSUIT_BASELINE.md) |
 | M3-06 | Decide and implement baseline barrier placement | DONE | P1 | SDK-reachable `choose_turn_intent` returns one move or one barrier, exclusivity encoded in the return type; the local harness executes either intent; policy captures by moving before spending quota, places a trapping barrier, and never wastes quota on an already-trapped Thief |
-| M4-01 | Finalize public message/envelope contract | DEFERRED | P0 | Accepted ADR-001/002 schemas and error semantics exist |
-| M4-02 | Finalize canonical JSON and commitment-nonce vectors | DEFERRED | P0 | Independent implementations reproduce exact hashes |
-| M4-03 | Implement commit, acknowledge, reveal, and final audit | DEFERRED | P0 | Valid state sequence round-trips through SDK with fresh commitment nonces that never reuse or derive from the public challenge |
-| M4-04 | Reject illegal transitions, replay, and idempotency conflicts | DEFERRED | P0 | Failure vectors terminate deterministically |
-| M4-05 | Implement tamper and technical-loss audit outcomes | DEFERRED | P0 | Byte, field, and commitment-nonce mutations are detected |
-| M4-06 | Implement Step-0 code and host attestation | DEFERRED | P0 | Both peers seal hardware/model/group/game data and the exact running Git commit before moves |
+| M4-01 | Finalize public message/envelope contract | DONE | P0 | Accepted ADR-001/002 schemas and error semantics exist |
+| M4-02 | Finalize canonical JSON and commitment-nonce vectors | DONE | P0 | Independent implementations reproduce exact hashes |
+| M4-03 | Implement commit, acknowledge, reveal, and final audit | DONE | P0 | Valid state sequence round-trips through SDK with fresh commitment nonces that never reuse or derive from the public challenge |
+| M4-04 | Reject illegal transitions, replay, and idempotency conflicts | DONE | P0 | Failure vectors terminate deterministically |
+| M4-05 | Implement tamper and technical-loss audit outcomes | DONE | P0 | Byte, field, and commitment-nonce mutations are detected |
+| M4-06 | Implement Step-0 code and host attestation | DONE | P0 | Both peers seal hardware/model/group/game data and the exact running Git commit before moves |
 | M5-01 | Implement transport-neutral peer interface | DEFERRED | P1 | SDK has no FastMCP-specific business logic |
 | M5-02 | Implement FastMCP server adapter | DEFERRED | P1 | Accepted tools validate inbound calls |
 | M5-03 | Implement FastMCP client connector | DEFERRED | P1 | Accepted calls work against a neutral stub |

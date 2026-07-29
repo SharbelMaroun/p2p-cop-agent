@@ -1,13 +1,12 @@
 """Public SDK boundary for all future Cop business behavior."""
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from collections.abc import Set as AbstractSet
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from p2p_cop_agent.domain import Action, BarrierField, Board, Coordinate
-from p2p_cop_agent.domain.scoring import ScoringTable
-from p2p_cop_agent.protocol import AuditReport, TurnInbox, TurnLedger, audit_reveal
+from p2p_cop_agent.sdk.session import ProtocolSessionMixin
 from p2p_cop_agent.shared import __version__
 from p2p_cop_agent.shared.contracts import (
     SharedContract,
@@ -20,8 +19,12 @@ _NO_BARRIERS: frozenset[Coordinate] = frozenset()
 
 
 @dataclass(frozen=True, slots=True)
-class CopSDK:
-    """Hold a validated per-match configuration without implementing game behavior."""
+class CopSDK(ProtocolSessionMixin):
+    """Hold a validated per-match configuration without implementing game behavior.
+
+    Commit-reveal and Step-0 session helpers are provided by
+    :class:`~p2p_cop_agent.sdk.session.ProtocolSessionMixin`.
+    """
 
     game_config: Mapping[str, object]
     rate_limits_config: Mapping[str, object]
@@ -105,46 +108,3 @@ class CopSDK:
         stores objective opponent truth.
         """
         return choose_turn_intent(self.board(), cop, target, barriers)
-
-    def new_turn_ledger(self, sender: str, public_challenge: str | None = None) -> TurnLedger:
-        """Return a fresh transport-neutral commit-reveal ledger for one sub-game.
-
-        ``sender`` is the peer's wire role for this sub-game (``police``/``thief``),
-        not the fixed package role, because roles alternate. ``public_challenge`` is
-        the peer's own ``negotiate.nonce`` when known, recorded only to prove that a
-        secret commitment nonce never equals it.
-        """
-        return TurnLedger(sender=sender, public_challenge=public_challenge)
-
-    def new_turn_inbox(self) -> TurnInbox:
-        """Return a fresh receive-side turn intake for one sub-game.
-
-        The inbox deduplicates redelivered turns, rejects a re-sent step whose
-        commit differs, and rejects any step that fails to strictly advance its
-        sender, so an adapter never applies a turn twice or accepts a replay.
-        """
-        return TurnInbox()
-
-    def verify_opponent_audit(
-        self,
-        payload: object,
-        received_commits: Sequence[str] | None = None,
-    ) -> AuditReport:
-        """Verify an opponent's end-game reveal, detecting any commitment tamper.
-
-        Pass ``received_commits`` (e.g. ``TurnInbox.commits_for(sender)``) to also
-        prove the reveal matches what was accepted live, catching a post-hoc swap.
-        """
-        return audit_reveal(payload, received_commits)
-
-    def score_after_audit(self, report: AuditReport) -> int | None:
-        """Return the falsifying peer's zero-point sanction, or ``None`` if verified.
-
-        A tampered reveal is a technical loss: the falsifying peer scores the
-        configured ``technical_loss`` value (Appendix E rules 19/48). The
-        non-falsifying counterpart award stays unresolved under ``U-026`` and is
-        deliberately not returned here.
-        """
-        if report.verified:
-            return None
-        return ScoringTable.from_config(self.game_config).technical_loss_award()

@@ -1,7 +1,9 @@
 # PRD — Commit-Reveal
 
 Status: config hashing and the Option-B move-commit profile are accepted project
-decisions; the M4 runtime state machine and audit binding remain unimplemented.
+decisions; the M4 runtime state machine, audit binding, and Step-0 attestation are
+implemented (`protocol.commit_reveal`, `protocol.receive`, `protocol.audit`,
+`protocol.attestation`) and reachable through the SDK. FastMCP adapters remain M5.
 
 ## Confirmed behavior
 
