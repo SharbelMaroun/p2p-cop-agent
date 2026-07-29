@@ -50,9 +50,10 @@ Naming rules that must not be confused:
 
 - A `TurnMessage` exposes only public event fields: `hint`, `smell_grid`,
   `commit`, and the allowed optional public events.
-- True position, move, intent/verdict, and nonce are revealed **only** in the
-  `AuditPayload` after the game. There is **no** separate live reveal tool.
-- Move/negotiation commitment uses the exact canonicalization:
+- True position, move, intent/verdict, and the per-turn commitment nonce are
+  revealed **only** in the `AuditPayload` after the game. There is **no** separate
+  live reveal tool.
+- Per-turn commitment uses the exact canonicalization:
 
   ```python
   canonical = json.dumps(
@@ -68,12 +69,25 @@ Naming rules that must not be confused:
   The delimiter between canonical payload and nonce is the single literal
   character `"|"`.
 
-## Nonce profile
+## Nonce domains
 
-- 16 cryptographically random bytes.
-- Rendered as 32 lowercase hexadecimal characters.
-- Kept outside the JSON payload.
-- Never disclosed before the final audit.
+- The per-turn commitment nonce is 16 cryptographically random bytes, rendered as
+  32 lowercase hexadecimal characters, kept outside the committed JSON payload,
+  and never disclosed before the final audit.
+- `negotiate.nonce` is a separate public pre-play challenge. It uses the same
+  32-lowercase-hex wire shape but is not a commitment nonce and is not secret.
+- The commitment nonce is generated independently and must not reuse or derive from
+  the public challenge. Sharing a wire shape does not merge their lifecycles.
+
+## M1.5 configuration boundary confirmation
+
+- The stable `shared_contract/` bundle contains specifications, schemas, fixtures,
+  vectors, and verification tooling only. It contains no active match.
+- Every real match object is supplied explicitly; the example fixture is never a
+  runtime default.
+- Every run also supplies a local rate-limit enforcement mirror explicitly. The
+  signed match object's Gatekeeper block is authoritative and the local mirror must
+  equal it exactly; mirror bytes and local extensions are not parity-controlled.
 
 ## Role alternation — UNKNOWN, NOT BINDING
 
@@ -98,11 +112,11 @@ schedule.
 ## Acceptance scope
 
 - ADR-001 (FastMCP tool names) is **accepted for this project** under Option B.
-- The move-commit portion of ADR-006 (canonicalization, `"|"` delimiter, nonce
-  profile) is **accepted for this project** under Option B.
+- The per-turn-commit portion of ADR-006 (canonicalization, `"|"` delimiter, and
+  commitment-nonce profile) is **accepted for this project** under Option B.
 - The rejected `0.1.0-proposed` bundle is superseded by `0.2.0-proposed`, then by
-  `0.2.1-proposed`, then by `0.2.2-proposed`; copying or freezing any earlier bundle
-  is not authorized.
+  `0.2.1-proposed`, `0.2.2-proposed`, and `0.2.3-proposed`; copying or freezing any
+  earlier bundle is not authorized.
 - Role alternation is **not** accepted under Option B. It is recorded as `U-025`
   and carries no contract status.
 

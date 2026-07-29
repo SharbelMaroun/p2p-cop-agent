@@ -11,6 +11,7 @@ from p2p_cop_agent.shared.contracts import ContractValidationError, load_match_c
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE = PROJECT_ROOT / "shared_contract" / "fixtures" / "match_config.example.json"
+RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 
 def base_config() -> dict:
@@ -30,38 +31,54 @@ def test_rejects_unsupported_schema_version(tmp_path: Path, schema_version: str)
     config = base_config()
     config["schema_version"] = schema_version
     with pytest.raises(ContractValidationError, match="match config"):
-        load_match_contract(PROJECT_ROOT, write_config(tmp_path, config))
+        load_match_contract(
+            PROJECT_ROOT,
+            write_config(tmp_path, config),
+            rate_limits_path=RATE_LIMITS,
+        )
 
 
 def test_rejects_grid_size_below_minimum(tmp_path: Path) -> None:
     config = base_config()
     config["board_and_agents"]["grid_size"] = 5
     with pytest.raises(ContractValidationError, match="match config"):
-        load_match_contract(PROJECT_ROOT, write_config(tmp_path, config))
+        load_match_contract(
+            PROJECT_ROOT,
+            write_config(tmp_path, config),
+            rate_limits_path=RATE_LIMITS,
+        )
 
 
 def test_rejects_duplicate_json_member(tmp_path: Path) -> None:
     path = tmp_path / "match.json"
     path.write_text('{"version": "1.00", "version": "1.00"}', encoding="utf-8")
     with pytest.raises(ConfigLoadError, match="Duplicate JSON member"):
-        load_match_contract(PROJECT_ROOT, path)
+        load_match_contract(PROJECT_ROOT, path, rate_limits_path=RATE_LIMITS)
 
 
 def test_rejects_rate_limit_mirror_mismatch(tmp_path: Path) -> None:
     config = base_config()
     config["rate_limiter_gatekeeper"]["requests_per_minute"] = 999
     with pytest.raises(ContractValidationError, match="rate-limit mirror differs"):
-        load_match_contract(PROJECT_ROOT, write_config(tmp_path, config))
+        load_match_contract(
+            PROJECT_ROOT,
+            write_config(tmp_path, config),
+            rate_limits_path=RATE_LIMITS,
+        )
 
 
 def test_offer_with_different_game_is_rejected(tmp_path: Path) -> None:
-    sdk = CopSDK.from_repository(PROJECT_ROOT)
+    sdk = CopSDK.from_repository(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
     config = base_config()
     config["board_and_agents"]["grid_size"] = 9
     with pytest.raises(ContractValidationError, match="negotiated game configuration differs"):
-        sdk.validate_match_offer(PROJECT_ROOT, write_config(tmp_path, config))
+        sdk.validate_match_offer(
+            PROJECT_ROOT,
+            write_config(tmp_path, config),
+            rate_limits_path=RATE_LIMITS,
+        )
 
 
 def test_offer_matching_the_example_is_accepted() -> None:
-    sdk = CopSDK.from_repository(PROJECT_ROOT)
-    sdk.validate_match_offer(PROJECT_ROOT)
+    sdk = CopSDK.from_repository(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
+    sdk.validate_match_offer(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)

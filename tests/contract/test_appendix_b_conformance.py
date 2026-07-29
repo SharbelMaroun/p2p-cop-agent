@@ -16,6 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = PROJECT_ROOT / "shared_contract" / "fixtures"
 APPENDIX_B = FIXTURES / "match_config.appendix_b.json"
 EXAMPLE = FIXTURES / "match_config.example.json"
+RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 
 def base_config() -> dict:
@@ -36,28 +37,43 @@ def test_appendix_b_fixture_carries_neither_disputed_field() -> None:
 
 
 def test_appendix_b_structure_is_accepted() -> None:
-    assert load_match_contract(PROJECT_ROOT, APPENDIX_B).game == base_config()
+    contract = load_match_contract(PROJECT_ROOT, APPENDIX_B, rate_limits_path=RATE_LIMITS)
+    assert contract.game == base_config()
 
 
 def test_our_own_example_with_both_fields_is_still_accepted() -> None:
-    assert load_match_contract(PROJECT_ROOT, EXAMPLE).game["version"] == "1.00"
+    contract = load_match_contract(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
+    assert contract.game["version"] == "1.00"
 
 
 def test_optional_extensions_alone_is_accepted(tmp_path: Path) -> None:
     config = base_config()
     config["extensions"] = {}
-    assert load_match_contract(PROJECT_ROOT, write_config(tmp_path, config)).game == config
+    contract = load_match_contract(
+        PROJECT_ROOT,
+        write_config(tmp_path, config),
+        rate_limits_path=RATE_LIMITS,
+    )
+    assert contract.game == config
 
 
 def test_unknown_root_field_is_still_rejected(tmp_path: Path) -> None:
     config = base_config()
     config["unexpected"] = 1
     with pytest.raises(ContractValidationError, match="match config"):
-        load_match_contract(PROJECT_ROOT, write_config(tmp_path, config))
+        load_match_contract(
+            PROJECT_ROOT,
+            write_config(tmp_path, config),
+            rate_limits_path=RATE_LIMITS,
+        )
 
 
 def test_genuinely_missing_section_is_still_rejected(tmp_path: Path) -> None:
     config = base_config()
     del config["board_and_agents"]
     with pytest.raises(ContractValidationError, match="match config"):
-        load_match_contract(PROJECT_ROOT, write_config(tmp_path, config))
+        load_match_contract(
+            PROJECT_ROOT,
+            write_config(tmp_path, config),
+            rate_limits_path=RATE_LIMITS,
+        )

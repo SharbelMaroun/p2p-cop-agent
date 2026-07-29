@@ -1,10 +1,10 @@
-"""Load and validate a per-match shared game object against the stable bundle.
+"""Load explicit per-run configuration files against the stable shared bundle.
 
 The stable contract lives in the role-neutral ``shared_contract`` bundle. A match
-configuration is supplied at runtime by an explicit path (defaulting to the bundle
-example template) rather than a permanent in-repository match file. Three hash
-domains are kept distinct: the canonical object ``config_sha256``, the exact-byte
-``config_file_sha256``, and (elsewhere) the move/negotiation commitment.
+configuration and its local rate-limit enforcement mirror are supplied at runtime
+by explicit paths. Three hash domains are kept distinct: the canonical object
+``config_sha256``, the exact-byte ``config_file_sha256``, and (elsewhere) the
+per-turn commitment.
 """
 
 from __future__ import annotations
@@ -20,13 +20,11 @@ from jsonschema import ValidationError
 from jsonschema.validators import validator_for
 
 from p2p_cop_agent.domain.board import BoardError, validate_start_coordinates
-from p2p_cop_agent.shared.config import JsonObject, load_json_object
+from p2p_cop_agent.shared.config import JsonObject, load_json_object, load_json_object_with_bytes
 
 BUNDLE_DIR = "shared_contract"
 MATCH_SCHEMA = "schemas/match-config.schema.json"
-EXAMPLE_MATCH_CONFIG = "fixtures/match_config.example.json"
 RATE_LIMITS_SCHEMA = "config/rate_limits.schema.json"
-RATE_LIMITS_CONFIG = "config/rate_limits.json"
 
 
 class ContractValidationError(ValueError):
@@ -64,12 +62,8 @@ def shared_config_sha256(config: JsonObject) -> str:
     return hashlib.sha256(canonical_config_bytes(config)).hexdigest()
 
 
-def _file_sha256(path: Path) -> str:
-    """Hash exact source bytes for the separate byte-identity rule."""
-    try:
-        raw = path.read_bytes()
-    except OSError as exc:
-        raise ContractValidationError(f"Cannot hash match config {path}: {exc}") from exc
+def _file_sha256(raw: bytes) -> str:
+    """Hash the exact bytes used to parse the match configuration."""
     return hashlib.sha256(raw).hexdigest()
 
 
@@ -103,11 +97,11 @@ def validate_instance(instance: object, schema: JsonObject, label: str) -> None:
         raise ContractValidationError(f"{label} {error.json_path}: {error.message}")
 
 
-def _check_profile(version: str, schema: JsonObject) -> None:
+def _check_profile(version: str, schema: JsonObject, label: str) -> None:
     profile = schema.get("x-contract-version")
     if profile != version:
         raise ContractValidationError(
-            f"Unsupported contract version {version!r}; match schema profile is {profile!r}"
+            f"Unsupported contract version {version!r}; {label} profile is {profile!r}"
         )
 
 
@@ -148,27 +142,27 @@ def require_same_match_configuration(
 
 def load_match_contract(
     root: str | Path,
-    match_config_path: str | Path | None = None,
+    match_config_path: str | Path,
+    *,
+    rate_limits_path: str | Path,
 ) -> SharedContract:
-    """Load and validate a per-match game object supplied by explicit path.
+    """Load explicit per-match and local rate-limit files.
 
-    ``match_config_path`` defaults to the role-neutral example template inside the
-    stable bundle. A real match supplies its own path outside the stable bundle.
+    Relative input paths retain normal process-working-directory semantics. Runtime
+    callers should prefer absolute paths and must never treat the stable example
+    fixture as an active match default.
     """
     repository = Path(root)
     version = _read_version(repository)
     match_schema = load_json_object(repository / BUNDLE_DIR / MATCH_SCHEMA)
-    _check_profile(version, match_schema)
-    game_path = (
-        Path(match_config_path)
-        if match_config_path is not None
-        else repository / BUNDLE_DIR / EXAMPLE_MATCH_CONFIG
-    )
-    game = load_json_object(game_path)
+    _check_profile(version, match_schema, "match schema")
+    game_path = Path(match_config_path)
+    game, game_bytes = load_json_object_with_bytes(game_path)
     validate_instance(game, match_schema, "match config")
     _check_start_coordinates(game)
     rate_schema = load_json_object(repository / RATE_LIMITS_SCHEMA)
-    rate_limits = load_json_object(repository / RATE_LIMITS_CONFIG)
+    _check_profile(version, rate_schema, "rate-limit schema")
+    rate_limits = load_json_object(Path(rate_limits_path))
     validate_instance(rate_limits, rate_schema, "rate-limit config")
     _check_rate_limit_mirror(game, rate_limits)
     return SharedContract(
@@ -176,5 +170,5 @@ def load_match_contract(
         game=game,
         rate_limits=rate_limits,
         config_sha256=shared_config_sha256(game),
-        config_file_sha256=_file_sha256(game_path),
+        config_file_sha256=_file_sha256(game_bytes),
     )

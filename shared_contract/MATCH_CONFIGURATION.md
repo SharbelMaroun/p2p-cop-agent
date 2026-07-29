@@ -1,22 +1,23 @@
 # Per-Match Configuration and Hash Domains
 
-Contract version: `0.2.2-proposed`
+Contract version: `0.2.3-proposed`
 Status: **PROPOSED / UNFROZEN**
 
 The stable bundle does not contain an active match. A per-match shared game object
-is supplied at runtime through an explicit path or a validated in-memory object and
-is checked against `schemas/match-config.schema.json`. `fixtures/match_config.example.json`
-is only an example template; changing opponent IDs or game identity for a real match
-never edits any file in this bundle.
+is supplied at runtime through an explicit path and is checked against
+`schemas/match-config.schema.json`. `fixtures/match_config.example.json` is only an
+example template; changing opponent IDs or game identity for a real match never
+edits any file in this bundle.
 
 ## Three distinct hash domains
 
 These three values are independent and must never be conflated with each other or
 with the parity-manifest self-hash.
 
-### 1. Move / negotiation commitment
+### 1. Per-turn commitment
 
-Binds a hidden payload to a secret nonce (see `PROTOCOL_PROFILE.md`):
+Binds a hidden payload to a secret per-turn commitment nonce (see
+`PROTOCOL_PROFILE.md`):
 
 ```text
 commit = SHA256( canonical_json(payload) + "|" + nonce )
@@ -24,6 +25,8 @@ commit = SHA256( canonical_json(payload) + "|" + nonce )
 
 `canonical_json` uses sorted keys, `ensure_ascii=False`, compact `,`/`:`
 separators, and `allow_nan=False`. Vectors live in `vectors/move-commit.vectors.json`.
+The public `negotiate.nonce` challenge is a different protocol value and is never
+treated as this secret commitment nonce.
 
 ### 2. `config_sha256`
 

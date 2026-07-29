@@ -3,7 +3,7 @@
 The Cop repository remains independently installable and runnable. It never imports,
 mounts, or reads the Thief repository at runtime.
 
-Contract `0.1.0-proposed` is **UNFROZEN**. Cop-local manifest integrity establishes
+Contract `0.2.3-proposed` is **UNFROZEN**. Cop-local manifest integrity establishes
 only that Cop files match Cop's recorded hashes. Cross-repository parity additionally
 requires Thief acceptance and optional read-only comparison reporting identical
 controlled bytes and an identical separately computed manifest hash.
@@ -12,7 +12,9 @@ controlled bytes and an identical separately computed manifest hash.
 
 - Played-game shared JSON is byte-identical and cryptographically locked.
 - Role-private TOML, `.env`, secrets, ports, tokens, providers, tunnel credentials,
-  nonces, and local strategy never enter the parity bundle.
+  per-turn commitment nonces, and local strategy never enter the parity bundle.
+  The public negotiation challenge appears only in its live wire message, not in
+  stable or private configuration.
 - Local generated-artifact key sets may be preserved as non-authoritative observation
   fixtures while provenance and formal constraints remain explicitly unresolved.
 - Book example `1.2`, local-artifact observation `1.1`, and simulator runtime `1.3`

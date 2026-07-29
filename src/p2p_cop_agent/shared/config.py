@@ -26,21 +26,28 @@ def _reject_non_json_number(value: str) -> object:
     raise ConfigLoadError(f"Non-finite JSON number {value!r} is not allowed")
 
 
-def load_json_object(path: str | Path) -> JsonObject:
-    """Load one explicit path as a JSON object without supplying defaults."""
+def load_json_object_with_bytes(path: str | Path) -> tuple[JsonObject, bytes]:
+    """Load one explicit JSON-object path and return the exact parsed bytes."""
     config_path = Path(path)
     try:
-        with config_path.open(encoding="utf-8") as stream:
-            value: object = json.load(
-                stream,
-                object_pairs_hook=_object_without_duplicates,
-                parse_constant=_reject_non_json_number,
-            )
+        raw = config_path.read_bytes()
+        text = raw.decode("utf-8")
+        value: object = json.loads(
+            text,
+            object_pairs_hook=_object_without_duplicates,
+            parse_constant=_reject_non_json_number,
+        )
     except ConfigLoadError:
         raise
-    except (OSError, JSONDecodeError) as exc:
+    except (OSError, UnicodeDecodeError, JSONDecodeError) as exc:
         raise ConfigLoadError(f"Cannot load JSON configuration {config_path}: {exc}") from exc
 
     if not isinstance(value, dict):
         raise ConfigLoadError(f"JSON configuration {config_path} must contain an object")
+    return value, raw
+
+
+def load_json_object(path: str | Path) -> JsonObject:
+    """Load one explicit path as a JSON object without supplying defaults."""
+    value, _raw = load_json_object_with_bytes(path)
     return value

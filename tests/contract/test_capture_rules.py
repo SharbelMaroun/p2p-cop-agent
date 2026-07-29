@@ -13,10 +13,12 @@ from p2p_cop_agent.domain import (
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE = PROJECT_ROOT / "shared_contract" / "fixtures" / "match_config.example.json"
+RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 
 def _board_starts_and_field() -> tuple[Board, Coordinate, Coordinate, BarrierField]:
-    sdk = CopSDK.from_repository(PROJECT_ROOT)
+    sdk = CopSDK.from_repository(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
     board = Board.from_config(sdk.game_config)
     field = BarrierField.from_config(sdk.game_config)
     section = sdk.game_config["board_and_agents"]

@@ -6,10 +6,12 @@ from p2p_cop_agent import CopSDK
 from p2p_cop_agent.domain import Action, Board, Coordinate, legal_moves
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE = PROJECT_ROOT / "shared_contract" / "fixtures" / "match_config.example.json"
+RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 
 def _board_and_section() -> tuple[Board, dict]:
-    sdk = CopSDK.from_repository(PROJECT_ROOT)
+    sdk = CopSDK.from_repository(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
     section = sdk.game_config["board_and_agents"]
     assert isinstance(section, dict)
     return Board.from_config(sdk.game_config), section

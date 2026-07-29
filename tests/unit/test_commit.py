@@ -1,4 +1,4 @@
-"""Tests for the Option-B move/negotiation commit domain."""
+"""Tests for the Option-B per-turn commitment domain."""
 
 import hashlib
 import json
@@ -9,7 +9,7 @@ import pytest
 from p2p_cop_agent.protocol.commit import (
     CommitError,
     canonical_payload_bytes,
-    generate_nonce,
+    generate_commitment_nonce,
     move_commit,
     verify_commit,
 )
@@ -76,16 +76,16 @@ def test_canonicalization_rejects_non_finite_numbers(bad: float) -> None:
         canonical_payload_bytes({"x": bad})
 
 
-def test_generate_nonce_is_32_hex_and_varies() -> None:
-    first = generate_nonce()
+def test_generate_commitment_nonce_is_32_hex_and_varies() -> None:
+    first = generate_commitment_nonce()
     assert len(first) == 32
     assert all(ch in "0123456789abcdef" for ch in first)
-    assert first != generate_nonce()
+    assert first != generate_commitment_nonce()
 
 
 def test_verify_commit_accepts_matching_and_rejects_mutations() -> None:
     payload = {"move": "E", "step": 4}
-    nonce = generate_nonce()
+    nonce = generate_commitment_nonce()
     commit = move_commit(payload, nonce)
     assert verify_commit(payload, nonce, commit) is True
     assert verify_commit({"move": "W", "step": 4}, nonce, commit) is False

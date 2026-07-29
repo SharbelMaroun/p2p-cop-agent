@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.2-proposed",
+  "x-contract-version": "0.2.3-proposed",
   "x-role-neutral": true,
   "title": "Option-B per-sub-game config artifact",
   "description": "Emitted config artifact wrapping one sub-game's agreed match object. The config_sha256 claim is stored outside the hashed game object. Exhaustive artifact rules remain M7 work.",

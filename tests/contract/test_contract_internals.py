@@ -1,5 +1,6 @@
 """Boundary and mismatch tests for the shared-contract loader."""
 
+import json
 import shutil
 from pathlib import Path
 
@@ -18,7 +19,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 def _contract(**overrides: object) -> SharedContract:
     base = {
-        "version": "0.2.2-proposed",
+        "version": "0.2.3-proposed",
         "game": {"a": 1},
         "rate_limits": {},
         "config_sha256": "a" * 64,
@@ -30,7 +31,11 @@ def _contract(**overrides: object) -> SharedContract:
 
 def test_missing_contract_version_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(ContractValidationError, match="Cannot load contract version"):
-        load_match_contract(tmp_path)
+        load_match_contract(
+            tmp_path,
+            tmp_path / "match.json",
+            rate_limits_path=tmp_path / "rate-limits.json",
+        )
 
 
 def test_schema_profile_mismatch_is_rejected(tmp_path: Path) -> None:
@@ -42,7 +47,36 @@ def test_schema_profile_mismatch_is_rejected(tmp_path: Path) -> None:
         bundle / "schemas" / "match-config.schema.json",
     )
     with pytest.raises(ContractValidationError, match="Unsupported contract version"):
-        load_match_contract(tmp_path)
+        load_match_contract(
+            tmp_path,
+            tmp_path / "match.json",
+            rate_limits_path=tmp_path / "rate-limits.json",
+        )
+
+
+def test_rate_limit_schema_profile_mismatch_is_rejected(tmp_path: Path) -> None:
+    bundle = tmp_path / "shared_contract"
+    (bundle / "schemas").mkdir(parents=True)
+    shutil.copy2(PROJECT_ROOT / "shared_contract" / "CONTRACT_VERSION", bundle)
+    shutil.copy2(
+        PROJECT_ROOT / "shared_contract" / "schemas" / "match-config.schema.json",
+        bundle / "schemas" / "match-config.schema.json",
+    )
+    config_dir = tmp_path / "config"
+    config_dir.mkdir()
+    rate_schema_path = PROJECT_ROOT / "config" / "rate_limits.schema.json"
+    rate_schema = json.loads(rate_schema_path.read_text(encoding="utf-8"))
+    rate_schema["x-contract-version"] = "other"
+    (config_dir / "rate_limits.schema.json").write_text(
+        json.dumps(rate_schema),
+        encoding="utf-8",
+    )
+    with pytest.raises(ContractValidationError, match="rate-limit schema profile"):
+        load_match_contract(
+            tmp_path,
+            PROJECT_ROOT / "shared_contract" / "fixtures" / "match_config.example.json",
+            rate_limits_path=PROJECT_ROOT / "config" / "rate_limits.json",
+        )
 
 
 def test_non_serializable_config_is_rejected() -> None:

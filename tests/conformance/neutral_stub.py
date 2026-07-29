@@ -40,9 +40,10 @@ def canonical(payload: object) -> bytes:
     return text.encode("utf-8")
 
 
-def commit(payload: object, nonce: str) -> str:
-    """Independent move/negotiation commitment hash."""
-    return hashlib.sha256(canonical(payload) + b"|" + nonce.encode("ascii")).hexdigest()
+def commit(payload: object, commitment_nonce: str) -> str:
+    """Return an independent per-turn commitment hash."""
+    suffix = b"|" + commitment_nonce.encode("ascii")
+    return hashlib.sha256(canonical(payload) + suffix).hexdigest()
 
 
 class NeutralPeer:

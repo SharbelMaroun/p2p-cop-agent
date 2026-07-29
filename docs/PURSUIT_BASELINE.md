@@ -5,10 +5,11 @@ Status: **IMPLEMENTED — CONTRACT-INDEPENDENT**
 Scope: `src/p2p_cop_agent/strategy/pursuit.py`, reachable through
 `CopSDK.choose_pursuit_action`.
 
-This is the M3-05 movement policy, authorized as a narrowly scoped exception to
-the M3 block. It uses only existing public domain APIs, defines no new game
+This is the M3-05 movement policy, initially delivered as a narrowly scoped
+contract-independent increment and now part of completed M3. It uses only public
+domain APIs, defines no new game
 rule, performs no I/O, and changes no shared-contract byte. It is independent of
-the contract gate: nothing here waits on `0.2.2-proposed` review.
+the contract gate: nothing here waits on `0.2.3-proposed` review.
 
 ## What the policy does
 
@@ -20,8 +21,8 @@ distance to the target.
 
 | Decision | Choice | Why |
 |---|---|---|
-| Target input | An explicit `Coordinate` supplied by the caller | Scent and belief are M6 and deferred. The policy must not infer opponent position, so inference stays outside this layer. |
-| Action space | Movement only | Placing a barrier gives up the turn's movement. That exclusivity belongs to the live-turn state machine, which is still provisional, so barrier choice is deferred to M3-06. |
+| Target input | An explicit `Coordinate` supplied by the caller | Scent and belief are later M6 work. The policy must not infer opponent position, so inference stays outside this layer. |
+| Action space | Movement only | This API remains the movement primitive. Completed M3-06 composes it with exclusive barrier placement through `choose_turn_intent`. |
 | Distance metric | Barrier-aware breadth-first step count | A plain row/column difference ignores barriers, so the Cop could prefer a route that is blocked. BFS uses the barrier-aware movement rules already implemented in M2. |
 | Tie-breaking | Fixed `Action` declaration order (`N`, `S`, `E`, `W`, `STAY`) | Fully deterministic and independent of dictionary or set iteration order. Identical inputs always produce an identical action. |
 

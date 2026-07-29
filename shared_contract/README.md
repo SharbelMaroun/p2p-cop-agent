@@ -1,4 +1,4 @@
-# Shared Contract Bundle — `0.2.2-proposed`
+# Shared Contract Bundle — `0.2.3-proposed`
 
 Status: **PROPOSED / UNFROZEN — role-neutral**
 
@@ -11,8 +11,8 @@ schemas, fixtures, reproducible vectors, and read-only verification tooling only
 - No active `game.json` for one permanent match. `fixtures/match_config.example.json`
   is an example **template**, not a runtime match.
 - No neutral participants presented as runtime identities. Real match
-  configurations are supplied at runtime through an explicit path or a validated
-  object, outside this bundle.
+  configurations are supplied at runtime through an explicit path outside this
+  bundle.
 - No Cop-specific runtime or package files, ports, URLs, credentials, models, or
   strategy settings, and no mutable per-match output.
 
@@ -23,7 +23,7 @@ bundle or its manifest.
 
 | Path | Purpose |
 |---|---|
-| `CONTRACT_VERSION` | `0.2.2-proposed` |
+| `CONTRACT_VERSION` | `0.2.3-proposed` |
 | `PROTOCOL_PROFILE.md` | Option-B FastMCP tools, messages, and commit-reveal |
 | `MATCH_CONFIGURATION.md` | how a per-match config is supplied and the three hash domains |
 | `SHARED_RULES.md` | book-authoritative gameplay rules |
