@@ -86,8 +86,7 @@ def test_reveal_must_match_the_commits_received_live() -> None:
     honest = ledger.audit_payload("survival")
     assert audit_reveal(honest, live).verified is True
 
-    # A reveal that self-reproduces but substitutes a different sealed record for
-    # step 1 is caught only by the live cross-check.
+    # A self-reproducing reveal that swaps in a different step-1 record is caught only live.
     forged = _forged_reveal_for_step_one()
     self_consistent = audit_reveal(forged)
     assert self_consistent.verdict is AuditVerdict.VERIFIED  # each record reproduces itself

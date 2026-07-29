@@ -11,7 +11,7 @@
     },
     {
       "path": "PROTOCOL_PROFILE.md",
-      "sha256": "6865c42e9c43ac2c1d1f1fcc8541616ba4ee49856549f14f3fb401ee5c5a9fb0"
+      "sha256": "1b9cb883fbd7b5e413f549f29664ce1fdad35eaaae51304b3827e75a1feed758"
     },
     {
       "path": "README.md",
@@ -75,7 +75,7 @@
     },
     {
       "path": "fixtures/simulator-v3.0.0-wire.golden.json",
-      "sha256": "0e76004a7a147c8a84d24093f7b57464391f9b03d15f6aaabe9d1ba6c126a179"
+      "sha256": "d7b95e4716766811fc79a5dc6bfb841e80cf1e04742094b9babbcb41f427667b"
     },
     {
       "path": "fixtures/tool_response.invalid.json",
@@ -95,7 +95,7 @@
     },
     {
       "path": "schemas/audit-payload.schema.json",
-      "sha256": "93528faeef2919cfd6fad3e749a480381b853d7d8861547c3f39e573b4818571"
+      "sha256": "c07f422f2645474ac6cc4169449eb722711fd465c5dadad8400795b78b7b14a7"
     },
     {
       "path": "schemas/audit-record.schema.json",
@@ -111,7 +111,7 @@
     },
     {
       "path": "schemas/negotiate.schema.json",
-      "sha256": "8e3f3379c7303afaf0d3233ea5abe6e0c34bc691a74549b54e9f3d53cc28b1e5"
+      "sha256": "86051dc84ccdefbf2440f3f707958ca7051a1fea1984daaea8da5cf2ef85b922"
     },
     {
       "path": "schemas/per-subgame-config.schema.json",

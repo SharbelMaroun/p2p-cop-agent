@@ -18,21 +18,14 @@ def police() -> NeutralPeer:
 
 
 def offer(group_id: str) -> dict:
+    # Required Appendix-F terms only; the optional simulator-profile
+    # min_center_intensity floor is deliberately omitted here.
     terms = {
-        "board_size": 7,
-        "smell_grid_size": 5,
-        "decay_per_step": 0.1,
-        "emit_intensity": 0.9,
-        "min_center_intensity": 0.5,
-        "max_steps": 35,
-        "barriers_max": 14,
-        "setting": "New York",
-        "hint_max_words": 15,
-        "axis_origin_corner": "top-left",
-        "axis_start_index": 0,
-        "thief_start": [3, 3],
-        "cop_start": [0, 0],
-        "num_games": 6,
+        "board_size": 7, "smell_grid_size": 5, "decay_per_step": 0.1,
+        "emit_intensity": 0.9, "max_steps": 35, "barriers_max": 14,
+        "setting": "New York", "hint_max_words": 15,
+        "axis_origin_corner": "top-left", "axis_start_index": 0,
+        "thief_start": [3, 3], "cop_start": [0, 0], "num_games": 6,
     }
     return {
         "terms": terms,
@@ -79,12 +72,8 @@ def test_turn_message_rejects_each_private_commitment_field(
     value: object,
 ) -> None:
     leaky = {
-        "step": 1,
-        "sender": "police",
-        "hint": "x",
-        "smell_grid": {"0,0": 0.9},
-        "commit": "a" * 64,
-        "timestamp": "t",
+        "step": 1, "sender": "police", "hint": "x",
+        "smell_grid": {"0,0": 0.9}, "commit": "a" * 64, "timestamp": "t",
         forbidden_field: value,
     }
     with pytest.raises(ConformanceError):
@@ -93,12 +82,8 @@ def test_turn_message_rejects_each_private_commitment_field(
 
 def good_turn(step: int = 1, sender: str = "police", digest: str = "a" * 64) -> dict:
     return {
-        "step": step,
-        "sender": sender,
-        "hint": "x",
-        "smell_grid": {"0,0": 0.9},
-        "commit": digest,
-        "timestamp": "t",
+        "step": step, "sender": sender, "hint": "x",
+        "smell_grid": {"0,0": 0.9}, "commit": digest, "timestamp": "t",
     }
 
 

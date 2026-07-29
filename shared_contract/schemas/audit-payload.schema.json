@@ -37,7 +37,7 @@
       }
     },
     "result_claim": {
-      "enum": ["capture", "survival", "timeout"]
+      "enum": ["capture", "survival", "tie"]
     }
   }
 }
