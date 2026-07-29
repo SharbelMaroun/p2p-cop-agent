@@ -26,9 +26,18 @@ Concretely:
   the effect twice. The same `(sender, step)` with a different `commit` is a
   deterministic protocol conflict. Audit and negotiation payloads deduplicate by
   canonical digest. This behaviour never changes the mandatory v3 payload.
-- **Errors are deterministic.** A message that fails its schema or a transition rule
-  raises a stable `ProtocolError` (transport-neutral); the FastMCP adapter (M5) maps
-  that to a transport error. A successful call returns `{"ok": true}`.
+- **Errors are deterministic, and separate from transport** (clarified 2026-07-29
+  from reference-server inspection). Validation is transport-neutral: a message that
+  fails its schema or a transition rule raises a stable `ProtocolError` in the
+  peer/SDK layer. The FastMCP receive tools, however, are pure **mailboxes**: they
+  enqueue the message and always return `{"ok": true}` as a transport
+  acknowledgement, matching the interoperable reference wire behaviour
+  (`infra/mcp_server.py`). A `ProtocolError` surfaced when the runtime **drains and
+  validates** a queued message is a **game-level outcome** (rejection / technical
+  loss), not a transport error. Mapping it to a transport error would be wrong twice
+  over: a peer that retries on any transport exception would abort the exchange, and
+  a tampered audit would never be recorded as its sender's technical loss.
+  `{"ok": true}` is only a transport ack, never a validation or game result.
 
 This is a documented Option-B project choice, not an Appendix E requirement. It does
 not add or modify any controlled `shared_contract/` file; the message schemas already
@@ -42,4 +51,7 @@ express it.
   schema and rejects malformed messages with `ProtocolError` (M4-01).
 - Duplicate delivery never double-applies; illegal transitions and conflicting
   commits fail deterministically (M4-03/M4-04).
+- The FastMCP server tools enqueue-and-acknowledge only; validation runs on drain
+  through `InboundPeer`, so a rejection is a game outcome, not a transport error
+  (M5-02).
 - No invented envelope member is a mandatory wire field.
