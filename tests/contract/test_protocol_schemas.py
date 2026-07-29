@@ -1,4 +1,4 @@
-"""Validate every Option-B protocol fixture against its schema."""
+"""Validate simulator-v3.0.0 compatibility fixtures against their schemas."""
 
 from pathlib import Path
 
@@ -49,9 +49,20 @@ def test_every_message_schema_is_role_neutral_and_versioned() -> None:
         assert schema["x-role-neutral"] is True
 
 
+def test_corrected_wire_schemas_identify_the_compatibility_profile() -> None:
+    for schema_name in ("negotiate", "turn-message", "audit-payload"):
+        assert _schema(schema_name)["x-compatibility-profile"] == "simulator-v3.0.0"
+
+
 @pytest.mark.parametrize(
     ("forbidden_field", "value"),
-    [("position", [1, 1]), ("nonce", "0" * 32)],
+    [
+        ("position", [1, 1]),
+        ("move", "N"),
+        ("nonce", "0" * 32),
+        ("intent", "pursue"),
+        ("verdict", "truth"),
+    ],
 )
 def test_turn_message_forbids_each_private_commitment_field(
     forbidden_field: str,

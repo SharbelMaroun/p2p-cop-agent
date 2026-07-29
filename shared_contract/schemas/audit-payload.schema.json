@@ -2,8 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "x-contract-version": "0.2.3-proposed",
   "x-role-neutral": true,
-  "title": "Option-B AuditPayload",
-  "description": "Post-game reveal delivered to the submit_audit tool.",
+  "x-compatibility-profile": "simulator-v3.0.0",
+  "title": "simulator-v3.0.0 AuditPayload",
+  "description": "Post-game reveal delivered to submit_audit under the simulator-v3.0.0 compatibility profile.",
   "type": "object",
   "required": ["sender", "records", "result_claim"],
   "additionalProperties": true,
@@ -36,7 +37,7 @@
       }
     },
     "result_claim": {
-      "type": "object"
+      "enum": ["capture", "survival", "timeout"]
     }
   }
 }

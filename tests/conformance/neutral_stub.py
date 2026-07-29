@@ -1,10 +1,10 @@
-"""A neutral reference peer for Option-B conformance testing.
+"""A neutral reference peer for simulator-v3.0.0 compatibility testing.
 
 This stub deliberately imports no Cop runtime code (`p2p_cop_agent`). It relies
 only on the standard library and jsonschema, and it re-implements the
 canonicalization and commit rules independently so it can prove cross-
 implementation reproducibility of the shared vectors. It exposes exactly the
-Option-B FastMCP tools with their exact argument names.
+simulator-v3.0.0 compatibility tools with their exact argument names.
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ OK = {"ok": True}
 
 
 class ConformanceError(ValueError):
-    """Raised when an inbound message violates the Option-B profile."""
+    """Raised when an inbound message violates the compatibility profile."""
 
 
 def canonical(payload: object) -> bytes:

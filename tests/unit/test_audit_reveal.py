@@ -18,7 +18,11 @@ RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 def public(hint: str = "closing in") -> dict:
     """Return the schema-required public turn fields."""
-    return {"hint": hint, "smell_grid": [[0.0, 0.1], [0.2, 0.9]], "timestamp": "2026-07-28T00:00:00Z"}
+    return {
+        "hint": hint,
+        "smell_grid": {"0,0": 0.1, "1,0": 0.2, "1,1": 0.9},
+        "timestamp": "2026-07-28T00:00:00Z",
+    }
 
 
 def hidden(step: int) -> dict:
@@ -35,7 +39,7 @@ def played_ledger(steps: int = 2) -> TurnLedger:
 
 
 def test_honest_reveal_is_verified() -> None:
-    audit = played_ledger().audit_payload({"outcome": "survival"})
+    audit = played_ledger().audit_payload("survival")
     report = audit_reveal(audit)
     assert report.verified is True
     assert report.verdict is AuditVerdict.VERIFIED
@@ -43,7 +47,7 @@ def test_honest_reveal_is_verified() -> None:
 
 
 def test_mutated_payload_field_is_tamper() -> None:
-    audit = played_ledger().audit_payload({"outcome": "survival"})
+    audit = played_ledger().audit_payload("survival")
     audit["records"][0]["payload"]["move"] = "S"  # byte/field mutation
     report = audit_reveal(audit)
     assert report.verdict is AuditVerdict.TAMPERED
@@ -52,7 +56,7 @@ def test_mutated_payload_field_is_tamper() -> None:
 
 
 def test_mutated_commitment_nonce_is_tamper() -> None:
-    audit = played_ledger().audit_payload({"outcome": "survival"})
+    audit = played_ledger().audit_payload("survival")
     audit["records"][1]["nonce"] = "b" * 32  # nonce mutation, still schema-valid
     report = audit_reveal(audit)
     assert report.verdict is AuditVerdict.TAMPERED
@@ -60,7 +64,7 @@ def test_mutated_commitment_nonce_is_tamper() -> None:
 
 
 def test_swapped_commit_byte_is_tamper() -> None:
-    audit = played_ledger().audit_payload({"outcome": "survival"})
+    audit = played_ledger().audit_payload("survival")
     audit["records"][0]["commit"] = "f" * 64  # commit byte mutation
     assert audit_reveal(audit).verdict is AuditVerdict.TAMPERED
 
@@ -79,7 +83,7 @@ def test_reveal_must_match_the_commits_received_live() -> None:
         inbox.admit(message)
     live = inbox.commits_for("thief")
 
-    honest = ledger.audit_payload({"outcome": "survival"})
+    honest = ledger.audit_payload("survival")
     assert audit_reveal(honest, live).verified is True
 
     # A reveal that self-reproduces but substitutes a different sealed record for
@@ -99,7 +103,7 @@ def test_reveal_with_an_extra_record_is_tamper_against_live() -> None:
         inbox.admit(message)
     live = inbox.commits_for("thief")
 
-    reveal = ledger.audit_payload({"outcome": "survival"})  # discloses all three
+    reveal = ledger.audit_payload("survival")  # discloses all three
     report = audit_reveal(reveal, live)
     assert report.verdict is AuditVerdict.TAMPERED  # overlap matches, but a record was added
     assert report.tampered_index is None
@@ -107,20 +111,20 @@ def test_reveal_with_an_extra_record_is_tamper_against_live() -> None:
 
 def test_sdk_scores_a_tampered_reveal_as_zero_and_leaves_counterpart_open() -> None:
     sdk = CopSDK.from_repository(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
-    audit = played_ledger().audit_payload({"outcome": "survival"})
+    audit = played_ledger().audit_payload("survival")
     audit["records"][0]["nonce"] = "c" * 32
 
     report = sdk.verify_opponent_audit(audit)
     assert report.verdict is AuditVerdict.TAMPERED
     assert sdk.score_after_audit(report) == 0  # zero-point technical loss
 
-    honest = played_ledger().audit_payload({"outcome": "survival"})
+    honest = played_ledger().audit_payload("survival")
     assert sdk.score_after_audit(sdk.verify_opponent_audit(honest)) is None
 
 
 def test_independent_peer_also_rejects_the_tampered_reveal() -> None:
     peer = NeutralPeer("police", "team-b")
-    audit = played_ledger().audit_payload({"outcome": "survival"})
+    audit = played_ledger().audit_payload("survival")
     assert peer.submit_audit(audit) == {"ok": True}  # honest reveal accepted
     audit["records"][0]["payload"]["intent"] = "pursue"
     try:
@@ -144,4 +148,4 @@ def _forged_reveal_for_step_one() -> dict:
     ledger = TurnLedger("thief")
     ledger.seal_turn(1, {"step": 1, "position": [9, 9], "move": "S", "intent": "pursue"}, public())
     ledger.seal_turn(2, hidden(2), public())
-    return ledger.audit_payload({"outcome": "survival"})
+    return ledger.audit_payload("survival")

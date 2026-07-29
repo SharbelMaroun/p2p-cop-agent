@@ -1,12 +1,14 @@
-# Option-B Protocol Profile
+# `simulator-v3.0.0` Compatibility Profile
 
 Contract version: `0.2.3-proposed`
 Status: **PROPOSED / UNFROZEN**
 
-This is the normative wire specification for the Option-B interoperability profile,
-pinned to lecturer simulator commit `960499fd5e8777b4929625f5d8fdcf2ab4677b54`. The
-JSON Schemas in `schemas/` and the fixtures in `fixtures/` are the machine-checkable
-form of this document.
+This document records the project's `simulator-v3.0.0 compatibility profile`,
+source-derived from the pinned simulator snapshot at
+`960499fd5e8777b4929625f5d8fdcf2ab4677b54`. It is a compatibility target only,
+not an authenticated course handoff, book requirement, or lecturer mandate. The
+JSON Schemas in `schemas/` and the fixtures in `fixtures/` are its
+machine-checkable form.
 
 ## FastMCP tools
 
@@ -18,7 +20,7 @@ returns `{"ok": true}` on successful transport acknowledgement.
 | `negotiate` | `message` | yes | agree per-match terms before play |
 | `receive_turn` | `message` | yes | deliver one opponent turn |
 | `submit_audit` | `payload` | yes | deliver the end-game audit (exposed endpoint) |
-| `receive_control` | `message` | optional | out-of-band control channel |
+| `receive_control` | `message` | yes | out-of-band control channel |
 
 Naming discipline:
 
@@ -33,16 +35,28 @@ Naming discipline:
 
 ### `negotiate` message
 
-Public per-match agreement: `terms` (the per-match game object projection), a public
-`nonce` challenge, `signature`, and `identity`. The negotiation challenge is sent
-before play and is not a per-turn commitment nonce. See
-`schemas/negotiate.schema.json`.
+Public agreement: `terms` (the exact `terms_from_config()` projection), a public
+32-lowercase-hex `nonce` challenge, a 64-lowercase-hex SHA-256 `signature`, and
+`identity`. The term names are `board_size`, `smell_grid_size`, `decay_per_step`,
+`emit_intensity`, `min_center_intensity`, `max_steps`, `barriers_max`, `setting`,
+`hint_max_words`, `axis_origin_corner`, `axis_start_index`, `thief_start`,
+`cop_start`, and `num_games`.
+
+The source identity fields are `group_id`, `group_name`, `members`, `repos`,
+`mcp_servers`, `llm_model`, and `spec`; it does not carry a role. Identity is not
+covered by the signature and the compatibility schema does not invent mandatory
+identity subfields. The negotiation challenge is sent before play and is not a
+per-turn commitment nonce. See `schemas/negotiate.schema.json`.
 
 ### `TurnMessage` (`receive_turn`)
 
 Public event only. Required: `step`, `sender`, `hint`, `smell_grid`, `commit`,
 `timestamp`. Optional public events: `barrier_placed`, `capture_claim`,
-`claim_response`, `win_claim`. See `schemas/turn-message.schema.json`.
+`claim_response`, `win_claim`. `smell_grid` is a cell map such as
+`{"2,3": 0.6}`, not a matrix. Barrier and capture claims are coordinate pairs or
+null; claim responses and win claims are objects or null. Source serialization
+includes absent optional events as explicit null values. See
+`schemas/turn-message.schema.json`.
 
 A `TurnMessage` never exposes the true position, the move, intent/verdict, or its
 per-turn commitment nonce. Those are revealed only after the game in the
@@ -53,10 +67,11 @@ per-turn commitment nonce. Those are revealed only after the game in the
 Post-game reveal: `sender`, `records`, and `result_claim`. Each audit `record`
 carries `payload`, its revealed per-turn commitment `nonce`, and `commit`. See
 `schemas/audit-payload.schema.json` and `schemas/audit-record.schema.json`.
+`result_claim` is exactly one of the strings `capture`, `survival`, or `timeout`.
 
-### `ControlMessage` (`receive_control`, optional)
+### `ControlMessage` (`receive_control`)
 
-Optional control channel; see `schemas/control-message.schema.json`.
+Out-of-band control channel; see `schemas/control-message.schema.json`.
 
 ## Commit-reveal
 
@@ -81,7 +96,7 @@ commit = sha256((canonical + "|" + nonce).encode("utf-8")).hexdigest()
 
 ## Duplicate safety (adapter behavior)
 
-This behavior is an adapter concern and does not change the mandatory v3 wire
+This behavior is an adapter concern and does not change the compatibility-profile wire
 payload; exact v3 opponents never send extra envelope fields:
 
 - Duplicate with the same `sender`/`step`/`commit`: acknowledge with

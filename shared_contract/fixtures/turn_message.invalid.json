@@ -8,6 +8,8 @@
   ],
   "commit": "aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44",
   "timestamp": "2026-07-28T12:00:00Z",
-  "position": [4, 4],
-  "nonce": "0123456789abcdef0123456789abcdef"
+  "barrier_placed": null,
+  "capture_claim": null,
+  "claim_response": null,
+  "win_claim": null
 }

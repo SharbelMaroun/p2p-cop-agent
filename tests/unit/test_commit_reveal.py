@@ -22,7 +22,11 @@ SECRET_KEYS = ("payload", "nonce", "position", "move", "intent", "verdict")
 
 def public(hint: str = "closing in") -> dict:
     """Return the schema-required public turn fields."""
-    return {"hint": hint, "smell_grid": [[0.0, 0.1], [0.2, 0.9]], "timestamp": "2026-07-28T00:00:00Z"}
+    return {
+        "hint": hint,
+        "smell_grid": {"0,0": 0.1, "1,0": 0.2, "1,1": 0.9},
+        "timestamp": "2026-07-28T00:00:00Z",
+    }
 
 
 def hidden(step: int) -> dict:
@@ -41,7 +45,7 @@ def test_full_commit_ack_reveal_audit_round_trip() -> None:
         validate_message("turn", message)
         assert not any(key in message for key in SECRET_KEYS)
 
-    audit = ledger.audit_payload({"outcome": "survival", "moves": 2})
+    audit = ledger.audit_payload("survival")
     assert verify_audit(audit) is True
     # An independent implementation reproduces and accepts the reveal.
     assert NeutralPeer("thief", "team-b").submit_audit(audit) == {"ok": True}
@@ -111,7 +115,7 @@ def test_sender_must_be_a_wire_role() -> None:
 def test_verify_audit_rejects_non_reproducing_or_malformed() -> None:
     ledger = TurnLedger("police")
     ledger.seal_turn(1, hidden(1), public())
-    audit = ledger.audit_payload({"outcome": "capture"})
+    audit = ledger.audit_payload("capture")
     audit["records"][0]["commit"] = "f" * 64
     assert verify_audit(audit) is False
     assert verify_audit({"not": "an-audit"}) is False

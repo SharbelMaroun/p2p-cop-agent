@@ -2,13 +2,15 @@
   "step": 3,
   "sender": "police",
   "hint": "closing from the north-west",
-  "smell_grid": [
-    [0.0, 0.1, 0.2],
-    [0.1, 0.9, 0.1],
-    [0.0, 0.1, 0.0]
-  ],
+  "smell_grid": {
+    "1,2": 0.3,
+    "2,2": 0.9,
+    "2,3": 0.6
+  },
   "commit": "aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44",
   "timestamp": "2026-07-28T12:00:00Z",
-  "barrier_placed": [2, 3],
-  "capture_claim": false
+  "barrier_placed": null,
+  "capture_claim": null,
+  "claim_response": null,
+  "win_claim": null
 }

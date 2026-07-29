@@ -24,7 +24,7 @@ bundle or its manifest.
 | Path | Purpose |
 |---|---|
 | `CONTRACT_VERSION` | `0.2.3-proposed` |
-| `PROTOCOL_PROFILE.md` | Option-B FastMCP tools, messages, and commit-reveal |
+| `PROTOCOL_PROFILE.md` | `simulator-v3.0.0` compatibility tools, messages, and commit-reveal |
 | `MATCH_CONFIGURATION.md` | how a per-match config is supplied and the three hash domains |
 | `SHARED_RULES.md` | book-authoritative gameplay rules |
 | `schemas/` | JSON Schemas for the match config and every protocol message |
@@ -35,10 +35,10 @@ bundle or its manifest.
 
 ## Interoperability profile
 
-This bundle implements **Option B**, the documented academic-freedom project choice
-pinned to lecturer simulator commit
-`960499fd5e8777b4929625f5d8fdcf2ab4677b54`. It is a wire-profile reference, not a
-claim that the simulator outranks the book. See `../docs/OPTION_B_DECISION.md`.
+This bundle carries the project's `simulator-v3.0.0 compatibility profile`,
+source-derived from the pinned simulator snapshot at
+`960499fd5e8777b4929625f5d8fdcf2ab4677b54`. It is a compatibility target only,
+not an authenticated course handoff, book requirement, or lecturer mandate.
 
 ## Verifying (read-only)
 

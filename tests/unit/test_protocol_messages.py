@@ -1,4 +1,4 @@
-"""Tests for the transport-neutral Option-B message surface (M4-01)."""
+"""Tests for the transport-neutral simulator-v3.0.0 compatibility surface."""
 
 from pathlib import Path
 
