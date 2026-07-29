@@ -4,7 +4,8 @@ One ``TurnLedger`` tracks one peer's sealed turns within one sub-game. Each turn
 seals a private payload (semantic state, move, and intent) under a fresh secret
 commitment nonce and emits only the public ``TurnMessage``. Payloads and nonces
 stay private until the post-game audit, which reveals every record so the opponent
-can reproduce each commit. Option B has no live reveal tool.
+can reproduce each commit. The simulator-v3.0.0 compatibility profile has no live
+reveal tool.
 
 This module covers the happy-path round-trip and the fresh-nonce discipline.
 Duplicate/replay/conflict depth is M4-04 and tamper/technical-loss is M4-05.
@@ -105,7 +106,7 @@ class TurnLedger:
         if not is_ok_response(response):
             raise CommitRevealError("missing transport acknowledgement")
 
-    def audit_payload(self, result_claim: Mapping[str, object]) -> JsonObject:
+    def audit_payload(self, result_claim: str) -> JsonObject:
         """Reveal every sealed record as a schema-valid ``AuditPayload``."""
         payload: JsonObject = {
             "sender": self.sender,
@@ -113,7 +114,7 @@ class TurnLedger:
                 {"payload": record.payload, "nonce": record.nonce, "commit": record.commit}
                 for record in self._records
             ],
-            "result_claim": dict(result_claim),
+            "result_claim": result_claim,
         }
         validate_message("audit", payload)
         return payload

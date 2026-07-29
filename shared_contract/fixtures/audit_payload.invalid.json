@@ -9,5 +9,8 @@
       "nonce": "0123456789abcdef0123456789abcdef",
       "commit": "aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44"
     }
-  ]
+  ],
+  "result_claim": {
+    "outcome": "survival"
+  }
 }

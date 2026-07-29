@@ -21,7 +21,11 @@ RATE_LIMITS = PROJECT_ROOT / "config" / "rate_limits.json"
 
 def public(hint: str = "closing in") -> dict:
     """Return the schema-required public turn fields."""
-    return {"hint": hint, "smell_grid": [[0.0, 0.1], [0.2, 0.9]], "timestamp": "2026-07-28T00:00:00Z"}
+    return {
+        "hint": hint,
+        "smell_grid": {"0,0": 0.1, "1,0": 0.2, "1,1": 0.9},
+        "timestamp": "2026-07-28T00:00:00Z",
+    }
 
 
 def hidden(step: int) -> dict:

@@ -2,15 +2,86 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "x-contract-version": "0.2.3-proposed",
   "x-role-neutral": true,
-  "title": "Option-B negotiate message",
-  "description": "Public per-match agreement message passed to the negotiate tool.",
+  "x-compatibility-profile": "simulator-v3.0.0",
+  "title": "simulator-v3.0.0 negotiate message",
+  "description": "Public agreement message accepted by the simulator-v3.0.0 compatibility profile.",
   "type": "object",
   "required": ["terms", "nonce", "signature", "identity"],
   "additionalProperties": true,
   "properties": {
     "terms": {
       "type": "object",
-      "description": "Projection of the per-match game object; not the full object."
+      "description": "Exact terms_from_config() projection signed by the simulator.",
+      "required": [
+        "board_size",
+        "smell_grid_size",
+        "decay_per_step",
+        "emit_intensity",
+        "min_center_intensity",
+        "max_steps",
+        "barriers_max",
+        "setting",
+        "hint_max_words",
+        "axis_origin_corner",
+        "axis_start_index",
+        "thief_start",
+        "cop_start",
+        "num_games"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "board_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "smell_grid_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "decay_per_step": {
+          "type": "number",
+          "minimum": 0
+        },
+        "emit_intensity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "min_center_intensity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_steps": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "barriers_max": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "setting": {
+          "type": ["string", "null"]
+        },
+        "hint_max_words": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "axis_origin_corner": {
+          "enum": ["top-left", "top-right", "bottom-left", "bottom-right"]
+        },
+        "axis_start_index": {
+          "type": "integer"
+        },
+        "thief_start": {
+          "$ref": "#/$defs/coordinate"
+        },
+        "cop_start": {
+          "$ref": "#/$defs/coordinate"
+        },
+        "num_games": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
     },
     "nonce": {
       "type": "string",
@@ -21,21 +92,59 @@
     },
     "signature": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[0-9a-f]{64}$"
     },
     "identity": {
       "type": "object",
-      "required": ["role", "group_id"],
       "additionalProperties": true,
       "properties": {
-        "role": {
-          "enum": ["police", "thief"]
-        },
         "group_id": {
           "type": "string",
           "minLength": 1
+        },
+        "group_name": {
+          "type": "string"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "repos": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "mcp_servers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "llm_model": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "object"
         }
       }
+    }
+  },
+  "$defs": {
+    "coordinate": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
     }
   }
 }

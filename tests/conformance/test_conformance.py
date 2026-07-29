@@ -17,12 +17,28 @@ def police() -> NeutralPeer:
     return NeutralPeer("police", "group-alpha")
 
 
-def offer(group_id: str, role: str = "police") -> dict:
+def offer(group_id: str) -> dict:
+    terms = {
+        "board_size": 7,
+        "smell_grid_size": 5,
+        "decay_per_step": 0.1,
+        "emit_intensity": 0.9,
+        "min_center_intensity": 0.5,
+        "max_steps": 35,
+        "barriers_max": 14,
+        "setting": "New York",
+        "hint_max_words": 15,
+        "axis_origin_corner": "top-left",
+        "axis_start_index": 0,
+        "thief_start": [3, 3],
+        "cop_start": [0, 0],
+        "num_games": 6,
+    }
     return {
-        "terms": {"grid_size": 7},
+        "terms": terms,
         "nonce": PUBLIC_NEGOTIATION_CHALLENGE,
-        "signature": "sig",
-        "identity": {"role": role, "group_id": group_id},
+        "signature": commit(terms, PUBLIC_NEGOTIATION_CHALLENGE),
+        "identity": {"group_id": group_id},
     }
 
 
@@ -37,14 +53,14 @@ def test_exact_tool_names_and_argument_names() -> None:
 
 def test_police_can_offer_and_accept_negotiation() -> None:
     peer = police()
-    assert peer.negotiate(offer("group-beta", "thief")) == {"ok": True}
+    assert peer.negotiate(offer("group-beta")) == {"ok": True}
     assert peer.opponent_group == "group-beta"
 
 
 def test_two_participant_pairs_do_not_change_controlled_bytes() -> None:
     before = (BUNDLE / "PARITY_MANIFEST.json").read_bytes()
-    assert NeutralPeer("police", "team-a").negotiate(offer("team-b", "thief")) == {"ok": True}
-    assert NeutralPeer("thief", "team-c").negotiate(offer("team-d", "police")) == {"ok": True}
+    assert NeutralPeer("police", "team-a").negotiate(offer("team-b")) == {"ok": True}
+    assert NeutralPeer("thief", "team-c").negotiate(offer("team-d")) == {"ok": True}
     assert (BUNDLE / "PARITY_MANIFEST.json").read_bytes() == before
 
 
@@ -66,7 +82,7 @@ def test_turn_message_rejects_each_private_commitment_field(
         "step": 1,
         "sender": "police",
         "hint": "x",
-        "smell_grid": [[0.0]],
+        "smell_grid": {"0,0": 0.9},
         "commit": "a" * 64,
         "timestamp": "t",
         forbidden_field: value,
@@ -80,7 +96,7 @@ def good_turn(step: int = 1, sender: str = "police", digest: str = "a" * 64) -> 
         "step": step,
         "sender": sender,
         "hint": "x",
-        "smell_grid": [[0.0]],
+        "smell_grid": {"0,0": 0.9},
         "commit": digest,
         "timestamp": "t",
     }
@@ -120,7 +136,7 @@ def test_invalid_turn_fields_are_rejected(message: dict) -> None:
 
 
 def test_invalid_public_negotiation_challenge_is_rejected() -> None:
-    bad = offer("group-beta", "thief")
+    bad = offer("group-beta")
     bad["nonce"] = "too-short"
     with pytest.raises(ConformanceError):
         police().negotiate(bad)
@@ -138,7 +154,7 @@ def test_audit_reproduction_is_checked() -> None:
                 "commit": commit(payload, COMMITMENT_NONCE),
             }
         ],
-        "result_claim": {"outcome": "capture"},
+        "result_claim": "capture",
     }
     assert peer.submit_audit(valid) == {"ok": True}
     valid["records"][0]["commit"] = "f" * 64

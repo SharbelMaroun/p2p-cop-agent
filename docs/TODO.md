@@ -4,8 +4,8 @@ Only Cop-owned work is decomposed here. `DONE` means implemented and locally
 verified; it does not imply cross-repository acceptance. `BLOCKED` names an external
 evidence/review dependency; `PENDING` names a concrete owner decision. The 2026-07-28 coordinator decision authorized
 contract-independent M2 domain work and an Option-B contract revision, so M2 and the
-new M1.5 gate became active. M1.5, M2, and M3 are now complete; M4 is next and
-M5–M9 remain ordered future work until their preceding phase is complete.
+new M1.5 gate became active. M1.5, M2, M3, and M4 are now complete; M5 is next and
+M6–M9 remain ordered future work until their preceding phase is complete.
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|

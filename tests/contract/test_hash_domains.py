@@ -48,7 +48,7 @@ def test_negotiation_projection_is_distinct_from_full_object() -> None:
     assert shared_config_sha256(game_object) == fixture["game_object_config_sha256"]
     projection_hash = hashlib.sha256(canonical_payload_bytes(projection)).hexdigest()
     assert projection_hash != fixture["game_object_config_sha256"]
-    assert projection["grid_size"] == game_object["board_and_agents"]["grid_size"]  # type: ignore[index]
+    assert projection["board_size"] == game_object["board_and_agents"]["grid_size"]  # type: ignore[index]
 
 
 def test_lecturer_supplied_65_char_value_is_not_a_valid_sha256() -> None:

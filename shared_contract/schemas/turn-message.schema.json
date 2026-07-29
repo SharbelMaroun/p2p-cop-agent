@@ -2,8 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "x-contract-version": "0.2.3-proposed",
   "x-role-neutral": true,
-  "title": "Option-B TurnMessage",
-  "description": "Public per-turn event. Extra fields are tolerated, but true position, move, intent/verdict, and the per-turn commitment nonce must never appear before the post-game audit.",
+  "x-compatibility-profile": "simulator-v3.0.0",
+  "title": "simulator-v3.0.0 TurnMessage",
+  "description": "Public per-turn event for the simulator-v3.0.0 compatibility profile. Extra fields are tolerated, but true position, move, intent/verdict, and the per-turn commitment nonce must never appear before the post-game audit.",
   "type": "object",
   "required": ["step", "sender", "hint", "smell_grid", "commit", "timestamp"],
   "additionalProperties": true,
@@ -19,12 +20,12 @@
       "type": "string"
     },
     "smell_grid": {
-      "type": "array",
-      "items": {
-        "type": "array",
-        "items": {
-          "type": "number"
-        }
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[0-9]+,[0-9]+$"
+      },
+      "additionalProperties": {
+        "type": "number"
       }
     },
     "commit": {
@@ -36,6 +37,65 @@
       "minLength": 1
     },
     "barrier_placed": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/coordinate"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "capture_claim": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/coordinate"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "claim_response": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": ["claim", "caught"],
+          "additionalProperties": false,
+          "properties": {
+            "claim": {
+              "$ref": "#/$defs/coordinate"
+            },
+            "caught": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "win_claim": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "survival"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "coordinate": {
       "type": "array",
       "prefixItems": [
         {
@@ -47,15 +107,6 @@
       ],
       "minItems": 2,
       "maxItems": 2
-    },
-    "capture_claim": {
-      "type": "boolean"
-    },
-    "claim_response": {
-      "type": "object"
-    },
-    "win_claim": {
-      "type": "boolean"
     }
   },
   "not": {

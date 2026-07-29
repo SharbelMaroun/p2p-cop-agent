@@ -11,11 +11,11 @@
     },
     {
       "path": "PROTOCOL_PROFILE.md",
-      "sha256": "b13522a457d97c34f752b6ad03ccd1877a93357b723c62ffbea6d2b6e8053548"
+      "sha256": "6865c42e9c43ac2c1d1f1fcc8541616ba4ee49856549f14f3fb401ee5c5a9fb0"
     },
     {
       "path": "README.md",
-      "sha256": "47cba741f052c05ce9da6a359027cf941e3a8e8d50b4824509fded2284a4f33f"
+      "sha256": "6cfc95b8655588bfd195b0ec77cf173faf258c71f784e4bd66d75e4fc8da34e9"
     },
     {
       "path": "SHARED_RULES.md",
@@ -23,11 +23,11 @@
     },
     {
       "path": "fixtures/audit_payload.invalid.json",
-      "sha256": "f7d71c22311509ea2bba2a490043a22fdf0e337b542b493bbc42e7d811c91a2a"
+      "sha256": "d7836f6fcc0071e8addf16f0b1700fa633bdfb6442f1d51f20bbe28ef38a8d9d"
     },
     {
       "path": "fixtures/audit_payload.valid.json",
-      "sha256": "fc5e5384bdc65d2d2163d8318e05c6ba524ea5e7c3d692765843d2958befa2d0"
+      "sha256": "8736797d2cb2d312d5a52f96ccd22324eb7c099b89646d997530ce8549a92c98"
     },
     {
       "path": "fixtures/audit_record.invalid.json",
@@ -55,15 +55,15 @@
     },
     {
       "path": "fixtures/negotiate.invalid.json",
-      "sha256": "6247ae2cb1e469701713718d068716e4c3db19b51131661a660dca8bf00018f4"
+      "sha256": "89a2056554d09f27cdb8bcfaa74ff3267ed9cfd37ff58f6e98eb45fd05ee8f9a"
     },
     {
       "path": "fixtures/negotiate.valid.json",
-      "sha256": "f9ad3dcb751f30a63e34c0bf16512e9349e19c9dddbc93e2f80f5054f67569d9"
+      "sha256": "757bb5b88b13895c22fbd859afea07f6438d08e13a2c976153cc615953d31a8b"
     },
     {
       "path": "fixtures/negotiation_terms.projection.json",
-      "sha256": "153fdbdd487ea426300a935eeb851834d0108e250804a4f62ae31712408ae5de"
+      "sha256": "4fa6ea85e649f5ab1fc22e08f8d42e421ecbbf653a4a9fde51538ea0fb8d1cdb"
     },
     {
       "path": "fixtures/per_subgame_config.invalid.json",
@@ -72,6 +72,10 @@
     {
       "path": "fixtures/per_subgame_config.valid.json",
       "sha256": "abee6cde6e7cd540c4e4a2efda7cfae650427547869f8f67bf2365f9e3ecfff0"
+    },
+    {
+      "path": "fixtures/simulator-v3.0.0-wire.golden.json",
+      "sha256": "0e76004a7a147c8a84d24093f7b57464391f9b03d15f6aaabe9d1ba6c126a179"
     },
     {
       "path": "fixtures/tool_response.invalid.json",
@@ -83,15 +87,15 @@
     },
     {
       "path": "fixtures/turn_message.invalid.json",
-      "sha256": "a04cdb2e2dd57bb5547b105abe999f0b54da3ae1d248dc3590c6c1ace720497a"
+      "sha256": "782e1e1a88ed5f1bb08f8ed135705659b9550d4d741534f40731ce8065ee2ddc"
     },
     {
       "path": "fixtures/turn_message.valid.json",
-      "sha256": "ff7bfd08efe44907da19fb3245c3ce9533299581590cb09e62eb63d3d6302a59"
+      "sha256": "7116b7067c44598969e6bb4996921c5a25072c46527d86a7220755755b98e6ba"
     },
     {
       "path": "schemas/audit-payload.schema.json",
-      "sha256": "7f78cbc667c37dfe0c223744a60b84e79df5898ad85f796123c31aca026259f1"
+      "sha256": "93528faeef2919cfd6fad3e749a480381b853d7d8861547c3f39e573b4818571"
     },
     {
       "path": "schemas/audit-record.schema.json",
@@ -107,7 +111,7 @@
     },
     {
       "path": "schemas/negotiate.schema.json",
-      "sha256": "d132afcee171f582510eb1d888e47f1cbd3b6fa366050c3c7ab9c3b2ddf682cf"
+      "sha256": "8e3f3379c7303afaf0d3233ea5abe6e0c34bc691a74549b54e9f3d53cc28b1e5"
     },
     {
       "path": "schemas/per-subgame-config.schema.json",
@@ -119,7 +123,7 @@
     },
     {
       "path": "schemas/turn-message.schema.json",
-      "sha256": "f0faf1881bc19edebc07979fece14c95558153c7789f7c6bb7d89cf4f1e330c3"
+      "sha256": "8bd265d77795e775d7fc06ddd4fd35a71000b48e8bad77245d3b0675c09ca308"
     },
     {
       "path": "vectors/config-sha256.vectors.json",
@@ -128,6 +132,10 @@
     {
       "path": "vectors/move-commit.vectors.json",
       "sha256": "8ad6d13ea1a77add0a6f42c9463aaccb2a149345bc25206b6031fc90f58aa37d"
+    },
+    {
+      "path": "vectors/simulator-v3.0.0-commit.golden.json",
+      "sha256": "8667cd316cf5dff8ca0812993b168959c649736ef3ada00f68d8c777e01773bf"
     },
     {
       "path": "verify.py",

@@ -1,0 +1,36 @@
+{
+  "profile": "simulator-v3.0.0",
+  "kind": "source-derived-compatibility-vector",
+  "description": "Golden commitment hashes derived from the pinned simulator source for compatibility testing only.",
+  "source_file": "Game-P2P-Cop-Chase/src/police_thief/domain/crypto.py",
+  "canonicalization": {
+    "sort_keys": true,
+    "ensure_ascii": false,
+    "separators": [",", ":"],
+    "delimiter": "|",
+    "encoding": "utf-8"
+  },
+  "vectors": [
+    {
+      "name": "ascii-payload",
+      "payload": {
+        "move": "N",
+        "step": 1
+      },
+      "nonce": "00112233445566778899aabbccddeeff",
+      "canonical_json": "{\"move\":\"N\",\"step\":1}",
+      "commit": "5e30292c866ab473eea4ab9621a386f341172d5cd813f832d4b6d3f5834b0ee1"
+    },
+    {
+      "name": "non-ascii-unescaped-unicode",
+      "payload": {
+        "hint": "שלום",
+        "step": 2
+      },
+      "nonce": "ffeeddccbbaa99887766554433221100",
+      "canonical_json": "{\"hint\":\"שלום\",\"step\":2}",
+      "commit": "ed14836cb1910471f1e3d2c4772a128c82674bf05a34b8ef7b782df0713fa9bc",
+      "proves_ensure_ascii_false": true
+    }
+  ]
+}

@@ -11,8 +11,5 @@
       "commit": "aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44"
     }
   ],
-  "result_claim": {
-    "outcome": "survived",
-    "moves": 35
-  }
+  "result_claim": "survival"
 }
