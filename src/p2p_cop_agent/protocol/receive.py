@@ -71,3 +71,15 @@ class TurnInbox:
         self._commits[key] = digest
         self._last_step[sender] = step
         return Intake(step, sender, digest, fresh=True)
+
+    def commits_for(self, sender: str) -> tuple[str, ...]:
+        """Return the commits accepted live for a sender, in step order.
+
+        This is the sequence an end-game audit must reproduce exactly, so a peer
+        cannot substitute a fabricated record after the fact (M4-05).
+        """
+        require_wire_role(sender)
+        ordered = sorted(
+            (step, digest) for (who, step), digest in self._commits.items() if who == sender
+        )
+        return tuple(digest for _, digest in ordered)

@@ -1,5 +1,10 @@
 """Cop protocol boundary; transport behavior is intentionally absent."""
 
+from p2p_cop_agent.protocol.audit import (
+    AuditReport,
+    AuditVerdict,
+    audit_reveal,
+)
 from p2p_cop_agent.protocol.commit import (
     CommitError,
     canonical_payload_bytes,
@@ -33,6 +38,8 @@ __all__ = [
     "MESSAGE_SCHEMAS",
     "OK_RESPONSE",
     "WIRE_ROLES",
+    "AuditReport",
+    "AuditVerdict",
     "CommitError",
     "CommitRevealError",
     "ConflictError",
@@ -42,6 +49,7 @@ __all__ = [
     "SealedTurn",
     "TurnInbox",
     "TurnLedger",
+    "audit_reveal",
     "canonical_payload_bytes",
     "generate_commitment_nonce",
     "is_ok_response",

@@ -1,12 +1,13 @@
 """Public SDK boundary for all future Cop business behavior."""
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from collections.abc import Set as AbstractSet
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from p2p_cop_agent.domain import Action, BarrierField, Board, Coordinate
-from p2p_cop_agent.protocol import TurnInbox, TurnLedger
+from p2p_cop_agent.domain.scoring import ScoringTable
+from p2p_cop_agent.protocol import AuditReport, TurnInbox, TurnLedger, audit_reveal
 from p2p_cop_agent.shared import __version__
 from p2p_cop_agent.shared.contracts import (
     SharedContract,
@@ -123,3 +124,27 @@ class CopSDK:
         sender, so an adapter never applies a turn twice or accepts a replay.
         """
         return TurnInbox()
+
+    def verify_opponent_audit(
+        self,
+        payload: object,
+        received_commits: Sequence[str] | None = None,
+    ) -> AuditReport:
+        """Verify an opponent's end-game reveal, detecting any commitment tamper.
+
+        Pass ``received_commits`` (e.g. ``TurnInbox.commits_for(sender)``) to also
+        prove the reveal matches what was accepted live, catching a post-hoc swap.
+        """
+        return audit_reveal(payload, received_commits)
+
+    def score_after_audit(self, report: AuditReport) -> int | None:
+        """Return the falsifying peer's zero-point sanction, or ``None`` if verified.
+
+        A tampered reveal is a technical loss: the falsifying peer scores the
+        configured ``technical_loss`` value (Appendix E rules 19/48). The
+        non-falsifying counterpart award stays unresolved under ``U-026`` and is
+        deliberately not returned here.
+        """
+        if report.verified:
+            return None
+        return ScoringTable.from_config(self.game_config).technical_loss_award()
