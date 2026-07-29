@@ -1,0 +1,132 @@
+{
+  "profile": "simulator-v3.0.0",
+  "kind": "source-derived-compatibility-fixture",
+  "description": "Golden wire objects derived from the pinned simulator source for compatibility testing only.",
+  "source_files": [
+    "Game-P2P-Cop-Chase/src/police_thief/infra/mcp_server.py",
+    "Game-P2P-Cop-Chase/src/police_thief/domain/protocol.py",
+    "Game-P2P-Cop-Chase/src/police_thief/domain/negotiation.py",
+    "Game-P2P-Cop-Chase/src/police_thief/peer/sealing.py"
+  ],
+  "messages": {
+    "negotiation": {
+      "terms": {
+        "board_size": 7,
+        "smell_grid_size": 5,
+        "decay_per_step": 0.1,
+        "emit_intensity": 0.9,
+        "min_center_intensity": 0.5,
+        "max_steps": 35,
+        "barriers_max": 14,
+        "setting": "New York",
+        "hint_max_words": 15,
+        "axis_origin_corner": "top-left",
+        "axis_start_index": 0,
+        "thief_start": [3, 3],
+        "cop_start": [0, 0],
+        "num_games": 6
+      },
+      "nonce": "0123456789abcdef0123456789abcdef",
+      "signature": "45ab01657f62e6f19962f7d3de12ec18cdfac2b84d2de3aa2db1d790281d67e5",
+      "identity": {
+        "group_id": "group-alpha",
+        "group_name": "Group Alpha",
+        "members": ["member-001", "member-002"],
+        "repos": {
+          "cop": "https://example.test/group-alpha/cop",
+          "thief": "https://example.test/group-alpha/thief"
+        },
+        "mcp_servers": {
+          "cop": "https://cop.example.test/mcp",
+          "thief": "https://thief.example.test/mcp"
+        },
+        "llm_model": "cli-default",
+        "spec": {
+          "os": "Example OS",
+          "cpu_type": "Example CPU",
+          "cpu_cores": 8,
+          "cpu_freq_mhz": 3200,
+          "ram_gb": 16,
+          "gpu_type": "unknown",
+          "gpu_cores_or_cuda": "unknown",
+          "vram_gb": "unknown"
+        }
+      }
+    },
+    "normal_turn": {
+      "step": 3,
+      "sender": "thief",
+      "hint": "Grabbing a cab east toward First Avenue.",
+      "smell_grid": {
+        "4,4": 0.9
+      },
+      "commit": "abababababababababababababababababababababababababababababababab",
+      "timestamp": "2026-07-06T10:00:00Z",
+      "barrier_placed": null,
+      "capture_claim": null,
+      "claim_response": null,
+      "win_claim": null
+    },
+    "capture_claim_turn": {
+      "step": 4,
+      "sender": "police",
+      "hint": "Checking the east blocks.",
+      "smell_grid": {
+        "1,0": 0.9
+      },
+      "commit": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+      "timestamp": "2026-07-06T10:00:01Z",
+      "barrier_placed": null,
+      "capture_claim": [1, 0],
+      "claim_response": null,
+      "win_claim": null
+    },
+    "claim_response_turn": {
+      "step": 5,
+      "sender": "thief",
+      "hint": "Still moving east.",
+      "smell_grid": {
+        "1,0": 0.8
+      },
+      "commit": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+      "timestamp": "2026-07-06T10:00:02Z",
+      "barrier_placed": null,
+      "capture_claim": null,
+      "claim_response": {
+        "claim": [1, 0],
+        "caught": false
+      },
+      "win_claim": null
+    },
+    "win_claim_turn": {
+      "step": 35,
+      "sender": "thief",
+      "hint": "Catch me if you can.",
+      "smell_grid": {
+        "0,0": 0.7
+      },
+      "commit": "f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0",
+      "timestamp": "2026-07-06T10:00:03Z",
+      "barrier_placed": null,
+      "capture_claim": null,
+      "claim_response": null,
+      "win_claim": {
+        "type": "survival"
+      }
+    },
+    "audit_payload": {
+      "sender": "police",
+      "records": [
+        {
+          "payload": {
+            "move": "N",
+            "step": 1
+          },
+          "nonce": "00112233445566778899aabbccddeeff",
+          "commit": "5e30292c866ab473eea4ab9621a386f341172d5cd813f832d4b6d3f5834b0ee1"
+        }
+      ],
+      "result_claim": "capture"
+    }
+  }
+}

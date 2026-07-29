@@ -94,6 +94,18 @@ commit = sha256((canonical + "|" + nonce).encode("utf-8")).hexdigest()
   before the audit. It is distinct from the public `negotiate.nonce` challenge.
 - At audit time, each record's `payload` + `nonce` must reproduce its `commit`.
 
+## Golden compatibility data
+
+`fixtures/simulator-v3.0.0-wire.golden.json` records source-derived negotiation,
+normal-turn, claim-turn, and audit wire objects. The normal turn includes all four
+optional event fields as null. Capture and win data are kept in separate,
+role-appropriate turn examples.
+
+`vectors/simulator-v3.0.0-commit.golden.json` records exact ASCII and non-ASCII
+commitment hashes. The non-ASCII vector includes its unescaped canonical JSON so
+the `ensure_ascii=False` behavior is checked directly. Both files are explicitly
+labelled `simulator-v3.0.0` and are compatibility evidence only.
+
 ## Duplicate safety (adapter behavior)
 
 This behavior is an adapter concern and does not change the compatibility-profile wire

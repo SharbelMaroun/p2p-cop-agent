@@ -11,11 +11,11 @@
     },
     {
       "path": "PROTOCOL_PROFILE.md",
-      "sha256": "68868ee8edb7f6766115df432d2a19729c4841c3c230e2095905ab46a1310456"
+      "sha256": "6865c42e9c43ac2c1d1f1fcc8541616ba4ee49856549f14f3fb401ee5c5a9fb0"
     },
     {
       "path": "README.md",
-      "sha256": "77cee39f0df3403aff5b297d4f05a34b6a8eef55b7276cc41c26a06fc6d06599"
+      "sha256": "6cfc95b8655588bfd195b0ec77cf173faf258c71f784e4bd66d75e4fc8da34e9"
     },
     {
       "path": "SHARED_RULES.md",
@@ -74,6 +74,10 @@
       "sha256": "abee6cde6e7cd540c4e4a2efda7cfae650427547869f8f67bf2365f9e3ecfff0"
     },
     {
+      "path": "fixtures/simulator-v3.0.0-wire.golden.json",
+      "sha256": "0e76004a7a147c8a84d24093f7b57464391f9b03d15f6aaabe9d1ba6c126a179"
+    },
+    {
       "path": "fixtures/tool_response.invalid.json",
       "sha256": "467483ad4afd4d5551061cd22ed3e250721f60316ffab2f1b36c77b451e78135"
     },
@@ -128,6 +132,10 @@
     {
       "path": "vectors/move-commit.vectors.json",
       "sha256": "8ad6d13ea1a77add0a6f42c9463aaccb2a149345bc25206b6031fc90f58aa37d"
+    },
+    {
+      "path": "vectors/simulator-v3.0.0-commit.golden.json",
+      "sha256": "8667cd316cf5dff8ca0812993b168959c649736ef3ada00f68d8c777e01773bf"
     },
     {
       "path": "verify.py",

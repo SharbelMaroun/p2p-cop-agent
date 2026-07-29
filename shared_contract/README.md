@@ -30,6 +30,8 @@ bundle or its manifest.
 | `schemas/` | JSON Schemas for the match config and every protocol message |
 | `fixtures/` | positive/negative example messages and the example match template |
 | `vectors/` | reproducible canonicalization and hash vectors |
+| `fixtures/simulator-v3.0.0-wire.golden.json` | source-derived golden compatibility messages |
+| `vectors/simulator-v3.0.0-commit.golden.json` | exact ASCII and unescaped-Unicode compatibility hashes |
 | `verify.py` | role-neutral, read-only bundle verifier |
 | `PARITY_MANIFEST.json` | recorded per-file SHA-256 manifest |
 
