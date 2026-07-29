@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from p2p_cop_agent.domain import Action, BarrierField, Board, Coordinate
-from p2p_cop_agent.protocol import TurnLedger
+from p2p_cop_agent.protocol import TurnInbox, TurnLedger
 from p2p_cop_agent.shared import __version__
 from p2p_cop_agent.shared.contracts import (
     SharedContract,
@@ -114,3 +114,12 @@ class CopSDK:
         secret commitment nonce never equals it.
         """
         return TurnLedger(sender=sender, public_challenge=public_challenge)
+
+    def new_turn_inbox(self) -> TurnInbox:
+        """Return a fresh receive-side turn intake for one sub-game.
+
+        The inbox deduplicates redelivered turns, rejects a re-sent step whose
+        commit differs, and rejects any step that fails to strictly advance its
+        sender, so an adapter never applies a turn twice or accepts a replay.
+        """
+        return TurnInbox()

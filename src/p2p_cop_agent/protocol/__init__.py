@@ -22,6 +22,12 @@ from p2p_cop_agent.protocol.messages import (
     require_wire_role,
     validate_message,
 )
+from p2p_cop_agent.protocol.receive import (
+    ConflictError,
+    Intake,
+    ReplayError,
+    TurnInbox,
+)
 
 __all__ = [
     "MESSAGE_SCHEMAS",
@@ -29,8 +35,12 @@ __all__ = [
     "WIRE_ROLES",
     "CommitError",
     "CommitRevealError",
+    "ConflictError",
+    "Intake",
     "ProtocolError",
+    "ReplayError",
     "SealedTurn",
+    "TurnInbox",
     "TurnLedger",
     "canonical_payload_bytes",
     "generate_commitment_nonce",
