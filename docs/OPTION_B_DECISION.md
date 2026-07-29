@@ -115,8 +115,8 @@ schedule.
 - The per-turn-commit portion of ADR-006 (canonicalization, `"|"` delimiter, and
   commitment-nonce profile) is **accepted for this project** under Option B.
 - The rejected `0.1.0-proposed` bundle is superseded by `0.2.0-proposed`, then by
-  `0.2.1-proposed`, `0.2.2-proposed`, and `0.2.3-proposed`; copying or freezing any
-  earlier bundle is not authorized.
+  `0.2.1-proposed`, `0.2.2-proposed`, `0.2.3-proposed`, and `0.2.4-proposed`; copying
+  or freezing any earlier bundle is not authorized.
 - Role alternation is **not** accepted under Option B. It is recorded as `U-025`
   and carries no contract status.
 

@@ -4,13 +4,16 @@ The active roadmap uses the common M0–M9 phase vocabulary. It decomposes only 
 owned in this Cop repository. External review, Thief consumption, and lecturer
 clarifications are exit dependencies, not Cop implementation tasks.
 
-Current state: **`0.1.0-proposed` rejected; M1.5 Option-B repair completed at
-`0.2.3-proposed`. The stable/per-match boundary, explicit local rate mirror, public
-negotiation challenge, secret per-turn commitment nonce, canonicalization, and
-FastMCP profile are resolved and tested. M2 core domain and M3 local state, scoring,
-rules harness, and deterministic move-or-barrier baseline are complete. M4 is next.
-Independent review and contract freeze remain later external gates and do not reopen
-M1.5.**
+Current state: **`0.1.0-proposed` rejected; the M1.5 Option-B repair completed at
+`0.2.3-proposed`, now advanced to `0.2.4-proposed` by the simulator-v3.0.0 wire
+reconciliation (schemas corrected toward the book where they conflicted: Appendix F
+result outcomes, optional `min_center_intensity`, optional `receive_control`). The
+stable/per-match boundary, explicit local rate mirror, public negotiation challenge,
+secret per-turn commitment nonce, canonicalization, and FastMCP profile are resolved
+and tested. M2 core domain, M3 local state/scoring/rules-harness and the
+deterministic move-or-barrier baseline, and the M4 protocol/commit-reveal/audit
+layer are complete. M5 is next. Independent review and contract freeze remain later
+external gates and do not reopen M1.5.**
 
 | Phase | Status | Cop outcome | Exit gate |
 |---|---|---|---|

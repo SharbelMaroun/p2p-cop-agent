@@ -1,25 +1,25 @@
 {
-  "contract_version": "0.2.3-proposed",
+  "contract_version": "0.2.4-proposed",
   "files": [
     {
       "path": "CONTRACT_VERSION",
-      "sha256": "7bf70109b5fc620c87d476998f277d7fcaf16bb54ec1e550e965902878c4230f"
+      "sha256": "8d3044d6d93d7106cc90401b40c5262df892e65ab08f0836767e4a2f97fd43be"
     },
     {
       "path": "MATCH_CONFIGURATION.md",
-      "sha256": "774bc225a583dcf8b7918296c3b3edee2767d4af07604f4062ac2100fa0160c3"
+      "sha256": "e075f20d3b0b8bc30ce85e926e181659effb073d818bb4736554df374db03951"
     },
     {
       "path": "PROTOCOL_PROFILE.md",
-      "sha256": "1b9cb883fbd7b5e413f549f29664ce1fdad35eaaae51304b3827e75a1feed758"
+      "sha256": "6b1a787d865e94f4f88ac80f67cfcd749bbffdfd7bab7d1d7dadd9d77e1212d3"
     },
     {
       "path": "README.md",
-      "sha256": "6cfc95b8655588bfd195b0ec77cf173faf258c71f784e4bd66d75e4fc8da34e9"
+      "sha256": "b3bd93640aac6cc8e47d8dfc028d1fcfd8545416cf3b7bd15b939300ba8bfbfa"
     },
     {
       "path": "SHARED_RULES.md",
-      "sha256": "be9dc76efc90d3e01212a88d9a8a9509d2e6b3b29b3ca9cb5132b36d365152a7"
+      "sha256": "0f8232da2d2f1b66c6f05ec6defe521e52b4f8e312ff9e0786afb0ab398004a4"
     },
     {
       "path": "fixtures/audit_payload.invalid.json",
@@ -63,7 +63,7 @@
     },
     {
       "path": "fixtures/negotiation_terms.projection.json",
-      "sha256": "4fa6ea85e649f5ab1fc22e08f8d42e421ecbbf653a4a9fde51538ea0fb8d1cdb"
+      "sha256": "95a3baffe8360845957e6fd163183f40c12b55af69d78b151e167d8c0efa8a93"
     },
     {
       "path": "fixtures/per_subgame_config.invalid.json",
@@ -95,43 +95,43 @@
     },
     {
       "path": "schemas/audit-payload.schema.json",
-      "sha256": "c07f422f2645474ac6cc4169449eb722711fd465c5dadad8400795b78b7b14a7"
+      "sha256": "5b0b0c0cd4d5fb9c2bb28ee3f99cdc94ec7e0081afe84543550555712233aece"
     },
     {
       "path": "schemas/audit-record.schema.json",
-      "sha256": "f065ed6514d56c17414dc95b4975dbff611f9fa79f7761f3b018213bb265c894"
+      "sha256": "82f293e72ba0f85d086a45ea4ad283557e3cb44af1ffbd77270bcd29fb421048"
     },
     {
       "path": "schemas/control-message.schema.json",
-      "sha256": "e82f8dda27896148ccab9c1f5d1fe8a9e26e6ff078f4e93e1f20454c60f36acb"
+      "sha256": "8fab64ea457f598bb3a8aadb5f8901ed044e8040c8d536e5f1e9567cb362ff28"
     },
     {
       "path": "schemas/match-config.schema.json",
-      "sha256": "442ae8defb05f1f6a7a10741d57447a9ddd6d3d18e087d332a4115eeb508aa30"
+      "sha256": "22c7100087e88e185d855e5bd712c3f8b25dedf90afb8f9e7e4d53995c3b2263"
     },
     {
       "path": "schemas/negotiate.schema.json",
-      "sha256": "86051dc84ccdefbf2440f3f707958ca7051a1fea1984daaea8da5cf2ef85b922"
+      "sha256": "eb968d4c2857ca06f1d5e8f1505f0b39b28b8c7b9832cc05cd76618bcf023b24"
     },
     {
       "path": "schemas/per-subgame-config.schema.json",
-      "sha256": "38c165fd1fa94de8cf3e2611c06524e893fd0b7611e965070d9cf2922ce40888"
+      "sha256": "05e194e809739b6a0b41eb0cc340d8e1ff930b9abd217733bce6e5b5faa00a81"
     },
     {
       "path": "schemas/tool-response.schema.json",
-      "sha256": "891a430b682344e652db91adabbbf7d795e76e5ad74c67f854c1d1af5c7ffe14"
+      "sha256": "d388e49b07718ffa658f2aa99a0c637a75800903b183cf2e0b3ef4bdc535d847"
     },
     {
       "path": "schemas/turn-message.schema.json",
-      "sha256": "8bd265d77795e775d7fc06ddd4fd35a71000b48e8bad77245d3b0675c09ca308"
+      "sha256": "cba79615ae9ebf72a483f663d7e7c5128b4a22dba9994480950aed5a1c3eae03"
     },
     {
       "path": "vectors/config-sha256.vectors.json",
-      "sha256": "1deb487e2c96385df18569e9e8436bada8a3c853200e39e7143963ceac5052a8"
+      "sha256": "5d5b9f4f9ffccec9a8048855a90a972e0fa0c08ba8b7810055901f7d1b9c38aa"
     },
     {
       "path": "vectors/move-commit.vectors.json",
-      "sha256": "8ad6d13ea1a77add0a6f42c9463aaccb2a149345bc25206b6031fc90f58aa37d"
+      "sha256": "1ec1c1956bd885c94be90ae058920941348b767c68c8ab4abe235a60444725d6"
     },
     {
       "path": "vectors/simulator-v3.0.0-commit.golden.json",
