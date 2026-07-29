@@ -54,7 +54,7 @@ M6–M9 remain ordered future work until their preceding phase is complete.
 | M4-04 | Reject illegal transitions, replay, and idempotency conflicts | DONE | P0 | Failure vectors terminate deterministically |
 | M4-05 | Implement tamper and technical-loss audit outcomes | DONE | P0 | Byte, field, and commitment-nonce mutations are detected |
 | M4-06 | Implement Step-0 code and host attestation | DONE | P0 | Both peers seal hardware/model/group/game data and the exact running Git commit before moves |
-| M5-01 | Implement transport-neutral peer interface | DEFERRED | P1 | SDK has no FastMCP-specific business logic |
+| M5-01 | Implement transport-neutral peer interface | DONE | P1 | `peer.PeerTransport` (outbound Port) and `peer.InboundPeer` (inbound handler) route the four Option-B tools through the protocol/SDK layers with no FastMCP import; a guard test proves the transport-neutral core imports no FastMCP |
 | M5-02 | Implement FastMCP server adapter | DEFERRED | P1 | Accepted tools validate inbound calls |
 | M5-03 | Implement FastMCP client connector | DEFERRED | P1 | Accepted calls work against a neutral stub |
 | M5-04 | Implement negotiation and mismatch refusal | DEFERRED | P0 | Unknown opponent acceptance works both directions |

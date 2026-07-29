@@ -1,15 +1,16 @@
-# Option-B Contract Handoff — `0.2.4-proposed`
+# Option-B Contract Handoff — `0.2.5-proposed`
 
 Status: **TECHNICALLY READY FOR COORDINATOR REVIEW — UNFROZEN — NOT COPIED, NOT FROZEN**
 
 Branch: `agent/cop-m1.5-blockers-v022`
-Contract version: `0.2.4-proposed`
+Contract version: `0.2.5-proposed`
 Interoperability profile: Option B, pinned to simulator commit
 `960499fd5e8777b4929625f5d8fdcf2ab4677b54`.
 
-This handoff supersedes `0.2.3-proposed`, which superseded `0.2.2-proposed`,
-`0.2.1-proposed`, `0.2.0-proposed`, and the rejected `0.1.0-proposed` bundle. The
-changes below retain the complete repair history from `0.2.0-proposed`.
+This handoff supersedes `0.2.4-proposed`, which superseded `0.2.3-proposed`,
+`0.2.2-proposed`, `0.2.1-proposed`, `0.2.0-proposed`, and the rejected
+`0.1.0-proposed` bundle. The changes below retain the complete repair history from
+`0.2.0-proposed`.
 
 It is for coordinator review only. It does **not** self-issue
 `ACCEPTED_FOR_PROVISIONAL_PARITY`, copy the bundle into Thief, freeze the contract,
@@ -107,6 +108,19 @@ simulator (authority #7 is a reference, not an override):
 
 The controlled file count rises from 33 to **35** with the two golden artifacts.
 
+### Closed in `0.2.5-proposed`
+
+11. **`result_claim` re-aligned to the simulator wire set.** After the
+    interoperability specification confirmed the reference enum, `result_claim`
+    returns to `capture`/`survival`/`timeout`, reversing item 8 above. It is a
+    **wire** field: accepting exactly the values a conforming peer sends prevents a
+    self-inflicted technical loss. The book's Tie outcome is a **scoring** result
+    (Appendix F table 17), already modelled in `ScoringTable.Outcome.TIE`, so
+    removing it from the wire enum loses nothing. `min_center_intensity` and
+    `receive_control` stay optional (items 9-10); both agree with the spec.
+
+The controlled file count remains **35** in this revision.
+
 ## Stable bundle location
 
 The role-neutral, copy-into-Thief bundle is the top-level `shared_contract/`
@@ -119,7 +133,7 @@ files, and no secrets.
 `shared_contract/PARITY_MANIFEST.json` is excluded from its own file list. Its
 separately computed exact-byte SHA-256 is:
 
-`5159a9ad03d7a62922de19f0fef41f3b6999b552399e6361b504ed3b78b57851`
+`8f24a3b9daa05b5bc3c61b30ee98b7be6d731049ecb9345c63709e4189a7688b`
 
 Superseded manifest hashes, which must not be used to authorize a copy of this
 revision:
@@ -130,16 +144,17 @@ revision:
 | `0.2.1-proposed` | `48664ac848f5422354919191ace0653db46697dc38a7250382d0449b540cfc9c` |
 | `0.2.2-proposed` | `fb6b97ac1cc5c4f5d3a25ce6096593e7f08fb4e8fb4cb61dbc2c06946016167d` |
 | `0.2.3-proposed` | `cf214a5e7562011072940e2153ece1d0032ab29eefcdfa104024a3d86502eecf` |
+| `0.2.4-proposed` | `5159a9ad03d7a62922de19f0fef41f3b6999b552399e6361b504ed3b78b57851` |
 
 ## Controlled inventory (35 files, paths relative to `shared_contract/`)
 
 | Path | SHA-256 |
 |---|---|
-| `CONTRACT_VERSION` | `8d3044d6d93d7106cc90401b40c5262df892e65ab08f0836767e4a2f97fd43be` |
-| `MATCH_CONFIGURATION.md` | `e075f20d3b0b8bc30ce85e926e181659effb073d818bb4736554df374db03951` |
-| `PROTOCOL_PROFILE.md` | `6b1a787d865e94f4f88ac80f67cfcd749bbffdfd7bab7d1d7dadd9d77e1212d3` |
-| `README.md` | `b3bd93640aac6cc8e47d8dfc028d1fcfd8545416cf3b7bd15b939300ba8bfbfa` |
-| `SHARED_RULES.md` | `0f8232da2d2f1b66c6f05ec6defe521e52b4f8e312ff9e0786afb0ab398004a4` |
+| `CONTRACT_VERSION` | `b7f82fe0ddb67b9cb752b0c2788c3b356a544ddd0791d26cc6f9454adac34180` |
+| `MATCH_CONFIGURATION.md` | `cd53e075ceb3341a2c0f811a59731cee5df125e4300cbd5100ff294f496c3ea8` |
+| `PROTOCOL_PROFILE.md` | `fdbd5f85110df9b5a8f8770120d0a386007799b618e08f560179d36204ed852b` |
+| `README.md` | `4b9c8a41a6d157d5d712fb92e756c9e123f3152fbf89387653578540f1664fe9` |
+| `SHARED_RULES.md` | `13ce414e5264d986a2882b9ddef3d52c7f6ea707b98788664af0c889164124e0` |
 | `fixtures/audit_payload.invalid.json` | `d7836f6fcc0071e8addf16f0b1700fa633bdfb6442f1d51f20bbe28ef38a8d9d` |
 | `fixtures/audit_payload.valid.json` | `8736797d2cb2d312d5a52f96ccd22324eb7c099b89646d997530ce8549a92c98` |
 | `fixtures/audit_record.invalid.json` | `f87b3e3a0b71de113071e5e2e4f4965acadd73f99046f2e8a46c135d7b34f965` |
@@ -150,7 +165,7 @@ revision:
 | `fixtures/match_config.example.json` | `70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06` |
 | `fixtures/negotiate.invalid.json` | `89a2056554d09f27cdb8bcfaa74ff3267ed9cfd37ff58f6e98eb45fd05ee8f9a` |
 | `fixtures/negotiate.valid.json` | `757bb5b88b13895c22fbd859afea07f6438d08e13a2c976153cc615953d31a8b` |
-| `fixtures/negotiation_terms.projection.json` | `95a3baffe8360845957e6fd163183f40c12b55af69d78b151e167d8c0efa8a93` |
+| `fixtures/negotiation_terms.projection.json` | `bd6720bb908b3d5ee24bbeabea656fd8dda895194721a84d6a7cf1e050fd8408` |
 | `fixtures/per_subgame_config.invalid.json` | `4f747aaeb24f18105434abbe9e4f5dccb1480dbecf4f1e8638f16218115f9096` |
 | `fixtures/per_subgame_config.valid.json` | `abee6cde6e7cd540c4e4a2efda7cfae650427547869f8f67bf2365f9e3ecfff0` |
 | `fixtures/simulator-v3.0.0-wire.golden.json` | `d7b95e4716766811fc79a5dc6bfb841e80cf1e04742094b9babbcb41f427667b` |
@@ -158,16 +173,16 @@ revision:
 | `fixtures/tool_response.valid.json` | `12b34da73b0c67a0319e6eddbd3582af66e3b558b4d44e4a6860e0cec20d726f` |
 | `fixtures/turn_message.invalid.json` | `782e1e1a88ed5f1bb08f8ed135705659b9550d4d741534f40731ce8065ee2ddc` |
 | `fixtures/turn_message.valid.json` | `7116b7067c44598969e6bb4996921c5a25072c46527d86a7220755755b98e6ba` |
-| `schemas/audit-payload.schema.json` | `5b0b0c0cd4d5fb9c2bb28ee3f99cdc94ec7e0081afe84543550555712233aece` |
-| `schemas/audit-record.schema.json` | `82f293e72ba0f85d086a45ea4ad283557e3cb44af1ffbd77270bcd29fb421048` |
-| `schemas/control-message.schema.json` | `8fab64ea457f598bb3a8aadb5f8901ed044e8040c8d536e5f1e9567cb362ff28` |
-| `schemas/match-config.schema.json` | `22c7100087e88e185d855e5bd712c3f8b25dedf90afb8f9e7e4d53995c3b2263` |
-| `schemas/negotiate.schema.json` | `eb968d4c2857ca06f1d5e8f1505f0b39b28b8c7b9832cc05cd76618bcf023b24` |
-| `schemas/per-subgame-config.schema.json` | `05e194e809739b6a0b41eb0cc340d8e1ff930b9abd217733bce6e5b5faa00a81` |
-| `schemas/tool-response.schema.json` | `d388e49b07718ffa658f2aa99a0c637a75800903b183cf2e0b3ef4bdc535d847` |
-| `schemas/turn-message.schema.json` | `cba79615ae9ebf72a483f663d7e7c5128b4a22dba9994480950aed5a1c3eae03` |
-| `vectors/config-sha256.vectors.json` | `5d5b9f4f9ffccec9a8048855a90a972e0fa0c08ba8b7810055901f7d1b9c38aa` |
-| `vectors/move-commit.vectors.json` | `1ec1c1956bd885c94be90ae058920941348b767c68c8ab4abe235a60444725d6` |
+| `schemas/audit-payload.schema.json` | `7620b703686d75404e8a6f881ec099b5b4754e3d71da7daf056b5ca2ad79547c` |
+| `schemas/audit-record.schema.json` | `3aa5bf05d2525f0f2b737b469ce7dd085b8a4226f876cddcc3be692db625a033` |
+| `schemas/control-message.schema.json` | `d54f77f9e1cdc3e27c943c0869086b2988361251ea28e489bc7b603c361d4096` |
+| `schemas/match-config.schema.json` | `997d3d26d3c0490e4fc5ff4dee685d6ff36b9d5aded5fa799c0845a055c41b4c` |
+| `schemas/negotiate.schema.json` | `ac81f1ad3b1a41c50182ec839f775df7c70b62fc39bda3e77144257ef5a7450f` |
+| `schemas/per-subgame-config.schema.json` | `99bc6e95bd77fe56453ba9c4a5cb004e10de59120aaa795186ed9f0170c52947` |
+| `schemas/tool-response.schema.json` | `099cf29c4e7ff615238d87ddd76b22e35130bc8cacaa0f5a6a1e301d7a3e3309` |
+| `schemas/turn-message.schema.json` | `8cc01a1e07018acdccc5e9b8e267363ef972426b3c604b74208d48b87af50ad0` |
+| `vectors/config-sha256.vectors.json` | `e40490ab5f997e4f0c3469f0de31c8f7d742dc02c9b322be9fbc7f3c9886d464` |
+| `vectors/move-commit.vectors.json` | `0bb194c7e8b599167a648218da7c9256dce731f68c05b238a3d6788b4ef66c68` |
 | `vectors/simulator-v3.0.0-commit.golden.json` | `8667cd316cf5dff8ca0812993b168959c649736ef3ada00f68d8c777e01773bf` |
 | `verify.py` | `1e6cb9521e418c8b7ff162d20e1f383af7490504f28f704492d415d48f4a84da` |
 
@@ -185,8 +200,8 @@ not prove semantic correctness or interoperability.
 
 ## What remains for the coordinator
 
-1. Review the `0.2.4-proposed` scope, the Option-B / simulator-v3.0.0 profile, and
-   the ten corrections above.
+1. Review the `0.2.5-proposed` scope, the Option-B / simulator-v3.0.0 profile, and
+   the eleven corrections above.
 2. If accepted, authorize copying the `shared_contract/` bundle into Thief
    byte-for-byte and independent cross-bundle verification
    (`verify.py --compare-root`).
