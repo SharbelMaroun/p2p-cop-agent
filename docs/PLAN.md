@@ -5,9 +5,9 @@ owned in this Cop repository. External review, Thief consumption, and lecturer
 clarifications are exit dependencies, not Cop implementation tasks.
 
 Current state: **`0.1.0-proposed` rejected; the M1.5 Option-B repair completed at
-`0.2.3-proposed`, now advanced to `0.2.4-proposed` by the simulator-v3.0.0 wire
-reconciliation (schemas corrected toward the book where they conflicted: Appendix F
-result outcomes, optional `min_center_intensity`, optional `receive_control`). The
+`0.2.3-proposed`, then advanced through `0.2.4`/`0.2.5-proposed` reconciling the
+simulator-v3.0.0 wire profile with the book (see
+[OPTION_B_HANDOFF.md](OPTION_B_HANDOFF.md) for the per-revision change log). The
 stable/per-match boundary, explicit local rate mirror, public negotiation challenge,
 secret per-turn commitment nonce, canonicalization, and FastMCP profile are resolved
 and tested. M2 core domain, M3 local state/scoring/rules-harness and the

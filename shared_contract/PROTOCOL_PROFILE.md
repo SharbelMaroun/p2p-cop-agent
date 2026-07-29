@@ -1,6 +1,6 @@
 # `simulator-v3.0.0` Compatibility Profile
 
-Contract version: `0.2.4-proposed`
+Contract version: `0.2.5-proposed`
 Status: **PROPOSED / UNFROZEN**
 
 This document records the project's `simulator-v3.0.0 compatibility profile`,
@@ -70,8 +70,10 @@ per-turn commitment nonce. Those are revealed only after the game in the
 Post-game reveal: `sender`, `records`, and `result_claim`. Each audit `record`
 carries `payload`, its revealed per-turn commitment `nonce`, and `commit`. See
 `schemas/audit-payload.schema.json` and `schemas/audit-record.schema.json`.
-`result_claim` is exactly one of the strings `capture`, `survival`, or `tie` —
-the self-declarable outcomes fixed by Appendix F table 17. Technical loss is
+`result_claim` is exactly one of the simulator-v3.0.0 wire strings `capture`,
+`survival`, or `timeout`, so a conforming peer's audit is never rejected on this
+field. The book's Tie outcome (Appendix F table 17) is a scoring result, not a wire
+value — it is modelled in the scoring layer, not claimed here. Technical loss is
 adjudicated from a commit-reveal mismatch (Appendix E rules 19/48), not
 self-claimed, so it is not a `result_claim` value.
 
