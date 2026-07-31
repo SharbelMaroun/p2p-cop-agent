@@ -340,18 +340,18 @@ These run before every commit and in CI; they are not milestone-scoped.
 |---|---|---|---|---|
 | M5-01 | Implement transport-neutral peer interface | DONE | P1 | `peer.PeerTransport` (outbound Port) and `peer.InboundPeer` (inbound handler) route the four Option-B tools through the protocol/SDK layers with no FastMCP import; a guard test proves the transport-neutral core imports no FastMCP |
 | M5-02 | Implement FastMCP server adapter | DONE | P1 | `adapters.build_server` exposes the four Option-B tools as enqueue-and-ack mailboxes (matching the reference wire behaviour); `adapters.drain` validates each queued message through `InboundPeer`, so a rejection is a game outcome, not a transport error. ADR-002 amended accordingly |
-| M5-03 | Implement FastMCP client connector | DEFERRED | P1 | Accepted calls work against a neutral stub |
-| M5-03a | Wrap `fastmcp.Client(opponent_url)` in `adapters/fastmcp_client.py` | DEFERRED | P1 | The only outbound FastMCP import; implements `peer.PeerTransport` |
-| M5-03b | Shape tool arguments per the wire profile | DEFERRED | P0 | `{"message": …}` for negotiate/receive_turn/receive_control, `{"payload": …}` for submit_audit |
-| M5-03c | Return `.data` and map transport faults | DEFERRED | P1 | A transport exception is distinguishable from a game-level rejection |
-| M5-03d | Drive an in-memory loopback against `build_server` | DEFERRED | P1 | Round-trip test needs no external process |
-| M5-03e | Prove accepted calls against the neutral stub | DEFERRED | P0 | Parent DoD; no peer source is read or imported |
-| M5-03f | Read the opponent URL from private configuration only | DEFERRED | P0 | Never from the shared JSON `[ADR-004]` |
-| M5-03g | Fail cleanly on an unreachable opponent URL | DEFERRED | P1 | Connection refused surfaces as a transport fault, not a crash |
-| M5-03h | Fail cleanly on a malformed opponent response | DEFERRED | P1 | Non-JSON or missing `.data` is rejected deterministically |
-| M5-03i | Keep the client stateless between calls | DEFERRED | P1 | No hidden session state leaks across turns |
-| M5-03j | Add a guard test that only `adapters/` imports fastmcp | DEFERRED | P0 | Extends the M5-01 guard to the client module |
-| M5-03k | Document the client contract in `PRD_p2p_mcp.md` | DEFERRED | P2 | Call shapes and fault mapping recorded |
+| M5-03 | Implement FastMCP client connector | DONE | P1 | `adapters.FastMCPClient` implements `peer.PeerTransport` and round-trips against an in-memory `build_server`; 10 tests in `tests/integration/test_fastmcp_client.py` |
+| M5-03a | Wrap `fastmcp.Client(opponent_url)` in `adapters/fastmcp_client.py` | DONE | P1 | The only outbound FastMCP import; implements `peer.PeerTransport` (verified structurally via `runtime_checkable`) |
+| M5-03b | Shape tool arguments per the wire profile | DONE | P0 | Keywords come from `peer.TOOL_ARGUMENTS`, so inbound and outbound cannot drift; a test asserts each of the four messages lands in its own inbox |
+| M5-03c | Return `.data` and map transport faults | DONE | P1 | Two disjoint types: `TransportError` (unreachable/timeout/malformed) and `PeerRejectionError` (reached but declined). A test asserts neither subclasses the other, so `except TransportError` cannot swallow a lost game as a retry |
+| M5-03d | Drive an in-memory loopback against `build_server` | DONE | P1 | Client → server → `drain` → SDK validation, no external process |
+| M5-03e | Prove accepted calls against the neutral stub | PENDING | P0 | Parent DoD. The in-memory loopback proves the call shapes against **our own** server; proving them against `tests/conformance/neutral_stub` (which shares no code) is the remaining half and is not yet done |
+| M5-03f | Read the opponent URL from private configuration only | PENDING | P0 | The client takes `target` explicitly and reads no configuration at all, so it cannot read the shared JSON. The private-TOML loader that supplies the URL does not exist yet; closing this needs that loader plus a test that the shared match object carries no opponent URL `[ADR-004]` |
+| M5-03g | Fail cleanly on an unreachable opponent URL | DONE | P1 | `http://127.0.0.1:1/mcp` raises `TransportError`, not a crash |
+| M5-03h | Fail cleanly on a malformed opponent response | DONE | P1 | A tool returning a non-object raises `TransportError` deterministically |
+| M5-03i | Keep the client stateless between calls | DONE | P1 | `__slots__` makes hidden per-turn state impossible rather than merely absent; each call opens and closes its own session |
+| M5-03j | Add a guard test that only `adapters/` imports fastmcp | DONE | P0 | Walks every module under `src/` and asserts no non-`adapters` file imports fastmcp |
+| M5-03k | Document the client contract in `PRD_p2p_mcp.md` | DONE | P2 | Call shapes and the two-way fault mapping recorded |
 | M5-04 | Implement negotiation and mismatch refusal | DEFERRED | P0 | Unknown opponent acceptance works both directions |
 | M5-04a | Build and send a match offer | DEFERRED | P0 | Offer carries participants, terms, and the public challenge nonce |
 | M5-04b | Compare `config_sha256` byte-for-byte before play | DEFERRED | P0 | Any mismatch refuses the match `[AE-11]` |
