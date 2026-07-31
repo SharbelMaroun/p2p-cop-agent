@@ -143,13 +143,54 @@
 
 ---
 
-> **Logging gap, recorded honestly (2026-08-01).** Entries P-013 onward resume this log
-> after a break: no entries were written between 2026-07-26 and 2026-07-31 while M1.5
-> through M5-04 were built. Those steps are not reconstructed here, because this agent
-> cannot attest to prompts it did not witness and an invented entry is worse than an
-> acknowledged gap. The work itself is recorded in `TODO.md` and the git history.
+> **Provenance note for P-013 … P-017.** These entries were reconstructed on
+> 2026-08-01 from the commit record, the documents each step produced, and the
+> `Co-Authored-By` trailers, because the log had fallen behind between 2026-07-26 and
+> 2026-07-31. They are **not transcribed from the original sessions**: each
+> "Prompt (essence)" line records the evident task and the human's stated intent, not
+> verbatim wording. P-018 onward were written in the sessions that performed them.
 
-## P-013 — Verifying against the lecturer's notebooks before writing code
+## P-013 — Hardening the contract before letting any code depend on it
+- **Date:** 2026-07-26 → 2026-07-27 · **Tool:** Claude (agentic CLI) · *reconstructed*
+- **Goal:** make the shared contract safe to build on: correct provenance, separate the three configuration scopes, and stop treating a local check as external agreement.
+- **Prompt (essence):** apply the cross-repository audit; fix the source hierarchy so a simulator observation can never outrank the book; split league-wide, per-match, and private configuration; add rejection vectors and CI.
+- **Output:** canonical shared-configuration lock; league/match/private separation; neutral negotiated-configuration validation; cross-root comparison and rejection vectors; enforced quality gates in CI; M1 marked ready for external parity review.
+- **Refinement:** an initial claim that the bundle was "ready" was walked back to *locally verified, externally unfrozen* — the distinction that the contract checker still enforces by failing closed.
+- **Lesson:** "our checks pass" and "the other side agrees" are different claims, and a document that blurs them will be believed later by someone who cannot re-derive the difference.
+
+## P-014 — Building the domain under an explicit authorization
+- **Date:** 2026-07-28 · **Tool:** Claude (agentic CLI) · *reconstructed*
+- **Goal:** implement M2 (coordinates, board geometry, legal movement, barriers, capture) and M3 (scoring, local state, rules harness, deterministic pursuit) while the contract stayed unfrozen.
+- **Prompt (essence):** proceed with the work that does not depend on the frozen contract, under the coordinator's authorization, and keep it reachable only through the SDK.
+- **Output:** immutable domain types, barrier-aware movement, capture conditions, the fixed scoring table with the technical-loss sanction, immutable Cop-local state with reproducible history, a single-process rules harness, and a deterministic barrier-aware pursuit baseline.
+- **Refinement:** two rules were corrected after implementation — a Police barrier on its **own** cell is legal, and role alternation was withdrawn from the contract and recorded as the open unknown `U-025` rather than left as an assumption.
+- **Lesson:** withdrawing a claim into a numbered unknown is cheaper than defending it. `U-025` was later closed by an actual lecturer answer, which would have been impossible if the guess had stayed buried in code.
+
+## P-015 — Commit-reveal, and proving it against something other than itself
+- **Date:** 2026-07-28 → 2026-07-29 · **Tool:** Claude (agentic CLI) · *reconstructed*
+- **Goal:** close M4 — message surface, canonical bytes, commit-reveal, replay/idempotency rejection, tamper detection, and Step-0 attestation.
+- **Prompt (essence):** implement the cryptographic layer so that any tampering is detected, and prove the hashing reproduces across independent implementations rather than merely agreeing with itself.
+- **Output:** the Option-B message surface; cross-implementation hash reproduction tests; the commit-reveal round trip through the SDK; replay and idempotency conflict rejection on intake; tamper detection with technical-loss outcomes; Step-0 host and code attestation binding the exact running Git commit.
+- **Refinement:** the neutral stub was written to re-implement canonicalization and hashing from the profile text rather than import ours, so a shared bug could not cancel out.
+- **Lesson:** a hash test that calls the same function twice proves nothing. The only useful question is whether a *different* implementation reaches the same bytes.
+
+## P-016 — Re-basing the wire onto the reference simulator
+- **Date:** 2026-07-29 · **Tool:** Claude (agentic CLI) · *reconstructed*
+- **Goal:** replace the self-authored Option-B wire with the reference simulator's, because league play is against unknown classmates.
+- **Prompt (essence):** align the schemas to simulator v3.0.0; reconcile the resulting profile against the book and Appendix F rather than adopting simulator defaults wholesale.
+- **Output:** schema alignment, a book/Appendix-F reconciliation pass, `result_claim` narrowed to the simulator's wire set, three bundle revisions to `0.2.5-proposed`, the transport-neutral peer interface (`M5-01`), and the FastMCP mailbox server (`M5-02`) with `ADR-002` amended.
+- **Refinement:** the reconciliation was the substantive half. Where the simulator and the book disagreed, the book won and the divergence was recorded — the profile is a compatibility target, not an authority.
+- **Lesson:** interoperability forces you to speak someone else's wire, but adopting their wire is not the same as adopting their rules, and conflating the two silently imports their bugs.
+
+## P-017 — An audit pass against the official sources
+- **Date:** 2026-07-31 · **Tool:** Claude (agentic CLI) · *reconstructed*
+- **Goal:** check the whole repository against `inst/` and the submission guidelines before building further.
+- **Prompt (essence):** check the instruction documents and both repositories deeply for anything unaligned or incomplete — the lecturer will not forgive missing points — then fix what is found.
+- **Output:** ledger and registers reconciled; two unknowns closed that the book already answered; the commit construction pinned to **real reference-implementation output**; the FastMCP client connector (`M5-03`); the acknowledgement-shape fix; the book's stage-2 localhost milestone closed; negotiation and mismatch refusal (`M5-04`).
+- **Refinement:** three of this pass's own findings were false alarms caught before being asserted — a console encoding artefact read as file corruption, a rubric regex that matched the *words* "C4"/"UML" in prose rather than actual diagrams, and a table parse that missed grouped rows and undercounted rule coverage. Each was re-checked with a script instead of an eye.
+- **Lesson:** an audit's own findings need auditing. The failure mode is not missing a problem, it is confidently reporting one that is not there — and a scripted re-check is the cheapest defence.
+
+## P-018 — Verifying against the lecturer's notebooks before writing code
 - **Date:** 2026-07-31 · **Tool:** Claude (agentic CLI) + NotebookLM
 - **Goal:** stop guessing at wire details that only the reference implementation can settle.
 - **Prompt (essence):** "always ask the notebookLM then look in the `inst` folder's md files then implement" — made a standing order after an ad-hoc query caught a real defect.
@@ -157,7 +198,7 @@
 - **Refinement:** ask for **verbatim quotes** and require the answer to mark each part quoted or inferred; treat hedged answers ("the design indicates…") as unverified. A follow-up question is mandatory when an answer would change a signed structure — one such follow-up established that `game_id`/`game_uid` are *not* signed terms, avoiding a change that would have broken every cross-peer signature.
 - **Lesson:** the expensive bugs here are not logic errors, they are **assumptions about the other side**. No local test can catch them, because both halves of a local test share our assumption.
 
-## P-014 — Proving the client against code that shares nothing with it
+## P-019 — Proving the client against code that shares nothing with it
 - **Date:** 2026-08-01 · **Tool:** Claude (agentic CLI)
 - **Goal:** close `M5-03e`, `M5-03f`, and `M5-10b` — the last open P0 items before a game loop.
 - **Prompt (essence):** "continue to work according to the unDone TODO file in 2 repos… and according to the 2 links in the notebookLM… and the md files under `inst`".
@@ -165,7 +206,7 @@
 - **Refinement:** the in-memory loopback was found to prove less than it appeared — both halves read the same `TOOL_ARGUMENTS` table, so a wrong argument name would have agreed with itself. The neutral-stub server writes its argument names out independently, which is what makes agreement mean anything.
 - **Lesson:** a test whose two sides share a constant tests the constant, not the contract. Ask of every conformance test: *what would still pass if the shared assumption were wrong?*
 
-## P-015 — Two notebooks, and a conclusion reversed
+## P-020 — Two notebooks, and a conclusion reversed
 - **Date:** 2026-08-01 · **Tool:** Claude (agentic CLI) + NotebookLM (both notebooks)
 - **Goal:** settle whether `min_center_intensity` is a required shared term.
 - **Prompt (essence):** "check the second notebook. always check in both of them when needed."
@@ -173,7 +214,7 @@
 - **Refinement:** the previous day's note had flagged **this** repository as the likely error and asked the coordinator to decide. That was wrong. The claim had been sourced from the `inst/` markdown, which *restates* the book, rather than from the PDF one query away.
 - **Lesson:** a restatement of a source is not the source. When a decision turns on an appendix table, read the table. Also: the notebooks divide cleanly — one answers *what the reference does*, the other *what the book requires* — and a question that spans both needs both.
 
-## P-016 — Building the turn loop, and what the reference corrected
+## P-021 — Building the turn loop, and what the reference corrected
 - **Date:** 2026-08-01 · **Tool:** Claude (agentic CLI) + NotebookLM (both notebooks)
 - **Goal:** `M5-11a` and `M5-11` — the declared phase machine and one turn driven through it.
 - **Prompt (essence):** "yes start it, ask both notebooks first, then see `inst` md files then build."
