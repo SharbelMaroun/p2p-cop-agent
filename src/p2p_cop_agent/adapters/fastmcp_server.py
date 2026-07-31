@@ -2,11 +2,25 @@
 
 Each peer runs its OWN FastMCP server as a public mailbox: the four Option-B tools
 enqueue the opponent's raw message and return the ``{"ok": true}`` transport
-acknowledgement, matching the interoperable reference wire behaviour. They never
-validate content and never raise, so a content-based rejection is never mistaken
-for a transport failure by a peer that retries on any exception (and a tampered
-audit is still received, to be scored as a technical loss rather than lost as a
-transport error).
+acknowledgement. They never validate content and never raise, so a content-based
+rejection is never mistaken for a transport failure by a peer that retries on any
+exception (and a tampered audit is still received, to be scored as a technical
+loss rather than lost as a transport error).
+
+**Deliberate divergence from the reference, corrected note 2026-07-31.** This
+docstring previously claimed the always-ack behaviour *matched* the reference
+implementation. It does not. The reference validates structurally inside the tool
+-- instantiating its protocol dataclass from the input dict -- and a malformed
+message raises, so the caller sees an MCP error rather than an acknowledgement.
+Only game-state logic (legal move, in-bounds) is deferred to its drain.
+
+The divergence is kept, because the stricter behaviour has a sharp edge: a
+*tampered* audit is structurally well-formed but must be **scored** as a
+technical loss under Appendix E rule 19, and a peer that raises risks the
+opponent retrying it as a transport error instead of accepting the loss. Being
+lenient inbound cannot break an opponent -- it only ever accepts more -- while
+the reverse could lose a decided game. Recorded in ADR-002; the client is
+correspondingly liberal about the opponent's acknowledgement shape.
 
 Validation is decoupled: :func:`drain` feeds each queued message through the
 transport-neutral :class:`~p2p_cop_agent.peer.InboundPeer` (M5-01), where a
