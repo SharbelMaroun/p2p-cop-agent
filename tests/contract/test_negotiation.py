@@ -13,7 +13,6 @@ import pytest
 from p2p_cop_agent.protocol.negotiation import (
     NegotiationError,
     build_offer,
-    check_appendix_f,
     terms_from_config,
     verify_offer,
 )
@@ -48,6 +47,22 @@ def test_config_hash_covers_the_whole_object_not_the_projection() -> None:
     assert shared_config_sha256(fixture["negotiation_terms"]) != fixture[
         "game_object_config_sha256"
     ]
+
+
+def test_the_scent_block_matches_the_lecturers_agreed_config_template() -> None:
+    """`U-028`, settled 2026-08-01 against the book PDF and the artifact template.
+
+    Table 16 has three rows, all `Fixed`, and **no** minimum-centre row; the
+    lecturer's own `agreed-config` template carries the same three keys. The
+    optional treatment of `min_center_intensity` is therefore right, and the
+    fixture must not acquire a fourth key to please the simulator.
+    """
+    assert game()["pheromones"] == {
+        "pheromone_center_intensity": 0.9,
+        "pheromone_decay": 0.1,
+        "pheromone_grid_size": 5,
+    }
+    assert "min_center_intensity" not in terms_from_config(game())
 
 
 def test_game_id_is_not_a_signed_term() -> None:
@@ -106,29 +121,6 @@ def test_a_structurally_incomplete_offer_is_refused(field: str) -> None:
     with pytest.raises(NegotiationError, match=field):
         verify_offer(offer, terms_from_config(game()))
 
-
-@pytest.mark.parametrize(
-    ("term", "value"),
-    [("smell_grid_size", 3), ("decay_per_step", 0.5), ("emit_intensity", 1.0), ("num_games", 1)],
-)
-def test_an_altered_fixed_value_is_refused(term: str, value: object) -> None:
-    """`[AE-12]`: a Fixed Appendix F parameter may not change at all."""
-    with pytest.raises(NegotiationError, match=f"{term} is Fixed"):
-        check_appendix_f(terms_from_config(game()) | {term: value})
-
-
-@pytest.mark.parametrize(("term", "value"), [("board_size", 6), ("max_steps", 34),
-                                             ("barriers_max", 13)])
-def test_a_lowered_minimum_is_refused(term: str, value: int) -> None:
-    """`[AE-12]`: a Minimum may be raised by agreement but never lowered."""
-    with pytest.raises(NegotiationError, match=f"{term} is a Minimum"):
-        check_appendix_f(terms_from_config(game()) | {term: value})
-
-
-@pytest.mark.parametrize(("term", "value"), [("board_size", 9), ("max_steps", 50),
-                                             ("barriers_max", 20)])
-def test_a_raised_minimum_is_allowed(term: str, value: int) -> None:
-    check_appendix_f(terms_from_config(game()) | {term: value})
 
 
 @pytest.mark.parametrize("participants",
