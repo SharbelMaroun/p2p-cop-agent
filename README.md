@@ -126,11 +126,7 @@ layer. Exact runtime interfaces and strategy weights remain future decisions.
 - Both teams independently send a byte-identical copy of their mutually agreed
   result artifact.
 
-The graded README report has six sections: (1) Dec-POMDP model, (2) FastMCP
-communication dilemma, (3) implemented strategy, (4) learning curves if RL is used,
-(5) live-belief-map and “Verified OK” replay screenshots, and (6) the companion
-repository link. Sections requiring runtime results remain pending; section 6 is the
-link at the top of this README.
+The graded six-section report is below, under **Report**.
 
 ## Planning history
 
@@ -138,6 +134,172 @@ The active M0–M9 [plan](docs/PLAN.md) and Cop-only [TODO](docs/TODO.md) govern
 branch. The
 635-task pre-audit backlog under `archive/pre-audit/documentation/` is historical
 coverage only and will not be restored as an executable plan.
+
+## Report
+
+The graded report has six sections. Sections that need a completed match are marked
+as blocked rather than filled with claims we cannot yet show.
+
+### 1. The Dec-POMDP model
+
+The game is a **decentralised, partially observable Markov decision process**. Each
+of the three words is doing work.
+
+- **Decentralised.** There is no server, no referee, and no shared memory. Each peer
+  runs in its own operating-system process with its own configuration directory, and
+  the two communicate only by message. Neither can read the other's state, so
+  correctness cannot rest on trust — it rests on cryptography.
+- **Partially observable.** The Cop never learns the Thief's position. What it
+  actually observes each turn is: its own position, the barriers it placed, the scent
+  intensity in the cells it can sense, the Thief's free-text hint, and a commitment
+  hash. The hint may be a deliberate lie — the Thief declares an `intent` of truth or
+  bluff, and that declaration is sealed inside the commitment, so it is verifiable
+  only *after* the game. So the Cop reasons over a **belief** about where the Thief
+  is, never a fact.
+- **Markov decision process.** State is the pair of positions, the barrier field, and
+  the step index. Actions are the five legal moves (`N`, `S`, `E`, `W`, `STAY`) or a
+  barrier placement, exclusively — one per turn. Transitions are deterministic given
+  both agents' actions. Rewards are the fixed Appendix F table: capture pays the Cop
+  20 and the Thief 5; survival pays the Cop 5 and the Thief 10; a tie pays 2 each; a
+  technical loss pays **zero to both sides**, which is why an audit failure is worth
+  avoiding more than a loss is.
+
+The asymmetry matters: the Cop places barriers and must corner an evader, while the
+Thief moves first each turn and only needs to survive the step limit. The Cop is
+therefore under time pressure the Thief is not.
+
+### 2. The FastMCP communication dilemma
+
+The dilemma is that the two agents **must** communicate to play, yet every message is
+an opportunity for the opponent to cheat or to learn. Three problems, and what this
+project does about each.
+
+**Simultaneity without a referee.** If the Cop announced its move first, the Thief
+could react to it; the reverse is equally unfair. There is no third party to hold
+both moves. The answer is **commit-reveal**: each peer hashes its full private
+decision with a fresh random nonce and sends only the 64-character digest. Neither
+can change a decision after seeing the other's, because a changed decision produces a
+different hash. Nonces stay secret until the end-of-game audit, where every
+commitment is recomputed. A single mismatch is an automatic zero, with no appeal.
+
+**How much to reveal, and when.** The book describes a per-turn phase in which peers
+exchange their actual moves. The reference implementation sends **no move at all** —
+the live message carries the hint, the scent grid, and the commitment hash, while the
+move, the true position, the bluff verdict, and the nonce stay private until the
+audit. This project follows the reference (`C-030`), because the wire is what a
+classmate's agent must interoperate with, and nothing is lost: the move is still
+revealed, just later.
+
+**Trusting an unknown opponent's answers.** Our peers play classmates' agents, not
+each other. Two decisions follow. Outbound, we are **liberal about what counts as an
+acknowledgement** — any reply that does not explicitly refuse is accepted, because
+the profile never fixed the opponent's reply shape and a peer answering
+`{"status": "ok"}` is not refusing. Inbound, our tools **always acknowledge and
+validate afterwards**, so a rejection is recorded as a game outcome rather than
+thrown to the sender as a network error. Both choices follow the same rule: be strict
+in what you send, generous in what you accept. Getting this wrong is not theoretical
+— an earlier version demanded our own reply shape, which would have read every
+successful delivery from a simulator-built classmate as a refusal and abandoned a
+healthy game on turn one.
+
+**Failure is a game state, not an exception.** Every turn runs through a declared
+phase machine that refuses any transition not in the specification's table, so an
+out-of-order or silent peer reaches a defined terminal state instead of deadlocking.
+Silence is not patience: a peer that owes a turn and sends nothing ends the match.
+
+### 3. The implemented strategy
+
+Movement is **pure Python and fully deterministic**. The language model never chooses
+a move; it is confined to the text layer, and the shipped configuration uses a
+zero-token template provider. Two agents given the same state always produce the same
+move, which is what makes a match reproducible from its log.
+
+The current Cop policy is a barrier-aware pursuit baseline that ranks candidate
+actions **lexicographically** rather than by a weighted score — no calibration data
+exists that would justify weights, and a strict criterion order is auditable in a way
+that tuned coefficients are not. Barrier placement is a separate, exclusive intent:
+the Cop either moves or places, never both in one turn.
+
+This is deliberately the floor, not the deliverable. The graded strategy must beat it
+using the belief map, and that work is `M6`.
+
+### 4. Learning curves
+
+**Not applicable.** No reinforcement learning is used. The movement policy is
+deterministic by design, so there is no training run and no curve to plot. If RL is
+adopted later, this section gains the curves; adding a chart now would be decoration.
+
+### 5. Live belief map and "Verified OK" replay screenshots
+
+**Blocked, honestly.** Screenshots require a completed sub-game, and no game has yet
+been played end to end — the sub-game driver (`M5-10d`) and the mutual audit
+(`M5-10e`) are the remaining gaps. What exists today is proven under test: a turn
+crosses a real socket into a separate operating-system process, and a negotiate round
+trip is agreed or refused **by name** between two interpreters.
+
+### 6. Companion repository
+
+<https://github.com/SharbelMaroun/p2p-thief-agent> — the Thief-side peer, developed
+independently.
+
+## Usage
+
+The peer is not yet runnable as a live agent; what exists today is the SDK, the
+protocol layer, both transport adapters, negotiation, and one turn of the loop.
+So the honest usage surface is the CLI version probe and the verification suite:
+
+```text
+uv run p2p-cop --version          # 1.00
+uv run python -m p2p_cop_agent --version
+```
+
+To exercise a turn crossing a real socket between two operating-system processes —
+the book's stage-2 milestone — run the localhost integration tests, which spawn a
+genuinely separate interpreter and read back the transcript it wrote:
+
+```text
+uv run pytest tests/integration/test_localhost_two_processes.py -v
+uv run pytest tests/integration/test_localhost_negotiation.py -v
+```
+
+To check this peer's call shapes against an implementation that shares no source
+with it:
+
+```text
+uv run pytest tests/conformance/ -v
+```
+
+This section will gain the live `peer` invocation, its flags, and replay
+screenshots once `M5-10d` (a full sub-game over the wire) lands.
+
+## Contributing
+
+Code standards are enforced by the gates above, not by convention, so a change that
+passes CI already meets them. In summary:
+
+- **Style and linting.** `ruff check .` must pass with no findings. Line length,
+  import order, and naming follow the configuration in `pyproject.toml`; do not
+  add per-file ignores to silence a finding.
+- **File length.** No source or test file may exceed **150 lines**
+  (`scripts/check_file_lengths.py`), per the submission guidelines. Split by
+  responsibility rather than trimming explanatory comments.
+- **Tests.** `pytest --cov --cov-branch --cov-fail-under=85` must pass. New
+  behaviour needs tests that would fail without it; prefer tests that pin a rule to
+  the document that states it, so a silently edited constant fails locally rather
+  than in a match.
+- **Secrets.** `scripts/check_secrets.py` must report zero findings. Credentials,
+  tokens, ports, and the opponent URL belong in the git-ignored `config/game.toml`
+  or `.env`, never in a tracked file and never in shared JSON.
+- **The controlled bundle.** `shared_contract/` is byte-controlled. Do not edit it
+  to make a check pass; `shared_contract/verify.py` is read-only and only
+  `scripts/generate_shared_manifest.py` regenerates the manifest. A change there is
+  a contract revision and needs the coordinator.
+- **Commits.** Stage explicit paths, never `git add .`. Commit messages state what
+  changed and *why*, including the authority (book section, Appendix E/F rule, or
+  ADR) when the change encodes a rule.
+- **Documentation.** A behaviour change updates `docs/TODO.md` and any document
+  that asserts the old behaviour. `docs/PROMPT_LOG.md` records significant
+  AI-assisted steps, including the problem found and the lesson drawn.
 
 ## License
 

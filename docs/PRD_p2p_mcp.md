@@ -1,9 +1,14 @@
 # PRD — Peer-to-Peer FastMCP
 
 Status: architecture and Option-B tool names are accepted for this project. Both
-transport adapters now exist — the server mailbox (M5-02) and the client connector
-(M5-03) — but no negotiation, deadline, watchdog, tunnel, or turn loop drives them,
-so no game has yet been played over the wire.
+transport adapters exist — the server mailbox (M5-02) and the client connector
+(M5-03) — and as of 2026-08-01 negotiation (M5-04), the declared phase machine
+(M5-11a), and one turn of the loop (M5-11) drive them. A negotiate round trip has
+crossed a real socket between two OS processes (M5-10b).
+
+Still missing before a whole game runs over the wire: the sub-game driver and the
+end-of-game mutual audit (M5-10d, M5-10e), deadlines and retry (M5-05), and the
+watchdog (M5-06).
 
 ## Confirmed behavior
 
@@ -66,11 +71,31 @@ leaves nowhere for per-turn state to hide, so no turn can leak context into the
 next one.
 
 **Configuration boundary.** The client receives its `target` explicitly and reads
-no configuration itself, so it has no path to the shared match JSON (ADR-004). The
-private-TOML loader that will supply the opponent URL is not built yet, so `M5-03f`
-stays open.
+no configuration itself, so it has no path to the shared match JSON (ADR-004).
+`shared/private_config.py` supplies that address from `[network].opponent_url` in
+the private TOML and is the only door to one; `assert_no_network_address` is the
+lock on the other, refusing a shared match object that carries an address by member
+name or by value (M5-03f, closed 2026-08-01).
 
-Still absent: negotiation logic (M5-04), deadlines/retry/idempotency (M5-05),
-watchdog (M5-06), tunnel (M5-07), and the turn loop (M5-11). The server adapter
-mailboxes and acknowledges; the client sends and classifies. Nothing yet drives
-them as a game.
+## The turn, as driven today
+
+`orchestration/turn_loop.run_turn` performs one iteration in the reference's order,
+confirmed 2026-08-01: **await the opponent, think, apply locally, seal, send**. A
+peer must receive before advancing its own step, which is what makes the
+alternation strict rather than two peers talking at once. Every step is a declared
+transition through `orchestration/phases.PhaseMachine`, so an out-of-order peer is
+refused instead of deadlocking `[AE-4]` `[AE-5]`.
+
+A turn is sealed **exactly once**. If delivery then fails, the record is not
+re-sealed — that would give one step two commitment hashes and hand the opponent an
+audit mismatch, which is an automatic zero `[AE-19]` — so the peer keeps the
+commitment it made and takes the declared terminal exit.
+
+What crosses the wire is only `step`, `sender`, `hint`, `smell_grid`, `commit`,
+`timestamp` and the optional claim members. The move, the true position, the bluff
+verdict, and the nonce stay private until the post-game audit. The book's phase 3
+describes a live move exchange; the reference sends none, and this project follows
+the reference — see `C-030`.
+
+Still absent: the sub-game driver and mutual audit (M5-10d, M5-10e),
+deadlines/retry/idempotency (M5-05), watchdog (M5-06), and tunnel (M5-07).

@@ -8,7 +8,7 @@ families are present; runtime/result sections remain incomplete by design.
 | `README.md` | Yes | Corrected M1 candidate status, checks, configuration, and six-section report mapping |
 | `docs/PRD.md` | Yes | Behavior-free milestone goals/non-goals/acceptance |
 | `docs/PLAN.md` | Yes | Common M0–M9 phases; M1 locally ready and externally unfrozen; M2–M4 implemented |
-| `docs/TODO.md` | Yes | Cop-owned M0–M9 tasks only; 555 tasks, 185 `DONE` through M4; M5–M9 deferred |
+| `docs/TODO.md` | Yes | Cop-owned M0–M9 tasks only. M1.5–M4 complete; M5 in progress; M6–M9 deferred. Task counts are deliberately not pinned here — they went stale three times before the ledger itself became the single place to read them |
 | `docs/CONTRACT_CANDIDATE_HANDOFF.md` | Yes | Controlled hashes, manifest self-hash, external freeze dependencies, and local gates |
 | `docs/PRD_commit_reveal.md` | Yes | Config hash defined; Step-0 and move-commit wire protocols remain M4 work |
 | `docs/PRD_scent_belief.md` | Yes | Book multiplicative model; runtime deferred |
