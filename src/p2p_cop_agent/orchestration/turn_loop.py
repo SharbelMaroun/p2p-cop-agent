@@ -75,15 +75,22 @@ def run_turn(
             on_transition(phase)
 
     incoming = None if opens else _await_opponent(machine, receive, enter)
+
+    # Deciding and sealing both happen in COMPUTING_MOVE, because that is the only
+    # phase from which the table permits TECHNICAL_LOSS. Entering COMMITTING means
+    # the commitment already exists and must now go out: the table gives it exactly
+    # one exit, so a peer cannot abandon a promise it has already made. Corrected
+    # 2026-08-01 — sealing used to happen inside COMMITTING, where a seal failure had
+    # no legal exit and left the machine stranded mid-turn.
     enter(Phase.COMPUTING_MOVE)
     payload, public = decide(incoming)
-
-    enter(Phase.COMMITTING)
     try:
         message = ledger.seal_turn(step, payload, public)
     except CommitRevealError as exc:
+        machine.fail()
         raise TurnLoopError(f"step {step} could not be sealed: {exc}") from exc
 
+    enter(Phase.COMMITTING)
     enter(Phase.AWAITING_REVEAL)
     _deliver(step, message, transport, ledger, machine)
 

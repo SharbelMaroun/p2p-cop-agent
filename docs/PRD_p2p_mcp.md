@@ -6,8 +6,11 @@ transport adapters exist — the server mailbox (M5-02) and the client connector
 (M5-11a), and one turn of the loop (M5-11) drive them. A negotiate round trip has
 crossed a real socket between two OS processes (M5-10b).
 
-Still missing before a whole game runs over the wire: the sub-game driver and the
-end-of-game mutual audit (M5-10d, M5-10e), deadlines and retry (M5-05), and the
+As of 2026-08-01 a bounded sub-game also runs end to end and reveals its audit
+(M5-10d, M5-10e), with both crossing a real socket into a separate OS process.
+
+Still missing before a *match* runs: a second peer that plays back and mutual
+verification of the opponent's audit (M7), deadlines and retry (M5-05), and the
 watchdog (M5-06).
 
 ## Confirmed behavior
@@ -97,5 +100,22 @@ verdict, and the nonce stay private until the post-game audit. The book's phase 
 describes a live move exchange; the reference sends none, and this project follows
 the reference — see `C-030`.
 
-Still absent: the sub-game driver and mutual audit (M5-10d, M5-10e),
-deadlines/retry/idempotency (M5-05), watchdog (M5-06), and tunnel (M5-07).
+## A whole sub-game, and how it ends
+
+Over the wire nothing can referee, because neither peer sees the other. So
+termination is **claimed, answered, and only later proven**. The Cop names a cell in
+`capture_claim`; only the Thief knows whether it stood there, so its `claim_response`
+decides; a `win_claim` ends it the other way; and silence past the deadline is a
+technical loss. Verified against the reference 2026-08-01, whose own precedence reads
+capture "when a cop's `capture_claim` is **confirmed by the thief**", survival at the
+threshold, then timeout.
+
+`orchestration/sub_game.run_sub_game_over_wire` plays bounded turns, stops the moment
+the game is decided, and then reveals every sealed record. The audit goes out **once
+per sub-game, after the loop** — matching the reference — and is sent even when this
+peer is taking the technical loss, because a withheld reveal cannot be checked and the
+whole point is that the opponent recomputes it.
+
+Still absent: mutual verification of the *opponent's* audit (`M7`; the reference has
+both peers swap logs and each verify the other's commits), deadlines/retry/idempotency
+(M5-05), watchdog (M5-06), and tunnel (M5-07).

@@ -224,6 +224,14 @@
 
 ---
 
+## P-022 — A whole sub-game, and a rule I broke on the way
+- **Date:** 2026-08-01 · **Tool:** Claude Opus 5 (agentic CLI) + NotebookLM
+- **Goal:** `M5-10d`/`M5-10e` — play a bounded sub-game over the wire and reveal the audit that settles it.
+- **Prompt (essence):** continue with the sub-game driver; then, separately, a challenge asking whether the notebooks had actually been consulted, whether `inst/` had been read, and whether the report, prompt log, and `docs/` files had all been updated.
+- **Output:** `orchestration/sub_game.py` plays turns until the game is decided and then reveals every sealed record. Termination is **claimed, answered, and only later proven**: the Cop names a cell, only the Thief knows whether it stood there, and the audit settles truth retroactively. Over the wire the remote process accepts a sound audit and **rejects a tampered one**, which is rule 19 enforced across a real carrier rather than asserted locally.
+- **Refinement:** the standing order is *notebook → `inst/` → implement*, and it was **half-kept**. The query to the reference notebook failed on a frozen renderer and was not retried; `inst/` was read (the book's capture conditions and duty of truth) and the controlled schema supplied the field shapes, so the build proceeded on those. When challenged, the query was retried and the reference **confirmed** the design — its precedence reads capture "when a cop's `capture_claim` is confirmed by the thief", survival at the threshold, then timeout, with the audit sent once per sub-game after the loop. The code was right; the process was not.
+- **Lesson:** a tool failure is not permission to skip the step. It happened to cost nothing here, which is exactly why it was worth recording — the next skipped check is the one that silently ships a wrong assumption. Retry, or say plainly that the step was skipped.
+
 ## Best practices derived so far
 1. **Binding values live in one table** — quote Appendix F, never paraphrase numbers.
 2. **Decide, then generate** — architecture-defining choices go to the human first.

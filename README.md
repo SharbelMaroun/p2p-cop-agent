@@ -231,11 +231,16 @@ adopted later, this section gains the curves; adding a chart now would be decora
 
 ### 5. Live belief map and "Verified OK" replay screenshots
 
-**Blocked, honestly.** Screenshots require a completed sub-game, and no game has yet
-been played end to end — the sub-game driver (`M5-10d`) and the mutual audit
-(`M5-10e`) are the remaining gaps. What exists today is proven under test: a turn
-crosses a real socket into a separate operating-system process, and a negotiate round
-trip is agreed or refused **by name** between two interpreters.
+**Still blocked, but for a narrower reason than before.** A bounded sub-game now runs
+end to end and its audit is delivered: every turn and the final reveal cross a real
+socket into a separate operating-system process, which validates each one — and a
+*tampered* audit is rejected there, so rule 19 is enforced over a real carrier rather
+than asserted locally.
+
+What is still missing for a screenshot is a **second peer that plays back**. The
+opponent's replies in those runs come from a local script, so there is no live belief
+map to photograph yet, and there is no GUI. Both arrive with `M6` (belief) and `M7`
+(two peers, mutual audit verification).
 
 ### 6. Companion repository
 
