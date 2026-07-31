@@ -19,9 +19,16 @@ from p2p_cop_agent.orchestration.phases import (
     PhaseMachine,
 )
 from p2p_cop_agent.orchestration.state import CopState, StateError
+from p2p_cop_agent.orchestration.sub_game import (
+    RESULT_CLAIMS,
+    SubGameOutcome,
+    run_sub_game_over_wire,
+)
+from p2p_cop_agent.orchestration.turn_loop import TurnLoopError, TurnRecord, run_turn
 
 __all__ = [
     "PROJECT_PROPOSED_TURN_ORDER",
+    "RESULT_CLAIMS",
     "TRANSITIONS",
     "TURN_CYCLE",
     "CopHistory",
@@ -30,8 +37,13 @@ __all__ = [
     "PhaseError",
     "PhaseMachine",
     "StateError",
+    "SubGameOutcome",
     "SubGameResult",
+    "TurnLoopError",
+    "TurnRecord",
     "TurnEvent",
     "TurnOrder",
     "run_sub_game",
+    "run_sub_game_over_wire",
+    "run_turn",
 ]
