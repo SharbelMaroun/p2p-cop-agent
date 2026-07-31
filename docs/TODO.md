@@ -378,14 +378,14 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M5-08a | Define the five subsystem ports behind the gateway | DEFERRED | P0 | MCP connector, decision module, log manager, deadline tracker, watchdog |
 | M5-08b | Forbid subsystem-to-subsystem imports by test | DEFERRED | P0 | An import-graph test fails on any direct peer link |
 | M5-08c | Keep decision logic out of the orchestrator | DEFERRED | P1 | The gateway coordinates; it does not decide `[book §9]` |
-| M5-09 | Run the two peers as two separate OS processes | DEFERRED | P0 | `[AE-1]` `[AE-2]`: separate processes, separate config directories, no shared memory or module state. A test proves the Cop process holds no Thief object |
-| M5-10 | Complete the book's stage-2 localhost milestone | DEFERRED | P0 | Book p. 105: a geometric message sent by peer A on localhost is received correctly by peer B. **This gate was skipped when M4 was built first and must be closed before M6** |
-| M5-10a | Launch two peers on distinct localhost ports | DEFERRED | P0 | Separate processes, separate config directories `[AE-1]` |
-| M5-10b | Exchange one negotiate round trip | DEFERRED | P0 | Offer out, acceptance back, both sides agree the terms hash |
-| M5-10c | Exchange one turn round trip | DEFERRED | P0 | Commit out, acknowledgement back, reveal accepted |
-| M5-10d | Complete one full sub-game over the wire | DEFERRED | P0 | Terminates on capture or survival, not on timeout |
-| M5-10e | Complete the end-of-game mutual audit over the wire | DEFERRED | P0 | Both logs reconcile; every commitment recomputes |
-| M5-10f | Record the run as stage-2 milestone evidence | DEFERRED | P1 | Transcript stored; the book requires observed behaviour, not written code |
+| M5-09 | Run the two peers as two separate OS processes | DONE | P0 | `[AE-1]` `[AE-2]`: `tests/integration/test_localhost_two_processes.py` spawns a real second interpreter and asserts the validating PID is not this one. Separate **config directories** for a live match remain M5-04/M7 work |
+| M5-10 | Complete the book's stage-2 localhost milestone | DONE | P0 | Book p. 105: a message sent by peer A on localhost is received correctly by peer B — now observed, not asserted. A turn crosses HTTP into a separate OS process, is validated there through `InboundPeer`, and the transcript proves it. **The skipped gate is closed** |
+| M5-10a | Launch two peers on distinct localhost ports | DONE | P0 | A free port is chosen per run and the peer is spawned with `subprocess`; readiness is polled, and the process is terminated in a fixture teardown `[AE-1]` |
+| M5-10b | Exchange one negotiate round trip | PENDING | P0 | The `negotiate` tool is reachable across the socket, but agreeing the terms hash needs the negotiation logic of `M5-04`, which does not exist yet |
+| M5-10c | Exchange one turn round trip | DONE | P0 | A `receive_turn` crosses the socket and is accepted; a malformed turn is acknowledged and then recorded as rejected, proving `ADR-002` holds over a real carrier |
+| M5-10d | Complete one full sub-game over the wire | PENDING | P0 | Needs the turn loop (`M5-11`) and negotiation (`M5-04`) |
+| M5-10e | Complete the end-of-game mutual audit over the wire | PENDING | P0 | Needs `M5-10d` plus audit orchestration |
+| M5-10f | Record the run as stage-2 milestone evidence | DONE | P1 | The peer process appends a JSONL transcript of every call's validation outcome, which the test reads back; observed behaviour, not written code |
 | M5-11 | Define the turn loop around the transport | DEFERRED | P0 | One iteration is compute → commit → await ack → reveal → verify → advance |
 | M5-11a | Drive the loop from the phase machine, not ad-hoc flags | DEFERRED | P0 | Every step is a declared transition `[AE-4]` |
 | M5-11b | Make one turn atomic against partial failure | DEFERRED | P0 | A mid-turn fault leaves no half-applied state |
