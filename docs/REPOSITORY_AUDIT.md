@@ -45,6 +45,23 @@ The read-only Thief comparison remains an expected NO-GO: 16 of 18 controlled
 paths and the manifest are absent, while `.gitattributes` and
 `scripts/check_shared_contracts.py` differ. No Thief file was changed.
 
+> **Superseded numbers.** The table above is the dated 2026-07-27 snapshot and is
+> retained as history. It predates M2–M5, so its counts no longer describe the
+> repository.
+>
+> **Exact test and file counts are deliberately not restated here.** They changed
+> three times on 2026-07-31 alone, and a hard-coded total is stale the moment the
+> next test lands — a number that rots is worse than no number, because a reader
+> trusts it. The durable statement is the *gate*: ruff reports zero findings,
+> branch coverage stays at or above the 85% floor (currently well above it), file
+> lengths and the secret scan pass, and `shared_contract/verify.py` verifies the
+> bundle. Run the sequence in `README.md` for current figures; CI enforces the
+> same gates on every push.
+>
+> The controlled bundle also moved from `docs/contracts/` + `docs/schemas/` to the
+> top-level `shared_contract/` directory; documents written before that move name
+> the old paths.
+
 A read-only provenance comparison used the pinned simulator commit
 `960499fd5e8777b4929625f5d8fdcf2ab4677b54`: 15 Cop source files were compared
 with all 101 tracked simulator Python files. It found zero identical whole-file

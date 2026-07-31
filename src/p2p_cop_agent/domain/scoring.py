@@ -35,6 +35,7 @@ class Outcome(str, Enum):
     CAPTURE = "capture"
     SURVIVAL = "survival"
     TIE = "tie"
+    TECHNICAL_LOSS = "technical_loss"
 
 
 @dataclass(frozen=True, slots=True)
@@ -88,14 +89,17 @@ class ScoringTable:
             return ScoreLine(cop=self.survival_cop, thief=self.survival_thief)
         if outcome is Outcome.TIE:
             return ScoreLine(cop=self.tie_score, thief=self.tie_score)
+        if outcome is Outcome.TECHNICAL_LOSS:
+            return ScoreLine(cop=self.technical_loss, thief=self.technical_loss)
         raise ScoringError(f"unknown outcome {outcome!r}")
 
     def technical_loss_award(self) -> int:
-        """Return the zero-point sanction applied to a falsifying peer.
+        """Return the technical-loss award, which is the same for both peers.
 
-        Appendix E rules 19 and 48 fix the falsifying peer's score at zero. No
-        consulted source states what the non-falsifying peer scores, so this
-        returns one side's award only and never invents the counterpart. See
-        ``U-026``.
+        Chapter 3 table 2 (PDF p. 38) prints the technical-loss row as ``0 | 0``
+        and Appendix E rule 48 writes it as "technical loss 0/0", so the sanction
+        is symmetric: a technical loss scores zero for the falsifying peer *and*
+        its opponent. ``award(Outcome.TECHNICAL_LOSS)`` returns the same value as
+        the explicit pair. Closes ``U-026``.
         """
         return self.technical_loss
