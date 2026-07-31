@@ -46,12 +46,19 @@ paths and the manifest are absent, while `.gitattributes` and
 `scripts/check_shared_contracts.py` differ. No Thief file was changed.
 
 > **Superseded numbers.** The table above is the dated 2026-07-27 snapshot and is
-> retained as history. It predates M2–M4, so its counts no longer describe the
-> repository. Re-measured at end of day 2026-07-31: **505 tests, 99.31% branch
-> coverage**; ruff clean; 43 source/script and 58 test files within the length cap;
-> secret scan 204 files, 0 findings; shared-contract bundle 35 controlled files, manifest
-> `8f24a3b9daa05b5bc3c61b30ee98b7be6d731049ecb9345c63709e4189a7688b`. The
-> controlled bundle also moved from `docs/contracts/` + `docs/schemas/` to the
+> retained as history. It predates M2–M5, so its counts no longer describe the
+> repository.
+>
+> **Exact test and file counts are deliberately not restated here.** They changed
+> three times on 2026-07-31 alone, and a hard-coded total is stale the moment the
+> next test lands — a number that rots is worse than no number, because a reader
+> trusts it. The durable statement is the *gate*: ruff reports zero findings,
+> branch coverage stays at or above the 85% floor (currently well above it), file
+> lengths and the secret scan pass, and `shared_contract/verify.py` verifies the
+> bundle. Run the sequence in `README.md` for current figures; CI enforces the
+> same gates on every push.
+>
+> The controlled bundle also moved from `docs/contracts/` + `docs/schemas/` to the
 > top-level `shared_contract/` directory; documents written before that move name
 > the old paths.
 
