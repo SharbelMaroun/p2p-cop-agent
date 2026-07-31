@@ -31,8 +31,18 @@ Concretely:
   fails its schema or a transition rule raises a stable `ProtocolError` in the
   peer/SDK layer. The FastMCP receive tools, however, are pure **mailboxes**: they
   enqueue the message and always return `{"ok": true}` as a transport
-  acknowledgement, matching the interoperable reference wire behaviour
-  (`infra/mcp_server.py`). A `ProtocolError` surfaced when the runtime **drains and
+  acknowledgement. **This diverges from the reference, deliberately** — corrected
+  2026-07-31, when this row still claimed it *matched* the reference. It does not:
+  the reference validates structurally **inside** the tool and raises, so a malformed
+  message reaches its caller as an MCP error. The divergence is kept because a
+  *tampered* audit is structurally well-formed but must be **scored** as a technical
+  loss `[AE-19]`, and a peer that raises invites the opponent to retry a decided loss
+  as a transport fault. Being lenient inbound cannot break an opponent — it only ever
+  accepts more — while the reverse could lose a decided game. The client is
+  correspondingly liberal about the opponent's acknowledgement shape, and since
+  2026-07-31 that judgement lives once in `protocol/messages.signals_refusal` so the
+  outbound adapter and the commit-reveal ledger cannot drift apart on it.
+  A `ProtocolError` surfaced when the runtime **drains and
   validates** a queued message is a **game-level outcome** (rejection / technical
   loss), not a transport error. Mapping it to a transport error would be wrong twice
   over: a peer that retries on any transport exception would abort the exchange, and

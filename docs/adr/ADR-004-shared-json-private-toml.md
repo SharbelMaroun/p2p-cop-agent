@@ -31,3 +31,21 @@ sharing a runtime filesystem.
   exact operational mirror.
 - Private TOML and `.env` are absent from the parity manifest.
 - Cop and Thief accept identical shared bytes independently.
+
+## Settled since (2026-08-01, `M5-03f`)
+
+The private `[network]` keys are no longer open. Confirmed against the reference and
+book page 131: each peer reads its own `config/<role>/game.toml` — police and thief
+from **separate directories** — and takes the opponent's address from
+`[network].opponent_url`. The section also carries `my_port`, `turn_timeout_seconds`,
+`poll_interval_seconds`, `connect_timeout_seconds`, `retry_interval_seconds`, and
+`audit_send_timeout_seconds`. `config/game.toml.example` was realigned from an
+invented `[local]` section to that skeleton.
+
+Asked directly whether the shared negotiated JSON ever carries a URL, port, host, or
+any network address, the answer was **no**: local settings must not "leak into the
+agreement". `shared/private_config.py` is the only door to an opponent address, and
+`assert_no_network_address` is the lock on the other — it refuses a shared match
+object carrying an address either by member **name** or by **value**, because either
+check alone is easy to slip past. The controlled `match_config.example.json` is
+asserted clean by test.
