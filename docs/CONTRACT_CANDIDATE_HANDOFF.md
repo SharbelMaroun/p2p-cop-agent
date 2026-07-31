@@ -1,6 +1,19 @@
 # M1 Contract Candidate Handoff
 
-Status: **TECHNICALLY READY FOR EXTERNAL REVIEW — UNFROZEN — NO-GO UNTIL PARITY**
+Status: **SUPERSEDED HISTORICAL RECORD** — retained as the dated `0.1.0-proposed`
+candidate. That bundle was rejected; the active bundle is `0.2.5-proposed` under
+[OPTION_B_HANDOFF.md](OPTION_B_HANDOFF.md).
+
+> **Paths in this document are pre-move.** Every `docs/contracts/…` and
+> `docs/schemas/…` path below now lives under the top-level `shared_contract/`
+> directory, and `tests/fixtures/contracts/…` moved with it. The two scripts named
+> here, `scripts/check_shared_contracts.py` and `scripts/shared_contract_integrity.py`,
+> were replaced by `shared_contract/verify.py` (read-only verifier) and
+> `scripts/generate_shared_manifest.py` (owner-only generator). The hashes below
+> describe the historical bundle and are **not** expected to match current files.
+
+Original status at the time of writing: **TECHNICALLY READY FOR EXTERNAL REVIEW —
+UNFROZEN — NO-GO UNTIL PARITY**
 
 Controlled-byte baseline: `e0df5ba530fd7c433d41a98c5976ca7e08cdfa53`
 

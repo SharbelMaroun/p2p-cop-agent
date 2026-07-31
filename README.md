@@ -9,10 +9,12 @@ Peer-to-Peer Network” final project.
 
 This branch implements M2 core domain rules and M3 Cop-local state, history,
 scoring, transport-free rules harness, and deterministic move-or-barrier baseline.
-It also contains the M1.5 Option-B contract repair: a role-neutral
-`shared_contract/` bundle at `0.2.5-proposed`. The `0.1.0-proposed` bundle was
-rejected and is superseded. There is still no network, cryptographic transport,
-LLM, Gmail, GUI, or replay runtime.
+It also implements the M4 commit-reveal primitives (per-turn commitment, audit
+reveal, Step-0 attestation) and the inbound FastMCP tool surface. It contains the
+M1.5 Option-B contract repair: a role-neutral `shared_contract/` bundle at
+`0.2.5-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
+There is still no outbound peer client, public tunnel, scent field, belief map,
+LLM, Gmail, GUI, or replay runtime, so no live game has been played.
 
 The shared contract is `0.2.5-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
@@ -39,8 +41,10 @@ Evidence and decisions are tracked in:
 - Each peer is both a FastMCP server and client; exact MCP names and envelope fields
   are proposed only through ADR-001 and ADR-002.
 - The played-game shared configuration must be byte-identical at both peers.
-- A counted series has six sub-games. The within-series role schedule remains
-  unresolved under `U-025`; runtime orchestration must stay role-agnostic.
+- A counted series has six sub-games. The role schedule is confirmed: sub-games 1, 3,
+  and 5 use the natural role, 2, 4, and 6 the swapped role, and the Thief moves first
+  (`U-025`, closed on a coordinator-relayed lecturer answer). Runtime orchestration
+  still stays role-agnostic so the schedule remains a configuration input.
 - Legal movement is north, south, east, west, or stay; diagonals are illegal.
 - Barrier placement is disclosed. A barrier on the Thief’s current cell captures the
   Thief, and a Thief with no legal move is captured.

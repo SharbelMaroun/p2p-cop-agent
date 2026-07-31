@@ -27,14 +27,17 @@ def table() -> ScoringTable:
         (Outcome.CAPTURE, (20, 5)),
         (Outcome.SURVIVAL, (5, 10)),
         (Outcome.TIE, (2, 2)),
+        (Outcome.TECHNICAL_LOSS, (0, 0)),
     ],
 )
 def test_appendix_f_table_17_awards(outcome: Outcome, expected: tuple[int, int]) -> None:
     assert table().award(outcome).as_pair() == expected
 
 
-def test_technical_loss_is_zero_for_the_falsifying_peer() -> None:
+def test_technical_loss_is_zero_for_both_peers() -> None:
+    """Chapter 3 table 2 and rule 48 fix the row at 0/0 for both sides (`U-026`)."""
     assert table().technical_loss_award() == 0
+    assert table().award(Outcome.TECHNICAL_LOSS).as_pair() == (0, 0)
 
 
 def test_values_come_from_configuration_not_source_constants() -> None:

@@ -94,6 +94,31 @@ def test_survival_runs_to_the_configured_threshold() -> None:
     assert result.turns == 3
 
 
+def test_the_survival_horizon_is_inclusive_at_the_threshold() -> None:
+    """Surviving exactly `[Survival Threshold]` turns is a Thief win (`U-027`).
+
+    Chapter 3 table 2 defines survival as surviving "the limit of valid moves", and
+    Appendix F table 15 sets the step limit equal to the survival threshold, so the
+    boundary turn itself must score as survival rather than run one turn short.
+    """
+    config = base_config()
+    config["movement_and_barriers"]["survival_threshold"] = 1
+    result = run_sub_game(config, lambda state: Action.STAY, fleeing_thief)
+    assert result.outcome is Outcome.SURVIVAL
+    assert result.turns == 1
+    assert result.score.as_pair() == (5, 10)
+
+
+def test_a_capture_on_the_final_turn_still_outranks_survival() -> None:
+    """The inclusive horizon must not convert a boundary-turn capture into a win."""
+    config = base_config()
+    config["movement_and_barriers"]["survival_threshold"] = 1
+    config["board_and_agents"]["cop_start"] = [3, 2]
+    result = run_sub_game(config, pursuing_cop, motionless_thief)
+    assert result.outcome is Outcome.CAPTURE
+    assert result.turns == 1
+
+
 def test_the_sub_game_always_terminates() -> None:
     result = run_sub_game(base_config(), pursuing_cop, fleeing_thief)
     assert result.outcome in (Outcome.CAPTURE, Outcome.SURVIVAL)

@@ -58,11 +58,13 @@ derived positions validate.
 | Capture | 20 | 5 | Fixed; Appendix F table 17, PDF p. 154 |
 | Survival to threshold | 5 | 10 | Fixed; Appendix F table 17, PDF p. 154 |
 | Tie | 2 | 2 | Fixed; Appendix F table 17, PDF p. 154 |
-| Technical loss | 0 if Cop falsifies; otherwise `U-026` | 0 if Thief falsifies; otherwise `U-026` | Mandatory zero for the falsifying peer; Appendix E rules 19/48, PDF pp. 145/149 |
+| Technical loss | 0 | 0 | Fixed and symmetric; chapter 3 table 2, PDF p. 38, plus Appendix E rules 19/48, PDF pp. 145/149 |
 
-The falsifying peer's zero is directly confirmed, but the non-falsifying peer's
-award remains unresolved under `U-026`. Technical loss is not a row in Appendix F
-table 17 and must not be cited as one.
+Technical loss is **not** a row in Appendix F table 17 and must not be cited as one;
+its value comes from chapter 3 table 2 and rule 48. Both are explicit that the award
+is symmetric — the table prints `0 | 0` and the surrounding text says a technical loss
+"results in zero points for both sides" — so the non-falsifying peer scores zero too.
+`U-026` previously recorded this as unresolved and is now closed.
 
 ## Network and league — Table 18
 

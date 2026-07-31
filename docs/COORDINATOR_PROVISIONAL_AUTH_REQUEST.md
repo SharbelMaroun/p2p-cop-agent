@@ -1,5 +1,16 @@
 # Coordinator Provisional Copy Authorization Request
 
+Status: **SUPERSEDED HISTORICAL RECORD.** The copy model this request served was
+withdrawn on 2026-07-28: under `THIEF-002` the Thief has no access to this
+repository and authors its own profile instead of copying controlled bytes, so no
+provisional copy authorization is outstanding.
+
+> **Paths in this document are pre-move.** The `docs/contracts/…`,
+> `docs/schemas/…`, and `tests/fixtures/contracts/…` paths below now live under the
+> top-level `shared_contract/` directory, and the two scripts named here were
+> replaced by `shared_contract/verify.py` and `scripts/generate_shared_manifest.py`.
+> The hashes describe the historical `0.1.0-proposed` bundle.
+
 Prepared by: Cop team (AmrSafadi)
 For: Coordinator (`rmisegal@gmail.com`)
 Purpose: Obtain the six provisional handoff values the Thief team requires
