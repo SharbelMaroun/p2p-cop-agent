@@ -139,6 +139,65 @@ branch. The
 635-task pre-audit backlog under `archive/pre-audit/documentation/` is historical
 coverage only and will not be restored as an executable plan.
 
+## Usage
+
+The peer is not yet runnable as a live agent; what exists today is the SDK, the
+protocol layer, both transport adapters, negotiation, and one turn of the loop.
+So the honest usage surface is the CLI version probe and the verification suite:
+
+```text
+uv run p2p-cop --version          # 1.00
+uv run python -m p2p_cop_agent --version
+```
+
+To exercise a turn crossing a real socket between two operating-system processes —
+the book's stage-2 milestone — run the localhost integration tests, which spawn a
+genuinely separate interpreter and read back the transcript it wrote:
+
+```text
+uv run pytest tests/integration/test_localhost_two_processes.py -v
+uv run pytest tests/integration/test_localhost_negotiation.py -v
+```
+
+To check this peer's call shapes against an implementation that shares no source
+with it:
+
+```text
+uv run pytest tests/conformance/ -v
+```
+
+This section will gain the live `peer` invocation, its flags, and replay
+screenshots once `M5-10d` (a full sub-game over the wire) lands.
+
+## Contributing
+
+Code standards are enforced by the gates above, not by convention, so a change that
+passes CI already meets them. In summary:
+
+- **Style and linting.** `ruff check .` must pass with no findings. Line length,
+  import order, and naming follow the configuration in `pyproject.toml`; do not
+  add per-file ignores to silence a finding.
+- **File length.** No source or test file may exceed **150 lines**
+  (`scripts/check_file_lengths.py`), per the submission guidelines. Split by
+  responsibility rather than trimming explanatory comments.
+- **Tests.** `pytest --cov --cov-branch --cov-fail-under=85` must pass. New
+  behaviour needs tests that would fail without it; prefer tests that pin a rule to
+  the document that states it, so a silently edited constant fails locally rather
+  than in a match.
+- **Secrets.** `scripts/check_secrets.py` must report zero findings. Credentials,
+  tokens, ports, and the opponent URL belong in the git-ignored `config/game.toml`
+  or `.env`, never in a tracked file and never in shared JSON.
+- **The controlled bundle.** `shared_contract/` is byte-controlled. Do not edit it
+  to make a check pass; `shared_contract/verify.py` is read-only and only
+  `scripts/generate_shared_manifest.py` regenerates the manifest. A change there is
+  a contract revision and needs the coordinator.
+- **Commits.** Stage explicit paths, never `git add .`. Commit messages state what
+  changed and *why*, including the authority (book section, Appendix E/F rule, or
+  ADR) when the change encodes a rule.
+- **Documentation.** A behaviour change updates `docs/TODO.md` and any document
+  that asserts the old behaviour. `docs/PROMPT_LOG.md` records significant
+  AI-assisted steps, including the problem found and the lesson drawn.
+
 ## License
 
 The repository MIT license covers team-authored material where legally valid.

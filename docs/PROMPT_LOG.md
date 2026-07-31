@@ -143,6 +143,46 @@
 
 ---
 
+> **Logging gap, recorded honestly (2026-08-01).** Entries P-013 onward resume this log
+> after a break: no entries were written between 2026-07-26 and 2026-07-31 while M1.5
+> through M5-04 were built. Those steps are not reconstructed here, because this agent
+> cannot attest to prompts it did not witness and an invented entry is worse than an
+> acknowledged gap. The work itself is recorded in `TODO.md` and the git history.
+
+## P-013 — Verifying against the lecturer's notebooks before writing code
+- **Date:** 2026-07-31 · **Tool:** Claude (agentic CLI) + NotebookLM
+- **Goal:** stop guessing at wire details that only the reference implementation can settle.
+- **Prompt (essence):** "always ask the notebookLM then look in the `inst` folder's md files then implement" — made a standing order after an ad-hoc query caught a real defect.
+- **Output:** a fixed working order — **notebook → `inst/` → code** — applied to every wire task since. It immediately paid: asking what dict the reference's tools return revealed it may answer `{"status": "ok"}`, while our client demanded its own `{"ok": true}`. Every successful delivery from a simulator-built classmate would have been read as a refusal and the game abandoned on turn one.
+- **Refinement:** ask for **verbatim quotes** and require the answer to mark each part quoted or inferred; treat hedged answers ("the design indicates…") as unverified. A follow-up question is mandatory when an answer would change a signed structure — one such follow-up established that `game_id`/`game_uid` are *not* signed terms, avoiding a change that would have broken every cross-peer signature.
+- **Lesson:** the expensive bugs here are not logic errors, they are **assumptions about the other side**. No local test can catch them, because both halves of a local test share our assumption.
+
+## P-014 — Proving the client against code that shares nothing with it
+- **Date:** 2026-08-01 · **Tool:** Claude (agentic CLI)
+- **Goal:** close `M5-03e`, `M5-03f`, and `M5-10b` — the last open P0 items before a game loop.
+- **Prompt (essence):** "continue to work according to the unDone TODO file in 2 repos… and according to the 2 links in the notebookLM… and the md files under `inst`".
+- **Output:** the neutral stub placed behind a real MCP server so `FastMCPClient` is proven against an implementation sharing no source; the private opponent-URL boundary plus a leak guard that refuses a shared match object carrying an address by member *name* or by *value*; and a negotiate round trip across a real socket between two OS processes, refusing a mismatch **by name**.
+- **Refinement:** the in-memory loopback was found to prove less than it appeared — both halves read the same `TOOL_ARGUMENTS` table, so a wrong argument name would have agreed with itself. The neutral-stub server writes its argument names out independently, which is what makes agreement mean anything.
+- **Lesson:** a test whose two sides share a constant tests the constant, not the contract. Ask of every conformance test: *what would still pass if the shared assumption were wrong?*
+
+## P-015 — Two notebooks, and a conclusion reversed
+- **Date:** 2026-08-01 · **Tool:** Claude (agentic CLI) + NotebookLM (both notebooks)
+- **Goal:** settle whether `min_center_intensity` is a required shared term.
+- **Prompt (essence):** "check the second notebook. always check in both of them when needed."
+- **Output:** the second notebook holds the **book PDF itself** plus the lecturer's four artifact templates. Appendix F table 16 has exactly three rows, all `Fixed`, and **no** minimum-centre row; the lecturer's own `agreed-config` template carries the same three keys. This repository's optional treatment was correct and the controlled bundle needed no change — while the companion peer, which required the key, would have refused the lecturer's own template.
+- **Refinement:** the previous day's note had flagged **this** repository as the likely error and asked the coordinator to decide. That was wrong. The claim had been sourced from the `inst/` markdown, which *restates* the book, rather than from the PDF one query away.
+- **Lesson:** a restatement of a source is not the source. When a decision turns on an appendix table, read the table. Also: the notebooks divide cleanly — one answers *what the reference does*, the other *what the book requires* — and a question that spans both needs both.
+
+## P-016 — Building the turn loop, and what the reference corrected
+- **Date:** 2026-08-01 · **Tool:** Claude (agentic CLI) + NotebookLM (both notebooks)
+- **Goal:** `M5-11a` and `M5-11` — the declared phase machine and one turn driven through it.
+- **Prompt (essence):** "yes start it, ask both notebooks first, then see `inst` md files then build."
+- **Output:** the mandatory transition table transcribed unchanged with every undeclared transition refused by name, and `run_turn` driving one iteration through it. The book gave the four-phase turn, Thief-first ordering, and termination precedence; the reference gave the actual loop order and the fact that **no move is ever sent live**.
+- **Refinement:** the assumed order was compute-then-send. The reference **awaits first** — a peer must receive before advancing its own step, which is what makes the alternation strict. Separately, sealing was made once-only: re-sealing after a failed send would give one step two commitment hashes and hand the opponent an audit mismatch, an automatic zero under rule 19.
+- **Lesson:** most of the phase machine's value is in what it *refuses*, so most of its tests should be refusals — a machine that accepts everything passes a happy-path test and still deadlocks the first time a peer goes out of order.
+
+---
+
 ## Best practices derived so far
 1. **Binding values live in one table** — quote Appendix F, never paraphrase numbers.
 2. **Decide, then generate** — architecture-defining choices go to the human first.
