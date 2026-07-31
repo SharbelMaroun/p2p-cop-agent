@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from p2p_cop_agent.protocol.commit import generate_commitment_nonce, move_commit, verify_commit
 from p2p_cop_agent.protocol.messages import (
     ProtocolError,
-    is_ok_response,
+    is_acknowledgement,
     require_wire_role,
     validate_message,
 )
@@ -102,9 +102,14 @@ class TurnLedger:
         return message
 
     def acknowledge(self, response: object) -> None:
-        """Require the transport acknowledgement ``{"ok": true}`` for a sent turn."""
-        if not is_ok_response(response):
-            raise CommitRevealError("missing transport acknowledgement")
+        """Require that the opponent acknowledged a sent turn.
+
+        Any JSON object counts unless it explicitly refuses (``is_acknowledgement``).
+        This demanded our own ``{"ok": true}`` until 2026-07-31, which would have
+        aborted every turn against a peer that answers ``{"status": "ok"}``.
+        """
+        if not is_acknowledgement(response):
+            raise CommitRevealError(f"turn was not acknowledged by the opponent: {response!r}")
 
     def audit_payload(self, result_claim: str) -> JsonObject:
         """Reveal every sealed record as a schema-valid ``AuditPayload``."""

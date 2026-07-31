@@ -26,10 +26,8 @@ from collections.abc import Mapping
 from fastmcp import Client
 
 from p2p_cop_agent.peer import TOOL_ARGUMENTS
+from p2p_cop_agent.protocol import signals_refusal
 from p2p_cop_agent.shared.config import JsonObject
-
-# Values of a ``status`` field that an opponent uses to signal refusal.
-_REFUSAL_WORDS = frozenset({"error", "failed", "failure", "rejected", "refused", "denied"})
 
 
 class TransportError(RuntimeError):
@@ -116,34 +114,15 @@ class FastMCPClient:
         A reply that is not a JSON object is a transport fault (M5-03h): the peer
         did not speak the wire at all.
 
-        **Liberal on the ack shape, strict on refusal.** This peer *sends*
-        ``{"ok": true}``, but the wire profile never fixed what an opponent must
-        send back, and the reference implementation's exact acknowledgement dict
-        is not established -- it may be ``{"status": "ok"}`` or
-        ``{"status": "delivered"}``. Demanding our own shape would read every
-        successful delivery from such a peer as a refusal and abandon a game that
-        was going fine. So any JSON object is accepted **unless** it explicitly
-        signals failure, which is the only reading that is safe against an
-        unknown classmate's agent.
+        **Liberal on the ack shape, strict on refusal.** The rule itself lives in
+        :func:`~p2p_cop_agent.protocol.signals_refusal`, in the transport-neutral
+        layer, so this adapter and the commit-reveal ledger cannot disagree about
+        what counts as delivered.
         """
         data = getattr(result, "data", None)
         if not isinstance(data, Mapping):
             raise TransportError(f"{tool} returned no JSON object: {data!r}")
         response: JsonObject = dict(data)
-        if _signals_refusal(response):
+        if signals_refusal(response):
             raise PeerRejectionError(f"{tool} was declined by the opponent: {response}")
         return response
-
-
-def _signals_refusal(response: Mapping[str, object]) -> bool:
-    """Return whether a well-formed reply explicitly says the peer refused.
-
-    Silence is not refusal: only an explicit ``ok: false``, a ``status`` naming a
-    failure, or an ``error`` member counts.
-    """
-    if response.get("ok") is False:
-        return True
-    status = response.get("status")
-    if isinstance(status, str) and status.strip().lower() in _REFUSAL_WORDS:
-        return True
-    return response.get("error") not in (None, "")

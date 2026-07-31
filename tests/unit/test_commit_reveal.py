@@ -100,11 +100,31 @@ def test_public_fields_may_not_carry_secret_keys() -> None:
         ledger.seal_turn(1, hidden(1), {**public(), "nonce": "x"})
 
 
-def test_acknowledge_requires_ok_response() -> None:
-    ledger = TurnLedger("police")
-    ledger.acknowledge({"ok": True})
-    with pytest.raises(CommitRevealError, match="acknowledgement"):
-        ledger.acknowledge({"ok": False})
+@pytest.mark.parametrize(
+    "ack", [{"ok": True}, {"status": "ok"}, {"status": "delivered"}, {}, {"received": 1}]
+)
+def test_acknowledge_accepts_any_reply_that_does_not_refuse(ack: dict) -> None:
+    """A foreign ack shape is still an ack (corrected 2026-07-31).
+
+    This required our own ``{"ok": true}``, so a peer answering ``{"status": "ok"}``
+    -- which the reference is reported to send -- would have failed every turn.
+    """
+    TurnLedger("police").acknowledge(ack)
+
+
+@pytest.mark.parametrize(
+    "refusal",
+    [{"ok": False}, {"status": "rejected"}, {"status": "ERROR"}, {"error": "bad step"}],
+)
+def test_acknowledge_still_refuses_an_explicit_rejection(refusal: dict) -> None:
+    with pytest.raises(CommitRevealError, match="not acknowledged"):
+        TurnLedger("police").acknowledge(refusal)
+
+
+@pytest.mark.parametrize("reply", ["ok", None, 1, ["ok"]])
+def test_acknowledge_refuses_a_reply_that_is_not_an_object(reply: object) -> None:
+    with pytest.raises(CommitRevealError, match="not acknowledged"):
+        TurnLedger("police").acknowledge(reply)
 
 
 def test_sender_must_be_a_wire_role() -> None:

@@ -30,11 +30,24 @@ from p2p_cop_agent.protocol.commit_reveal import (
 from p2p_cop_agent.protocol.messages import (
     MESSAGE_SCHEMAS,
     OK_RESPONSE,
+    REFUSAL_WORDS,
     WIRE_ROLES,
     ProtocolError,
+    is_acknowledgement,
     is_ok_response,
     require_wire_role,
+    signals_refusal,
     validate_message,
+)
+from p2p_cop_agent.protocol.negotiation import (
+    FIXED_TERMS,
+    MINIMUM_TERMS,
+    NegotiationError,
+    build_offer,
+    check_appendix_f,
+    terms_from_config,
+    validate_participants,
+    verify_offer,
 )
 from p2p_cop_agent.protocol.receive import (
     ConflictError,
@@ -44,9 +57,18 @@ from p2p_cop_agent.protocol.receive import (
 )
 
 __all__ = [
+    "FIXED_TERMS",
     "MESSAGE_SCHEMAS",
+    "MINIMUM_TERMS",
     "OK_RESPONSE",
+    "REFUSAL_WORDS",
     "WIRE_ROLES",
+    "NegotiationError",
+    "build_offer",
+    "check_appendix_f",
+    "terms_from_config",
+    "validate_participants",
+    "verify_offer",
     "AttestationError",
     "AuditReport",
     "AuditVerdict",
@@ -65,11 +87,13 @@ __all__ = [
     "build_step_zero",
     "canonical_payload_bytes",
     "generate_commitment_nonce",
+    "is_acknowledgement",
     "is_ok_response",
     "move_commit",
     "require_wire_role",
     "running_git_commit",
     "seal_step_zero",
+    "signals_refusal",
     "validate_message",
     "verify_attestation",
     "verify_audit",

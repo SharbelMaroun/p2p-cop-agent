@@ -9,10 +9,12 @@ Cop's local view stay separate objects.
 No opponent behaviour ships here. Both policies are supplied by the caller, so
 this module never encodes how any particular opponent plays.
 
-Turn order is `PROJECT-PROPOSED`, not book-confirmed: the Thief acts first, then
-the Cop, and capture is evaluated after each side acts. It is injectable for
-exactly that reason — when an authoritative live-turn ordering arrives, it drops
-in without touching the rules. Nothing here carries contract status.
+Turn order — Thief first, then Cop, capture evaluated after each side acts — was
+`PROJECT-PROPOSED` when this was written and is now **book-confirmed** (checked
+against the book PDF, 2026-08-01): the Thief moves first in every turn cycle, and
+the Cop sees the Thief's hint before choosing its own move. The constant keeps its
+name so no caller breaks, and the schedule stays injectable, but the default is no
+longer a guess. Nothing here carries contract status.
 """
 
 from __future__ import annotations
