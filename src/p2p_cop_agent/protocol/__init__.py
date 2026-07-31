@@ -36,6 +36,16 @@ from p2p_cop_agent.protocol.messages import (
     require_wire_role,
     validate_message,
 )
+from p2p_cop_agent.protocol.negotiation import (
+    FIXED_TERMS,
+    MINIMUM_TERMS,
+    NegotiationError,
+    build_offer,
+    check_appendix_f,
+    terms_from_config,
+    validate_participants,
+    verify_offer,
+)
 from p2p_cop_agent.protocol.receive import (
     ConflictError,
     Intake,
@@ -44,9 +54,17 @@ from p2p_cop_agent.protocol.receive import (
 )
 
 __all__ = [
+    "FIXED_TERMS",
     "MESSAGE_SCHEMAS",
+    "MINIMUM_TERMS",
     "OK_RESPONSE",
     "WIRE_ROLES",
+    "NegotiationError",
+    "build_offer",
+    "check_appendix_f",
+    "terms_from_config",
+    "validate_participants",
+    "verify_offer",
     "AttestationError",
     "AuditReport",
     "AuditVerdict",
