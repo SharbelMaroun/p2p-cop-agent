@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -27,29 +28,48 @@ from fastmcp import FastMCP  # noqa: E402
 
 from p2p_cop_agent import CopSDK  # noqa: E402
 from p2p_cop_agent.peer import InboundPeer  # noqa: E402
-from p2p_cop_agent.protocol import ProtocolError  # noqa: E402
+from p2p_cop_agent.protocol import (  # noqa: E402
+    NegotiationError,
+    ProtocolError,
+    terms_from_config,
+    verify_offer,
+)
 
 EXAMPLE = ROOT / "shared_contract" / "fixtures" / "match_config.example.json"
 RATE_LIMITS = ROOT / "config" / "rate_limits.json"
 
 
-def build(peer: InboundPeer, transcript: Path) -> FastMCP:
+def build(peer: InboundPeer, transcript: Path, terms: dict) -> FastMCP:
     """Return a server that records every call's validation outcome."""
     mcp: FastMCP = FastMCP("p2p-cop-localhost")
 
-    def record(tool: str, argument: dict) -> dict:
-        try:
-            peer.dispatch(tool, argument)
-            entry = {"tool": tool, "accepted": True, "pid": __import__("os").getpid()}
-        except ProtocolError as exc:
-            entry = {"tool": tool, "accepted": False, "reason": str(exc)}
+    def write(entry: dict) -> dict:
         with transcript.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(entry, sort_keys=True) + "\n")
         return {"ok": True}
 
+    def record(tool: str, argument: dict) -> dict:
+        try:
+            peer.dispatch(tool, argument)
+            entry = {"tool": tool, "accepted": True, "pid": os.getpid()}
+        except ProtocolError as exc:
+            entry = {"tool": tool, "accepted": False, "reason": str(exc)}
+        return write(entry)
+
     @mcp.tool
     def negotiate(message: dict) -> dict:
-        return record("negotiate", message)
+        """Check the offer against *this* peer's own terms, not just its shape.
+
+        The stage-2 negotiate round trip (M5-10b): a real second process decides
+        whether it will play, and a mismatch is refused by name (`AE-11`).
+        """
+        try:
+            peer.dispatch("negotiate", message)
+            verify_offer(message, terms)
+            entry = {"tool": "negotiate", "accepted": True, "pid": os.getpid()}
+        except (ProtocolError, NegotiationError) as exc:
+            entry = {"tool": "negotiate", "accepted": False, "reason": str(exc)}
+        return write(entry)
 
     @mcp.tool
     def receive_turn(message: dict) -> dict:
@@ -73,7 +93,8 @@ def main() -> int:
     args = parser.parse_args()
 
     sdk = CopSDK.from_repository(ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
-    server = build(InboundPeer(sdk), args.transcript)
+    terms = terms_from_config(json.loads(EXAMPLE.read_text(encoding="utf-8")))
+    server = build(InboundPeer(sdk), args.transcript, terms)
     server.run(transport="http", host="127.0.0.1", port=args.port)
     return 0
 

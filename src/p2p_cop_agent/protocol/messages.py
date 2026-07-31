@@ -63,5 +63,47 @@ def require_wire_role(value: object) -> str:
 
 
 def is_ok_response(response: object) -> bool:
-    """Return whether a tool response is the successful ``{"ok": true}`` ack."""
+    """Return whether a tool response is exactly *this* peer's ``{"ok": true}`` ack.
+
+    Use it to assert what **we** send. For judging what an *opponent* sent back,
+    use :func:`is_acknowledgement` -- demanding our own shape from a peer we did
+    not write is the bug described there.
+    """
     return isinstance(response, Mapping) and response.get("ok") is True
+
+
+# ``status`` values by which an opponent signals it declined the message.
+REFUSAL_WORDS = frozenset({"error", "failed", "failure", "rejected", "refused", "denied"})
+
+
+def signals_refusal(response: object) -> bool:
+    """Return whether a well-formed reply explicitly says the peer refused.
+
+    Silence is not refusal: only an explicit ``ok: false``, a ``status`` naming a
+    failure, or a non-empty ``error`` member counts.
+    """
+    if not isinstance(response, Mapping):
+        return False
+    if response.get("ok") is False:
+        return True
+    status = response.get("status")
+    if isinstance(status, str) and status.strip().lower() in REFUSAL_WORDS:
+        return True
+    return response.get("error") not in (None, "")
+
+
+def is_acknowledgement(response: object) -> bool:
+    """Return whether an opponent's reply counts as a delivery acknowledgement.
+
+    Liberal on shape, strict on refusal. This peer sends ``{"ok": true}``, but the
+    profile never fixed what an opponent must send back and the reference is
+    reported to answer ``{"status": "ok"}`` or ``{"status": "delivered"}``.
+    Requiring our own dict would read every successful delivery from a
+    simulator-built classmate as a failure and abandon a game that was going fine.
+
+    This lives here, in the transport-neutral layer, so the outbound adapter and
+    the commit-reveal ledger cannot drift apart on what counts as delivered --
+    they judged it differently until 2026-07-31, and the ledger's stricter reading
+    would have aborted every turn against such a peer.
+    """
+    return isinstance(response, Mapping) and not signals_refusal(response)
