@@ -232,6 +232,14 @@
 - **Refinement:** the standing order is *notebook → `inst/` → implement*, and it was **half-kept**. The query to the reference notebook failed on a frozen renderer and was not retried; `inst/` was read (the book's capture conditions and duty of truth) and the controlled schema supplied the field shapes, so the build proceeded on those. When challenged, the query was retried and the reference **confirmed** the design — its precedence reads capture "when a cop's `capture_claim` is confirmed by the thief", survival at the threshold, then timeout, with the audit sent once per sub-game after the loop. The code was right; the process was not.
 - **Lesson:** a tool failure is not permission to skip the step. It happened to cost nothing here, which is exactly why it was worth recording — the next skipped check is the one that silently ships a wrong assumption. Retry, or say plainly that the step was skipped.
 
+## P-023 — Deadlines and bounded retry, and a parameter status nobody had noticed
+- **Date:** 2026-08-01 · **Tool:** Claude Opus 5 (agentic CLI) + NotebookLM (both notebooks)
+- **Goal:** `M5-05a`/`M5-05b` — stop the turn loop being able to wait forever.
+- **Prompt (essence):** run the full eight-step workflow for the next feature in both ledgers.
+- **Output:** `services/deadlines.py` — an injected-time `Deadline`, a `RetryPolicy` read from the shared signed match object, and an `attempt` helper that bounds every wait. Book §8.4.1's boxed note is the whole design: *"Missing a Deadline is a Failure, Not Patience"*, permitting only retry or a declared technical loss with the queue cleared.
+- **Refinement:** the reference gave the exact config keys and defaults — `network_and_league.response_timeout_sec` 30, `rate_limiter_gatekeeper.retry_backoff_sec` 5, `.max_retries` 3, `network_and_league.watchdog_timeout_sec` 60 — and all four proved already present in our controlled match fixture. The book PDF then added something the ledger had not recorded: table 19 marks the watchdog timeout **`Negotiation`**, not `Minimum` like its neighbours. Step 1 also caught two stale ledger rows (`M5-11c` here, `M5-012` in the companion) claiming open work that was already done.
+- **Lesson:** injecting the clock is what makes a timeout testable at all — every one of these tests would otherwise have had to sleep, and a suite that sleeps is a suite people stop running. Separately: re-reading the ledger *before* starting is cheap and caught two rows that would have sent someone to re-do finished work.
+
 ## Best practices derived so far
 1. **Binding values live in one table** — quote Appendix F, never paraphrase numbers.
 2. **Decide, then generate** — architecture-defining choices go to the human first.

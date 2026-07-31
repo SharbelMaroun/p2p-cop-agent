@@ -116,6 +116,22 @@ per sub-game, after the loop** — matching the reference — and is sent even w
 peer is taking the technical loss, because a withheld reveal cannot be checked and the
 whole point is that the opponent recomputes it.
 
-Still absent: mutual verification of the *opponent's* audit (`M7`; the reference has
-both peers swap logs and each verify the other's commits), deadlines/retry/idempotency
-(M5-05), watchdog (M5-06), and tunnel (M5-07).
+## Bounded waiting (M5-05a, M5-05b)
+
+`services/deadlines.py` makes every wait finite. Book §8.4.1's boxed note is the
+design — *"Missing a Deadline is a Failure, Not Patience"* — and it permits exactly
+two outcomes on expiry: retry, or declare a technical loss and clear the queue.
+
+Each attempt gets its own expiry; retries stop at `max_retries`; and an attempt that
+overruns its own expiry is **not** retried, because the retry budget does not rescue
+a missed deadline. Running out raises, so the caller decides rather than hanging.
+
+The four limits are read from the **shared, signed** match object — not private
+config — so neither peer can grant itself a longer rope:
+`network_and_league.response_timeout_sec` (30), `.watchdog_timeout_sec` (60),
+`rate_limiter_gatekeeper.retry_backoff_sec` (5), `.max_retries` (3). Key names
+confirmed against the reference 2026-08-01. Time is injected, so timeouts are tested
+by passing a number rather than sleeping.
+
+Still absent: mutual verification of the *opponent's* audit (`M7`), idempotency keys
+and backpressure (M5-05c, M5-05d), the watchdog itself (M5-06), and tunnel (M5-07).
