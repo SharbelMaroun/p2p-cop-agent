@@ -308,6 +308,13 @@
 - **Refinement:** the same discipline as M5-05e and M5-15 — do not manufacture code to claim a milestone that is really about behaviour already present. The additive value here is pinning that `except TransportError` can never swallow a `PeerRejectionError` (the types are disjoint, re-asserted) and that the retry budget does not rescue a lost game.
 - **Lesson:** three of M5's "handle X" rows (05e, 14, 15) turned out to be proof milestones, not build milestones, because the guards were written test-first when each mechanism landed. The honest close is a consolidated proof plus a precise ledger note pointing at the tests — and saying "no new runtime code was needed" out loud, so a reader is not left hunting for an implementation that was never the point.
 
+## P-033 — Documenting the architecture last, when it was finally true
+- **Date:** 2026-08-01 · **Tool:** Claude Opus 4.8 (agentic CLI) · **NotebookLM: unavailable this session**
+- **Goal:** `M5-16` — draw the subsystem diagram and document every failure path.
+- **Output:** a "Runtime architecture" section in `PRD_p2p_mcp.md`: a mermaid `graph TD` of the gateway and five subsystems (every arrow gateway↔subsystem, `services.limits` shown below the line), and a failure-path table mapping eight fault classes to their guard and defined terminal outcome, each row naming the test that pins it. Also corrected the PRD's stale "still absent" line, which still listed the gateway, log manager, and tunnel as unbuilt — all of them landed this session.
+- **Refinement:** M5-16 was left for last on purpose. A subsystem diagram drawn before M5-08 would have been a wish, not a description; drawing it after the gateway, the five ports, and the boundary test exist means the picture and the code agree, and the diagram deliberately mirrors the boundary test (limits below the line) so the two cannot drift. The failure table is a consolidation, not new analysis — every row already had a test from the resilience milestones, and the table just gives a grader one place to see that a hostile peer has nowhere to make this peer hang.
+- **Lesson:** documentation of an architecture is only worth writing once the architecture is real; written earlier it becomes a claim someone later has to reconcile. The tell that it was the right time: every cell in the failure table could cite an existing test, and the diagram could be checked against the boundary test rather than against intent.
+
 ## Best practices derived so far
 1. **Binding values live in one table** — quote Appendix F, never paraphrase numbers.
 2. **Decide, then generate** — architecture-defining choices go to the human first.
