@@ -32,6 +32,7 @@ from p2p_cop_agent.shared.config import JsonObject
 
 NETWORK_SECTION = "network"
 OPPONENT_URL_KEY = "opponent_url"
+PUBLIC_URL_KEY = "public_url"
 _ALLOWED_SCHEMES = ("http://", "https://")
 
 # Member names that carry a network address and so may live only in private TOML.
@@ -74,18 +75,35 @@ def load_private_config(path: str | Path) -> JsonObject:
         raise PrivateConfigError(f"private config {config_path} is not valid TOML: {exc}") from exc
 
 
-def opponent_url(config: Mapping[str, object]) -> str:
-    """Return ``[network].opponent_url``: the only address this peer may dial."""
+def _read_network_url(config: Mapping[str, object], key: str) -> str:
+    """Return one validated http(s) URL from the private ``[network]`` section."""
     section = config.get(NETWORK_SECTION)
     if not isinstance(section, Mapping):
         raise PrivateConfigError(f"private config has no [{NETWORK_SECTION}] section")
-    value = section.get(OPPONENT_URL_KEY)
+    value = section.get(key)
     if not isinstance(value, str) or not value.strip():
-        raise PrivateConfigError(f"[{NETWORK_SECTION}].{OPPONENT_URL_KEY} must be a non-empty string")
+        raise PrivateConfigError(f"[{NETWORK_SECTION}].{key} must be a non-empty string")
     url = value.strip()
     if not url.startswith(_ALLOWED_SCHEMES):
-        raise PrivateConfigError(f"[{NETWORK_SECTION}].{OPPONENT_URL_KEY} must be http(s), got {url!r}")
+        raise PrivateConfigError(f"[{NETWORK_SECTION}].{key} must be http(s), got {url!r}")
     return url
+
+
+def opponent_url(config: Mapping[str, object]) -> str:
+    """Return ``[network].opponent_url``: the only address this peer may dial."""
+    return _read_network_url(config, OPPONENT_URL_KEY)
+
+
+def public_url(config: Mapping[str, object]) -> str:
+    """Return ``[network].public_url``: our own tunnel address, advertised to the peer.
+
+    This is the value that populates the negotiation identity's ``mcp_servers``
+    (M5-04h). The provider that produces it (ngrok, cloudflare, a self-hosted domain)
+    is a local choice and never observable in the protocol: only the resulting URL is
+    exchanged, and the token that authorises the tunnel stays here in private config,
+    never in the shared signed object `[AE-10]` `[G§7.4]`.
+    """
+    return _read_network_url(config, PUBLIC_URL_KEY)
 
 
 def load_opponent_url(path: str | Path) -> str:
