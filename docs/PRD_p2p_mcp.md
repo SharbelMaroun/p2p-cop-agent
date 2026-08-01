@@ -173,5 +173,50 @@ The concrete snapshot **format** is the log manager's (M5-12) and the **wiring**
 persistence to a live match is the orchestrator's (M5-08); `persist_state` is an
 injected seam until then.
 
-Still absent: mutual verification of the *opponent's* audit (`M7`), the orchestrator
-gateway (M5-08), the log manager (M5-12), and tunnel (M5-07).
+Still absent: mutual verification of the *opponent's* audit (`M7`), and the
+cross-machine tunnel rehearsal (`M5-07c`, needs hardware).
+
+## Runtime architecture (M5-16)
+
+One Orchestrator gateway owns the five subsystems and is the only place they are
+wired together (Appendix E rule 3). Each is injected as a port, so the gateway
+depends on interfaces, and no subsystem reaches another directly — the arrows all run
+gateway↔subsystem, never subsystem↔subsystem `[G§20.1]`.
+
+```mermaid
+graph TD
+    G[Orchestrator gateway]
+    G --> C[MCP connector<br/>PeerTransport / adapters]
+    G --> D[Decision module<br/>strategy]
+    G --> L[Log manager<br/>MatchLog]
+    G --> T[Deadline tracker]
+    G --> W[Watchdog]
+    C -. Option-B tools .-> P((Opponent peer))
+    L -. reads .-> X[[services.limits<br/>signed match limits]]
+    T -. reads .-> X
+    W -. reads .-> X
+```
+
+`services.limits` sits *below* the subsystem line: the tracker, watchdog, and
+gatekeeper all read their bounds from it, and depending on it is not a peer link
+(that is why the boundary test allows it). The gateway drives the M4 phase machine
+for each turn and never decides a move itself (book §9).
+
+### Failure paths (M5-16b)
+
+Every fault class reaches a **defined** terminal state rather than a hang. One row
+each:
+
+| Fault (adversarial peer) | Guard | Terminal outcome |
+|---|---|---|
+| Never responds (silence) | `_await_opponent` + watchdog | `TECHNICAL_LOSS` (per-turn), or watchdog trip → `controlled_shutdown` |
+| Responds out of order | phase machine / `TurnInbox` | `PhaseError` / `ReplayError`; state unchanged |
+| Replays an earlier message | `TurnInbox` idempotency | dedup (`fresh=False`) or `ConflictError`; committed record intact |
+| Oversized / malformed input | schema `validate_message` | `ProtocolError` before domain code; no state change |
+| Disconnects mid-audit | `sub_game._reveal` | outcome still decided; audit payload recorded |
+| Content rejection (declines) | `PeerRejectionError` (not retried) | scored `TECHNICAL_LOSS`, audit sent |
+| Transport fault | `TransportError` (retried, bounded) | retry, then `TECHNICAL_LOSS` on exhaustion |
+| Own seal fails mid-turn | `run_turn` seals in `COMPUTING_MOVE` | `TECHNICAL_LOSS`; sealed exactly once |
+
+Each row is pinned by a test — see `test_adversarial_peer`, `test_rejection_handling`,
+`test_turn_loop_faults`, `test_watchdog`, and `test_controlled_shutdown`.

@@ -11,12 +11,20 @@ from p2p_cop_agent.orchestration.harness import (
     run_sub_game,
 )
 from p2p_cop_agent.orchestration.history import CopHistory
+from p2p_cop_agent.orchestration.orchestrator import Orchestrator
 from p2p_cop_agent.orchestration.phases import (
     TRANSITIONS,
     TURN_CYCLE,
     Phase,
     PhaseError,
     PhaseMachine,
+)
+from p2p_cop_agent.orchestration.ports import (
+    DeadlineTracker,
+    DecisionModule,
+    LivenessWatchdog,
+    LogManager,
+    MCPConnector,
 )
 from p2p_cop_agent.orchestration.shutdown import (
     ShutdownError,
@@ -39,6 +47,12 @@ __all__ = [
     "TURN_CYCLE",
     "CopHistory",
     "CopState",
+    "DeadlineTracker",
+    "DecisionModule",
+    "LivenessWatchdog",
+    "LogManager",
+    "MCPConnector",
+    "Orchestrator",
     "Phase",
     "PhaseError",
     "PhaseMachine",

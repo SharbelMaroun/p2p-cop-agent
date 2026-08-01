@@ -8,6 +8,7 @@ from p2p_cop_agent.shared.private_config import (
     load_opponent_url,
     load_private_config,
     opponent_url,
+    public_url,
 )
 from p2p_cop_agent.shared.version import __version__
 
@@ -20,4 +21,5 @@ __all__ = [
     "load_opponent_url",
     "load_private_config",
     "opponent_url",
+    "public_url",
 ]

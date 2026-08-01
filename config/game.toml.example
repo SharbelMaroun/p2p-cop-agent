@@ -28,6 +28,11 @@ repos = { cop = "https://example.invalid/cop", thief = "https://example.invalid/
 [network]
 my_port = 0
 opponent_url = "https://opponent.invalid/mcp"
+# Our own public tunnel address, advertised to the peer as `mcp_servers` during
+# negotiation (M5-07b). Provider-neutral: any https URL (ngrok, cloudflare, a
+# self-hosted domain) works. The token that authorises the tunnel is a secret and
+# belongs in an ignored .env, never here and never in the shared JSON.
+public_url = "https://self.invalid/mcp"
 turn_timeout_seconds = 180
 poll_interval_seconds = 1
 connect_timeout_seconds = 10

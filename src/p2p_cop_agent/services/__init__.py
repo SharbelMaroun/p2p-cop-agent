@@ -1,5 +1,6 @@
 """Cop runtime services: reliability patterns that keep the peer from freezing."""
 
+from p2p_cop_agent.services.deadline_tracker import DeadlineTracker
 from p2p_cop_agent.services.deadlines import (
     MAX_RETRIES,
     RESPONSE_TIMEOUT,
@@ -21,9 +22,15 @@ from p2p_cop_agent.services.gatekeeper import (
     QueueStatus,
     guard,
 )
+from p2p_cop_agent.services.limits import LimitError
+from p2p_cop_agent.services.log_manager import LogError, MatchLog
 from p2p_cop_agent.services.watchdog import Watchdog, WatchdogError
 
 __all__ = [
+    "DeadlineTracker",
+    "LimitError",
+    "LogError",
+    "MatchLog",
     "Watchdog",
     "WatchdogError",
     "CONCURRENT_REQUESTS",

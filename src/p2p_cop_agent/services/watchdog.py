@@ -18,7 +18,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
-from p2p_cop_agent.services.deadlines import WATCHDOG_TIMEOUT, read_limit
+from p2p_cop_agent.services.limits import WATCHDOG_TIMEOUT, read_limit
 
 
 class WatchdogError(RuntimeError):
