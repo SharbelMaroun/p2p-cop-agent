@@ -240,6 +240,14 @@
 - **Refinement:** the reference gave the exact config keys and defaults — `network_and_league.response_timeout_sec` 30, `rate_limiter_gatekeeper.retry_backoff_sec` 5, `.max_retries` 3, `network_and_league.watchdog_timeout_sec` 60 — and all four proved already present in our controlled match fixture. The book PDF then added something the ledger had not recorded: table 19 marks the watchdog timeout **`Negotiation`**, not `Minimum` like its neighbours. Step 1 also caught two stale ledger rows (`M5-11c` here, `M5-012` in the companion) claiming open work that was already done.
 - **Lesson:** injecting the clock is what makes a timeout testable at all — every one of these tests would otherwise have had to sleep, and a suite that sleeps is a suite people stop running. Separately: re-reading the ledger *before* starting is cheap and caught two rows that would have sent someone to re-do finished work.
 
+## P-024 — The Gatekeeper, and a word the ledger should not have claimed
+- **Date:** 2026-08-01 - **Tool:** Claude Opus 5 (agentic CLI) + NotebookLM (both notebooks)
+- **Goal:** `M5-05c`/`M5-05d` - queue depth and the backpressure signal.
+- **Prompt (essence):** run the full eight-step workflow for the next feature in both ledgers.
+- **Output:** `services/gatekeeper.py`. The guidelines settled the design in one line - **"Overflow is queued, not rejected"** - which is the opposite of the usual instinct: a busy gate returns `False` and keeps the work, and only a genuinely full queue fails, loudly. `queue_status()` exists because the guidelines require a gatekeeper to expose depth and stats.
+- **Refinement:** step 2 changed the plan before any code was written. Idempotency was already implemented - the receive-side intake had been deduplicating and rejecting replays since `M4-04` - so the feature narrowed to backpressure alone. The book then narrowed it further: chapter 9.3.1 aims the Gatekeeper at **outbound** Gmail and LLM calls to avoid a `429`, not at the inbound peer mailbox. Building it as an inbound queue would have been a plausible, useless answer.
+- **Lesson:** the ledger's own row said "FIFO queue depth", and the book notebook marked FIFO **inferred, not stated**. The word was removed rather than kept, because a task title that cites book authority for something the book never says is how an invented requirement becomes permanent. Check the wording of the requirement, not just the requirement.
+
 ## Best practices derived so far
 1. **Binding values live in one table** — quote Appendix F, never paraphrase numbers.
 2. **Decide, then generate** — architecture-defining choices go to the human first.
