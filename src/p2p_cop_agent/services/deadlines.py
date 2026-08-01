@@ -35,28 +35,35 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
+from p2p_cop_agent.services.limits import (
+    MAX_RETRIES,
+    RESPONSE_TIMEOUT,
+    RETRY_BACKOFF,
+    WATCHDOG_TIMEOUT,
+    read_limit,
+)
 from p2p_cop_agent.shared.config import JsonObject
 
-# Shared-config location of each limit, and the Appendix F default.
-RESPONSE_TIMEOUT = ("network_and_league", "response_timeout_sec", 30)
-WATCHDOG_TIMEOUT = ("network_and_league", "watchdog_timeout_sec", 60)
-RETRY_BACKOFF = ("rate_limiter_gatekeeper", "retry_backoff_sec", 5)
-MAX_RETRIES = ("rate_limiter_gatekeeper", "max_retries", 3)
+# The limit constants and ``read_limit`` are shared infrastructure and now live in
+# ``services.limits`` so the watchdog and gatekeeper can read their bounds without
+# importing this module (M5-08b). They are re-exported here for callers that already
+# read them from the deadline tracker.
+__all__ = [
+    "MAX_RETRIES",
+    "RESPONSE_TIMEOUT",
+    "RETRY_BACKOFF",
+    "WATCHDOG_TIMEOUT",
+    "Deadline",
+    "DeadlineError",
+    "RetryPolicy",
+    "attempt",
+    "limits_from_match",
+    "read_limit",
+]
 
 
 class DeadlineError(RuntimeError):
     """Raised when a bounded wait ran out: a decision, never a hang."""
-
-
-def read_limit(game: Mapping[str, object], section: str, key: str, default: int) -> int:
-    """Return one agreed numeric limit, falling back to the Appendix F default."""
-    block = game.get(section)
-    value = block.get(key) if isinstance(block, Mapping) else None
-    if value is None:
-        return default
-    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-        raise DeadlineError(f"{section}.{key} must be a non-negative integer, got {value!r}")
-    return value
 
 
 @dataclass(frozen=True, slots=True)

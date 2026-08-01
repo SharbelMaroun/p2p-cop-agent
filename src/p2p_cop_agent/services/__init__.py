@@ -21,9 +21,11 @@ from p2p_cop_agent.services.gatekeeper import (
     QueueStatus,
     guard,
 )
+from p2p_cop_agent.services.limits import LimitError
 from p2p_cop_agent.services.watchdog import Watchdog, WatchdogError
 
 __all__ = [
+    "LimitError",
     "Watchdog",
     "WatchdogError",
     "CONCURRENT_REQUESTS",
