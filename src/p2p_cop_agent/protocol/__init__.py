@@ -53,8 +53,8 @@ from p2p_cop_agent.protocol.negotiation import (
     check_appendix_f,
     terms_from_config,
     validate_participants,
-    verify_offer,
 )
+from p2p_cop_agent.protocol.offer_review import verify_offer
 from p2p_cop_agent.protocol.receive import (
     ConflictError,
     Intake,

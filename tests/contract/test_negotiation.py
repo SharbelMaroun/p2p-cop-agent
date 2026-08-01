@@ -14,8 +14,8 @@ from p2p_cop_agent.protocol.negotiation import (
     NegotiationError,
     build_offer,
     terms_from_config,
-    verify_offer,
 )
+from p2p_cop_agent.protocol.offer_review import verify_offer
 from p2p_cop_agent.shared.contracts import shared_config_sha256
 
 ROOT = Path(__file__).resolve().parents[2]
