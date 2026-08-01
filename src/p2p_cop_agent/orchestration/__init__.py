@@ -18,6 +18,12 @@ from p2p_cop_agent.orchestration.phases import (
     PhaseError,
     PhaseMachine,
 )
+from p2p_cop_agent.orchestration.shutdown import (
+    ShutdownError,
+    ShutdownReport,
+    controlled_shutdown,
+    heartbeat_on_transition,
+)
 from p2p_cop_agent.orchestration.state import CopState, StateError
 from p2p_cop_agent.orchestration.sub_game import (
     RESULT_CLAIMS,
@@ -36,8 +42,12 @@ __all__ = [
     "Phase",
     "PhaseError",
     "PhaseMachine",
+    "ShutdownError",
+    "ShutdownReport",
     "StateError",
     "SubGameOutcome",
+    "controlled_shutdown",
+    "heartbeat_on_transition",
     "SubGameResult",
     "TurnLoopError",
     "TurnRecord",

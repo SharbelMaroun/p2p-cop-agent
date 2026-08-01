@@ -250,6 +250,33 @@ out never to say FIFO - it was our inference wearing a citation. The word was
 removed. A task that credits the book for something the book never said is how an
 invented requirement becomes permanent.
 
+**The watchdog (added 2026-08-01).** The deadline bounds a single request; the
+watchdog bounds *overall silence*. A peer can answer every individual call and still
+go quietly dead between them, so a separate liveness timer trips when nothing has
+happened for the agreed `watchdog_timeout_sec` (60 s, from the same signed match
+object). The heartbeat that feeds it is not new plumbing: the turn loop already emits
+one transition per phase for the log, and the watchdog simply subscribes to that
+stream — every phase entered is a sign of life. On a trip the runtime **persists its
+state first, then shuts down**, routing the declared phase machine to its one terminal
+state (`TECHNICAL_LOSS`) using only transitions the table already allows; a peer that
+is merely waiting steps through the same bridge the turn loop uses, never a
+fabricated edge. The persist step is deliberately fail-closed: if saving the snapshot
+fails, that is recorded and the game still ends, because a shutdown that could itself
+hang is the exact failure the watchdog exists to catch.
+
+*Problems hit building it.* One, and it was about tooling, not code. The standing
+order is *consult both NotebookLM notebooks, then implement*, and this session had **no
+way to reach NotebookLM at all** — the tool was absent, not merely slow. Rather than
+relabel the work as if the notebooks had been read, the gap was surfaced and the
+decision handed to the human, who authorised proceeding on authority a *previous*
+notebook pass had already pinned: the 60 s timeout was recorded in the deadlines
+module as an Appendix F value, the heartbeat/terminal duty as Appendix E rules, and
+the `WATCHDOG_TIMEOUT` constant already existed, read by nothing. No schema, wire
+message, or phase transition was invented. What is *not* yet built: the concrete
+state-snapshot format and the coordinator that wires persistence to a real match are
+left to the log manager and orchestrator milestones, so `persist_state` is an injected
+seam today rather than a file on disk.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

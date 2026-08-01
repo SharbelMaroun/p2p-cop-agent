@@ -133,5 +133,29 @@ config — so neither peer can grant itself a longer rope:
 confirmed against the reference 2026-08-01. Time is injected, so timeouts are tested
 by passing a number rather than sleeping.
 
-Still absent: mutual verification of the *opponent's* audit (`M7`), idempotency keys
-and backpressure (M5-05c, M5-05d), the watchdog itself (M5-06), and tunnel (M5-07).
+## Watchdog and controlled shutdown (M5-06)
+
+The deadline bounds one request; the watchdog bounds *overall silence*. A peer can
+answer every call and still go dead between them, so `services/watchdog.py` is a
+separate liveness timer that trips when nothing has happened for the agreed
+`network_and_league.watchdog_timeout_sec` (60, `[AF-t19]`, `Negotiation`). Its trip is
+**sticky** and its clock injected, matching `Deadline`. The heartbeat that feeds it
+reuses the loop's existing per-phase `on_transition` stream (M5-11d) via
+`heartbeat_on_transition` — every phase entered is a sign of life — so no new plumbing
+threads through the turn loop.
+
+`orchestration/shutdown.py` owns the trip response the book names: `persist_state()`
+**then** `controlled_shutdown()`. It guarantees the ordering and, above all, is
+fail-closed — a failing `persist_state` is recorded (`ShutdownReport.persisted=False`)
+and the game still ends, because a shutdown that could hang is the failure the
+watchdog exists to catch. Routing to `TECHNICAL_LOSS` uses only declared transitions:
+a direct edge from `AWAITING_REVEAL`/`COMPUTING_MOVE`, the documented
+`COMPUTING_MOVE` bridge from `WAITING_FOR_OPPONENT`, and a refusal (`ShutdownError`)
+in the synchronous phases where bridging would fabricate a reveal `[AE-7]`.
+
+The concrete snapshot **format** is the log manager's (M5-12) and the **wiring** of
+persistence to a live match is the orchestrator's (M5-08); `persist_state` is an
+injected seam until then.
+
+Still absent: mutual verification of the *opponent's* audit (`M7`), the orchestrator
+gateway (M5-08), the log manager (M5-12), and tunnel (M5-07).
