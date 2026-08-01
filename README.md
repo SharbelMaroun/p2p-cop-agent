@@ -277,6 +277,55 @@ state-snapshot format and the coordinator that wires persistence to a real match
 left to the log manager and orchestrator milestones, so `persist_state` is an injected
 seam today rather than a file on disk.
 
+#### The play loop: driving the mailbox (`M5-17`, 2026-08-02)
+
+The FastMCP server this peer runs is a **passive mailbox** — its four tools enqueue the
+opponent's message, acknowledge it, and do nothing else. The turn loop is the mirror
+image: it consumes a message and never looks for one. Nothing joined the two, which
+meant every sub-game test had to hand the loop a *scripted* opponent, and a peer could
+not play a match unattended. That gap was the real content of the "two-machine game is
+blocked" row: it was never only about hardware.
+
+The join is a polling turn source. Each wait drains the mailbox, hands back the next
+turn the peer **accepted**, and is bounded — Appendix E rule 6 makes a deadline
+mandatory "to prevent deadlocks while waiting for the opponent", so silence returns
+`None` and the loop takes its one declared exit to `TECHNICAL_LOSS` instead of
+blocking. The wait also **pulses the heartbeat every iteration**, because book §8.4.2
+puts the watchdog on the main game loop and waiting for an opponent is precisely the
+window in which a frozen peer and a patient one are indistinguishable.
+
+Three behaviours in the mailbox side are there because each would otherwise break an
+unattended match invisibly: a *rejected* turn is consumed (leaving it queued makes the
+poller re-reject it forever and starve the real turn behind it), a *second* queued turn
+is left in place (draining both discards the next step rather than playing it), and the
+other three mailboxes are drained first (a control or audit message parked in front of
+a turn stalls the game). A whole sub-game now plays with **no message fed in by hand**.
+
+*Problems hit building it.* Two worth recording. First, the two notebooks appeared to
+**contradict each other**: the reference drives its runtime by polling its own inboxes
+at `poll_interval_seconds`, while the book mandates a strict state machine rather than
+a loop. Treating that as a conflict would have meant choosing one and quietly dropping
+the other; the actual resolution is that they answer different questions — polling is
+only *how* a queued message is picked up, and the phase machine still decides what may
+legally follow, so a message arriving out of turn is refused by the transition table
+and not by the poller. Second, the first test run **failed on my own assumption**: the
+harness had the Cop *opening* the game, when the book gives the first move of every
+cycle to the Thief. The failure was in the test, but the same assumption in a launcher
+would have deadlocked two correctly-written peers against each other.
+
+*What is still not built.* The `serve` CLI (`M5-17e`). `build_server(...).run()` is a
+blocking call, so launching a peer needs the server on a background thread plus
+autonomous negotiation sequencing. A **passive** `serve` — one that mailboxes without
+playing — was rejected on 2026-08-01 as proving connectivity rather than a game, and
+shipping one now for the appearance of progress would contradict that. It is left
+explicitly open, and it is no longer blocked on design: the loop it would drive exists.
+
+*A blocker that got worse on inspection.* The book's stage-5 milestone requires
+**screenshots from the Replay App showing "Verified OK", plus the Live GUI belief map**
+as its evidence. Both are `M8` deliverables, so the two-machine game cannot be
+*evidenced* even once the hardware and the CLI exist. The ledger previously recorded it
+as hardware-only, which understated it.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
