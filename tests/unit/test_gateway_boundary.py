@@ -19,15 +19,17 @@ SUBSYSTEMS = {
     "connector": ["adapters/fastmcp_client.py", "adapters/fastmcp_server.py"],
     "decision": ["strategy/pursuit.py", "strategy/barrier_policy.py"],
     "log_manager": ["services/log_manager.py"],
-    "deadline_tracker": ["services/deadlines.py"],
+    "deadline_tracker": ["services/deadlines.py", "services/deadline_tracker.py"],
     "watchdog": ["services/watchdog.py"],
 }
-# the import fragment that betrays each subsystem
+# the import fragment that betrays each subsystem. The deadline tracker spans two
+# files (the primitive and the tracker), so the ``services.deadline`` prefix names
+# both; the tracker using its own primitive is intra-subsystem, hence allowed.
 SIGNATURE = {
     "connector": "adapters",
     "decision": "strategy",
     "log_manager": "services.log_manager",
-    "deadline_tracker": "services.deadlines",
+    "deadline_tracker": "services.deadline",
     "watchdog": "services.watchdog",
 }
 
