@@ -23,7 +23,15 @@ BUNDLE = ROOT / "shared_contract"
 EXAMPLE = BUNDLE / "fixtures" / "match_config.example.json"
 PROJECTION = BUNDLE / "fixtures" / "negotiation_terms.projection.json"
 
-IDENTITY = {"group_id": "neutral-group-alpha", "group_name": "Alpha", "members": ["a"]}
+# A complete identity: the book mandates members, repo URLs, MCP URLs, hardware
+# spec, and LLM model, and `build_offer` now enforces that on our own outbound offer
+# (M5-04h). Values are neutral test data, not the real team's.
+IDENTITY = {
+    "group_id": "neutral-group-alpha", "group_name": "Alpha", "members": ["a", "b"],
+    "repos": {"cop": "https://example.test/cop", "thief": "https://example.test/thief"},
+    "mcp_servers": {"cop": "https://cop.example.test/mcp"}, "llm_model": "cli-default",
+    "spec": {"os": "Example OS", "cpu": "Example CPU"},
+}
 
 
 def game() -> dict:
@@ -75,9 +83,9 @@ def test_game_id_is_not_a_signed_term() -> None:
     assert "game_id" not in terms and "game_uid" not in terms
 
 
-def test_offer_carries_terms_challenge_signature_and_identity() -> None:
+def test_offer_carries_terms_challenge_signature_identity_and_lock() -> None:
     offer = build_offer(game(), IDENTITY)
-    assert set(offer) == {"terms", "nonce", "signature", "identity"}
+    assert set(offer) == {"terms", "nonce", "signature", "identity", "config_sha256"}
     assert offer["identity"]["group_id"] == "neutral-group-alpha"
     assert len(offer["nonce"]) == 32 and len(offer["signature"]) == 64
 
@@ -96,7 +104,7 @@ def test_an_offer_verifies_against_matching_terms_in_both_directions() -> None:
     expected = terms_from_config(game())
     assert verify_offer(build_offer(game(), IDENTITY), expected) == expected
 
-    other = {"group_id": "neutral-group-beta"}
+    other = {**IDENTITY, "group_id": "neutral-group-beta"}
     assert verify_offer(build_offer(game(), other), expected) == expected
 
 

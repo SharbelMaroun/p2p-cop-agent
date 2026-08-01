@@ -67,6 +67,22 @@ apart:
 
 Keeping these separate matters: collapsing them would make a peer that legitimately
 refuses look like a flaky network, and a retry loop would then hide a lost game.
+
+## Pre-game identity and the config lock (M5-04h)
+
+The book requires the negotiation exchange to carry the team's members, repository
+URLs, MCP server URLs, hardware spec, and LLM model, and both teams to lock the
+agreed values with a `config_sha256`. Under the 2026-08-01 "populate ours, tolerate
+theirs" decision (`C-031`), this is one-directional: `build_offer` assembles the full
+identity (`protocol/identity.py`, from injected config sources — never hard-coded),
+refuses to ship an incomplete one, and attaches `config_sha256` over the *whole* game
+object — the same digest the artifacts use, distinct from the signed terms projection.
+`verify_offer` is unchanged, so a peer that omits these still negotiates: requiring
+them would refuse a simulator-built peer that keeps them in artifacts, not on the
+wire, which is a contract change reserved for the coordinator (`U-029`). The identity's
+URLs live on the negotiation wire precisely because the book mandates sharing them —
+a different object from the shared, signed match config, which still forbids any
+network address `[AE-10]`.
 Appendix E rules 6/7 require the opposite — failures must surface, not be waited out.
 
 **Statelessness.** Each call opens and closes its own session, and `__slots__`
@@ -133,5 +149,29 @@ config — so neither peer can grant itself a longer rope:
 confirmed against the reference 2026-08-01. Time is injected, so timeouts are tested
 by passing a number rather than sleeping.
 
-Still absent: mutual verification of the *opponent's* audit (`M7`), idempotency keys
-and backpressure (M5-05c, M5-05d), the watchdog itself (M5-06), and tunnel (M5-07).
+## Watchdog and controlled shutdown (M5-06)
+
+The deadline bounds one request; the watchdog bounds *overall silence*. A peer can
+answer every call and still go dead between them, so `services/watchdog.py` is a
+separate liveness timer that trips when nothing has happened for the agreed
+`network_and_league.watchdog_timeout_sec` (60, `[AF-t19]`, `Negotiation`). Its trip is
+**sticky** and its clock injected, matching `Deadline`. The heartbeat that feeds it
+reuses the loop's existing per-phase `on_transition` stream (M5-11d) via
+`heartbeat_on_transition` — every phase entered is a sign of life — so no new plumbing
+threads through the turn loop.
+
+`orchestration/shutdown.py` owns the trip response the book names: `persist_state()`
+**then** `controlled_shutdown()`. It guarantees the ordering and, above all, is
+fail-closed — a failing `persist_state` is recorded (`ShutdownReport.persisted=False`)
+and the game still ends, because a shutdown that could hang is the failure the
+watchdog exists to catch. Routing to `TECHNICAL_LOSS` uses only declared transitions:
+a direct edge from `AWAITING_REVEAL`/`COMPUTING_MOVE`, the documented
+`COMPUTING_MOVE` bridge from `WAITING_FOR_OPPONENT`, and a refusal (`ShutdownError`)
+in the synchronous phases where bridging would fabricate a reveal `[AE-7]`.
+
+The concrete snapshot **format** is the log manager's (M5-12) and the **wiring** of
+persistence to a live match is the orchestrator's (M5-08); `persist_state` is an
+injected seam until then.
+
+Still absent: mutual verification of the *opponent's* audit (`M7`), the orchestrator
+gateway (M5-08), the log manager (M5-12), and tunnel (M5-07).

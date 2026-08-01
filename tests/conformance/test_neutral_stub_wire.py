@@ -24,7 +24,14 @@ from tests.conformance.neutral_stub_server import build_neutral_server
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE = ROOT / "shared_contract" / "fixtures" / "match_config.example.json"
 CHALLENGE = "0123456789abcdef0123456789abcdef"
-IDENTITY = {"group_id": "neutral-group-alpha", "group_name": "Alpha"}
+# Complete per the book-mandated pre-game content `build_offer` now enforces on our
+# side (M5-04h); neutral test values, not the real team's.
+IDENTITY = {
+    "group_id": "neutral-group-alpha", "group_name": "Alpha", "members": ["a", "b"],
+    "repos": {"cop": "https://example.test/cop", "thief": "https://example.test/thief"},
+    "mcp_servers": {"cop": "https://cop.example.test/mcp"}, "llm_model": "cli-default",
+    "spec": {"os": "Example OS", "cpu": "Example CPU"},
+}
 
 
 def game() -> dict:
