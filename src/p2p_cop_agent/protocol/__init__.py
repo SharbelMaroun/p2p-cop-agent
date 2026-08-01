@@ -27,6 +27,12 @@ from p2p_cop_agent.protocol.commit_reveal import (
     TurnLedger,
     verify_audit,
 )
+from p2p_cop_agent.protocol.identity import (
+    MANDATORY_IDENTITY,
+    IdentityError,
+    build_identity,
+    require_complete_identity,
+)
 from p2p_cop_agent.protocol.messages import (
     MESSAGE_SCHEMAS,
     OK_RESPONSE,
@@ -58,13 +64,17 @@ from p2p_cop_agent.protocol.receive import (
 
 __all__ = [
     "FIXED_TERMS",
+    "MANDATORY_IDENTITY",
     "MESSAGE_SCHEMAS",
     "MINIMUM_TERMS",
     "OK_RESPONSE",
     "REFUSAL_WORDS",
     "WIRE_ROLES",
+    "IdentityError",
     "NegotiationError",
+    "build_identity",
     "build_offer",
+    "require_complete_identity",
     "check_appendix_f",
     "terms_from_config",
     "validate_participants",

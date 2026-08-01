@@ -14,7 +14,14 @@ from __future__ import annotations
 from p2p_cop_agent.protocol import build_offer
 from tests.integration.conftest import match_object, transcript_entries
 
-IDENTITY = {"group_id": "neutral-group-alpha", "group_name": "Alpha"}
+# Complete per the book-mandated pre-game content `build_offer` now enforces on our
+# side (M5-04h); neutral test values, not the real team's.
+IDENTITY = {
+    "group_id": "neutral-group-alpha", "group_name": "Alpha", "members": ["a", "b"],
+    "repos": {"cop": "https://example.test/cop", "thief": "https://example.test/thief"},
+    "mcp_servers": {"cop": "https://cop.example.test/mcp"}, "llm_model": "cli-default",
+    "spec": {"os": "Example OS", "cpu": "Example CPU"},
+}
 
 
 def negotiations(transcript) -> list[dict]:

@@ -23,7 +23,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from p2p_cop_agent.protocol.commit import generate_commitment_nonce, move_commit, verify_commit
+from p2p_cop_agent.protocol.identity import require_complete_identity
 from p2p_cop_agent.shared.config import JsonObject
+from p2p_cop_agent.shared.contracts import shared_config_sha256
 
 # Signed-terms projection: term name -> (section, key) in the match config.
 TERM_SOURCES: tuple[tuple[str, tuple[str, str]], ...] = (
@@ -118,16 +120,24 @@ def build_offer(
     The nonce is the **public** negotiation challenge. It is generated with the
     same entropy source as a commitment nonce but is a distinct domain value and
     is never reused as one (`C-020`).
+
+    Two book-mandated pre-game facts are enforced on **our** side only (M5-04h,
+    `U-029`): the identity must carry every member the book requires, and the message
+    carries a ``config_sha256`` lock over the *complete* game object -- the same
+    digest the emitted artifacts use, distinct from the terms projection that gets
+    signed. We do not require either of an opponent; see `verify_offer`.
     """
     terms = terms_from_config(game)
     check_appendix_f(terms)
     validate_participants(game, identity.get("group_id"))
+    require_complete_identity(identity)
     challenge = nonce or generate_commitment_nonce()
     return {
         "terms": terms,
         "nonce": challenge,
         "signature": move_commit(terms, challenge),
         "identity": dict(identity),
+        "config_sha256": shared_config_sha256(dict(game)),
     }
 
 

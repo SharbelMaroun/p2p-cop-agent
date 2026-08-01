@@ -67,6 +67,22 @@ apart:
 
 Keeping these separate matters: collapsing them would make a peer that legitimately
 refuses look like a flaky network, and a retry loop would then hide a lost game.
+
+## Pre-game identity and the config lock (M5-04h)
+
+The book requires the negotiation exchange to carry the team's members, repository
+URLs, MCP server URLs, hardware spec, and LLM model, and both teams to lock the
+agreed values with a `config_sha256`. Under the 2026-08-01 "populate ours, tolerate
+theirs" decision (`C-031`), this is one-directional: `build_offer` assembles the full
+identity (`protocol/identity.py`, from injected config sources — never hard-coded),
+refuses to ship an incomplete one, and attaches `config_sha256` over the *whole* game
+object — the same digest the artifacts use, distinct from the signed terms projection.
+`verify_offer` is unchanged, so a peer that omits these still negotiates: requiring
+them would refuse a simulator-built peer that keeps them in artifacts, not on the
+wire, which is a contract change reserved for the coordinator (`U-029`). The identity's
+URLs live on the negotiation wire precisely because the book mandates sharing them —
+a different object from the shared, signed match config, which still forbids any
+network address `[AE-10]`.
 Appendix E rules 6/7 require the opposite — failures must surface, not be waited out.
 
 **Statelessness.** Each call opens and closes its own session, and `__slots__`
