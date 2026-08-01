@@ -18,6 +18,7 @@ SRC = Path(__file__).resolve().parents[2] / "src" / "p2p_cop_agent"
 SUBSYSTEMS = {
     "connector": ["adapters/fastmcp_client.py", "adapters/fastmcp_server.py"],
     "decision": ["strategy/pursuit.py", "strategy/barrier_policy.py"],
+    "log_manager": ["services/log_manager.py"],
     "deadline_tracker": ["services/deadlines.py"],
     "watchdog": ["services/watchdog.py"],
 }
@@ -25,6 +26,7 @@ SUBSYSTEMS = {
 SIGNATURE = {
     "connector": "adapters",
     "decision": "strategy",
+    "log_manager": "services.log_manager",
     "deadline_tracker": "services.deadlines",
     "watchdog": "services.watchdog",
 }
