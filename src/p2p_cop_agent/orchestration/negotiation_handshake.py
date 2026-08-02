@@ -39,6 +39,7 @@ from p2p_cop_agent.orchestration.polling import (
     Sleep,
     poll_for_turn,
 )
+from p2p_cop_agent.protocol.attestation import AttestationError, review_opponent_attestation
 from p2p_cop_agent.protocol.messages import ProtocolError, is_acknowledgement, validate_message
 from p2p_cop_agent.protocol.negotiation import NegotiationError, build_offer, terms_from_config
 from p2p_cop_agent.protocol.offer_review import verify_offer
@@ -61,11 +62,17 @@ class HandshakeError(RuntimeError):
 
 @dataclass(frozen=True, slots=True)
 class Agreement:
-    """A verified mutual agreement: the terms both peers signed, and who we agreed with."""
+    """A verified mutual agreement: the terms both peers signed, and who we agreed with.
+
+    ``opponent_step_zero`` is the peer's verified Step-0 attestation when it sent one,
+    or ``None`` when it omitted it (tolerated, `U-029`) -- kept so the caller can carry
+    it into the emitted artifacts without re-reading the offer.
+    """
 
     terms: JsonObject
     opponent_identity: JsonObject
     our_offer: JsonObject
+    opponent_step_zero: JsonObject | None = None
 
 
 def negotiate_match(
@@ -80,6 +87,7 @@ def negotiate_match(
     poll_interval: float = DEFAULT_POLL_INTERVAL,
     heartbeat: Heartbeat | None = None,
     our_nonce: str | None = None,
+    step_zero: Mapping[str, object] | None = None,
 ) -> Agreement | None:
     """Send our offer, await the opponent's, and return an Agreement iff both verify.
 
@@ -87,8 +95,14 @@ def negotiate_match(
     identity), so an offer that leaves here is already well-formed; the opponent's is
     checked with ``verify_offer`` once it arrives. A return of ``None`` means no
     counter-offer came in time, and the caller must not start play.
+
+    ``step_zero`` is our sealed Step-0 attestation (``protocol.attestation_wire``);
+    when given it rides on the offer and the opponent's is verified on receipt --
+    tolerating omission, refusing a present-but-tampered seal (M5-17f-ii, `U-029`).
     """
     our_offer = build_offer(game, identity, nonce=our_nonce)
+    if step_zero is not None:
+        our_offer = {**our_offer, "step_zero": dict(step_zero)}
     _send_offer(transport, our_offer)
     their_offer = poll_for_turn(
         take_offer,
@@ -102,7 +116,12 @@ def negotiate_match(
         return None
     agreed = _verify_incoming(their_offer, game)
     opponent = their_offer.get("identity")
-    return Agreement(agreed, dict(opponent) if isinstance(opponent, Mapping) else {}, our_offer)
+    return Agreement(
+        agreed,
+        dict(opponent) if isinstance(opponent, Mapping) else {},
+        our_offer,
+        _review_attestation(their_offer.get("step_zero")),
+    )
 
 
 def _send_offer(transport: object, offer: JsonObject) -> None:
@@ -116,6 +135,14 @@ def _send_offer(transport: object, offer: JsonObject) -> None:
         raise HandshakeError(f"our offer could not be delivered: {exc}") from exc
     if not is_acknowledgement(ack):
         raise HandshakeError(f"opponent did not acknowledge our offer: {ack!r}")
+
+
+def _review_attestation(step_zero: object) -> JsonObject | None:
+    """Verify the opponent's Step-0 if present; a tampered one refuses the match."""
+    try:
+        return review_opponent_attestation(step_zero)
+    except AttestationError as exc:
+        raise NegotiationError(f"opponent attestation refused: {exc}") from exc
 
 
 def _verify_incoming(offer: JsonObject, game: Mapping[str, object]) -> JsonObject:
