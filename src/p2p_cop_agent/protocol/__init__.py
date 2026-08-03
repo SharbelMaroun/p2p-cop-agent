@@ -29,6 +29,11 @@ from p2p_cop_agent.protocol.commit_reveal import (
     TurnLedger,
     verify_audit,
 )
+from p2p_cop_agent.protocol.declaration import (
+    DeclarationError,
+    build_declaration,
+    lock_declaration,
+)
 from p2p_cop_agent.protocol.identity import (
     MANDATORY_IDENTITY,
     IdentityError,
@@ -87,6 +92,7 @@ __all__ = [
     "CommitError",
     "CommitRevealError",
     "ConflictError",
+    "DeclarationError",
     "HostSpec",
     "Intake",
     "ProtocolError",
@@ -97,7 +103,9 @@ __all__ = [
     "TurnLedger",
     "attestation_wire",
     "audit_reveal",
+    "build_declaration",
     "build_step_zero",
+    "lock_declaration",
     "review_opponent_attestation",
     "canonical_payload_bytes",
     "generate_commitment_nonce",
