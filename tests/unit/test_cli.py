@@ -5,11 +5,10 @@ import pytest
 from p2p_cop_agent.cli import main
 
 
-def test_cli_without_arguments_shows_scaffold_help(capsys: pytest.CaptureFixture[str]) -> None:
-    """Keep the default command informative without starting a runtime."""
+def test_cli_without_arguments_shows_help_without_serving(capsys: pytest.CaptureFixture[str]) -> None:
+    """With no subcommand, show help and start no runtime; `serve` is advertised."""
     assert main([]) == 0
-    output = capsys.readouterr().out
-    assert "runtime behavior is not implemented" in output
+    assert "serve" in capsys.readouterr().out
 
 
 def test_cli_help_exits_successfully(capsys: pytest.CaptureFixture[str]) -> None:
