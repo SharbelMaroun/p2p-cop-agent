@@ -16,6 +16,15 @@ from p2p_cop_agent.strategy.belief_pursuit import (
     belief_turn_intent,
     pursue_belief,
 )
+from p2p_cop_agent.strategy.hints import (
+    HINT_MAX_WORDS_DEFAULT,
+    Hint,
+    HintError,
+    encodes_coordinates,
+    hint_max_words,
+    template_hint,
+    validate_hint,
+)
 from p2p_cop_agent.strategy.pursuit import choose_action, step_distances
 from p2p_cop_agent.strategy.scent import (
     CENTER_INTENSITY,
@@ -31,9 +40,12 @@ __all__ = [
     "DECAY_RATE",
     "DOCUMENTED_EMISSION",
     "FIELD_SIZE",
+    "HINT_MAX_WORDS_DEFAULT",
     "BarrierIntent",
     "Belief",
     "BeliefError",
+    "Hint",
+    "HintError",
     "MoveIntent",
     "TurnIntent",
     "belief_target",
@@ -42,7 +54,11 @@ __all__ = [
     "choose_turn_intent",
     "decay",
     "emission_field",
+    "encodes_coordinates",
+    "hint_max_words",
     "pursue_belief",
     "scent_likelihood",
     "step_distances",
+    "template_hint",
+    "validate_hint",
 ]
