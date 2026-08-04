@@ -1,0 +1,108 @@
+"""Compose the whole pre-play preamble and the sub-game into one match (M5-17f).
+
+The book's order before the first move: **negotiate -> exchange & verify Step-0 ->
+write and lock the declaration -> play**. The pieces exist (M5-17f-i/ii/iii, M5-17);
+this runs them as one autonomous sequence, so a peer plays a match end to end with no
+human in the loop -- the whole point of `M5-17f`.
+
+Transport-agnostic in the same way the turn loop is: given a transport, the two mailbox
+sources, and a clock, it runs in-memory in tests and over a socket in production, so the
+sequencing is proven without a second machine.
+
+**A match that never agrees never plays.** ``negotiate_match`` returning ``None`` (a
+silent opponent) or raising ``NegotiationError`` (a refusal) both stop before the
+declaration is even built -- a declaration locked for a game that will not happen would
+be a lie, and the first move must never precede the lock.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
+
+from p2p_cop_agent.orchestration.negotiation_handshake import Agreement, negotiate_match
+from p2p_cop_agent.orchestration.phases import PhaseMachine
+from p2p_cop_agent.orchestration.polling import DEFAULT_POLL_INTERVAL, Heartbeat, turn_receiver
+from p2p_cop_agent.orchestration.sub_game import SubGameOutcome, run_sub_game_over_wire
+from p2p_cop_agent.orchestration.turn_loop import Decide, Receive
+from p2p_cop_agent.protocol.commit_reveal import TurnLedger
+from p2p_cop_agent.protocol.declaration import build_declaration, lock_declaration
+from p2p_cop_agent.shared.config import JsonObject
+
+COP_ROLE = "police"
+
+
+@dataclass(frozen=True, slots=True)
+class MatchResult:
+    """The whole match: what was agreed, the locked declaration, and how play ended.
+
+    Every field is ``None`` when the peers never reached agreement, so a caller can
+    tell "no game happened" from "a game happened and ended thus" without guessing.
+    """
+
+    agreement: Agreement | None
+    declaration: JsonObject | None
+    declaration_lock: str | None
+    outcome: SubGameOutcome | None
+
+    @property
+    def played(self) -> bool:
+        """Whether a sub-game actually ran (i.e. agreement was reached)."""
+        return self.outcome is not None
+
+
+def play_match(
+    *,
+    sdk: object,
+    transport: object,
+    take_offer: Callable[[], JsonObject | None],
+    take_turn: Callable[[], JsonObject | None],
+    decide: Decide,
+    identity: Mapping[str, object],
+    game_id: str,
+    game_uid: str,
+    started_at: str,
+    max_tokens_per_game: int,
+    clock: Callable[[], float],
+    sleep: Callable[[float], None],
+    step_zero: Mapping[str, object] | None = None,
+    opens: bool = False,
+    heartbeat: Heartbeat | None = None,
+    poll_interval: float = DEFAULT_POLL_INTERVAL,
+) -> MatchResult:
+    """Negotiate, lock the declaration, then play -- or stop cleanly if never agreed."""
+    game = dict(sdk.game_config)  # type: ignore[attr-defined]
+    timeout = float(game["network_and_league"]["response_timeout_sec"])
+    agreement = negotiate_match(
+        game=game, identity=identity, transport=transport, take_offer=take_offer,
+        clock=clock, sleep=sleep, timeout=timeout, poll_interval=poll_interval,
+        heartbeat=heartbeat, step_zero=step_zero,
+    )
+    if agreement is None:
+        return MatchResult(None, None, None, None)
+    declaration = build_declaration(
+        game_id=game_id, game_uid=game_uid, our_identity=identity,
+        opponent_identity=agreement.opponent_identity,
+        config_sha256=sdk.config_sha256,  # type: ignore[attr-defined]
+        num_sub_games=int(game["network_and_league"]["num_games"]),
+        max_tokens_per_game=max_tokens_per_game, started_at=started_at,
+    )
+    lock = lock_declaration(declaration)
+    receive = turn_receiver(
+        take_turn, clock=clock, sleep=sleep, timeout=timeout,
+        poll_interval=poll_interval, heartbeat=heartbeat,
+    )
+    outcome = _play(game, transport, receive, decide, opens)
+    return MatchResult(agreement, declaration, lock, outcome)
+
+
+def _play(
+    game: Mapping[str, object], transport: object, receive: Receive,
+    decide: Decide, opens: bool,
+) -> SubGameOutcome:
+    """Play one sub-game to a decided outcome, bounded by the negotiated horizon."""
+    threshold = game["movement_and_barriers"]["survival_threshold"]  # type: ignore[index]
+    return run_sub_game_over_wire(
+        machine=PhaseMachine(), ledger=TurnLedger(COP_ROLE), transport=transport,
+        receive=receive, decide=decide, survival_threshold=threshold, opens=opens,
+    )

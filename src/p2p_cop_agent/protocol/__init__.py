@@ -4,7 +4,9 @@ from p2p_cop_agent.protocol.attestation import (
     AttestationError,
     HostSpec,
     SealedAttestation,
+    attestation_wire,
     build_step_zero,
+    review_opponent_attestation,
     running_git_commit,
     seal_step_zero,
     verify_attestation,
@@ -26,6 +28,11 @@ from p2p_cop_agent.protocol.commit_reveal import (
     SealedTurn,
     TurnLedger,
     verify_audit,
+)
+from p2p_cop_agent.protocol.declaration import (
+    DeclarationError,
+    build_declaration,
+    lock_declaration,
 )
 from p2p_cop_agent.protocol.identity import (
     MANDATORY_IDENTITY,
@@ -85,6 +92,7 @@ __all__ = [
     "CommitError",
     "CommitRevealError",
     "ConflictError",
+    "DeclarationError",
     "HostSpec",
     "Intake",
     "ProtocolError",
@@ -93,8 +101,12 @@ __all__ = [
     "SealedTurn",
     "TurnInbox",
     "TurnLedger",
+    "attestation_wire",
     "audit_reveal",
+    "build_declaration",
     "build_step_zero",
+    "lock_declaration",
+    "review_opponent_attestation",
     "canonical_payload_bytes",
     "generate_commitment_nonce",
     "is_acknowledgement",

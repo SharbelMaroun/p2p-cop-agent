@@ -11,6 +11,12 @@ from p2p_cop_agent.orchestration.harness import (
     run_sub_game,
 )
 from p2p_cop_agent.orchestration.history import CopHistory
+from p2p_cop_agent.orchestration.match import MatchResult, play_match
+from p2p_cop_agent.orchestration.negotiation_handshake import (
+    Agreement,
+    HandshakeError,
+    negotiate_match,
+)
 from p2p_cop_agent.orchestration.orchestrator import Orchestrator
 from p2p_cop_agent.orchestration.phases import (
     TRANSITIONS,
@@ -52,8 +58,11 @@ __all__ = [
     "RESULT_CLAIMS",
     "TRANSITIONS",
     "TURN_CYCLE",
+    "Agreement",
     "CopHistory",
     "CopState",
+    "HandshakeError",
+    "MatchResult",
     "DeadlineTracker",
     "DecisionModule",
     "LivenessWatchdog",
@@ -75,6 +84,8 @@ __all__ = [
     "TurnRecord",
     "TurnEvent",
     "TurnOrder",
+    "negotiate_match",
+    "play_match",
     "poll_for_turn",
     "run_sub_game",
     "run_sub_game_over_wire",

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import re
 import subprocess
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -117,3 +118,38 @@ def seal_step_zero(payload: JsonObject, *, nonce: str | None = None) -> SealedAt
 def verify_attestation(sealed: SealedAttestation) -> bool:
     """Return whether a revealed Step-0 declaration reproduces its seal."""
     return verify_commit(sealed.payload, sealed.nonce, sealed.commit)
+
+
+def attestation_wire(sealed: SealedAttestation) -> JsonObject:
+    """Serialize a sealed Step-0 for the pre-game negotiation exchange (M5-17f-ii).
+
+    Step-0 carries nothing secret -- hardware, model, git commit -- so unlike a move
+    it is exchanged *revealed* and verified on the spot, before the first move. The
+    seal binds it: neither peer can later claim different facts without the audit
+    catching it. The nonce travels because the seal is only reproducible with it.
+    """
+    return {"payload": sealed.payload, "nonce": sealed.nonce, "commit": sealed.commit}
+
+
+def review_opponent_attestation(step_zero: object) -> JsonObject | None:
+    """Tolerate an omitted Step-0, but refuse a present-but-tampered one (`U-029`).
+
+    Returns the verified attestation when present and sound, or ``None`` when the peer
+    omitted it -- a simulator-built peer keeps Step-0 in its artifacts rather than on
+    the wire, so refusing an omission would forfeit an otherwise-valid match. A seal
+    that **is** present must be well-formed and reproduce, or it is tampered and the
+    match is refused, exactly as a present-but-wrong config lock is (`verify_offer`).
+    """
+    if step_zero is None:
+        return None
+    if not isinstance(step_zero, Mapping):
+        raise AttestationError("step_zero must be an object")
+    for field in ("payload", "nonce", "commit"):
+        if field not in step_zero:
+            raise AttestationError(f"step_zero is missing {field!r}")
+    payload = step_zero["payload"]
+    if not isinstance(payload, Mapping):
+        raise AttestationError("step_zero.payload must be an object")
+    if not verify_commit(dict(payload), step_zero["nonce"], step_zero["commit"]):
+        raise AttestationError("step_zero seal does not reproduce; attestation is tampered")
+    return dict(step_zero)
