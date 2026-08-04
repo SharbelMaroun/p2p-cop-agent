@@ -485,12 +485,12 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M6-11a | Parse an inbound hint without executing it | DEFERRED | P0 | Text is evidence, never an instruction |
 | M6-11b | Weight the hint by the sender's running trust score | DEFERRED | P1 | Repeated contradiction lowers the weight |
 | M6-11c | Tolerate an absent, empty, or over-long hint | DEFERRED | P1 | Missing evidence is not an error state |
-| M6-12 | Prove the strategy layer under observation tests | DEFERRED | P0 | Behaviour stays legal and deterministic under every observation shape |
-| M6-12a | Test with no scent and no hint | DEFERRED | P1 | A uniform belief still yields a legal action |
-| M6-12b | Test with contradictory scent and hint | DEFERRED | P1 | The physical evidence wins |
-| M6-12c | Test with a saturated scent field | DEFERRED | P1 | No overflow, no division by zero |
-| M6-12d | Test with the Thief adjacent and with the Thief far | DEFERRED | P1 | Both produce sane, legal, distinct choices |
-| M6-12e | Test that repeated runs are byte-identical | DEFERRED | P0 | Determinism is a submission property, not an accident |
+| M6-12 | Prove the strategy layer under observation tests | PENDING | P0 | Behaviour stays legal and deterministic under every observation shape. **Started 2026-08-03** (`test_strategy_observation.py`): the scent-driven shapes are proven end to end through scent→belief→pursuit; only `M6-12b` (hint contradiction) remains, gated on the hint model (`M6-10`/`M6-11`), so the parent stays open |
+| M6-12a | Test with no scent and no hint | DONE | P1 | A uniform belief still yields a legal action. An empty observation leaves belief uniform and the pipeline returns a member of `Action`, never an error |
+| M6-12b | Test with contradictory scent and hint | DEFERRED | P1 | The physical evidence wins. Needs the hint model (`M6-10`/`M6-11`) and the hint-vs-scent trust factor (`M6-02f`), none of which exist yet; the scent half is covered by the other M6-12 cases |
+| M6-12c | Test with a saturated scent field | DONE | P1 | No overflow, no division by zero. Every cell at max scent yields a valid, normalised belief (sums to 1) and a legal action |
+| M6-12d | Test with the Thief adjacent and with the Thief far | DONE | P1 | Both produce sane, legal, distinct choices. Adjacent vs far scent give **different** `belief_target`s (the exact source cell) and both resolve to legal actions |
+| M6-12e | Test that repeated runs are byte-identical | DONE | P0 | Determinism is a submission property, not an accident. The same observation yields the same action **and** byte-identical belief probabilities across two independent runs |
 | M6-13 | Benchmark the per-turn decision cost | DEFERRED | P1 | Belief update plus policy stays well inside the response timeout |
 | M6-13a | Measure worst-case belief update time | DEFERRED | P1 | Measured at the negotiated grid size |
 | M6-13b | Record the measurement in the research evidence | DEFERRED | P2 | Feeds `M9-06` and the computational-fairness claim |
