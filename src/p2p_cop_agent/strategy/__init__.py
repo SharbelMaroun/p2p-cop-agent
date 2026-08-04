@@ -6,6 +6,11 @@ from p2p_cop_agent.strategy.barrier_policy import (
     TurnIntent,
     choose_turn_intent,
 )
+from p2p_cop_agent.strategy.belief import (
+    Belief,
+    BeliefError,
+    scent_likelihood,
+)
 from p2p_cop_agent.strategy.pursuit import choose_action, step_distances
 from p2p_cop_agent.strategy.scent import (
     CENTER_INTENSITY,
@@ -22,11 +27,14 @@ __all__ = [
     "DOCUMENTED_EMISSION",
     "FIELD_SIZE",
     "BarrierIntent",
+    "Belief",
+    "BeliefError",
     "MoveIntent",
     "TurnIntent",
     "choose_action",
     "choose_turn_intent",
     "decay",
     "emission_field",
+    "scent_likelihood",
     "step_distances",
 ]
