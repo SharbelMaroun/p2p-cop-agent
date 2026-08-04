@@ -436,11 +436,11 @@ These run before every commit and in CI; they are not milestone-scoped.
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
-| M6-01 | Implement multiplicative scent field | DEFERRED | P1 | Book equation and fixed constants pass numeric tests |
-| M6-01a | Emit a 5×5 field centred on the agent | DEFERRED | P1 | Centre `τ = 0.9`, radial decay `[AF-t16]` `[PRD-scent]` |
-| M6-01b | Apply `τ(t+1) = max(0, (1-ρ)·τ(t) + Δτ)` per full turn | DEFERRED | P1 | Decay runs once after both sides act, never per half-turn |
-| M6-01c | Pin the radial profile with numeric vectors | DEFERRED | P1 | 0.90 / 0.62 / 0.20 / 0.14 / 0.04 asserted to the documented precision |
-| M6-01d | Clip intensities to non-negative | DEFERRED | P1 | A never-visited cell reads 0, meaning absence of information |
+| M6-01 | Implement multiplicative scent field | PENDING | P1 | Book equation and fixed constants pass numeric tests. **Started 2026-08-03** (`strategy/scent.py`): three of four children DONE; `M6-01a` is 17/25 cells pending `U-030`, so the parent stays open, and the `M6-07` model lock is blocked on `U-030`/`U-031` |
+| M6-01a | Emit a 5×5 field centred on the agent | PENDING | P1 | Centre `τ = 0.9`, radial decay `[AF-t16]` `[PRD-scent]`. `emission_field` places the **17 book-documented cells** (centre `0.90`, cross `0.62`, diagonal `0.20`, mid-side `0.14`, corner `0.04`); the **8 intermediate outer-ring cells** `(±2,±1)`/`(±1,±2)` are undocumented and intentionally omitted rather than guessed — `U-030`, because the emitted field crosses the wire and the model is hash-locked cross-peer |
+| M6-01b | Apply `τ(t+1) = max(0, (1-ρ)·τ(t) + Δτ)` per full turn | DONE | P1 | Decay runs once after both sides act, never per half-turn. `strategy/scent.decay` implements the formula exactly; **multiplicative, not subtractive** (`C-009`) — at `ρ=0.10` a cell retains `0.90·τ`, and a test asserts `0.81 ≠ 0.80`. No re-emission cap is applied (`U-031`). The once-per-full-turn timing is the caller's to honour |
+| M6-01c | Pin the radial profile with numeric vectors | DONE | P1 | 0.90 / 0.62 / 0.20 / 0.14 / 0.04 asserted to the documented precision. `DOCUMENTED_EMISSION` sourced from the book heatmap (`police_thief_p2p_unverified_translation.md:962-970`); `test_scent.py` pins each radial class and its symmetry |
+| M6-01d | Clip intensities to non-negative | DONE | P1 | A never-visited cell reads 0, meaning absence of information. `decay`'s `max(0.0, …)` clips a negative update to absence; tested at `τ=0`, `Δτ=−1` |
 | M6-02 | Implement Cop-local belief update | DEFERRED | P1 | Belief uses observation only and normalizes safely |
 | M6-02a | Maintain a board-sized probability matrix | DEFERRED | P1 | Sized to `grid_size`, not to the book's 10×10 illustration |
 | M6-02b | Apply Bayes with a per-hint trust factor | DEFERRED | P1 | A hint contradicted by scent lowers its own trust weight `[PRD-scent]` |
