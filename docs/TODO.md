@@ -513,7 +513,7 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M6-16a | Prove a full series runs at zero tokens | DEFERRED | P1 | Template provider only `[AF-t21]` |
 | M6-16b | Prove a provider outage never forfeits a turn | DEFERRED | P0 | Fallback is automatic and silent to the opponent |
 | M6-17 | Record the belief model in the academic report | DEFERRED | P1 | Bayes update, trust factor, and the Manhattan objective `[AE-42]` |
-| M6-18 | Prove belief and scent never leak into the wire beyond the agreed fields | DEFERRED | P0 | Internal certainty is private; only the agreed observation crosses |
+| M6-18 | Prove belief and scent never leak into the wire beyond the agreed fields | IN PROGRESS | P0 | Internal certainty is private; only the agreed observation crosses |
 | M6-19 | Add regression vectors for the scent field | DEFERRED | P1 | Stored expected fields guard against silent physics drift |
 | M6-20 | Measure strategy quality against the baseline | DEFERRED | P1 | Belief-driven pursuit must beat the blind baseline or be reverted |
 | M6-20a | Define the comparison protocol | DEFERRED | P1 | Fixed seeds, fixed opponent policy, repeated runs |
