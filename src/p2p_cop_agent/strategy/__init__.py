@@ -41,6 +41,13 @@ from p2p_cop_agent.strategy.scent import (
     decay,
     emission_field,
 )
+from p2p_cop_agent.strategy.verbal import (
+    HintProviderError,
+    generate_hint,
+    is_model_turn,
+    openai_provider,
+    provider_from_config,
+)
 
 __all__ = [
     "CENTER_INTENSITY",
@@ -54,6 +61,7 @@ __all__ = [
     "BeliefError",
     "Hint",
     "HintError",
+    "HintProviderError",
     "MoveIntent",
     "ReceivedHint",
     "TrustScore",
@@ -65,8 +73,12 @@ __all__ = [
     "decay",
     "emission_field",
     "encodes_coordinates",
+    "generate_hint",
     "hint_max_words",
     "hint_weight",
+    "is_model_turn",
+    "openai_provider",
+    "provider_from_config",
     "pursue_belief",
     "receive_hint",
     "scent_likelihood",
