@@ -16,6 +16,13 @@ from p2p_cop_agent.strategy.belief_pursuit import (
     belief_turn_intent,
     pursue_belief,
 )
+from p2p_cop_agent.strategy.hint_consumption import (
+    NEUTRAL_TRUST,
+    ReceivedHint,
+    TrustScore,
+    hint_weight,
+    receive_hint,
+)
 from p2p_cop_agent.strategy.hints import (
     HINT_MAX_WORDS_DEFAULT,
     Hint,
@@ -34,6 +41,13 @@ from p2p_cop_agent.strategy.scent import (
     decay,
     emission_field,
 )
+from p2p_cop_agent.strategy.verbal import (
+    HintProviderError,
+    generate_hint,
+    is_model_turn,
+    openai_provider,
+    provider_from_config,
+)
 
 __all__ = [
     "CENTER_INTENSITY",
@@ -41,12 +55,16 @@ __all__ = [
     "DOCUMENTED_EMISSION",
     "FIELD_SIZE",
     "HINT_MAX_WORDS_DEFAULT",
+    "NEUTRAL_TRUST",
     "BarrierIntent",
     "Belief",
     "BeliefError",
     "Hint",
     "HintError",
+    "HintProviderError",
     "MoveIntent",
+    "ReceivedHint",
+    "TrustScore",
     "TurnIntent",
     "belief_target",
     "belief_turn_intent",
@@ -55,8 +73,14 @@ __all__ = [
     "decay",
     "emission_field",
     "encodes_coordinates",
+    "generate_hint",
     "hint_max_words",
+    "hint_weight",
+    "is_model_turn",
+    "openai_provider",
+    "provider_from_config",
     "pursue_belief",
+    "receive_hint",
     "scent_likelihood",
     "step_distances",
     "template_hint",
