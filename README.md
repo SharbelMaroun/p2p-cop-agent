@@ -365,13 +365,72 @@ bind a port another process already holds, which is exactly the condition the fu
 exists to detect. A test that held a port and asserted the raise caught it. A
 detection probe wants the strictest bind available, not the most permissive.
 
-*Still not built (`M5-17f`).* Negotiation-to-first-move sequencing — send offer, poll
-for the counter-signature, verify both directions, then play. The reference confirms
-play starts only after both verifications pass; the book adds that Step-0 must be
-exchanged and mutually signed and that the pre-game declaration is written after
-negotiation but before play. No `serve` command is wired until that lands, because a
-`serve` that comes up and mailboxes without playing is the passive server rejected on
-2026-08-01.
+*Since closed (`M5-17f`).* Negotiation-to-first-move sequencing now exists —
+`orchestration/negotiation_handshake.py` and `orchestration/match.py` run the book's
+pre-play order (negotiate → exchange and verify Step-0 → write and lock the
+declaration → play), and `adapters/serve.py` wires the `serve` command onto it. The
+paragraph that stood here said it was not built; that was true when written and is no
+longer, which is exactly the drift this report exists to avoid.
+
+#### Locking the scent model, and an unknown that no ruling could close (`M6-07`, 2026-08-05)
+
+Appendix E rule 23 is short: *"Lock the cryptographic hash of the scent model before
+the start of the game. Sanction: Deviation from the formula cancels the game."* We had
+no lock at all, and the reason turned out to be more interesting than an unfinished
+task.
+
+The 5×5 emission field has 25 cells. Book Figure 4 names five radial classes — centre
+`0.90`, cross `0.62`, diagonal `0.20`, mid-side `0.14`, corner `0.04` — and those cover
+**17** of them. The remaining eight, the ring at offsets `(±1,±2)`/`(±2,±1)`, are named
+by nothing. They had been recorded as an open unknown (`U-030`) and left **empty**,
+waiting for a ruling, and the model lock was blocked behind them.
+
+That wait could never have ended. A ruling needs something to rule on, and no source
+states a value. Meanwhile the omission was itself a defect: the reference simulator
+emits all 25 cells and its own tests assert a snapshot length of 25, so our eight empty
+cells would reach an opponent as eight cells reading zero — a quieter agent than we
+actually are, and a wrong one.
+
+The book had already answered a different and better question (p. 31): the parties
+**agree** the emission and decay model, confirm they interpret it identically against a
+concrete numerical example, and lock the agreement with SHA-256. It even recommends
+handing the opponent your scent source code. So the eight cells stopped being an
+unknown and became a **negotiated parameter** — published with an explicit default that
+carries no book authority, and sealed inside a hash covering the whole model: formula,
+constants, field size, and all 25 cells. Comparing the three Appendix F constants could
+never have caught this, because the formula and the radial profile never cross the wire
+on their own.
+
+**The lock is deliberately lenient in one direction.** A peer that publishes no lock is
+still played; a peer that publishes a *different* one is refused. The reference
+publishes none — it folds its pheromone terms into `config_sha256` — so demanding one
+would refuse every simulator-built classmate over a message they never send, and rule
+23 sanctions a *deviation from the formula*, not a silence. That is the same reasoning
+already settled for `config_sha256` under `U-029`.
+
+*The arithmetic correction, disclosed (`M6-07c`).* The locked formula reads `(1 − ρ)` as
+**retaining** 90% of prior scent at ρ = 0.10. The book's p. 43 prose "reduced by 90%"
+and its p. 46 claim that ρ approaching 1.0 *saturates* the board are arithmetic errors —
+a decay rate near 1.0 erases the trail, it does not saturate it. Both are disclosed here
+under the book's own p. 5 contradiction clause and are not implemented.
+
+*Problem hit — and it is the one worth reading.* The standing process is: ask both
+NotebookLM notebooks, **then** verify against `inst/`. The book notebook reported that
+Figure 4 prints **all 25** cells, with diagonals at `0.42` and the unnamed ring at
+`0.14`, and stated outright that no cell is left unspecified. It had been asked
+explicitly not to infer or interpolate. The source
+(`inst/police_thief_p2p_Summary.md:947-955`) contradicts every part of that: five
+classes, 17 cells, diagonals `0.20`. Had the verification step been skipped as
+redundant, a **correct** emission table would have been overwritten with an invented
+one in both repositories — and the tests would have been rewritten to match it, so
+nothing downstream would ever have caught it. A notebook is a search tool over sources.
+It is not a source, and it ranks below one in `SOURCE_OF_TRUTH.md` for this exact reason.
+
+*The evidence that the lock is worth anything.* The companion Thief peer, written
+independently against the same book sections, produces the identical digest
+`416a57e1…` from its own record. Two implementations agreeing is the only thing that
+distinguishes a real interoperability contract from a number we hash locally and
+believe.
 
 ### 3. The implemented strategy
 
@@ -386,8 +445,20 @@ exists that would justify weights, and a strict criterion order is auditable in 
 that tuned coefficients are not. Barrier placement is a separate, exclusive intent:
 the Cop either moves or places, never both in one turn.
 
-This is deliberately the floor, not the deliverable. The graded strategy must beat it
-using the belief map, and that work is `M6`.
+**The belief layer now exists** (`M6-01`…`M6-03`). Scent emission and multiplicative
+decay are implemented and hash-locked (see the `M6-07` section above); `strategy/belief.py`
+maintains a Cop-local probability distribution over the Thief's position, updated by
+Bayes from observation only, and `strategy/belief_pursuit.py` aims the policy at
+`argmax b(s)` rather than at a last-known cell. The belief is Cop-private and never
+crosses the wire.
+
+Two halves are still open and are named rather than glossed: the **per-hint trust
+factor** (`M6-02b`) that lets a hint contradicted by scent lower its own weight, and the
+optional **LLM adapter** (`M6-05`) behind the zero-token template provider. Both wait on
+the hint model rather than on the belief math.
+
+This is still the floor rather than the deliverable — but it is no longer the *blind*
+floor it was.
 
 ### 4. Learning curves
 
