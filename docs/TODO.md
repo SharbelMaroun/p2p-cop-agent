@@ -477,14 +477,14 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M6-07a | Canonicalise the scent model to hashable bytes | DONE | P0 | `scent_model_record()` is one canonical dict — formula string, `center_intensity`/`decay_per_step`/`field_size`, and the full 25-cell profile keyed by **squared distance** (not by offset, so two peers cannot agree on physics yet differ on key spelling). Hashed with the same canonical JSON as `config_sha256`. The record shape is the interop contract: `test_scent_lock.py` pins the digest `416a57e1…`, which the independently written Thief peer reproduces exactly |
 | M6-07b | Exchange and compare the lock at negotiation | DONE | P0 | `build_offer(scent_lock=…, scent_outer_ring=…)` publishes ours; `verify_offer(expected_scent_lock=…)` compares theirs. **Tolerate omission, refuse a mismatch** — the same `U-029`/`C-031` rule already settled for `config_sha256`. Silence is not deviation, and the pinned simulator publishes no standalone scent hash (it folds pheromone terms into `config_sha256`), so requiring one would refuse every simulator-built classmate over a message they never send. The lock rides **outside** the signed `terms` for that reason. Both values are **injected** by the caller so `protocol/` never imports `strategy/` |
 | M6-07c | Record the arithmetic correction in the report | PENDING | P1 | Book p. 43 and p. 46 errors disclosed under the p. 5 contradiction clause. The correction is implemented and inside the lock; the **README report** disclosure is step 7 of the 2026-08-05 session and is not yet written |
-| M6-08 | Serialize and parse the scent observation on the wire | DEFERRED | P1 | The observed field survives a round trip without precision loss |
-| M6-08a | Encode the emitted field in the turn message | DEFERRED | P1 | Sparse map keyed by cell; empty cells are omitted, not zero-filled |
-| M6-08b | Parse an opponent field defensively | DEFERRED | P0 | Out-of-range, non-numeric, and off-board keys reject |
-| M6-08c | Pin the numeric precision on the wire | DEFERRED | P0 | Both peers must agree, or the locked model hash means nothing |
-| M6-09 | Prove the scent model is symmetric and involuntary | DEFERRED | P1 | Emission follows movement automatically; no code path can suppress or fake it |
-| M6-09a | Emit on every action including `STAY` | DEFERRED | P1 | Staying still still deposits scent `[book §6]` |
-| M6-09b | Read only the opponent's field, never one's own | DEFERRED | P0 | A test proves own-scent is never used as evidence |
-| M6-09c | Make suppression impossible by construction | DEFERRED | P0 | No flag or branch can skip emission |
+| M6-08 | Serialize and parse the scent observation on the wire | IN PROGRESS | P1 | The observed field survives a round trip without precision loss |
+| M6-08a | Encode the emitted field in the turn message | IN PROGRESS | P1 | Sparse map keyed by cell; empty cells are omitted, not zero-filled |
+| M6-08b | Parse an opponent field defensively | IN PROGRESS | P0 | Out-of-range, non-numeric, and off-board keys reject |
+| M6-08c | Pin the numeric precision on the wire | IN PROGRESS | P0 | Both peers must agree, or the locked model hash means nothing |
+| M6-09 | Prove the scent model is symmetric and involuntary | IN PROGRESS | P1 | Emission follows movement automatically; no code path can suppress or fake it |
+| M6-09a | Emit on every action including `STAY` | IN PROGRESS | P1 | Staying still still deposits scent `[book §6]` |
+| M6-09b | Read only the opponent's field, never one's own | IN PROGRESS | P0 | A test proves own-scent is never used as evidence |
+| M6-09c | Make suppression impossible by construction | IN PROGRESS | P0 | No flag or branch can skip emission |
 | M6-10 | Implement hint generation | PENDING | P1 | A hint is produced each turn, truthful or bluffed, within the agreed limits. **The generation mechanism is built** (`strategy/hints.py`); producing one **per turn** is a wiring step into the decision/turn loop (with the belief-derived `place`), and `M6-10e`/`M6-10f` (P2) remain, so the parent stays open |
 | M6-10a | Carry an explicit truth/bluff intent flag | DONE | P0 | Sealed in the commitment so it cannot be revised later `[book §8]`. `Hint.intent` is `truth`/`bluff`; it rides in the private sealed payload (the commit-reveal ledger already seals `intent`), so it cannot be revised after commit |
 | M6-10b | Generate from the zero-token template provider | DONE | P1 | Default path; no network, no account `[AF-t21]`. `template_hint` |
