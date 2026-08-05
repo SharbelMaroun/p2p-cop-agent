@@ -68,6 +68,13 @@ from p2p_cop_agent.protocol.receive import (
     ReplayError,
     TurnInbox,
 )
+from p2p_cop_agent.protocol.scent_wire import (
+    WIRE_PRECISION,
+    ScentWireError,
+    decode_scent,
+    encode_scent,
+    saturation_limit,
+)
 
 __all__ = [
     "FIXED_TERMS",
@@ -75,6 +82,11 @@ __all__ = [
     "MESSAGE_SCHEMAS",
     "MINIMUM_TERMS",
     "OK_RESPONSE",
+    "WIRE_PRECISION",
+    "ScentWireError",
+    "decode_scent",
+    "encode_scent",
+    "saturation_limit",
     "REFUSAL_WORDS",
     "WIRE_ROLES",
     "IdentityError",

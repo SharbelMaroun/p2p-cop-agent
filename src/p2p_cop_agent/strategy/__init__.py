@@ -53,6 +53,7 @@ from p2p_cop_agent.strategy.scent import (
     emission_offsets,
     require_outer_ring,
 )
+from p2p_cop_agent.strategy.scent_field import SILENCE_FLOOR, ScentField
 from p2p_cop_agent.strategy.scent_lock import (
     SCENT_LOCK_FIELD,
     SCENT_OUTER_RING_FIELD,
@@ -89,6 +90,7 @@ __all__ = [
     "NEUTRAL_TRUST",
     "OUTER_RING_OFFSETS",
     "SCENT_LOCK_FIELD",
+    "SILENCE_FLOOR",
     "SCENT_OUTER_RING_FIELD",
     "TRUST_UPDATE_RATE",
     "BarrierIntent",
@@ -100,6 +102,7 @@ __all__ = [
     "MoveIntent",
     "Perception",
     "ReceivedHint",
+    "ScentField",
     "ScentLockError",
     "ScentModelError",
     "TrustScore",
