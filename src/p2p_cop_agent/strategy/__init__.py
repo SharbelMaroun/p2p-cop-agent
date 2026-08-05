@@ -16,6 +16,12 @@ from p2p_cop_agent.strategy.belief_pursuit import (
     belief_turn_intent,
     pursue_belief,
 )
+from p2p_cop_agent.strategy.consume import Perception, consume_turn
+from p2p_cop_agent.strategy.hint_decode import (
+    DIRECTION_WORDS,
+    decode_hint,
+    hint_directions,
+)
 from p2p_cop_agent.strategy.hints import (
     HINT_MAX_WORDS_DEFAULT,
     Hint,
@@ -48,6 +54,14 @@ from p2p_cop_agent.strategy.scent_lock import (
     scent_model_record,
     verify_peer_scent_lock,
 )
+from p2p_cop_agent.strategy.trust import (
+    INITIAL_TRUST,
+    TRUST_STEP,
+    corroboration,
+    expected_fresh_scent,
+    trust_weighted,
+    update_trust,
+)
 
 __all__ = [
     "CENTER_INTENSITY",
@@ -59,12 +73,16 @@ __all__ = [
     "OUTER_RING_OFFSETS",
     "SCENT_LOCK_FIELD",
     "SCENT_OUTER_RING_FIELD",
+    "DIRECTION_WORDS",
+    "INITIAL_TRUST",
+    "TRUST_STEP",
     "BarrierIntent",
     "Belief",
     "BeliefError",
     "Hint",
     "HintError",
     "MoveIntent",
+    "Perception",
     "ScentLockError",
     "ScentModelError",
     "TurnIntent",
@@ -72,11 +90,16 @@ __all__ = [
     "belief_target",
     "belief_turn_intent",
     "choose_action",
+    "consume_turn",
+    "corroboration",
     "choose_turn_intent",
     "decay",
+    "decode_hint",
     "emission_field",
     "emission_offsets",
     "encodes_coordinates",
+    "expected_fresh_scent",
+    "hint_directions",
     "hint_max_words",
     "pursue_belief",
     "require_outer_ring",
@@ -85,6 +108,8 @@ __all__ = [
     "scent_model_record",
     "step_distances",
     "template_hint",
+    "trust_weighted",
+    "update_trust",
     "validate_hint",
     "verify_peer_scent_lock",
 ]

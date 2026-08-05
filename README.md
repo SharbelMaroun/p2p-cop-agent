@@ -432,6 +432,55 @@ independently against the same book sections, produces the identical digest
 distinguishes a real interoperability contract from a number we hash locally and
 believe.
 
+#### Catching a lie: the reliability factor (`M6-02`, `M6-11`, 2026-08-06)
+
+The Thief is *allowed* to lie — deception is the strategic layer this project is about.
+What it cannot do is lie about where it has been, because scent is "an involuntary
+byproduct of movement". Chapter 4.4's boxed case study is written from the pursuer's
+side, which makes it this peer's specification almost verbatim: the Thief announces a
+direction, the Cop computes the fresh trail it would expect there — "approximately 0.81
+(calculated as 0.9 \* (1 − 0.1) = 0.81)" — measures 0.00 instead, "lowers the trust
+coefficient assigned to the thief's verbal statements", and keeps tracking the real
+scent.
+
+That is now arithmetic rather than narrative. `expected_fresh_scent()` derives the 0.81
+from the **locked** model's own constants instead of hard-coding it, so a renegotiated
+scent model moves it too. `corroboration()` compares it against the strongest scent
+actually measured where the hint points — the *strongest*, not the mean, because a
+direction names a whole half-plane and averaging would dilute a real trail to nothing on
+a large board. `update_trust()` then moves a running coefficient, clipped to `[0, 1]`.
+
+**Three design choices worth defending.** Trust runs *forward* between turns, because a
+coefficient recomputed each turn forgives every lie immediately. A distrusted hint is
+**ignored, never inverted** — a liar's claim is evidence of nothing, not evidence of the
+opposite, since it may still happen to be true. And scent is applied to belief *before*
+the hint is weighed against it, so the claim is judged against evidence the Thief could
+not manipulate.
+
+**What the book fixes, and what it does not.** It fixes the shape — "the agent applies
+Bayes' rule to update the probabilities, incorporating a reliability factor for the
+clue" — and the evidence. It states **no** starting trust, no step size, no decay rate
+for repeated lies, and no bound, saying outright that translating scent and statement
+into a numerical belief map is the agent's own business. So `INITIAL_TRUST = 0.5` and
+`TRUST_STEP = 0.2` are marked PROJECT-PROPOSED, not cited. Belief never crosses the wire,
+so unlike the scent model there is no opponent to disagree with them.
+
+*The reference was checked too, and does none of this.* It never parses the opponent's
+`hint` at all — the string is logged and displayed in the GUI, and `_pick_move` receives
+the smell-driven belief grid but not the hint. So there is no interoperability
+constraint here whatsoever; this is purely our own strategy, which is also why it is a
+place we can actually beat a simulator-built opponent.
+
+*Problem hit — the specification is upside down (`C-032`).* Transcribing the case study
+literally made **my own tests fail**, which is how it surfaced. The study places the
+scent at `(1,4)`/`(1,3)` and calls that the **south-east** corner, then calls `(5,2)` a
+**northern** cell. Under the Appendix F origin — top-left, row growing downward — `(1,4)`
+is *north*-east and `(5,2)` is *southern*: north and south are swapped throughout. The
+"lie" I had set up was in fact corroborated, and the test correctly refused it. Its
+intensities are authoritative and are used verbatim; its cell labels are not. Copied
+faithfully, it would have pinned an inverted board into the suite and the Cop would have
+chased every lie instead of catching it.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
@@ -452,13 +501,20 @@ Bayes from observation only, and `strategy/belief_pursuit.py` aims the policy at
 `argmax b(s)` rather than at a last-known cell. The belief is Cop-private and never
 crosses the wire.
 
-Two halves are still open and are named rather than glossed: the **per-hint trust
-factor** (`M6-02b`) that lets a hint contradicted by scent lower its own weight, and the
-optional **LLM adapter** (`M6-05`) behind the zero-token template provider. Both wait on
-the hint model rather than on the belief math.
+**The hint layer closed on 2026-08-06** (see the `M6-02`/`M6-11` section above).
+`strategy/hint_decode.py` turns an opponent's free text into a directional likelihood,
+`strategy/trust.py` carries the reliability factor and the lie test, and
+`strategy/consume.py` folds one turn of scent and one hint into belief in the book's
+order. The Cop now reads a hint as *evidence weighted by how honest that opponent has
+proved so far*, never as an instruction.
+
+What remains open is named rather than glossed: the optional **LLM adapter** (`M6-05`)
+behind the zero-token template provider, and wiring hint generation into every turn
+(`M6-10`). Neither changes how a move is chosen — the movement decision is pure Python
+and stays that way `[AE-25]`.
 
 This is still the floor rather than the deliverable — but it is no longer the *blind*
-floor it was.
+floor it was, and it is no longer credulous either.
 
 ### 4. Learning curves
 
