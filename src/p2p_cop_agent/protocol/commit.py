@@ -54,19 +54,50 @@ def _require_commitment_nonce(nonce: object) -> str:
     return nonce
 
 
-def move_commit(payload: object, nonce: str) -> str:
-    """Return the hash for a payload bound to a validated commitment nonce."""
-    valid_nonce = _require_commitment_nonce(nonce)
-    suffix = f"{DELIMITER}{valid_nonce}".encode("ascii")
+def _commit_bytes_hash(payload: object, nonce: str) -> str:
+    """Return the digest for a payload and a nonce, with no format opinion.
+
+    The hash construction only; the *policy* about what a well-formed nonce looks like
+    belongs to :func:`move_commit`, which is what we send, not to verification, which
+    judges what an opponent sent (see :func:`verify_commit`).
+    """
+    suffix = f"{DELIMITER}{nonce}".encode()
     return hashlib.sha256(canonical_payload_bytes(payload) + suffix).hexdigest()
 
 
-def verify_commit(payload: object, nonce: str, commit: object) -> bool:
-    """Return whether payload and commitment nonce reproduce a claimed hash."""
-    if not isinstance(commit, str):
+def move_commit(payload: object, nonce: str) -> str:
+    """Return the hash for a payload bound to a validated commitment nonce.
+
+    Generation is strict on purpose: **our** nonce must be 32 lowercase hex, so we
+    cannot ship a weak or malformed one. Verification is deliberately not (`C-033`).
+    """
+    return _commit_bytes_hash(payload, _require_commitment_nonce(nonce))
+
+
+def verify_commit(payload: object, nonce: object, commit: object) -> bool:
+    """Return whether payload and commitment nonce reproduce a claimed hash.
+
+    **The opponent's nonce format is not our business (corrected 2026-08-06).** This
+    used to run the same ``_require_commitment_nonce`` check as generation, so a peer
+    revealing a longer nonce -- ``secrets.token_hex(32)`` rather than ``(16)`` -- failed
+    verification even when its digest reproduced perfectly, and was scored a forger.
+
+    The book does not permit that. It defines the offence precisely: "Any mismatch
+    between the **recomputed hash** and the hash declared during the commitment phase
+    proves that tampering occurred" (`inst/police_thief_p2p_Summary.md:1270`), and
+    Appendix E rule 19 sanctions exactly that mismatch. A nonce of a different length
+    that still reproduces the digest is not a mismatch -- it is proof the peer was
+    honest. Calling it forgery is both wrong and expensive: rule 19 is an iron rule with
+    no appeal, so a false verdict ends a game that was played fairly.
+
+    So verification hashes **whatever it is given**. Our own nonces stay 32 lowercase
+    hex (`generate_commitment_nonce`, still enforced on the way out by ``move_commit``);
+    what an opponent chose is only ever judged by whether the arithmetic works.
+    """
+    if not isinstance(commit, str) or not isinstance(nonce, str):
         return False
     try:
-        expected = move_commit(payload, nonce)
+        expected = _commit_bytes_hash(payload, nonce)
     except CommitError:
         return False
     return hmac.compare_digest(expected, commit)

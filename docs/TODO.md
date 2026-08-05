@@ -430,6 +430,17 @@ These run before every commit and in CI; they are not milestone-scoped.
 
 ---
 
+## X — Interoperability defects found by probing (2026-08-06)
+
+*Not a milestone. Defects found by sending our own peers the messages a classmate would send, rather than the messages we send ourselves. Neither had an owning row — a ledger defect, not an exemption.*
+
+| ID | Cop-owned task | Status | Priority | Definition of done |
+|---|---|---|---|---|
+| X-01 | Stop scoring a verifying audit as forgery over nonce shape `C-033` | DONE | P0 | Found 2026-08-06 by probing our own peers. `verify_commit` hashes whatever nonce it is given; only a digest mismatch is `TAMPERED` `[AE-19]` `[book :1270]`. Generation stays strict at 32 lowercase hex. Schemas relaxed to `^[0-9a-f]+$`; bundle bumped to `0.2.6-proposed` `[G-18]`. `test_audit_nonce_tolerance.py` |
+| X-02 | Make the two peers agree on unmodelled wire fields | DONE | P0 | The Cop tolerated an extra field and the Thief refused it, so one classmate message played fine against one peer and silently starved the other into a technical loss. Both now ignore extras on turn, control and audit messages, matching the reference; missing **required** fields still refuse |
+
+---
+
 ## M6 — Scent, belief and private strategy
 
 *Gate: legal deterministic behaviour under observation and fallback tests.*
@@ -915,7 +926,7 @@ Terms used throughout this ledger, for anyone joining mid-project.
 |---|---|
 | Option B | The decision to adopt the pinned simulator's wire shape wherever the book leaves a wire detail open, while the book still governs rules and scoring |
 | Wire | The exact bytes exchanged between peers. Two agents must agree byte-for-byte or every hash comparison fails |
-| `shared_contract/` | The controlled bundle of schemas, fixtures, and golden vectors that both peers must satisfy. Currently `0.2.5-proposed`, `UNFROZEN` |
+| `shared_contract/` | The controlled bundle of schemas, fixtures, and golden vectors that both peers must satisfy. Currently `0.2.6-proposed`, `UNFROZEN` |
 | Mailbox semantics | The server tools enqueue a message and always acknowledge; a content rejection is a game outcome, decided later, not a transport error `[ADR-002]` |
 | Commit-reveal | Send a hash of the move first, reveal the move after, disclose the nonce only at the final audit. Any mismatch is a technical loss |
 | Nonce | A fresh random value per commitment. Prevents identical moves producing identical hashes and defeats dictionary attacks |

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.5-proposed",
+  "x-contract-version": "0.2.6-proposed",
   "x-role-neutral": true,
   "x-compatibility-profile": "simulator-v3.0.0",
   "title": "simulator-v3.0.0 AuditPayload",
@@ -24,9 +24,10 @@
           },
           "nonce": {
             "type": "string",
-            "pattern": "^[0-9a-f]{32}$",
+            "pattern": "^[0-9a-f]+$",
             "description": "Per-turn commitment nonce, secret before this post-game audit reveal.",
             "x-purpose": "per-turn-commitment-nonce",
+            "x-length-policy": "Lowercase hex; no length is imposed. The book fixes no nonce format (`inst/police_thief_p2p_Summary.md` shows `secrets.token_hex(16)` in its own example code but states no requirement), and Appendix E rule 19 sanctions a mismatch between the recomputed and declared digest (`:1270`), never an unusual shape. A peer whose digest verifies is honest whatever its nonce length; refusing it scored a fair player as a forger (`C-033`).",
             "x-visibility": "audit-only"
           },
           "commit": {

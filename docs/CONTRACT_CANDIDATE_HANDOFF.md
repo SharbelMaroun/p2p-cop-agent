@@ -1,7 +1,7 @@
 # M1 Contract Candidate Handoff
 
 Status: **SUPERSEDED HISTORICAL RECORD** — retained as the dated `0.1.0-proposed`
-candidate. That bundle was rejected; the active bundle is `0.2.5-proposed` under
+candidate. That bundle was rejected; the active bundle is `0.2.6-proposed` under
 [OPTION_B_HANDOFF.md](OPTION_B_HANDOFF.md).
 
 > **Paths in this document are pre-move.** Every `docs/contracts/…` and
