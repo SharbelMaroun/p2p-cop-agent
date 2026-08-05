@@ -59,3 +59,60 @@ real evidence that locking a model achieves anything.
 
 Belief normalization, trust math, observation timing, interfaces, and pursuit
 weights are future Cop strategy decisions.
+
+## The observation on the wire (`M6-08`, `M6-09`, added 2026-08-06)
+
+**Shape.** A JSON object keyed `"row,col"` — row first, the same axis order as a
+position — mapping to numbers. What travels is a **5×5 window of this peer's own
+accumulated trail**, centred on its current cell and clipped to the board: not the bare
+one-turn emission, and not the whole board. That is the reference's shape, confirmed
+against its `SmellField.snapshot()`.
+
+**Emission is involuntary by construction.** `ScentField.advance` takes a **cell** and
+nothing else — no action, no flag, no provider. A `STAY` deposits exactly as a move
+does, because there is no parameter a caller could set to stay silent. The book is
+explicit (`inst/police_thief_p2p_Summary.md:895`): the scent "is emitted by the
+**movement or the stay itself**, and no agent can plant a misleading trail — each side
+emits its own scent, and each side reads the scent field of its opponent only."
+
+**Order follows the book, not the reference.** The update is decay-then-add,
+`τ(t+1) = max(0, (1−ρ)·τ(t) + Δτ)`; the reference deposits first and decays the whole
+field afterwards, which yields `(τ + Δτ)(1−ρ)` and quietly attenuates the fresh deposit.
+Per `C-009` the book governs, so a cell just stepped on reads the full `0.9` — which is
+what the chapter 4.4 worked example assumes when it predicts `0.81` for a
+**one-turn-old** trail.
+
+**Precision.** Six decimal places on send. Repeated decay produces
+`0.7290000000000001`, whose textual form is implementation-dependent. This is a
+**send-side choice only** — parsing accepts any precision, because tightening what we
+emit cannot break a peer while tightening what we accept can.
+
+> **Correction.** The `M6-08c` DoD, and the companion Thief's `M6-006c` row, both claimed
+> byte-identical serialisation is "the property the locked scent-model hash depends on".
+> **It is not.** `scent_model_record()` contains exactly `model`, `update`,
+> `center_intensity`, `decay_per_step`, `field_size`, and
+> `emission_profile_by_squared_distance` — the *model*, never an emitted value. Verified
+> by inspection on 2026-08-06. Rounding cannot invalidate a lock, and no interop property
+> rests on it.
+
+**Parsing is hostile-input handling.** The grid comes from an opponent, so eleven shapes
+are refused by name: malformed keys, non-string keys, non-numeric and boolean values,
+NaN, infinity, negatives, off-board cells, and values above the model's saturation
+limit. A corrupt grid **raises** rather than degrading to empty — scent is the one
+channel that cannot be faked, so silently reading a corrupt one as "no evidence" would
+discard the strongest signal available.
+
+**The saturation bound is derived, not chosen.** An earlier parser capped intensity at
+the centre intensity `0.9`. That is wrong and would have rejected *our own* emissions:
+the update is additive, so an agent standing still accumulates, and a two-turn trail
+already reaches `1.458`. The real ceiling is the fixed point of `τ = (1−ρ)τ + Δτ`, i.e.
+`Δτ/ρ = 9.0`. `U-031` — whether re-emission should instead clamp at `0.9` — remains
+open, and the parser deliberately does **not** assume the clamp, because assuming it
+would refuse a peer following the formula as written.
+
+**Cross-peer note.** The Cop sends the full window including silent cells (matching the
+reference); the companion Thief sends a sparse map with zeros omitted. Both peers parse
+both forms — verified by round-tripping each encoder through the other's parser on
+2026-08-06 — because an absent cell and a zero cell mean the same thing. The divergence
+is stylistic and is recorded rather than churned.
+

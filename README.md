@@ -491,6 +491,63 @@ guard refuses to parse it at all, so "our hints carry no coordinates" and "we ne
 a coordinate channel" became one rule instead of two that drift. A refused hint costs the
 peer no trust, though: declining to read a message is not the same as catching a lie.
 
+#### The scent reaches the wire (`M6-08`, `M6-09`, 2026-08-06)
+
+Found by inspection while about to start the reporting milestone: `serve.py` sent a
+hard-coded `"smell_grid": {}` every single turn. Nothing parsed an opponent's grid
+either, and the belief pipeline's `observed_scent` parameter had no supplier anywhere in
+the codebase.
+
+So this peer **emitted no scent at all** — while having just cryptographically locked an
+emission model at negotiation. That is a deviation from the agreed model, which is what
+rule 23 cancels a game for, and it denied the opponent the one channel the design
+guarantees them. It also meant the entire belief, trust, and lie-detection layer built
+the day before was **dead code in a live match**, because nothing ever fed it evidence.
+
+The trail is now real, and the whole loop is proven end to end: emit, encode, cross the
+wire, decode, and the belief argmax lands on the emitter's actual cell.
+
+**Emission is involuntary by construction, not by discipline.** `ScentField.advance`
+takes a **cell** and nothing else — a signature test asserts its only parameter is
+`occupied`. There is no action, no flag, no provider a caller could set to stay quiet, so
+a `STAY` deposits exactly as a move does. The book leaves no room here: the scent "is
+emitted by the **movement or the stay itself**, and no agent can plant a misleading trail
+— each side emits its own scent, and each side reads the scent field of its opponent
+only." Suppression is not refused; it is unrepresentable.
+
+**Where we follow the book against the reference.** The reference deposits scent and
+*then* decays the whole field, which yields `(τ + Δτ)(1−ρ)` and quietly attenuates the
+fresh deposit. The book's update is decay-then-add, so a cell just stepped on reads the
+full `0.9` — which is exactly what chapter 4.4's worked example assumes when it predicts
+`0.81` for a **one-turn-old** trail. Copying the reference here would have made our own
+lie-detection arithmetic disagree with the book that specifies it.
+
+*Problem hit — I shipped a parser that would have rejected our own emissions.* The
+inbound parser capped intensity at the centre intensity, `0.9`. That reads as obviously
+right and is obviously wrong: the update is **additive**, so an agent that stands still
+keeps depositing onto a decayed prior, and our own two-turn trail already reaches
+`1.458`. We would have refused ourselves, and every peer following the formula. My own
+test caught it, because it asserted a behaviour **across turns** rather than one call —
+a happy-path test would never have reached the case. The bound is now *derived*: the
+fixed point of `τ = (1−ρ)τ + Δτ`, which is `Δτ/ρ = 9.0`. It tolerates any conformant peer
+while still refusing a hostile `1e9`.
+
+*Two ledger definitions turned out to be wrong, and were corrected rather than quietly
+satisfied.* One said empty cells should be omitted; the reference includes them, and
+interoperability follows the reference — so we send the full window and tolerate a
+sparse peer. The other claimed byte-identical rounding is "the property the locked
+scent-model hash depends on"; it is not. The lock covers the **model** — formula,
+constants, radial profile — and never an emitted number, so rounding cannot invalidate
+it. The companion Thief's ledger carried the same false claim and has been corrected too.
+
+*A process failure worth recording.* The standing order is an eight-step gate, and on
+this task I ran five of them. I read only one repository's ledger instead of both,
+skipped the submission-guidelines file entirely, left this report untouched, and pushed
+anyway — then reported the work as done. The gap was found by being asked, not by a
+check. Closing it immediately surfaced something real: **the companion Thief had already
+built this same wire layer**, and comparing the two exposed the false hash claim above.
+Step 1 exists precisely to find that before the work starts, not after it ships.
+
 *Problem hit — the specification is upside down (`C-032`).* Transcribing the case study
 literally made **my own tests fail**, which is how it surfaced. The study places the
 scent at `(1,4)`/`(1,3)` and calls that the **south-east** corner, then calls `(5,2)` a
