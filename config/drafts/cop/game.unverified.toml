@@ -23,7 +23,7 @@ turn_timeout_seconds = 180
 # police_class = "<pkg>.strategy:PoliceBrain"   # package.module:Class — unset = default heuristic
 
 [trash_talk]
-provider = "template"   # template (0 tokens, default) | ollama | claude_api | claude_cli
+provider = "template"   # template (0 tokens, default) | openai | ollama | claude_api | claude_cli
 
 [llm]
 model = "claude-haiku-4-5-20251001"

@@ -1,4 +1,10 @@
-"""The reliability factor for a Thief's verbal hint (M6-02b, M6-02f, M6-11b).
+"""The scent test that decides whether to trust a hint (M6-02b, M6-02f).
+
+`hint_consumption` owns the trust *machine* -- :class:`TrustScore` and its bounded
+`reinforced`/`weakened` steps -- and says outright that its scent-contradiction
+**trigger** is deferred to `M6-02f`, "which needs the decode to exist first". This module
+is that trigger. The two were written independently and are joined here rather than
+duplicated: there is one trust type, one rate, and one neutral prior in the package.
 
 Chapter 4.4's boxed case study is written from the **pursuer's** side, so it is this
 peer's specification almost verbatim (`inst/police_thief_p2p_Summary.md:1007-1022`):
@@ -14,17 +20,16 @@ peer's specification almost verbatim (`inst/police_thief_p2p_Summary.md:1007-102
 rather than typed in, so it follows the locked scent model instead of drifting from it.
 
 **What the book fixes, and what it leaves to us.** It fixes the *shape* -- Bayes with a
-reliability factor (`:1480`) -- and the *evidence* -- expected-versus-measured scent
-where the claim points. It states **no** starting trust, no step size, no decay rate for
+reliability factor (`:1480`) -- and the *evidence*: expected-versus-measured scent where
+the claim points. It states **no** starting trust, no step size, no decay rate for
 repeated lies, and no bound, and says the translation into a numeric belief map is the
-agent's own (`:1025`). Belief is Cop-private and never crosses the wire (M6-18), so
-unlike the hash-locked scent model there is no opponent to disagree with these numbers.
-Every constant here is PROJECT-PROPOSED.
+agent's own (`:1025`). Belief and trust are Cop-private and never cross the wire
+(M6-18), so unlike the hash-locked scent model there is no opponent to disagree with
+these numbers. Everything here is PROJECT-PROPOSED.
 
-**Trust is per-opponent and persistent within a match, not per-hint.** A liar caught
-once should still be doubted on its next sentence -- that is the whole point of a
-*running* coefficient, and a value recomputed from scratch each turn would forgive every
-lie immediately.
+**Warning: the case study's quadrant labels are inverted (`C-032`).** It calls `(1,4)`
+"south-east" and `(5,2)` "northern", which is upside down under the Appendix F top-left
+origin. Its *intensities* are authoritative; its *cells* are not.
 """
 
 from __future__ import annotations
@@ -32,17 +37,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from p2p_cop_agent.strategy.belief import Cell
+from p2p_cop_agent.strategy.hint_consumption import TRUST_UPDATE_RATE, TrustScore
 from p2p_cop_agent.strategy.scent import CENTER_INTENSITY, DECAY_RATE
 
-# Trust runs on [0, 1]: 1 believes a hint fully, 0 ignores it entirely.
-MIN_TRUST, MAX_TRUST = 0.0, 1.0
-# Neutral prior: an unknown classmate is neither trusted nor dismissed. The league is
-# played against strangers, so assuming either would be a guess about a specific team.
-INITIAL_TRUST = 0.5
-# How far one fully corroborated or fully contradicted hint moves trust. At 0.2, five
-# consecutive absolute lies reach the floor and an honest peer recovers just as fast --
-# a liar is not condemned forever, which matters because bluffing is legal here.
-TRUST_STEP = 0.2
+# Corroboration is scored on [0, 1]; this is "no information either way".
+NEUTRAL_SUPPORT = 0.5
 
 
 def expected_fresh_scent(
@@ -66,37 +65,48 @@ def corroboration(
 
     The measure is the book's: take the cells the hint favours, look at the strongest
     scent actually measured among them, and compare it to the fresh-trail intensity we
-    would expect if the claim were true. ``1.0`` is full support, ``0.0`` the case study's
-    "absolute" contradiction -- a claimed direction with no scent residue at all.
+    would expect if the claim were true. ``1.0`` is full support, ``0.0`` the case
+    study's "absolute" contradiction -- a claimed direction with no scent residue at all.
 
     The *strongest* cell is used rather than the mean because a direction names a whole
     half-plane: the Thief occupies one cell in it, so a single fresh trail corroborates
     the claim while averaging would dilute it to nothing across a large board.
 
     A hint that favours nothing (a uniform likelihood) is unfalsifiable, so it returns
-    neutral ``0.5`` and leaves trust untouched -- silence is not a lie.
+    :data:`NEUTRAL_SUPPORT` and leaves trust untouched -- silence is not a lie.
     """
     target = expected if expected is not None else expected_fresh_scent()
     if target <= 0.0:
-        return 0.5
+        return NEUTRAL_SUPPORT
     strongest = max(likelihood.values(), default=0.0)
     favoured = [cell for cell, value in likelihood.items() if value >= strongest]
     if not favoured or len(favoured) == len(likelihood):
-        return 0.5  # nothing singled out: no claim to test
+        return NEUTRAL_SUPPORT  # nothing singled out: no claim to test
     measured = max((max(0.0, observed.get(cell, 0.0)) for cell in favoured), default=0.0)
     return min(1.0, measured / target)
 
 
-def update_trust(trust: float, support: float, *, step: float = TRUST_STEP) -> float:
-    """Return the running trust after one hint, clipped to ``[0, 1]`` (M6-02f).
+def apply_support(
+    trust: TrustScore, support: float, *, rate: float = TRUST_UPDATE_RATE
+) -> TrustScore:
+    """Move trust by the scent evidence, and by **how strong** that evidence is (M6-02f).
 
-    ``support`` is :func:`corroboration`. Above neutral the hint is corroborated and
-    trust rises; below it the scent contradicts the claim and trust falls, which is the
-    case study's "lowers the trust coefficient" applied as arithmetic rather than as a
-    one-off judgement.
+    Above :data:`NEUTRAL_SUPPORT` the scent corroborates the claim and trust is
+    reinforced; below it the scent contradicts it and trust is weakened -- the case
+    study's "lowers the trust coefficient", as arithmetic rather than a one-off
+    judgement. The rate is scaled by the *distance* from neutral, so the study's absolute
+    contradiction (``0.00`` measured against an expected ``0.81``) moves trust at the
+    full rate while a marginal disagreement barely moves it at all.
+
+    Delegating to ``reinforced``/``weakened`` keeps their bounded-step property: trust
+    approaches 1.0 and 0.0 but never arrives, so no peer is ever granted certainty or
+    condemned beyond appeal. Bluffing is legal here -- a liar must be able to rebuild.
     """
-    moved = trust + step * 2.0 * (support - 0.5)
-    return max(MIN_TRUST, min(MAX_TRUST, moved))
+    strength = abs(support - NEUTRAL_SUPPORT) / NEUTRAL_SUPPORT
+    scaled = rate * min(1.0, strength)
+    if scaled == 0.0:
+        return trust
+    return trust.reinforced(scaled) if support > NEUTRAL_SUPPORT else trust.weakened(scaled)
 
 
 def trust_weighted(likelihood: Mapping[Cell, float], trust: float) -> dict[Cell, float]:
@@ -110,7 +120,7 @@ def trust_weighted(likelihood: Mapping[Cell, float], trust: float) -> dict[Cell,
     """
     if not likelihood:
         return {}
-    weight = max(MIN_TRUST, min(MAX_TRUST, trust))
+    weight = max(0.0, min(1.0, trust))
     mean = sum(likelihood.values()) / len(likelihood)
     return {
         cell: weight * value + (1.0 - weight) * mean for cell, value in likelihood.items()

@@ -448,7 +448,9 @@ from the **locked** model's own constants instead of hard-coding it, so a renego
 scent model moves it too. `corroboration()` compares it against the strongest scent
 actually measured where the hint points — the *strongest*, not the mean, because a
 direction names a whole half-plane and averaging would dilute a real trail to nothing on
-a large board. `update_trust()` then moves a running coefficient, clipped to `[0, 1]`.
+a large board. `apply_support()` then moves a running `TrustScore`, scaling the step by
+how far the evidence sits from neutral — the study's *absolute* contradiction moves trust
+at full rate, a marginal disagreement barely at all.
 
 **Three design choices worth defending.** Trust runs *forward* between turns, because a
 coefficient recomputed each turn forgives every lie immediately. A distrusted hint is
@@ -461,15 +463,33 @@ not manipulate.
 Bayes' rule to update the probabilities, incorporating a reliability factor for the
 clue" — and the evidence. It states **no** starting trust, no step size, no decay rate
 for repeated lies, and no bound, saying outright that translating scent and statement
-into a numerical belief map is the agent's own business. So `INITIAL_TRUST = 0.5` and
-`TRUST_STEP = 0.2` are marked PROJECT-PROPOSED, not cited. Belief never crosses the wire,
-so unlike the scent model there is no opponent to disagree with them.
+into a numerical belief map is the agent's own business. So `NEUTRAL_TRUST = 0.5` and
+`TRUST_UPDATE_RATE = 0.25` are marked PROJECT-PROPOSED, not cited. Belief never crosses
+the wire, so unlike the scent model there is no opponent to disagree with them.
+
+`TrustScore` moves by a bounded step *toward* a bound rather than clipping at it, so
+trust approaches 1.0 and 0.0 without arriving: no opponent is ever granted certainty or
+condemned past appeal. That matters here specifically because **bluffing is legal** — a
+peer that lies four times and then tells the truth has to be able to climb back.
 
 *The reference was checked too, and does none of this.* It never parses the opponent's
 `hint` at all — the string is logged and displayed in the GUI, and `_pick_move` receives
 the smell-driven belief grid but not the hint. So there is no interoperability
 constraint here whatsoever; this is purely our own strategy, which is also why it is a
 place we can actually beat a simulator-built opponent.
+
+*Two implementations met in the middle.* This work and `hint_consumption.py` were
+written on separate branches within a day of each other, both claiming `M6-11`, neither
+aware of the other — a coordination failure rather than a technical one. They merged
+without loss because they were complementary: that module's own docstring **defers**
+exactly the two rows this one built. `receive_hint` became the front door, its
+`TrustScore` the single trust type, and `corroboration` became the scent trigger it had
+left open. The merge was net-positive in a way parallel work usually is not, because each
+half caught something the other missed — and what it caught in mine was a real hole:
+**an opponent smuggling `3,4` into a hint.** My decoder read that as ordinary text; the
+guard refuses to parse it at all, so "our hints carry no coordinates" and "we never read
+a coordinate channel" became one rule instead of two that drift. A refused hint costs the
+peer no trust, though: declining to read a message is not the same as catching a lie.
 
 *Problem hit — the specification is upside down (`C-032`).* Transcribing the case study
 literally made **my own tests fail**, which is how it surfaced. The study places the

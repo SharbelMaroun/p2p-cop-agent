@@ -15,14 +15,16 @@ from __future__ import annotations
 
 import pytest
 
+from p2p_cop_agent.strategy.hint_consumption import NEUTRAL_TRUST, TrustScore
 from p2p_cop_agent.strategy.hint_decode import decode_hint
 from p2p_cop_agent.strategy.trust import (
-    INITIAL_TRUST,
+    apply_support,
     corroboration,
     expected_fresh_scent,
     trust_weighted,
-    update_trust,
 )
+
+NEUTRAL = TrustScore.neutral()
 
 GRID = 7
 CENTRE = (3, 3)
@@ -55,38 +57,46 @@ def test_the_books_case_study_a_claim_with_no_scent_behind_it() -> None:
     claim = _claim("I am moving North")
     support = corroboration(claim, scent)
     assert support == pytest.approx(0.0)  # "absolute" contradiction
-    assert update_trust(INITIAL_TRUST, support) < INITIAL_TRUST  # ":1020" lowers it
+    assert apply_support(NEUTRAL, support).value < NEUTRAL_TRUST  # ":1020" lowers it
 
 
 def test_a_corroborated_claim_raises_trust() -> None:
     scent = {(0, 3): 0.81, (1, 3): 0.62}  # fresh trail exactly where the hint points
     support = corroboration(_claim("north"), scent)
     assert support == pytest.approx(1.0)
-    assert update_trust(INITIAL_TRUST, support) > INITIAL_TRUST
+    assert apply_support(NEUTRAL, support).value > NEUTRAL_TRUST
 
 
-def test_trust_stays_within_its_bounds_however_often_it_moves() -> None:
-    liar = INITIAL_TRUST
+def test_trust_approaches_its_bounds_but_never_reaches_certainty() -> None:
+    """`TrustScore`'s bounded step: no peer is ever granted or denied certainty."""
+    liar = NEUTRAL
     for _ in range(20):
-        liar = update_trust(liar, 0.0)
-    assert liar == 0.0
-    honest = INITIAL_TRUST
+        liar = apply_support(liar, 0.0)
+    assert 0.0 < liar.value < 0.01
+    honest = NEUTRAL
     for _ in range(20):
-        honest = update_trust(honest, 1.0)
-    assert honest == 1.0
+        honest = apply_support(honest, 1.0)
+    assert 0.99 < honest.value < 1.0
 
 
 def test_a_caught_liar_can_rebuild_trust_by_telling_the_truth() -> None:
     """Bluffing is legal, so a liar is doubted, never permanently condemned."""
-    burnt = 0.0
-    assert update_trust(burnt, 1.0) > burnt
+    burnt = TrustScore(0.02)
+    assert apply_support(burnt, 1.0).value > burnt.value
+
+
+def test_a_marginal_disagreement_moves_trust_less_than_an_absolute_one() -> None:
+    """The book's contradiction is "absolute"; a near-miss is not the same event."""
+    absolute = NEUTRAL_TRUST - apply_support(NEUTRAL, 0.0).value
+    marginal = NEUTRAL_TRUST - apply_support(NEUTRAL, 0.4).value
+    assert 0 < marginal < absolute
 
 
 def test_an_unfalsifiable_hint_leaves_trust_untouched() -> None:
     """A hint naming no direction makes no claim, and silence is not a lie."""
     flat = _claim("lovely evening for it")
     assert corroboration(flat, {(1, 4): 0.81}) == pytest.approx(0.5)
-    assert update_trust(INITIAL_TRUST, 0.5) == pytest.approx(INITIAL_TRUST)
+    assert apply_support(NEUTRAL, 0.5).value == pytest.approx(NEUTRAL_TRUST)
 
 
 def test_full_trust_applies_a_hint_unchanged() -> None:
