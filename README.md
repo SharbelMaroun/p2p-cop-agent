@@ -1022,6 +1022,47 @@ name Gmail, and a module that cannot name the API cannot bypass the gates to rea
 higher value is honoured rather than clamped back down. Clamping a minimum to its floor
 is the classic misreading of that table.
 
+#### Reporting: the rules here have unusually blunt sanctions (`M7-05`, `M7-16`, `M7-17`, 2026-08-06)
+
+Most rules in this project cost a point or invite a review. The reporting ones do not:
+rule 32 — "absence of reporting **disqualifies the game points**"; rule 34 — free text
+instead of an attached JSON file "will be rejected and **result in a zero score**"; rule
+35 — a conflicting report scores **0 for both teams**. So every check in this layer
+refuses rather than warns, and the code says which rule it is refusing on behalf of.
+
+**The body is not a place to be helpful.** Rule 34 prohibits free text, and a polite
+covering note *is* free text. The body is a fixed pointer to the attachment, and the test
+asserts the result's own values do not appear in it — a check that would fail the moment
+someone "improved" the email by summarising the score.
+
+**The subject is generated because a machine reads it.** Rule 45 ties automatic report
+assignment to the eight-character team code, so the code and `game_id` appear in a fixed
+order. A subject written per game would sort and assign inconsistently the first time
+someone was in a hurry.
+
+**The address is a confirmed source inconsistency, not a choice.** The book prints both
+spellings — `:3040` has `rmisegal`, `:3605-3606` have `rimesegal` — and lecturer answer
+`AF-020` settles it (`C-004`). It is a constant here rather than a configuration value:
+the destination is not negotiable with an opponent, and a peer able to move it could
+silence our reporting entirely.
+
+**Three failures, three different answers.** A 429 retries with backoff from the Appendix
+F `Minimum` of 5 seconds; a constructor asking for less is refused, because a minimum is a
+floor to honour rather than a value to tune down. A non-429 is *not* retried — retrying a
+400 spends quota on a request that will fail identically. A permanent failure raises
+loudly, since a caller that could quietly continue would convert a lost game into a silent
+one. And a second send for one game is refused outright.
+
+*Nothing here imports a Google library.* `transmit` is injected and the credential path is
+checked for presence but never read, so this module cannot reach the API by itself and
+cannot leak a credential. Consistent with the gates: what a module cannot name, it cannot
+bypass.
+
+*Not claimed:* `M7-15a`/`b`/`d`, the OAuth consent flow and its setup guide. Running a
+consent flow means handling a real credential for a real account — the user's action on
+their own machine, not something to automate from here. The code path is built and fails
+closed without a credential (`M7-15c`); creating the credential is not.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

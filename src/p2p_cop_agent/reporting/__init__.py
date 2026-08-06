@@ -11,6 +11,14 @@ from p2p_cop_agent.reporting.config_artifact import (
     quantitative_parameters,
 )
 from p2p_cop_agent.reporting.emit import EmitError, artifact_bytes, write_all, write_artifact
+from p2p_cop_agent.reporting.gmail_message import (
+    REPORT_ADDRESS,
+    REQUIRED_SCOPE,
+    ReportMessageError,
+    build_report_message,
+    encoded_message,
+    report_subject,
+)
 from p2p_cop_agent.reporting.log_artifact import (
     LogArtifactError,
     build_log,
@@ -27,6 +35,11 @@ from p2p_cop_agent.reporting.naming import (
     result_filename,
 )
 from p2p_cop_agent.reporting.result_artifact import ResultArtifactError, build_result
+from p2p_cop_agent.reporting.send_report import (
+    ReportAlreadySentError,
+    ReportNotSentError,
+    ReportSender,
+)
 from p2p_cop_agent.reporting.validate import (
     ArtifactInvalidError,
     check_one_identity,
@@ -35,6 +48,15 @@ from p2p_cop_agent.reporting.validate import (
 )
 
 __all__ = [
+    "report_subject",
+    "encoded_message",
+    "build_report_message",
+    "ReportSender",
+    "ReportNotSentError",
+    "ReportMessageError",
+    "ReportAlreadySentError",
+    "REQUIRED_SCOPE",
+    "REPORT_ADDRESS",
     "ArtifactInvalidError",
     "ConfigArtifactError",
     "EmitError",
