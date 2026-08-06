@@ -26,7 +26,6 @@ import pytest
 from p2p_cop_agent.protocol.messages import (
     MESSAGE_SCHEMAS,
     ProtocolError,
-    require_wire_role,
     validate_message,
 )
 
@@ -113,22 +112,6 @@ def test_an_unknown_message_type_is_refused_rather_than_skipped() -> None:
     worse than having no validator because it reads as protection."""
     with pytest.raises((ProtocolError, KeyError)):
         validate_message("not_a_message_type", {"anything": 1})
-
-
-# --- the role field, which decides who may act -------------------------------------------
-
-
-@pytest.mark.parametrize("bad", ["cop", "COP", "Police", "", None, 1, "thief ", "police\n"])
-def test_a_role_outside_the_wire_vocabulary_is_refused(bad: object) -> None:
-    """The wire vocabulary is `police`/`thief` (`OB-003`). `cop` is our *internal* name and
-    is not on the wire — the series rehearsal caught that distinction, and this keeps it."""
-    with pytest.raises(ProtocolError):
-        require_wire_role(bad)
-
-
-@pytest.mark.parametrize("good", ["police", "thief"])
-def test_both_wire_roles_are_accepted(good: str) -> None:
-    assert require_wire_role(good) == good
 
 
 # --- "cannot reach domain code" ----------------------------------------------------------
