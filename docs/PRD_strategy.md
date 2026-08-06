@@ -69,3 +69,47 @@ not evidence of the opposite, since it may still be true.
 Nothing here could be adapted from the reference: it never applies a hint to belief at
 all, has no trust coefficient, and logs and displays the hint without it entering the
 belief update — though its own README describes a fusion it does not perform.
+
+## Measuring the strategy: protocol and result (`M6-20`)
+
+`inst/police_thief_p2p_Summary.md:3115` requires the report to present "the empirical
+evidence for their success". It specifies **no** run count, seed policy, significance
+test, or baseline — the "shipped heuristic" appears only as a config comment (`:3028`,
+"else the shipped heuristic runs"), meaning the bundled default when you supply no
+brain. The protocol below is therefore ours, stated in full so the number can be
+reproduced or disputed. `scripts/compare_strategies.py` runs it.
+
+**Protocol.** 7×7 at the negotiated `match_config.example.json`, survival threshold 35,
+Cop and Thief started at opposite corners so the chase is not trivially short. Seeds
+0–29. One opponent for every arm: a seeded random legal walk that **does not react to
+the Cop**, so for a given seed every arm meets the *identical* Thief trajectory — making
+this a **paired** comparison rather than two independent averages, which is a much
+stronger claim and free given the design. Each actor gets its own RNG stream. The Cop
+observes the real channel: the Thief's emission advances a `ScentField` and the Cop
+reads the 5×5 window `M6-08` puts on the wire.
+
+**Arms.** `blind` — a seeded random legal move, no scent and no belief. `belief` — what
+we ship. `oracle` — `choose_action` against the Thief's true cell; **not a legal agent**,
+included as the ceiling so a reader can see how much of the *available* gap belief
+closes rather than only that it beat random.
+
+| arm | capture rate | mean turns | mean Cop score |
+| --- | --- | --- | --- |
+| `blind` | 26.7% | 32.4 | 9.0 |
+| **`belief`** | **96.7%** | **12.5** | **19.5** |
+| `oracle` (ceiling, illegal) | 100% | 12.2 | 20.0 |
+
+Paired: belief captured on **21** seeds the blind Cop lost, and lost **0** it won; 8 both,
+1 neither. Belief closes **95.5%** of the blind→oracle gap. Stable across sample size —
+belief 99.0% at n=100 and 99.7% at n=300, blind 24.0% at both.
+
+**The caveat, stated because it changes how the number should be read.** Belief lands
+near the oracle partly because the book's scent channel is generous: a 5×5 window peaks
+at the emitter's own cell, so a fresh trail nearly identifies the Thief. The measurement
+shows our pipeline exploits the available signal almost fully; it is *not* evidence that
+the policy would hold up against a Thief that manages its trail deliberately. The
+`oracle` arm is in the table precisely so this ceiling is visible rather than implied.
+
+`test_strategy_quality.py` pins the claim — deliberately with loose bounds, so it fails
+on a real regression rather than on any harmless retune. `M6-20`'s condition ("must beat
+the blind baseline **or be reverted**") is only enforceable if something re-checks it.

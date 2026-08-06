@@ -685,6 +685,61 @@ contains `gh` + `s` + `_` followed by twenty-five word characters, which is exac
 GitHub token pattern. Renaming it was the right fix; an allowlist entry would have
 weakened the scanner permanently to accommodate a cosmetic choice.
 
+#### Does the smart strategy actually work? (`M6-17`, `M6-20`, `M6-20a`, `M6-20b`, 2026-08-06)
+
+Everything above argues that belief-driven pursuit *should* beat a Cop with no model of
+where the Thief is. `:3115` requires the report to present "the empirical evidence for
+their success", and until now this repository had none for the strategy itself.
+
+It specifies nothing else. No run count, no seed policy, no significance test — and no
+baseline: the "shipped heuristic" appears only as a config comment (`:3028`, "else the
+shipped heuristic runs"), meaning the bundled default when you supply no brain, not a
+prescribed thing to measure against. So the protocol is ours, and is stated in full in
+`docs/PRD_strategy.md` rather than summarised, because a number whose method is hidden is
+not evidence.
+
+**The design choice that makes the result mean something** is a *non-reacting* opponent.
+The Thief is a seeded random legal walk that never looks at the Cop, so on a given seed
+**every arm meets the identical trajectory**. That turns the comparison from two averages
+into a **paired** one — we can ask "on this exact chase, which Cop caught it?" — and it
+cost nothing but the decision to hold the opponent fixed.
+
+The second choice is the **`oracle` arm**: a Cop that reads the Thief's true cell. It is
+not a legal agent and could never be shipped. It is there because beating a random walk
+is a low bar, and without a ceiling a reader cannot tell a good result from an easy one.
+
+| arm | capture rate | mean turns | mean Cop score |
+| --- | --- | --- | --- |
+| `blind` (random legal move) | 26.7% | 32.4 | 9.0 |
+| **`belief` (what we ship)** | **96.7%** | **12.5** | **19.5** |
+| `oracle` (ceiling, illegal) | 100% | 12.2 | 20.0 |
+
+Paired over 30 seeds: belief captured on **21** seeds the blind Cop lost, and lost **0**
+that it won. Not "better on average" — better or equal on every single chase. It closes
+**95.5%** of the blind→oracle gap, and the result is stable across sample size (belief
+99.0% at n=100, 99.7% at n=300; blind 24.0% at both).
+
+**And the caveat, because it changes how the number should be read.** Belief lands close
+to a cheating Cop partly because the book's scent channel is *generous*: a 5×5 window
+peaks at the emitter's own cell, so a fresh trail nearly identifies the Thief outright.
+What this measures is that our pipeline exploits nearly all of the available signal. It
+is **not** evidence that the policy would hold against a Thief that manages its trail
+deliberately — no such opponent was run. The `oracle` row is in the table so that ceiling
+is visible rather than implied, and this paragraph exists because a result presented
+without its limits is a claim, not evidence.
+
+`M6-20`'s condition was unusually sharp — "must beat the blind baseline **or be
+reverted**" — which is only enforceable if something re-checks it. `test_strategy_quality.py`
+does, with deliberately loose bounds so it fails on a real regression rather than on any
+harmless retune, and with a wiring check (belief must never beat the oracle) so a
+mis-plumbed harness cannot quietly produce a flattering table.
+
+*The reference had nothing to copy:* it contains **no harness, script, or test** that
+plays repeated matches to compare strategies, and no committed results table or learning
+curve — only LLM token-cost benchmarks. Its seeding pattern was worth borrowing though:
+a `seed` config key resolved into a `random.Random` instance passed to the brain, rather
+than global `random.seed`. Each actor here gets its own stream for the same reason.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
