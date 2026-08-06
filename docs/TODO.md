@@ -601,15 +601,15 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-20a | Rehearse with a deliberately failing sub-game | DEFERRED | P0 | A technical loss still produces a complete artifact set |
 | M7-20b | Rehearse with a tampered audit | DEFERRED | P0 | Detection, scoring, and reporting all behave |
 | M7-21 | Document the reporting pipeline | DEFERRED | P2 | `PRD_gatekeeper_reporting.md` matches the built gates and flow |
-| M7-22 | Emit the declaration before the first move of each game | DEFERRED | P0 | The pre-game declaration is signed and fixed before play begins |
-| M7-22a | Include both groups and their members | DEFERRED | P1 | Identity is public and agreed |
-| M7-22b | Include both repository links per group | DEFERRED | P0 | Four links total `[AE-49]` |
-| M7-22c | Include the MCP addresses in use | DEFERRED | P1 | Public URLs only; no credential |
-| M7-22d | Include the hardware and model declaration | DEFERRED | P0 | Carried from Step-0 `[AE-24]` |
-| M7-22e | Include the agreed token limit and game times | DEFERRED | P1 | Start and end recorded |
-| M7-23 | Bind the config artifact to the negotiated match | DEFERRED | P0 | The emitted config is the one actually played, not a template |
-| M7-23a | Include every quantitative parameter | DEFERRED | P0 | All Appendix F values with their agreed settings |
-| M7-23b | Include the cryptographic locks | DEFERRED | P0 | Config hash and the scent-model lock `[AE-23]` |
+| M7-22 | Emit the declaration before the first move of each game | IN PROGRESS | P0 | **Claimed by Sharbel 2026-08-06.** The pre-game declaration is signed and fixed before play begins |
+| M7-22a | Include both groups and their members | IN PROGRESS | P1 | Identity is public and agreed |
+| M7-22b | Include both repository links per group | IN PROGRESS | P0 | Four links total `[AE-49]` |
+| M7-22c | Include the MCP addresses in use | IN PROGRESS | P1 | Public URLs only; no credential |
+| M7-22d | Include the hardware and model declaration | IN PROGRESS | P0 | Carried from Step-0 `[AE-24]` |
+| M7-22e | Include the agreed token limit and game times | IN PROGRESS | P1 | Start and end recorded |
+| M7-23 | Bind the config artifact to the negotiated match | IN PROGRESS | P0 | The emitted config is the one actually played, not a template |
+| M7-23a | Include every quantitative parameter | IN PROGRESS | P0 | All Appendix F values with their agreed settings |
+| M7-23b | Include the cryptographic locks | IN PROGRESS | P0 | Config hash and the scent-model lock `[AE-23]` |
 | M7-24 | Make the log artifact sufficient for an independent audit | DEFERRED | P0 | A third party can re-verify without our code |
 | M7-24a | Record each step's commitment and revealed payload | DEFERRED | P0 | Enough to recompute every hash |
 | M7-24b | Record nonces only in the final audit section | DEFERRED | P0 | Nonce secrecy holds until the end `[AE-18]` |
