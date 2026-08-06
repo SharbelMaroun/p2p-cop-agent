@@ -808,6 +808,27 @@ boundary by an independent implementation is stronger evidence than one demonstr
 the code that also produced the message. Noted rather than fixed; it is a small gap, not
 a hole.
 
+#### The Thief's config-integrity guards, and one worth mirroring (2026-08-06)
+
+The companion Thief closed its remaining `M1-017` vectors today with two guards this
+repository does not have, and one of them is worth considering here.
+
+**Duplicate JSON keys are unguarded by default, everywhere.** `json.loads` resolves
+`{"a":1,"a":2}` to `{"a": 2}` silently, so a check on the parsed object can never see it.
+Appendix E rule 11 (Mandatory) requires the configuration to be "identical, bit-for-bit,
+on both sides"; a document with a repeated key cannot satisfy that, and a signature over
+the raw bytes would verify a different object than the one parsed. The Thief now refuses
+it in `object_pairs_hook`. This repository loads its bundle fixtures and match configs
+with plain `json.loads` and has no equivalent — noted here rather than silently fixed,
+because it belongs to a row that does not yet exist.
+
+**Private fields in a shared config** are refused there too, against the classes the book
+assigns to the private `config/game.toml` (`:2901`). Our `M6-18` guard keeps belief off
+the *wire*; this is the neighbouring question of what may appear in the *negotiated
+config*, which we do not currently check either.
+
+Both are recorded as candidates rather than claimed as done here.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
