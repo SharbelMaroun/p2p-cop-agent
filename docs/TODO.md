@@ -538,11 +538,11 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-02a | Emit `declaration_<game_id>.json` | DONE | P1 | `declaration_<game_id>.json`, written atomically by `reporting.emit` with the lock folded in as `declaration_lock` |
 | M7-02b | Emit `config_<game_id>_g<NN>.json` | DONE | P1 | `config_<game_id>_g<NN>.json`, built from the negotiated game object and written in the same pre-play step, so the config on disk describes the match about to be played |
 | M7-02c | Share one `game_uid` across all four artifacts | DONE | P1 | `MatchIdentity(game_id, game_uid)` is the single identity every filename derives from, validated once at construction — `M7-14e` refuses a mismatched set after the fact, but the cheaper guarantee is that the builders were never able to disagree. `game_id` is refused unless filename-safe, since it is negotiated with an opponent and then becomes part of a path |
-| M7-03 | Generate game logs and final result | DEFERRED | P1 | Audit links, commits, tokens, and scores are consistent |
+| M7-03 | Generate game logs and final result | IN PROGRESS | P1 | Audit links, commits, tokens, and scores are consistent |
 | M7-03a | Emit `log_<game_id>_g<NN>.json` with full commit-reveal | DONE | P1 | `build_log` + `reveal_log` produce it; feeding real per-turn records from the turn loop is the consumer and follows |
-| M7-03b | Emit `result_<game_id>.json` as the emailed report | DEFERRED | P0 | Per-group scores plus cumulative result |
-| M7-03c | Carry four repository links in the result artifact | DEFERRED | P0 | `[AE-49]`; two links per group |
-| M7-03d | Carry the per-game commit hash and total tokens | DEFERRED | P0 | `[AE-53]` `[AE-54]` |
+| M7-03b | Emit `result_<game_id>.json` as the emailed report | IN PROGRESS | P0 | Per-group scores plus cumulative result |
+| M7-03c | Carry four repository links in the result artifact | IN PROGRESS | P0 | `[AE-49]`; two links per group |
+| M7-03d | Carry the per-game commit hash and total tokens | IN PROGRESS | P0 | `[AE-53]` `[AE-54]` |
 | M7-04 | Implement API Gatekeeper and token-bucket/FIFO limits | DEFERRED | P1 | Appendix F minimums and backpressure pass load tests |
 | M7-04a | Route every external call through one gatekeeper | DEFERRED | P0 | No service calls an external API directly `[G§5.1]` |
 | M7-04b | Implement the token bucket | DEFERRED | P0 | `tokens ← min(C, tokens + r·Δt)`; allow iff `tokens ≥ 1` `[AE-28]` |
@@ -572,12 +572,12 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-11 | Account for LLM tokens across a series | DEFERRED | P1 | Per-game and per-series totals are counted, sealed at Step-0, and reported `[AE-54]` |
 | M7-12 | Emit warm-up games as uncounted | DEFERRED | P1 | A warm-up produces artifacts but never enters the counted total `[AE-52]` |
 | M7-13 | Persist artifacts atomically | DEFERRED | P2 | A crash mid-write cannot leave a half-written artifact that later fails audit |
-| M7-14 | Validate every emitted artifact against its schema | DEFERRED | P0 | An artifact that fails its own schema is never sent |
-| M7-14a | Validate the declaration artifact | DEFERRED | P0 | Required identity, hardware, and timing fields present |
-| M7-14b | Validate the config artifact | DEFERRED | P0 | Every Appendix F parameter present with a legal value |
-| M7-14c | Validate the log artifact | DEFERRED | P0 | Every step carries commitment, nonce, move, and hint |
-| M7-14d | Validate the result artifact | DEFERRED | P0 | Scores, four links, commit hash, and token totals present |
-| M7-14e | Reject an artifact set whose `game_uid` values disagree | DEFERRED | P0 | All four must share one identity `[AF-§3]` |
+| M7-14 | Validate every emitted artifact against its schema | IN PROGRESS | P0 | An artifact that fails its own schema is never sent |
+| M7-14a | Validate the declaration artifact | IN PROGRESS | P0 | Required identity, hardware, and timing fields present |
+| M7-14b | Validate the config artifact | IN PROGRESS | P0 | Every Appendix F parameter present with a legal value |
+| M7-14c | Validate the log artifact | IN PROGRESS | P0 | Every step carries commitment, nonce, move, and hint |
+| M7-14d | Validate the result artifact | IN PROGRESS | P0 | Scores, four links, commit hash, and token totals present |
+| M7-14e | Reject an artifact set whose `game_uid` values disagree | IN PROGRESS | P0 | All four must share one identity `[AF-§3]` |
 | M7-15 | Implement the OAuth setup path | DEFERRED | P1 | First run creates a token; later runs refresh without human action |
 | M7-15a | Run the consent flow once and store the token locally | DEFERRED | P1 | `token.json` is created, never committed `[book App. A]` |
 | M7-15b | Refresh the access token automatically | DEFERRED | P1 | The refresh token gives months of autonomy |
