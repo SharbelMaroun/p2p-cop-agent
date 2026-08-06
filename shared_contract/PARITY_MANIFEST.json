@@ -1,25 +1,25 @@
 {
-  "contract_version": "0.2.6-proposed",
+  "contract_version": "0.2.7-proposed",
   "files": [
     {
       "path": "CONTRACT_VERSION",
-      "sha256": "419c70eac39575a2b62d0c93a9d80d4088e6568445374efa23b4c17e37afbe8b"
+      "sha256": "b915328140c5f18dc735822307bace1d0e4520949e7f175e6dfb91eb30068543"
     },
     {
       "path": "MATCH_CONFIGURATION.md",
-      "sha256": "0350b14eb1f19b6d504ce26a8e06c3936db7a448a77d4366a43b193335cd84a5"
+      "sha256": "93ac5385281a5ad48e217e05fd542e3806c2befbe2dd125a45482ecb9985b157"
     },
     {
       "path": "PROTOCOL_PROFILE.md",
-      "sha256": "119dc631b03462644114c15a63b451c973b98e8a25bd984cead506b2032e76ad"
+      "sha256": "708c3dc617ab0a4082bf2b0dd946082201c4ebf1acd5e48a77373ef25f346280"
     },
     {
       "path": "README.md",
-      "sha256": "de872bd67c6952f542e712a76bb96f07c86842b9351ef1c47525234a4ea10166"
+      "sha256": "a9278682d8c99981927e94e896418130a7e4c7500d665d6ecaa5a2b6859e5b76"
     },
     {
       "path": "SHARED_RULES.md",
-      "sha256": "8cee1f98de26ec473f3c699b5585a9f50b4b98ec1028f353315e6138473bc5ac"
+      "sha256": "d291bc4f81c2572598a6100b040c19cdcd0ad4097d252984615c604de985695e"
     },
     {
       "path": "fixtures/audit_payload.invalid.json",
@@ -63,7 +63,7 @@
     },
     {
       "path": "fixtures/negotiation_terms.projection.json",
-      "sha256": "578b187f153e07b9e04d7deff9af5f6f0a627e062538e49daa699b94674be46f"
+      "sha256": "5b4194bd25836bd33e2d6d9fd48b65063653010c38c871db8b6a7af7a71102ad"
     },
     {
       "path": "fixtures/per_subgame_config.invalid.json",
@@ -95,43 +95,43 @@
     },
     {
       "path": "schemas/audit-payload.schema.json",
-      "sha256": "ed88914dbd7c84afb1fa13f4d3d00c4c53477739bb09927d4b0b573846c48cd8"
+      "sha256": "762e2f0e336196d3a2b078760a56b35fa5b3ba314c71ef40a828df66e80910c6"
     },
     {
       "path": "schemas/audit-record.schema.json",
-      "sha256": "1db30218888ae73abbcf8bf45d19b8e7703844165a59d08e411e2987451de03e"
+      "sha256": "db4fa2c8b428c473deaa37b7ec804d47d8b2cbec309d4740a8717face8c2770a"
     },
     {
       "path": "schemas/control-message.schema.json",
-      "sha256": "4162d5b26e59593e2a315697711b980495f6db02876cee45507fbd2679b1f941"
+      "sha256": "741b5e66d3f95e733f2728bc7f87dcbeed7f24f28548bf4f430254cdd80b0561"
     },
     {
       "path": "schemas/match-config.schema.json",
-      "sha256": "1f77c3e975149c400cb921d26990e8cb31c0fb90dbfd86a388227d288974bacc"
+      "sha256": "542a372960f167beca4b19b8206b02cd6317e5ced6bd9bd1b2baa9e154a0b63d"
     },
     {
       "path": "schemas/negotiate.schema.json",
-      "sha256": "ab3bc93f002003a066ce020098e29ac3e125187404dbf7cb68a998181a9da8aa"
+      "sha256": "70b10dfd18b623d92bf2a5310fa1e0ee37128ba10bc536e38cbdbf55b3787a65"
     },
     {
       "path": "schemas/per-subgame-config.schema.json",
-      "sha256": "e81b6d79d4c0bf482cab5a888ec4547b1ea602d4a554559c1a859a0fa5dc96ab"
+      "sha256": "9aeac1ccd5b7944eceb89b9f1e41b7b15676fc830c6bc4d7e9c18ec0da36c29a"
     },
     {
       "path": "schemas/tool-response.schema.json",
-      "sha256": "332f8219847ef89bfbcfcdefc2ae65793ae3df774a02f0931eb2418af6c4ccc4"
+      "sha256": "0d3f52f4418434939fd5c6f950a4bf024f9d98f922bb314732406ab6f75430c7"
     },
     {
       "path": "schemas/turn-message.schema.json",
-      "sha256": "6be9e5bfa4bbce592deb4f596f5f7d92055628c537a249b5dfca76b68f4b078a"
+      "sha256": "c989b45a16db4f76f97c0bd8010f8a87ef44204d413a05561e4231bad22a21e7"
     },
     {
       "path": "vectors/config-sha256.vectors.json",
-      "sha256": "3fcda489c78c5f7f61cb5af3c248d0c707060ab0b1b4a5aeff5ab1c2422e0c7e"
+      "sha256": "74d7db8954bda1ffa70e822c46312994c107cd8ae4954dc6c162670a6e06e20a"
     },
     {
       "path": "vectors/move-commit.vectors.json",
-      "sha256": "2559a1133cab55e31dcc5b5cd93c88f2ac7f359c0401f34897df65a4607aa894"
+      "sha256": "0c905b078333c56ec4ea232abb39b66b8e0564fbcd8560967337553e7e125aaa"
     },
     {
       "path": "vectors/simulator-v3.0.0-commit.golden.json",
@@ -139,7 +139,7 @@
     },
     {
       "path": "verify.py",
-      "sha256": "1e6cb9521e418c8b7ff162d20e1f383af7490504f28f704492d415d48f4a84da"
+      "sha256": "64e9b9aa897dbb926ddb5798f63ca0c0f7fe76f6c50f113e91fa93808f649b71"
     }
   ],
   "freeze_status": "proposed_unfrozen",

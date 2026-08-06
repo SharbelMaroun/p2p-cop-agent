@@ -1,7 +1,12 @@
 """Role-neutral read-only verifier for the shared contract bundle.
 
-This file is part of the stable bundle and is copied into the opponent repository
-byte-for-byte. It imports no Cop or Thief runtime code and never writes any file.
+This file is part of the stable bundle. It may be offered to an opponent along with
+the rest of the bundle, but holding it proves nothing about interoperability -- that
+evidence is a `Verified OK` replay of a real match. It is **not** copied into our
+companion Thief repository; that model was retired under `THIEF-002`.
+
+It imports no Cop or Thief runtime code and never writes any file, so it carries no
+live state of the kind Appendix E rule 2 prohibits sharing.
 It verifies that every controlled file under the bundle root matches the recorded
 hash in ``PARITY_MANIFEST.json`` and that the manifest is canonical. Manifest
 generation is a repository-owner operation and lives outside this verifier.

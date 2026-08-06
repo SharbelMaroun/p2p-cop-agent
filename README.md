@@ -12,11 +12,11 @@ scoring, transport-free rules harness, and deterministic move-or-barrier baselin
 It also implements the M4 commit-reveal primitives (per-turn commitment, audit
 reveal, Step-0 attestation) and the inbound FastMCP tool surface. It contains the
 M1.5 Option-B contract repair: a role-neutral `shared_contract/` bundle at
-`0.2.6-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
+`0.2.7-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
 There is still no outbound peer client, public tunnel, scent field, belief map,
 LLM, Gmail, GUI, or replay runtime, so no live game has been played.
 
-The shared contract is `0.2.6-proposed` and **UNFROZEN**. It becomes frozen only
+The shared contract is `0.2.7-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
 identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
 a documented academic-freedom interoperability choice pinned to simulator commit
@@ -84,7 +84,7 @@ displays the equivalent PEP 440 form `1.0`.
 ## Configuration
 
 - The stable, role-neutral shared contract is the top-level `shared_contract/`
-  bundle at `0.2.6-proposed` (Option B). It holds specifications, schemas,
+  bundle at `0.2.7-proposed` (Option B). It holds specifications, schemas,
   fixtures, vectors, and the read-only verifier only — no active match.
 - A per-match shared game object and local rate-limit enforcement mirror are each
   supplied at runtime by explicit path; neither loader has a repository or example
@@ -739,6 +739,49 @@ plays repeated matches to compare strategies, and no committed results table or 
 curve — only LLM token-cost benchmarks. Its seeding pattern was worth borrowing though:
 a `seed` config key resolved into a `random.Random` instance passed to the brain, rather
 than global `random.seed`. Each actor here gets its own stream for the same reason.
+
+#### The bundle was telling strangers to do the retired thing (`X-03`, 2026-08-06)
+
+Found by reading `shared_contract/` the way an opposing team would, rather than the way
+its author does. Two lines — the bundle README's opening and `verify.py`'s header — still
+said the bundle "can be copied into the Thief repository byte-for-byte". That model was
+retired on 2026-07-28 under `THIEF-002`, and the companion repo's own checklist says it
+"must not be revived". The withdrawal *was* recorded here — but only in a document marked
+SUPERSEDED, so the **deliverable itself** contradicted the companion repository.
+
+**The obvious fix would have been wrong.** Deleting the sentence would have implied
+sharing is discouraged, and the book says close to the opposite. Chapter 6 **recommends**
+publishing the scent model so both sides run identical logic. What Appendix E rule 2
+prohibits — with the sanction "immediate disqualification due to data leakage" — is
+sharing *memory or variables*, which the same chapter extends to importing "a shared
+module that maintains live state". This bundle is specifications, schemas, fixtures,
+vectors and a read-only verifier. It holds no state. Offering it to an opponent is the
+**recommended** half of that distinction, not the prohibited one, and the bundle now says
+so explicitly rather than leaving a reader to guess which side of the rule it sits on.
+
+Three things were genuinely wrong, and they are different from each other:
+
+1. **It named our companion Thief repo.** The book names that precise hazard: separation
+   matters "specifically during the development stage, when one team builds on the same
+   machine both the Police and the Thief" — which is exactly our situation.
+2. **It implied copying establishes conformance.** The book's evidence of
+   interoperability is a replay screenshot showing `Verified OK` for a real match (§7.4;
+   the submission requirements in Appendix C). Appendix E rule 52 permits warm-up games
+   for exactly this purpose. Byte-parity with one peer is evidence about that peer.
+3. **It cited our own summary's line numbers** — `:705`, `:708`, `:1693`. This is the one
+   file we write *for a stranger*, and a stranger has the book, not our summary. Every
+   citation in the shared bundle is now by chapter and rule number.
+
+Both files are controlled, so `G-18` forced a version bump and a regenerated manifest:
+`0.2.6-proposed` → `0.2.7-proposed`, manifest `4dd5d18a…`.
+
+**The bump found a second defect.** After bumping `CONTRACT_VERSION`, the manifest
+verified clean — because it hashes bytes and the bytes were consistent. But **12 files
+inside the bundle still declared `"x-contract-version": "0.2.6-proposed"`** in their own
+JSON. A bundle whose version file says one thing and whose schemas say another would have
+shipped, passing its own integrity gate the whole way. Nineteen current-state claims were
+updated across the repo and three historical ones deliberately left, since a record of
+what `0.2.6` changed should not be rewritten to claim it was `0.2.7`.
 
 ### 3. The implemented strategy
 

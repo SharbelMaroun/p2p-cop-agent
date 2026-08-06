@@ -3,7 +3,7 @@
 The Cop repository remains independently installable and runnable. It never imports,
 mounts, or reads the Thief repository at runtime.
 
-Contract `0.2.6-proposed` is **UNFROZEN**. Cop-local manifest integrity establishes
+Contract `0.2.7-proposed` is **UNFROZEN**. Cop-local manifest integrity establishes
 only that Cop files match Cop's recorded hashes. Cross-repository parity additionally
 requires Thief acceptance and optional read-only comparison reporting identical
 controlled bytes and an identical separately computed manifest hash.

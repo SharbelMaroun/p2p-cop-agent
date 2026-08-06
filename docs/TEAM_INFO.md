@@ -14,7 +14,7 @@ directly confirmed.
 | Thief repository | CONFIRMED | <https://github.com/SharbelMaroun/p2p-thief-agent> |
 | General/repository-sharing address | CONFIRMED | `rmisegal@gmail.com` — lecturer answer `AF-020` |
 | Automated-report address | CONFIRMED | `rmisegal+uoh26finalgame@gmail.com` — lecturer answer `AF-020` |
-| Proposed contract | PROPOSED | `0.2.6-proposed`, UNFROZEN pending independent peer acceptance |
+| Proposed contract | PROPOSED | `0.2.7-proposed`, UNFROZEN pending independent peer acceptance |
 
 Do not infer identity fields from Git authors, examples, translations, or archived
 configuration. The values above were supplied directly by the team; that direct input is

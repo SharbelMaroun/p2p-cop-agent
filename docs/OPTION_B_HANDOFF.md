@@ -1,9 +1,9 @@
-# Option-B Contract Handoff — `0.2.6-proposed`
+# Option-B Contract Handoff — `0.2.7-proposed`
 
 Status: **TECHNICALLY READY FOR COORDINATOR REVIEW — UNFROZEN — NOT COPIED, NOT FROZEN**
 
 Branch: `agent/cop-m1.5-blockers-v022`
-Contract version: `0.2.6-proposed`
+Contract version: `0.2.7-proposed`
 Interoperability profile: Option B, pinned to simulator commit
 `960499fd5e8777b4929625f5d8fdcf2ab4677b54`.
 
@@ -218,7 +218,7 @@ not prove semantic correctness or interoperability.
 
 ## What remains for the coordinator
 
-1. Review the `0.2.6-proposed` scope, the Option-B / simulator-v3.0.0 profile, and
+1. Review the `0.2.7-proposed` scope, the Option-B / simulator-v3.0.0 profile, and
    the eleven corrections above.
 2. If accepted, authorize copying the `shared_contract/` bundle into Thief
    byte-for-byte and independent cross-bundle verification
