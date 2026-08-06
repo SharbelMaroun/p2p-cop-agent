@@ -985,6 +985,43 @@ no per-file schema can catch, because every file in it is individually valid.
 on code** — the bundle carries one for the per-sub-game config only, and authoring the
 declaration, log and result schemas is a contract change in its own right.
 
+#### Three gates in front of Gmail, and a limiter that was the wrong algorithm (`M7-04`, `M7-08`, 2026-08-06)
+
+`:2096` fixes the flow and it is not ours to rearrange: "Outgoing report → **Quota
+Manager** → **Token Bucket** → **DOS Detector** → Gmail API", with three distinct outcomes
+(`:2098`) — "Rejected (quota full)", "Blocked (no token)", "LOCKED (anomaly)". Three names
+because they differ in remedy: *try tomorrow*, *try shortly*, *the code is wrong*.
+
+**The gap step 1 found.** A gatekeeper already existed here, and `M7-04b` looked like
+bookkeeping. It was not: the existing limiter is a **sliding window** — it drops
+timestamps older than sixty seconds and counts what remains. Rule 28 (Mandatory) asks for
+"a rate-limiter based on asynchronous **tokens**", and `:2085` says why the difference
+matters — a bucket prevents the **bursts** that "trigger an immediate block from the
+provider". A window caps a *rate*; a bucket caps a *burst* and then refills. Those are
+different algorithms with different behaviour in exactly the case that draws a 429.
+
+**Why the DOS detector does not unlock itself.** `:2087` is specific about what it is
+for: "a bug or an infinite loop **in the agent's code**" — our own runaway, not a hostile
+peer. A lock that cleared after a quiet period would let the same loop resume the moment
+it briefly looked calm, so it stays locked until a human looks.
+
+**Fail-fast is correctness, not efficiency.** Each gate has a side effect, so a later gate
+running after an earlier refusal corrupts the counters the gates exist to protect. Two
+tests pin the consequences: a quota rejection must not consume a token, or a send that
+never went out would throttle tomorrow's; and a token-blocked send must not register in
+the DOS window, or a legitimately throttled burst would look like a runaway loop and lock
+the pipeline — a self-inflicted outage. A transmitter that *raises* still counts against
+every gate, because one that only counted successes would let a failing loop retry
+without limit.
+
+`M7-04a` — "no service calls an external API directly" — is a property of the call graph,
+so `send` takes the transmitting callable rather than importing one. This layer cannot
+name Gmail, and a module that cannot name the API cannot bypass the gates to reach it.
+
+*One number worth flagging:* Appendix F makes the rate a `Minimum` of 30, so a negotiated
+higher value is honoured rather than clamped back down. Clamping a minimum to its floor
+is the classic misreading of that table.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
