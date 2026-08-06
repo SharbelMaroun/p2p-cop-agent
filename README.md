@@ -783,6 +783,31 @@ shipped, passing its own integrity gate the whole way. Nineteen current-state cl
 updated across the repo and three historical ones deliberately left, since a record of
 what `0.2.6` changed should not be rewritten to claim it was `0.2.7`.
 
+#### The Thief now has its own neutral peer (`M1-015`–`M1-017` cross-check, 2026-08-06)
+
+This repository has had a conformance stub since `M5-03e`. The companion Thief did not —
+its equivalent rows had been PENDING since the wire realigned to the simulator profile
+and archived the old one. They are now closed, and deliberately **not** by copying
+anything from here: `M1-015` requires a stub "sharing no source file with any peer
+repository", and `THIEF-002` forbids that repository any access to this one. It authored
+its own from its own profile document.
+
+Two findings there are worth recording on this side.
+
+**Ordering has no rule, and the reference does not enforce it.** Asked directly, the
+reference does not gate message ingestion on step sequence — a duplicate or non-advancing
+step stays queued for the peer loop rather than being refused on arrival. Our stub here
+refuses one (`test_a_turn_that_does_not_advance_is_refused_by_the_stub`), which is
+stricter than the reference. That is defensible for a test peer, but it is *our*
+strictness and should not be read as a rule the wire imposes.
+
+**Our version negative-vector sits one layer up.** `M1-017`'s categories include version
+mismatch. This repository proves it in `tests/contract/` — against our own parser — not
+across the stub wire, where the other six are proven. A refusal demonstrated at the
+boundary by an independent implementation is stronger evidence than one demonstrated by
+the code that also produced the message. Noted rather than fixed; it is a small gap, not
+a hole.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
