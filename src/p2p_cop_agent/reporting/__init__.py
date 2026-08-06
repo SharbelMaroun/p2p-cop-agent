@@ -11,6 +11,12 @@ from p2p_cop_agent.reporting.config_artifact import (
     quantitative_parameters,
 )
 from p2p_cop_agent.reporting.emit import EmitError, artifact_bytes, write_all, write_artifact
+from p2p_cop_agent.reporting.log_artifact import (
+    LogArtifactError,
+    build_log,
+    is_revealed,
+    reveal_log,
+)
 from p2p_cop_agent.reporting.naming import (
     MatchIdentity,
     NamingError,
@@ -24,16 +30,20 @@ from p2p_cop_agent.reporting.naming import (
 __all__ = [
     "ConfigArtifactError",
     "EmitError",
+    "LogArtifactError",
     "MatchIdentity",
     "NamingError",
     "artifact_bytes",
     "build_config",
+    "build_log",
     "config_filename",
     "declaration_filename",
+    "is_revealed",
     "log_filename",
     "match_filenames",
     "quantitative_parameters",
     "result_filename",
+    "reveal_log",
     "write_all",
     "write_artifact",
 ]

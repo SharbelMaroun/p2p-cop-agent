@@ -920,6 +920,37 @@ during rule 19's audit, whose sanction is "score of 0 for the falsifying group".
 schema-valid, but nothing in `orchestration/match` calls them yet. Wiring emission into a
 played match, the log artifact (`M7-24`) and validation (`M7-14`) are the next batch.
 
+#### The log a stranger verifies, and a rule about *when* a byte exists (`M7-24`, 2026-08-06)
+
+The artifact layer is now wired: the declaration and the agreed config are written to
+disk **inside `play_match`, immediately after the declaration is locked and before the
+first turn is sent**. That timing is `M7-22`'s actual requirement, so it is proven by
+timing — a spy records whether the file existed at each outbound turn, and every one must
+see it already there. A declaration emitted at the end could have been edited to suit the
+result, which is precisely what locking it beforehand rules out.
+
+The third artifact is the one an auditor actually uses. `M7-24` asks that "a third party
+can re-verify **without our code**", and `:1690` gives the procedure: the replay viewer
+"takes the Nonce and the move appearing in the log, re-encodes them, and compares the
+result to the original Commitment value using the SHA-256 algorithm". So the binding test
+recomputes every commitment from the emitted file with nothing but `hashlib`, and a
+companion test alters one move and asserts the same recomputation fails.
+
+**The interesting constraint is `M7-24b`, and it is a constraint about time.** Rule 18 is
+Mandatory: "Keep the Nonce secret until the end of the game. Sanction: **Disqualification
+due to risk of dictionary attack**." A log written step-by-step with its nonces inline
+violates that the moment the file is shared or committed mid-game — and the finished
+artifact is **byte-identical** either way. No inspection of the final file can detect it.
+
+So the rule is made unrepresentable instead of observed: `build_log` refuses a step
+carrying `nonce` or `payload` at all, and `reveal_log` is the only way they enter. The
+forbidden intermediate state cannot be written with this module, whatever the caller
+intends — which for a property that leaves no trace is the only enforcement available.
+
+*Still open.* `M7-03a`'s consumer — feeding real per-turn records from the turn loop —
+plus `M7-14` (validate all four against their schemas) and `M7-03b` (the result artifact,
+the last builder).
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
