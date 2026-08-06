@@ -1254,9 +1254,46 @@ floor it was, and it is no longer credulous either.
 
 ### 4. Learning curves
 
-**Not applicable.** No reinforcement learning is used. The movement policy is
-deterministic by design, so there is no training run and no curve to plot. If RL is
-adopted later, this section gains the curves; adding a chart now would be decoration.
+The book requires learning curves **"if RL was used"** (p.81/189). This policy is
+deterministic and weight-free — a fixed lexicographic ranking, nothing fitted from data —
+so there is no convergence to plot, and asked directly, the book is silent on a substitute.
+
+In its place, [`docs/RESEARCH-REPORT-Performance-Analysis.md`](docs/RESEARCH-REPORT-Performance-Analysis.md)
+answers the question a learning curve answers — *is this policy actually better, and by how
+much* — by measurement over **40 paired seeds**:
+
+![Capture rate and mean score by strategy arm](assets/chart-strategy-comparison.svg)
+
+| Arm | Capture rate | Mean turns | Mean Cop score |
+|---|---|---|---|
+| blind | 0.225 | 32.83 | 8.38 |
+| **belief** | **0.975** | **12.83** | **19.62** |
+| oracle (illegal ceiling) | 1.000 | 12.10 | 20.00 |
+
+Belief closes **96.8%** of the blind-to-oracle gap, wins **30 of 40** paired seeds and
+**loses none**.
+
+![Cop score distribution by arm](assets/chart-strategy-distribution.svg)
+
+The distribution is where a mean alone would have misled: the blind arm's median score is
+**5.0**, with Q1 = Q3 = 5.0. It is not a weak pursuer — it is almost always a *non*-pursuer
+that occasionally stumbles into a capture, and its 8.38 mean is that rarity averaged over
+many failures.
+
+**Two sweeps came back flat, and probing them found more than the sweeps did.** The barrier
+quota is identical to four decimals at every value — not because the quota is irrelevant,
+but because this arm places **zero barriers in 501 decisions**; the squeeze machinery exists
+and is tested but is not wired into it. Board size is flat because on a 12×12 board the
+Thief never reaches past index 7 of 11 within the horizon, so the extra ranks are space
+nobody visits. Both are recorded as findings about our own agent rather than as parameter
+conclusions.
+
+Nine charts, all SVG, all regenerable:
+
+```text
+uv run python scripts/run_experiments.py
+uv run python scripts/render_charts.py
+```
 
 ### 5. Live belief map and "Verified OK" replay screenshots
 
