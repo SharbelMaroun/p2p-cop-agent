@@ -2,8 +2,8 @@
 
 Exercises scent -> likelihood -> belief -> pursuit (M6-01/02/03) end to end under the
 observation extremes the book names: no evidence, a saturated field, a near vs a far
-source, and repeated runs. The hint-contradiction case (M6-12b) needs the hint model
-(M6-10/M6-11) and is deferred.
+source, and repeated runs. The hint-contradiction case (M6-12b) has its own file,
+``test_contradiction.py``, now that the hint model (M6-10/M6-11) exists.
 """
 
 from __future__ import annotations

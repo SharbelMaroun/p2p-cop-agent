@@ -626,6 +626,65 @@ instead — sharing state creates "a 'backdoor' through which one agent might se
 truth of its rival". Citing 8 and 9 here would have been an invented requirement wearing a
 real rule number.
 
+#### When the words and the world disagree (`M6-12`, `M6-12b`, 2026-08-06)
+
+This closes the last `P0` in `M6`. The row had been deferred since 2026-08-03 on three
+dependencies that all now exist, and it asks a question the whole verbal layer rests on:
+when a hint says one thing and the scent says another, which wins?
+
+Two sentences answer it and they ask for different things. `:508` states the obligation —
+a contradicted hint means the agent "**must reduce their trust level and update their
+map**", two clauses joined by *and*, so both are asserted separately. `:1020` states the
+behaviour, and its verb is the precise one: the pursuer "**ignores** the verbal claim and
+**continues** to track the actual scent source". Not *redirects* — **continues**. A lie
+that merely failed to win would still have deflected the pursuit slightly; the book says
+it does not bend at all. So the binding test compares the target under a lie against the
+target from the same turn having heard **nothing**, and requires them identical.
+
+**Then the tests passed on the first run, which is where the actual work started.**
+Passing immediately is not evidence a test is good — it is equally consistent with a test
+that cannot fail. Probing the implementation across its whole range showed the pursuit is
+protected by something other than what the tests appeared to credit: a `0.04` trace, the
+faintest value in the book's emission table, outweighs that lie held at **complete**
+trust. A located peak concentrates likelihood on one cell; a bearing spreads it over half
+the board. The dominance is structural, and those two headline tests would have passed
+with the trust machinery entirely disabled.
+
+They are not wrong — chapter 4.4's case study *is* that regime, an absolute
+contradiction — but alone they would have overstated what they proved. So the ordering
+itself is now pinned in `test_evidence_priority.py`, both halves of it: scent decides
+wherever it can, and a hint decides only what scent leaves open. Given two equal peaks,
+scent cannot choose and the claim breaks the tie. That second half matters as much as the
+first: a hint that could never change any decision would be dead code dressed as
+strategy, while one that could overrule scent would make the book's lie detector
+pointless. The result is lexicographic, like every other policy here (`M6-04`).
+
+**Both repositories reach the same ordering from different structures** — a mapping of
+cells here, a grid of rows in the Thief — and both now test it. Belief never crosses the
+wire (`M6-018`), so nothing in the protocol could ever detect the two sides drifting
+apart on this; only a test in each repo can.
+
+*What the sources do not say, checked rather than assumed.* No numbered Appendix E rule
+with a sanction covers any of this — `:508` is body text, and the override falls out of
+the Bayesian update rather than being decreed. Nothing defines a trust floor or an
+"ignore a liar after N turns" rule, so our multiplicative decay and `[0, 1]` clamp are
+engineering and are labelled as ours. A consequence we accept: decay approaches zero
+without reaching it, so a distrusted peer can still break an exact tie. Inverting a
+liar's claim would be worse — a liar's statement is evidence of nothing, not evidence of
+the opposite, since it may still be true.
+
+*The reference offered nothing to copy, and its own documentation is wrong about that.*
+It never applies a hint to belief at all: no trust coefficient, the hint logged and
+displayed but never entering the belief update — while its README describes a fusion of
+scent and hints that its code does not perform.
+
+*Two gates caught this batch before it shipped.* The file-length cap rejected the test
+file at 217 lines, which is what split it into the two files above — a better shape than
+the one it replaced. The secret scanner then flagged a test **name**: `outweighs_a_lie_…`
+contains `gh` + `s` + `_` followed by twenty-five word characters, which is exactly the
+GitHub token pattern. Renaming it was the right fix; an allowlist entry would have
+weakened the scanner permanently to accommodate a cosmetic choice.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
