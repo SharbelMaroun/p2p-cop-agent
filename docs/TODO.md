@@ -635,10 +635,10 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-01c | Lock input while the banner is grey | DEFERRED | P1 | Out-of-turn input is ignored, not queued |
 | M8-01d | Prove the objective board is never renderable | DEFERRED | P0 | `[AE-8]` `[AE-9]`; a view-model test asserts no opponent-truth field |
 | M8-02 | Implement replay verifier and tamper view | IN PROGRESS | P1 | `Verified OK` and `TAMPERED` paths are demonstrable |
-| M8-02a | Load a saved match log and step forward/back | IN PROGRESS | P1 | `[AE-20]` mandatory deliverable `[PRD-replay]` |
+| M8-02a | Load a saved match log and step forward/back | DONE | P1 | `[AE-20]` mandatory deliverable `[PRD-replay]` |
 | M8-02b | Recompute every step's hash and compare | DEFERRED | P0 | Uses the M4 construction, not the book's chapter-7 sketch |
-| M8-02c | Void the whole match on the first mismatch | IN PROGRESS | P0 | A single tampered step yields `TAMPERED` for the match |
-| M8-02d | Record why the book's chapter-7 verifier is not used | IN PROGRESS | P1 | Book p. 74 computes `SHA256("{nonce}|{move}")`, which cannot verify a chapter-5 commitment. Disclosed under the p. 5 contradiction clause |
+| M8-02c | Void the whole match on the first mismatch | DONE | P0 | A single tampered step yields `TAMPERED` for the match |
+| M8-02d | Record why the book's chapter-7 verifier is not used | DONE | P1 | Book p. 74 computes `SHA256("{nonce}|{move}")`, which cannot verify a chapter-5 commitment. Disclosed under the p. 5 contradiction clause |
 | M8-02e | Document the replay UI workflow and states | DEFERRED | P2 | Screens, controls, and both verdict states described `[G§10.2]` |
 | M8-03 | Run neutral unknown-opponent interoperability suite | DEFERRED | P0 | Both proposal/acceptance directions pass remotely |
 | M8-03a | Rehearse against a stub that shares no source with this repo | DEFERRED | P0 | Independently authored; imports no project module |
@@ -662,8 +662,8 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-07a | Render disclosed barriers only | DEFERRED | P0 | A barrier appears only once disclosed `[AE-15]` |
 | M8-07b | Render received hints as text | DEFERRED | P2 | The verbal channel is visible to the operator |
 | M8-07c | Show the current score and step count | DEFERRED | P2 | Operator can see progress toward the threshold |
-| M8-08 | Implement replay navigation | IN PROGRESS | P1 | Step forward, step back, and jump to a step |
-| M8-08a | Recompute verification on every navigation | IN PROGRESS | P0 | The verdict is derived, never cached from load time |
+| M8-08 | Implement replay navigation | DONE | P1 | Step forward, step back, and jump to a step |
+| M8-08a | Recompute verification on every navigation | DONE | P0 | The verdict is derived, never cached from load time |
 | M8-08b | Show the per-step verdict alongside the board | DEFERRED | P1 | Operator sees where a match failed |
 | M8-08c | Load a malformed log without crashing | DEFERRED | P1 | Corrupt input yields a clear error, not a stack trace |
 | M8-08d | Detect a reordered log | DEFERRED | P0 | Step sequence is validated, not assumed |
@@ -678,9 +678,9 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-11 | Document both interfaces | DEFERRED | P2 | Screens, states, and workflows described `[G§10.2]` |
 | M8-11a | Document the live GUI workflow | DEFERRED | P2 | Turn banner states and what each means |
 | M8-11b | Document accessibility considerations | DEFERRED | P2 | Colour is not the only signal `[G§10.2]` |
-| M8-12 | Prove the replay app on a foreign log | IN PROGRESS | P0 | It verifies a log this peer did not write |
-| M8-12a | Verify an opponent-produced log | IN PROGRESS | P0 | The audit is mutual; both logs must verify `[AE-36]` |
-| M8-12b | Detect a foreign log that was tampered | IN PROGRESS | P0 | The detection path is not self-only |
+| M8-12 | Prove the replay app on a foreign log | DONE | P0 | It verifies a log this peer did not write |
+| M8-12a | Verify an opponent-produced log | DONE | P0 | The audit is mutual; both logs must verify `[AE-36]` |
+| M8-12b | Detect a foreign log that was tampered | DONE | P0 | The detection path is not self-only |
 | M8-13 | Rehearse the full failure matrix end to end | DEFERRED | P0 | Every fault class has an observed outcome, not a predicted one |
 | M8-13a | Rehearse an opponent crash mid-series | DEFERRED | P0 | The series still produces artifacts |
 | M8-13b | Rehearse a tunnel drop mid-turn | DEFERRED | P0 | Terminal outcome is defined, not a hang |

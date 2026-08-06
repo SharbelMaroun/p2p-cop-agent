@@ -13,8 +13,15 @@ It also implements the M4 commit-reveal primitives (per-turn commitment, audit
 reveal, Step-0 attestation) and the inbound FastMCP tool surface. It contains the
 M1.5 Option-B contract repair: a role-neutral `shared_contract/` bundle at
 `0.2.9-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
-There is still no outbound peer client, public tunnel, scent field, belief map,
-LLM, Gmail, GUI, or replay runtime, so no live game has been played.
+
+Since then: the M6 scent field and belief map, the outbound FastMCP client, the M7
+artifact/reporting pipeline (declaration, per-sub-game config and log, final result,
+settlement, six-sub-game series) with the Gmail sender, and the M8 **replay verifier** —
+which reaches `Verified OK` or `TAMPERED` on a saved log, including one this peer did not
+write. Still absent: a public tunnel, an LLM provider, any GUI (`ui/` is an empty package),
+and the replay *view* that would make the verifier's banner photographable. Gmail
+credentials are deliberately not in the repository (rules 39–40), so the sender is built
+but unexercised. **No live game against a real opponent has been played.**
 
 The shared contract is `0.2.9-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
@@ -1253,16 +1260,41 @@ adopted later, this section gains the curves; adding a chart now would be decora
 
 ### 5. Live belief map and "Verified OK" replay screenshots
 
-**Still blocked, but for a narrower reason than before.** A bounded sub-game now runs
-end to end and its audit is delivered: every turn and the final reveal cross a real
-socket into a separate operating-system process, which validates each one — and a
-*tampered* audit is rejected there, so rule 19 is enforced over a real carrier rather
-than asserted locally.
+**The verifier behind the `Verified OK` stamp now exists; the screen that shows it does
+not yet.** That is a narrower gap than before, and worth stating precisely because rule 20
+is Mandatory with the sanction "threshold condition for confirmation of logs and submission
+of the project" (p. 129/272) — this is the one deliverable whose absence is a rejected
+submission rather than a lost mark.
 
-What is still missing for a screenshot is a **second peer that plays back**. The
-opponent's replies in those runs come from a local script, so there is no live belief
-map to photograph yet, and there is no GUI. Both arrive with `M6` (belief) and `M7`
-(two peers, mutual audit verification).
+`src/p2p_cop_agent/replay/` loads a saved log, recomputes every SHA-256 commitment from the
+file's own bytes, and reaches one of exactly two verdicts. `:1753` decides the scope: one
+altered step invalidates the entire match, so the banner is a match verdict, not a per-step
+annotation. The cursor steps forward, back, jumps to a step, and jumps straight to the
+first divergence — and the verdict is **recomputed on every one of those moves**. It is a
+property with nowhere to cache; a stamp computed once at load and painted thereafter would
+be a claim about the past tense, which is not what a submission screenshot should be.
+
+**It verifies logs we did not write.** Rule 36 mandates a "comprehensive mutual log audit"
+as a necessary condition for agreement (p. 131/276), and p. 39/102 spells it out: "each
+side presents its full log … each side reconstructs the opponent's data through the
+revealed nonces". The test fixtures are therefore built by a writer that imports nothing
+from this package and emits a deliberately foreign shape — an unknown `schema_version`,
+keys we never write. A verifier fed only its own output would confirm that our writer
+agrees with our reader, which it always will.
+
+**A test we nearly wrote as a formality found a real hole.** Forging a log by copying a
+real record and changing only its *visible* `step` passed cleanly: the commitment binds the
+sealed payload and says nothing about the `step` and `move` keys a viewer actually paints
+on the board. A forger could leave the seal untouched, rewrite only the display, and
+collect a green stamp over a game nobody played. `:1691` closes it — the viewer re-encodes
+"the Nonce and the move **appearing in the log**" — and the verifier now cross-checks every
+visible field against the sealed one.
+
+What remains for the screenshot is the **view**: a window that paints the banner, plus the
+belief map from a live two-peer run. The `Verified OK` capture belongs "within the README.md
+academic report" (p. 81/189, "absolute mandatory"); the exact filename and directory are
+**not specified** by Appendix E or the submission checklist, so that will be a recorded
+project choice rather than an inferred one.
 
 ### 6. Companion repository
 

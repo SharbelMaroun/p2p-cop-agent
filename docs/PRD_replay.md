@@ -1,20 +1,57 @@
 # PRD — Replay and Verification Viewer
 
-Status: mandatory verification viewer confirmed; runtime UI deferred.
+Status: **verifier built and proven on foreign logs (`M8-02c`/`02d`/`08`/`08a`/`12`);
+the UI that paints it is still open (`M8-02`, `M8-05`).**
+
+Appendix E rule 20 (Mandatory), p. 129/272: "Mandatory to build a match log reconstruction
+and replay app for observation and verification; **Threshold condition** for confirmation
+of logs and submission of the project." Confirmed with the book notebook 2026-08-06: the
+project cannot be accepted without it. `:1769` restates it — "a mandatory project
+requirement, not an optional component".
+
+## Built
+
+- `replay/load.py` — accepts a path and nothing else, so an opponent's log opens on the
+  same code path as ours. Tolerant of foreign shape (unknown `schema_version`, extra keys,
+  `sub_game` for `sub_game_number`); strict about the three fields verification consumes.
+- `replay/verify.py` — recomputes each commitment from the file's own bytes. Two verdicts,
+  no third. One bad step voids the whole match (`:1743`, `:1753`).
+- `replay/cursor.py` — step forward, back, `go_to`, `go_to_step`, `restart`, and
+  `go_to_first_divergence`. The verdict is a property, never a field.
 
 ## Confirmed behavior
 
 - The viewer loads `log_<game_id>_g<NN>.json`, moves through the history, and
   recomputes each SHA-256 commitment from revealed data.
 - A match displays `Verified OK`; any mismatch displays `TAMPERED` and invalidates
-  the match.
-- The README submission report includes a `Verified OK` replay screenshot.
+  the match. There is no third state — `:1769` allows "no room for manual correction".
+- **The verdict is recomputed on every navigation, never cached from load time**
+  (`M8-08a`). The `Verified OK` stamp is submission evidence; a verdict computed once and
+  painted forever is a claim about the past tense.
+- **It must verify the opponent's log, not only ours.** Rule 36 mandates a "comprehensive
+  mutual log audit" as a necessary condition for agreement (p. 131/276); p. 39/102: "each
+  side presents its full log … each side reconstructs the opponent's data through the
+  revealed nonces". A verifier fed only its own output proves nothing.
+- The README submission report includes a `Verified OK` replay screenshot. Asked directly:
+  the book requires it "within the README.md academic report" (p. 81/189) and calls it
+  "absolute mandatory"; the **exact filename and directory are not specified**.
 
-Sources: book Ch. 7; Appendix E rule 20; `SR-008`/`SR-010`.
+## Which hash construction (`M8-02d`, `C-023` RESOLVED)
 
-The official log exemplar and observed key set have already been inspected. What
-remains unresolved is its complete formal validation schema and the exact commit
-byte canonicalization governed by ADR-006. SHA-256 and mismatch consequences are
-fixed; a particular JSON serialization is not.
+Chapter 7's `verify_step` sketch (`:1733`) computes `sha256(f"{nonce}|{move}")`. Ours
+hashes the canonical payload then the nonce. These never agree — a viewer written to the
+sketch would red-banner an honest log at step 1.
 
-This milestone may validate the 1.1 fixture but adds no replay/UI behavior.
+This is **not** a contradiction requiring disclosure. `:1757` footnotes the listing in the
+book's own voice: "the sketch simplified the input for the sake of the illustration; in
+practice the signature covers all components of the step — Intent, Move, State and Nonce —
+as detailed in the protocol in Chapter 5". The reference simulator diverges identically.
+
+## Open
+
+- The UI (`M8-02` tamper view, `M8-05` screenshot capture). The reference ships Tkinter
+  with `Play/Pause`, `Step >`, `Restart`, sub-game selection and `Go to step`; ours needs
+  only to make the banner visible and the capture reproducible (`M8-05d`).
+- Belief-heatmap rendering (`M8-05a`) is a separate deliverable from the replay banner.
+
+Sources: book Ch. 7 (`:1689`–`:1769`); Appendix E rules 20 and 36; `SR-008`/`SR-010`.
