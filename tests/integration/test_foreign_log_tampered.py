@@ -74,13 +74,33 @@ def test_rewriting_only_the_displayed_move_is_detected(tmp_path: Path) -> None:
     assert "contradicts the sealed payload" in replay.banner
 
 
-def test_a_deleted_step_is_detected(tmp_path: Path) -> None:
-    """Removing a step you would rather nobody replayed. The surviving records each still
-    verify, so this is caught by their `step` numbering, not by their digests."""
+def test_a_deleted_step_is_reported_though_the_digests_still_pass(tmp_path: Path) -> None:
+    """Removing a step you would rather nobody replayed.
+
+    **This test used to assert only that its own fixture had a gap** — `steps == [1,2,4,5]`
+    — which would have passed against no implementation at all. It now asserts what the
+    product does: every surviving digest verifies, so the banner stays green, and the gap
+    is surfaced by `sequence` under rule 35 rather than misreported as a rule 19 forgery.
+    """
     document = foreign_writer(5)
     del document["records"][2]
-    steps = [record["step"] for record in document["records"]]
-    assert steps == [1, 2, 4, 5], "the gap is the evidence"
+
+    replay = _replay(tmp_path, document)
+    assert replay.stamp is Verdict.VERIFIED_OK, "no digest was touched"
+    finding = next(f for f in replay.sequence.findings if f.kind == "gap")
+    assert finding.rule == "AE-35" and "[3]" in finding.detail
+
+
+def test_a_reordered_foreign_log_verifies_but_is_reported(tmp_path: Path) -> None:
+    """The deliberate asymmetry. Neither the book nor the reference requires ordering, so
+    red-bannering an honest opponent over it would be a false accusation with no appeal
+    (`:1769`) — and rule 35 scores zero for *both* teams on a contradicting report."""
+    document = foreign_writer(5)
+    document["records"] = [document["records"][i] for i in (0, 3, 1, 4, 2)]
+
+    replay = _replay(tmp_path, document)
+    assert replay.stamp is Verdict.VERIFIED_OK
+    assert any(f.kind == "out-of-order" for f in replay.sequence.findings)
 
 
 def test_stripping_a_single_nonce_is_detected_rather_than_read_as_in_play(

@@ -47,6 +47,24 @@ book's own voice: "the sketch simplified the input for the sake of the illustrat
 practice the signature covers all components of the step — Intent, Move, State and Nonce —
 as detailed in the protocol in Chapter 5". The reference simulator diverges identically.
 
+## Sequence integrity — reported, never bannered (`M8-08d`, `U-032`)
+
+Every commitment covers one record, so a log whose records are **shuffled, missing one, or
+carrying a duplicate** still verifies digest by digest. The first batch shipped without
+noticing; a direct probe confirmed all three stamped `Verified OK`.
+
+`replay/sequence.py` now detects them. It deliberately does **not** change the verdict:
+
+* rule 19 is "any mismatch **in the digest**" (p.129/271) — structural damage is not rule 19;
+* a missing step is instead "contradictory reports" (rule 35, p.131/275) and an illegal state
+  jump (rule 5), and rule 35's sanction falls on **both** teams;
+* neither the book nor the reference requires ordering to be checked at all — the reference
+  verifies each record "with no reference to its place in the sequence".
+
+So a differently-ordered opponent log is not evidence of forgery, and red-bannering it would
+be a false accusation carrying "no appeal process" (`:1769`). Findings are tagged with the
+rule they answer to and left for settlement, which is where both logs are actually compared.
+
 ## Open
 
 - The UI (`M8-02` tamper view, `M8-05` screenshot capture). The reference ships Tkinter

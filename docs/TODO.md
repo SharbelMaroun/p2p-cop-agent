@@ -665,8 +665,8 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-08 | Implement replay navigation | DONE | P1 | Step forward, step back, and jump to a step |
 | M8-08a | Recompute verification on every navigation | DONE | P0 | The verdict is derived, never cached from load time |
 | M8-08b | Show the per-step verdict alongside the board | DEFERRED | P1 | Operator sees where a match failed |
-| M8-08c | Load a malformed log without crashing | DEFERRED | P1 | Corrupt input yields a clear error, not a stack trace |
-| M8-08d | Detect a reordered log | DEFERRED | P0 | Step sequence is validated, not assumed |
+| M8-08c | Load a malformed log without crashing | DONE | P1 | Corrupt input yields a clear error, not a stack trace |
+| M8-08d | Detect a reordered log | DONE | P0 | Step sequence is validated, not assumed |
 | M8-09 | Run the security review | DEFERRED | P0 | Secrets, identity, input validation, and dependencies all reviewed |
 | M8-09a | Confirm no secret is readable from any artifact | DEFERRED | P0 | Artifacts are shared; secrets must not travel in them `[AE-39]` |
 | M8-09b | Confirm no private field crosses the wire | DEFERRED | P0 | Leakage vector per private field class |

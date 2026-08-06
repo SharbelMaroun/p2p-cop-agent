@@ -27,6 +27,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from p2p_cop_agent.replay.load import ReplayLog
+from p2p_cop_agent.replay.sequence import SequenceReport, inspect_sequence
 from p2p_cop_agent.replay.verify import MatchVerdict, RecordCheck, Verdict, verify_records
 
 
@@ -62,6 +63,11 @@ class Replay:
     def verdict(self) -> MatchVerdict:
         """Re-verify the whole log, now. Recomputed on every read by construction."""
         return verify_records(self._log.records)
+
+    @property
+    def sequence(self) -> SequenceReport:
+        """Structural findings, reported beside the verdict and never folded into it."""
+        return inspect_sequence(self._log.records)
 
     @property
     def check(self) -> RecordCheck:

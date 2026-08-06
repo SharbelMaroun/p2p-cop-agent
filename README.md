@@ -1290,6 +1290,27 @@ collect a green stamp over a game nobody played. `:1691` closes it — the viewe
 "the Nonce and the move **appearing in the log**" — and the verifier now cross-checks every
 visible field against the sealed one.
 
+**A structural hole the first batch shipped, found by reading the other repository's
+requirement list.** Every commitment covers a single record, so a log with its records
+shuffled, one deleted, or one duplicated survives every digest. Measured directly against
+the shipped verifier: all three came back `Verified OK`. Both repositories carried a
+"detect a reordered log" row; only one list was read in full, and the row that was never
+claimed is precisely the one that shipped broken.
+
+The fix deliberately does **not** turn those into a red banner. Rule 19 is "any mismatch
+**in the digest**" (p.129/271), so structural damage is a different rule with a different
+sanction — a gap makes the two peers' reports contradictory under rule 35 (p.131/275),
+which scores zero for **both** teams, and shows an illegal state jump under rule 5. Neither
+the book nor the reference checks ordering at all; the reference verifies each record "with
+no reference to its place in the sequence". So an opponent's log that is merely ordered
+differently is not evidence of forgery, and red-bannering it would be a false accusation
+carrying "no appeal process". Findings are reported with the rule they answer to and left
+for settlement, where both logs are actually compared. Recorded as `U-032`.
+
+One test also had to be replaced rather than extended: it asserted that its own fixture had
+a gap and never that the verifier noticed, so it would have passed against no
+implementation at all.
+
 What remains for the screenshot is the **view**: a window that paints the banner, plus the
 belief map from a live two-peer run. The `Verified OK` capture belongs "within the README.md
 academic report" (p. 81/189, "absolute mandatory"); the exact filename and directory are
