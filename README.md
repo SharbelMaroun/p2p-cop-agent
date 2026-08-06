@@ -12,11 +12,11 @@ scoring, transport-free rules harness, and deterministic move-or-barrier baselin
 It also implements the M4 commit-reveal primitives (per-turn commitment, audit
 reveal, Step-0 attestation) and the inbound FastMCP tool surface. It contains the
 M1.5 Option-B contract repair: a role-neutral `shared_contract/` bundle at
-`0.2.5-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
+`0.2.8-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
 There is still no outbound peer client, public tunnel, scent field, belief map,
 LLM, Gmail, GUI, or replay runtime, so no live game has been played.
 
-The shared contract is `0.2.5-proposed` and **UNFROZEN**. It becomes frozen only
+The shared contract is `0.2.8-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
 identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
 a documented academic-freedom interoperability choice pinned to simulator commit
@@ -84,7 +84,7 @@ displays the equivalent PEP 440 form `1.0`.
 ## Configuration
 
 - The stable, role-neutral shared contract is the top-level `shared_contract/`
-  bundle at `0.2.5-proposed` (Option B). It holds specifications, schemas,
+  bundle at `0.2.8-proposed` (Option B). It holds specifications, schemas,
   fixtures, vectors, and the read-only verifier only — no active match.
 - A per-match shared game object and local rate-limit enforcement mirror are each
   supplied at runtime by explicit path; neither loader has a repository or example
@@ -365,13 +365,662 @@ bind a port another process already holds, which is exactly the condition the fu
 exists to detect. A test that held a port and asserted the raise caught it. A
 detection probe wants the strictest bind available, not the most permissive.
 
-*Still not built (`M5-17f`).* Negotiation-to-first-move sequencing — send offer, poll
-for the counter-signature, verify both directions, then play. The reference confirms
-play starts only after both verifications pass; the book adds that Step-0 must be
-exchanged and mutually signed and that the pre-game declaration is written after
-negotiation but before play. No `serve` command is wired until that lands, because a
-`serve` that comes up and mailboxes without playing is the passive server rejected on
-2026-08-01.
+*Since closed (`M5-17f`).* Negotiation-to-first-move sequencing now exists —
+`orchestration/negotiation_handshake.py` and `orchestration/match.py` run the book's
+pre-play order (negotiate → exchange and verify Step-0 → write and lock the
+declaration → play), and `adapters/serve.py` wires the `serve` command onto it. The
+paragraph that stood here said it was not built; that was true when written and is no
+longer, which is exactly the drift this report exists to avoid.
+
+#### Locking the scent model, and an unknown that no ruling could close (`M6-07`, 2026-08-05)
+
+Appendix E rule 23 is short: *"Lock the cryptographic hash of the scent model before
+the start of the game. Sanction: Deviation from the formula cancels the game."* We had
+no lock at all, and the reason turned out to be more interesting than an unfinished
+task.
+
+The 5×5 emission field has 25 cells. Book Figure 4 names five radial classes — centre
+`0.90`, cross `0.62`, diagonal `0.20`, mid-side `0.14`, corner `0.04` — and those cover
+**17** of them. The remaining eight, the ring at offsets `(±1,±2)`/`(±2,±1)`, are named
+by nothing. They had been recorded as an open unknown (`U-030`) and left **empty**,
+waiting for a ruling, and the model lock was blocked behind them.
+
+That wait could never have ended. A ruling needs something to rule on, and no source
+states a value. Meanwhile the omission was itself a defect: the reference simulator
+emits all 25 cells and its own tests assert a snapshot length of 25, so our eight empty
+cells would reach an opponent as eight cells reading zero — a quieter agent than we
+actually are, and a wrong one.
+
+The book had already answered a different and better question (p. 31): the parties
+**agree** the emission and decay model, confirm they interpret it identically against a
+concrete numerical example, and lock the agreement with SHA-256. It even recommends
+handing the opponent your scent source code. So the eight cells stopped being an
+unknown and became a **negotiated parameter** — published with an explicit default that
+carries no book authority, and sealed inside a hash covering the whole model: formula,
+constants, field size, and all 25 cells. Comparing the three Appendix F constants could
+never have caught this, because the formula and the radial profile never cross the wire
+on their own.
+
+**The lock is deliberately lenient in one direction.** A peer that publishes no lock is
+still played; a peer that publishes a *different* one is refused. The reference
+publishes none — it folds its pheromone terms into `config_sha256` — so demanding one
+would refuse every simulator-built classmate over a message they never send, and rule
+23 sanctions a *deviation from the formula*, not a silence. That is the same reasoning
+already settled for `config_sha256` under `U-029`.
+
+*The arithmetic correction, disclosed (`M6-07c`).* The locked formula reads `(1 − ρ)` as
+**retaining** 90% of prior scent at ρ = 0.10. The book's p. 43 prose "reduced by 90%"
+and its p. 46 claim that ρ approaching 1.0 *saturates* the board are arithmetic errors —
+a decay rate near 1.0 erases the trail, it does not saturate it. Both are disclosed here
+under the book's own p. 5 contradiction clause and are not implemented.
+
+*Problem hit — and it is the one worth reading.* The standing process is: ask both
+NotebookLM notebooks, **then** verify against `inst/`. The book notebook reported that
+Figure 4 prints **all 25** cells, with diagonals at `0.42` and the unnamed ring at
+`0.14`, and stated outright that no cell is left unspecified. It had been asked
+explicitly not to infer or interpolate. The source
+(`inst/police_thief_p2p_Summary.md:947-955`) contradicts every part of that: five
+classes, 17 cells, diagonals `0.20`. Had the verification step been skipped as
+redundant, a **correct** emission table would have been overwritten with an invented
+one in both repositories — and the tests would have been rewritten to match it, so
+nothing downstream would ever have caught it. A notebook is a search tool over sources.
+It is not a source, and it ranks below one in `SOURCE_OF_TRUTH.md` for this exact reason.
+
+*The evidence that the lock is worth anything.* The companion Thief peer, written
+independently against the same book sections, produces the identical digest
+`416a57e1…` from its own record. Two implementations agreeing is the only thing that
+distinguishes a real interoperability contract from a number we hash locally and
+believe.
+
+#### Catching a lie: the reliability factor (`M6-02`, `M6-11`, 2026-08-06)
+
+The Thief is *allowed* to lie — deception is the strategic layer this project is about.
+What it cannot do is lie about where it has been, because scent is "an involuntary
+byproduct of movement". Chapter 4.4's boxed case study is written from the pursuer's
+side, which makes it this peer's specification almost verbatim: the Thief announces a
+direction, the Cop computes the fresh trail it would expect there — "approximately 0.81
+(calculated as 0.9 \* (1 − 0.1) = 0.81)" — measures 0.00 instead, "lowers the trust
+coefficient assigned to the thief's verbal statements", and keeps tracking the real
+scent.
+
+That is now arithmetic rather than narrative. `expected_fresh_scent()` derives the 0.81
+from the **locked** model's own constants instead of hard-coding it, so a renegotiated
+scent model moves it too. `corroboration()` compares it against the strongest scent
+actually measured where the hint points — the *strongest*, not the mean, because a
+direction names a whole half-plane and averaging would dilute a real trail to nothing on
+a large board. `apply_support()` then moves a running `TrustScore`, scaling the step by
+how far the evidence sits from neutral — the study's *absolute* contradiction moves trust
+at full rate, a marginal disagreement barely at all.
+
+**Three design choices worth defending.** Trust runs *forward* between turns, because a
+coefficient recomputed each turn forgives every lie immediately. A distrusted hint is
+**ignored, never inverted** — a liar's claim is evidence of nothing, not evidence of the
+opposite, since it may still happen to be true. And scent is applied to belief *before*
+the hint is weighed against it, so the claim is judged against evidence the Thief could
+not manipulate.
+
+**What the book fixes, and what it does not.** It fixes the shape — "the agent applies
+Bayes' rule to update the probabilities, incorporating a reliability factor for the
+clue" — and the evidence. It states **no** starting trust, no step size, no decay rate
+for repeated lies, and no bound, saying outright that translating scent and statement
+into a numerical belief map is the agent's own business. So `NEUTRAL_TRUST = 0.5` and
+`TRUST_UPDATE_RATE = 0.25` are marked PROJECT-PROPOSED, not cited. Belief never crosses
+the wire, so unlike the scent model there is no opponent to disagree with them.
+
+`TrustScore` moves by a bounded step *toward* a bound rather than clipping at it, so
+trust approaches 1.0 and 0.0 without arriving: no opponent is ever granted certainty or
+condemned past appeal. That matters here specifically because **bluffing is legal** — a
+peer that lies four times and then tells the truth has to be able to climb back.
+
+*The reference was checked too, and does none of this.* It never parses the opponent's
+`hint` at all — the string is logged and displayed in the GUI, and `_pick_move` receives
+the smell-driven belief grid but not the hint. So there is no interoperability
+constraint here whatsoever; this is purely our own strategy, which is also why it is a
+place we can actually beat a simulator-built opponent.
+
+*Two implementations met in the middle.* This work and `hint_consumption.py` were
+written on separate branches within a day of each other, both claiming `M6-11`, neither
+aware of the other — a coordination failure rather than a technical one. They merged
+without loss because they were complementary: that module's own docstring **defers**
+exactly the two rows this one built. `receive_hint` became the front door, its
+`TrustScore` the single trust type, and `corroboration` became the scent trigger it had
+left open. The merge was net-positive in a way parallel work usually is not, because each
+half caught something the other missed — and what it caught in mine was a real hole:
+**an opponent smuggling `3,4` into a hint.** My decoder read that as ordinary text; the
+guard refuses to parse it at all, so "our hints carry no coordinates" and "we never read
+a coordinate channel" became one rule instead of two that drift. A refused hint costs the
+peer no trust, though: declining to read a message is not the same as catching a lie.
+
+#### The scent reaches the wire (`M6-08`, `M6-09`, 2026-08-06)
+
+Found by inspection while about to start the reporting milestone: `serve.py` sent a
+hard-coded `"smell_grid": {}` every single turn. Nothing parsed an opponent's grid
+either, and the belief pipeline's `observed_scent` parameter had no supplier anywhere in
+the codebase.
+
+So this peer **emitted no scent at all** — while having just cryptographically locked an
+emission model at negotiation. That is a deviation from the agreed model, which is what
+rule 23 cancels a game for, and it denied the opponent the one channel the design
+guarantees them. It also meant the entire belief, trust, and lie-detection layer built
+the day before was **dead code in a live match**, because nothing ever fed it evidence.
+
+The trail is now real, and the whole loop is proven end to end: emit, encode, cross the
+wire, decode, and the belief argmax lands on the emitter's actual cell.
+
+**Emission is involuntary by construction, not by discipline.** `ScentField.advance`
+takes a **cell** and nothing else — a signature test asserts its only parameter is
+`occupied`. There is no action, no flag, no provider a caller could set to stay quiet, so
+a `STAY` deposits exactly as a move does. The book leaves no room here: the scent "is
+emitted by the **movement or the stay itself**, and no agent can plant a misleading trail
+— each side emits its own scent, and each side reads the scent field of its opponent
+only." Suppression is not refused; it is unrepresentable.
+
+**Where we follow the book against the reference.** The reference deposits scent and
+*then* decays the whole field, which yields `(τ + Δτ)(1−ρ)` and quietly attenuates the
+fresh deposit. The book's update is decay-then-add, so a cell just stepped on reads the
+full `0.9` — which is exactly what chapter 4.4's worked example assumes when it predicts
+`0.81` for a **one-turn-old** trail. Copying the reference here would have made our own
+lie-detection arithmetic disagree with the book that specifies it.
+
+*Problem hit — I shipped a parser that would have rejected our own emissions.* The
+inbound parser capped intensity at the centre intensity, `0.9`. That reads as obviously
+right and is obviously wrong: the update is **additive**, so an agent that stands still
+keeps depositing onto a decayed prior, and our own two-turn trail already reaches
+`1.458`. We would have refused ourselves, and every peer following the formula. My own
+test caught it, because it asserted a behaviour **across turns** rather than one call —
+a happy-path test would never have reached the case. The bound is now *derived*: the
+fixed point of `τ = (1−ρ)τ + Δτ`, which is `Δτ/ρ = 9.0`. It tolerates any conformant peer
+while still refusing a hostile `1e9`.
+
+*Two ledger definitions turned out to be wrong, and were corrected rather than quietly
+satisfied.* One said empty cells should be omitted; the reference includes them, and
+interoperability follows the reference — so we send the full window and tolerate a
+sparse peer. The other claimed byte-identical rounding is "the property the locked
+scent-model hash depends on"; it is not. The lock covers the **model** — formula,
+constants, radial profile — and never an emitted number, so rounding cannot invalidate
+it. The companion Thief's ledger carried the same false claim and has been corrected too.
+
+*A process failure worth recording.* The standing order is an eight-step gate, and on
+this task I ran five of them. I read only one repository's ledger instead of both,
+skipped the submission-guidelines file entirely, left this report untouched, and pushed
+anyway — then reported the work as done. The gap was found by being asked, not by a
+check. Closing it immediately surfaced something real: **the companion Thief had already
+built this same wire layer**, and comparing the two exposed the false hash claim above.
+Step 1 exists precisely to find that before the work starts, not after it ships.
+
+*Problem hit — the specification is upside down (`C-032`).* Transcribing the case study
+literally made **my own tests fail**, which is how it surfaced. The study places the
+scent at `(1,4)`/`(1,3)` and calls that the **south-east** corner, then calls `(5,2)` a
+**northern** cell. Under the Appendix F origin — top-left, row growing downward — `(1,4)`
+is *north*-east and `(5,2)` is *southern*: north and south are swapped throughout. The
+"lie" I had set up was in fact corroborated, and the test correctly refused it. Its
+intensities are authoritative and are used verbatim; its cell labels are not. Copied
+faithfully, it would have pinned an inverted board into the suite and the Cop would have
+chased every lie instead of catching it.
+
+#### What a hint is actually about (`M6-10`, `M6-10e`, 2026-08-06)
+
+Until now this peer sent the same five words every turn: *"holding position"*. That is a
+hint in name only — constant text carries no information, true or false, and the verbal
+layer is half the game the book is about. A real hint now goes out each turn, its intent
+alternating so both honesty and bluff are exercised, and sealed in the commitment so a
+bluff cannot be denied at the audit.
+
+**The interesting part is what a hint is a claim *about*.** Our own ledger said the place
+descriptor should be "belief-derived" — that we should hint about where we think the
+Thief is. That is wrong twice over, and both notebooks plus the book agree.
+
+It would be **unfalsifiable**. Chapter 4.4's whole lie-detection mechanism works by
+testing a verbal claim against *the claimant's own scent*: the Thief says "I am moving
+North", the pursuer measures no scent there, and "the physical evidence contradicts the
+verbal claim, revealing the thief's true location". You can only check a claim against
+the scent of the peer who made it. A hint about the *opponent's* position could never be
+tested by anyone, so it would carry no strategic weight at all.
+
+And it would be **a leak**. A place computed from our belief argmax publishes our private
+inference on the wire — exactly what the `M6-18` guard above exists to prevent. Asked
+directly, the reference confirms its own `place` comes from the negotiated `setting` and
+is "not derived from the belief heatmap".
+
+So `place_for` takes **our own cell** and dresses it in a landmark from the agreed
+`map_area`. When no area is agreed the book is explicit that generic bearings are used,
+so an unset area is an ordinary supported configuration rather than a gap — as are an
+unknown city, a malformed value, and a missing section. Every word in the vocabulary is
+asserted coordinate-free, because a landmark that smuggled a digit would be the numeric
+protocol rule 27 forbids, just wearing a nicer coat.
+
+*A note on where the words came from.* The mechanism is the reference's; the vocabularies
+are ours. Copying its landmark lists verbatim would be source reuse under `ADR-008`, and
+the lists are the one part with no engineering content.
+
+#### Keeping the guesses private (`M6-18`, 2026-08-06)
+
+The belief map is not a secret in the cryptographic sense — nothing hashes it, nothing
+hides it. That is precisely why it needed a *structural* guard: a `belief` field added to
+a turn message would work perfectly, pass every test, and be caught by nothing.
+
+Two properties are now pinned. The public turn schema's roster is fixed and carries no
+belief, certainty, probability or trust member, and the existing guard against publishing
+our own `position`/`move`/`nonce`/`intent`/`verdict` is pinned so it cannot quietly erode.
+Then a walk over the wire and transport layers proves they import no inference module at
+all — which catches the subtler case the roster test cannot: inference imported into the
+wire layer and its output smuggled into a field that already exists, a hint or the scent
+grid.
+
+**The guard was verified to bite**, not merely to pass. Injecting
+`from strategy.belief import Belief` into the wire layer fails it; the injection was then
+reverted. A guard that has never been seen to fail is a guard nobody has tested.
+
+**It deliberately does not over-reach.** `strategy.scent` and `strategy.scent_field` are
+outside the ban, because emitting scent is an *obligation* — the model is hash-locked
+under rule 23 and the book requires that "each side emits its own scent". A guard that
+forbade the wire layer from touching scent would forbid the very thing we are committed
+to doing.
+
+*Worth correcting, because it is widely misquoted.* Appendix E rules 8 and 9 are usually
+cited as the authority for this. Read verbatim, they are narrower: rule 8 is "**display**
+true local information only in the **live user interface**" and rule 9 is "do not
+**display** the full objective board state in the **live user interface**". They govern
+the UI, which is a later milestone. The constraint on the *wire* comes from Zero-Trust
+instead — sharing state creates "a 'backdoor' through which one agent might see the local
+truth of its rival". Citing 8 and 9 here would have been an invented requirement wearing a
+real rule number.
+
+#### When the words and the world disagree (`M6-12`, `M6-12b`, 2026-08-06)
+
+This closes the last `P0` in `M6`. The row had been deferred since 2026-08-03 on three
+dependencies that all now exist, and it asks a question the whole verbal layer rests on:
+when a hint says one thing and the scent says another, which wins?
+
+Two sentences answer it and they ask for different things. `:508` states the obligation —
+a contradicted hint means the agent "**must reduce their trust level and update their
+map**", two clauses joined by *and*, so both are asserted separately. `:1020` states the
+behaviour, and its verb is the precise one: the pursuer "**ignores** the verbal claim and
+**continues** to track the actual scent source". Not *redirects* — **continues**. A lie
+that merely failed to win would still have deflected the pursuit slightly; the book says
+it does not bend at all. So the binding test compares the target under a lie against the
+target from the same turn having heard **nothing**, and requires them identical.
+
+**Then the tests passed on the first run, which is where the actual work started.**
+Passing immediately is not evidence a test is good — it is equally consistent with a test
+that cannot fail. Probing the implementation across its whole range showed the pursuit is
+protected by something other than what the tests appeared to credit: a `0.04` trace, the
+faintest value in the book's emission table, outweighs that lie held at **complete**
+trust. A located peak concentrates likelihood on one cell; a bearing spreads it over half
+the board. The dominance is structural, and those two headline tests would have passed
+with the trust machinery entirely disabled.
+
+They are not wrong — chapter 4.4's case study *is* that regime, an absolute
+contradiction — but alone they would have overstated what they proved. So the ordering
+itself is now pinned in `test_evidence_priority.py`, both halves of it: scent decides
+wherever it can, and a hint decides only what scent leaves open. Given two equal peaks,
+scent cannot choose and the claim breaks the tie. That second half matters as much as the
+first: a hint that could never change any decision would be dead code dressed as
+strategy, while one that could overrule scent would make the book's lie detector
+pointless. The result is lexicographic, like every other policy here (`M6-04`).
+
+**Both repositories reach the same ordering from different structures** — a mapping of
+cells here, a grid of rows in the Thief — and both now test it. Belief never crosses the
+wire (`M6-018`), so nothing in the protocol could ever detect the two sides drifting
+apart on this; only a test in each repo can.
+
+*What the sources do not say, checked rather than assumed.* No numbered Appendix E rule
+with a sanction covers any of this — `:508` is body text, and the override falls out of
+the Bayesian update rather than being decreed. Nothing defines a trust floor or an
+"ignore a liar after N turns" rule, so our multiplicative decay and `[0, 1]` clamp are
+engineering and are labelled as ours. A consequence we accept: decay approaches zero
+without reaching it, so a distrusted peer can still break an exact tie. Inverting a
+liar's claim would be worse — a liar's statement is evidence of nothing, not evidence of
+the opposite, since it may still be true.
+
+*The reference offered nothing to copy, and its own documentation is wrong about that.*
+It never applies a hint to belief at all: no trust coefficient, the hint logged and
+displayed but never entering the belief update — while its README describes a fusion of
+scent and hints that its code does not perform.
+
+*Two gates caught this batch before it shipped.* The file-length cap rejected the test
+file at 217 lines, which is what split it into the two files above — a better shape than
+the one it replaced. The secret scanner then flagged a test **name**: `outweighs_a_lie_…`
+contains `gh` + `s` + `_` followed by twenty-five word characters, which is exactly the
+GitHub token pattern. Renaming it was the right fix; an allowlist entry would have
+weakened the scanner permanently to accommodate a cosmetic choice.
+
+#### Does the smart strategy actually work? (`M6-17`, `M6-20`, `M6-20a`, `M6-20b`, 2026-08-06)
+
+Everything above argues that belief-driven pursuit *should* beat a Cop with no model of
+where the Thief is. `:3115` requires the report to present "the empirical evidence for
+their success", and until now this repository had none for the strategy itself.
+
+It specifies nothing else. No run count, no seed policy, no significance test — and no
+baseline: the "shipped heuristic" appears only as a config comment (`:3028`, "else the
+shipped heuristic runs"), meaning the bundled default when you supply no brain, not a
+prescribed thing to measure against. So the protocol is ours, and is stated in full in
+`docs/PRD_strategy.md` rather than summarised, because a number whose method is hidden is
+not evidence.
+
+**The design choice that makes the result mean something** is a *non-reacting* opponent.
+The Thief is a seeded random legal walk that never looks at the Cop, so on a given seed
+**every arm meets the identical trajectory**. That turns the comparison from two averages
+into a **paired** one — we can ask "on this exact chase, which Cop caught it?" — and it
+cost nothing but the decision to hold the opponent fixed.
+
+The second choice is the **`oracle` arm**: a Cop that reads the Thief's true cell. It is
+not a legal agent and could never be shipped. It is there because beating a random walk
+is a low bar, and without a ceiling a reader cannot tell a good result from an easy one.
+
+| arm | capture rate | mean turns | mean Cop score |
+| --- | --- | --- | --- |
+| `blind` (random legal move) | 26.7% | 32.4 | 9.0 |
+| **`belief` (what we ship)** | **96.7%** | **12.5** | **19.5** |
+| `oracle` (ceiling, illegal) | 100% | 12.2 | 20.0 |
+
+Paired over 30 seeds: belief captured on **21** seeds the blind Cop lost, and lost **0**
+that it won. Not "better on average" — better or equal on every single chase. It closes
+**95.5%** of the blind→oracle gap, and the result is stable across sample size (belief
+99.0% at n=100, 99.7% at n=300; blind 24.0% at both).
+
+**And the caveat, because it changes how the number should be read.** Belief lands close
+to a cheating Cop partly because the book's scent channel is *generous*: a 5×5 window
+peaks at the emitter's own cell, so a fresh trail nearly identifies the Thief outright.
+What this measures is that our pipeline exploits nearly all of the available signal. It
+is **not** evidence that the policy would hold against a Thief that manages its trail
+deliberately — no such opponent was run. The `oracle` row is in the table so that ceiling
+is visible rather than implied, and this paragraph exists because a result presented
+without its limits is a claim, not evidence.
+
+`M6-20`'s condition was unusually sharp — "must beat the blind baseline **or be
+reverted**" — which is only enforceable if something re-checks it. `test_strategy_quality.py`
+does, with deliberately loose bounds so it fails on a real regression rather than on any
+harmless retune, and with a wiring check (belief must never beat the oracle) so a
+mis-plumbed harness cannot quietly produce a flattering table.
+
+*The reference had nothing to copy:* it contains **no harness, script, or test** that
+plays repeated matches to compare strategies, and no committed results table or learning
+curve — only LLM token-cost benchmarks. Its seeding pattern was worth borrowing though:
+a `seed` config key resolved into a `random.Random` instance passed to the brain, rather
+than global `random.seed`. Each actor here gets its own stream for the same reason.
+
+#### The bundle was telling strangers to do the retired thing (`X-03`, 2026-08-06)
+
+Found by reading `shared_contract/` the way an opposing team would, rather than the way
+its author does. Two lines — the bundle README's opening and `verify.py`'s header — still
+said the bundle "can be copied into the Thief repository byte-for-byte". That model was
+retired on 2026-07-28 under `THIEF-002`, and the companion repo's own checklist says it
+"must not be revived". The withdrawal *was* recorded here — but only in a document marked
+SUPERSEDED, so the **deliverable itself** contradicted the companion repository.
+
+**The obvious fix would have been wrong.** Deleting the sentence would have implied
+sharing is discouraged, and the book says close to the opposite. Chapter 6 **recommends**
+publishing the scent model so both sides run identical logic. What Appendix E rule 2
+prohibits — with the sanction "immediate disqualification due to data leakage" — is
+sharing *memory or variables*, which the same chapter extends to importing "a shared
+module that maintains live state". This bundle is specifications, schemas, fixtures,
+vectors and a read-only verifier. It holds no state. Offering it to an opponent is the
+**recommended** half of that distinction, not the prohibited one, and the bundle now says
+so explicitly rather than leaving a reader to guess which side of the rule it sits on.
+
+Three things were genuinely wrong, and they are different from each other:
+
+1. **It named our companion Thief repo.** The book names that precise hazard: separation
+   matters "specifically during the development stage, when one team builds on the same
+   machine both the Police and the Thief" — which is exactly our situation.
+2. **It implied copying establishes conformance.** The book's evidence of
+   interoperability is a replay screenshot showing `Verified OK` for a real match (§7.4;
+   the submission requirements in Appendix C). Appendix E rule 52 permits warm-up games
+   for exactly this purpose. Byte-parity with one peer is evidence about that peer.
+3. **It cited our own summary's line numbers** — `:705`, `:708`, `:1693`. This is the one
+   file we write *for a stranger*, and a stranger has the book, not our summary. Every
+   citation in the shared bundle is now by chapter and rule number.
+
+Both files are controlled, so `G-18` forced a version bump and a regenerated manifest:
+`0.2.6-proposed` → `0.2.7-proposed`, manifest `4dd5d18a…`.
+
+**The bump found a second defect.** After bumping `CONTRACT_VERSION`, the manifest
+verified clean — because it hashes bytes and the bytes were consistent. But **12 files
+inside the bundle still declared `"x-contract-version": "0.2.6-proposed"`** in their own
+JSON. A bundle whose version file says one thing and whose schemas say another would have
+shipped, passing its own integrity gate the whole way. Nineteen current-state claims were
+updated across the repo and three historical ones deliberately left, since a record of
+what `0.2.6` changed should not be rewritten to claim it was `0.2.7`.
+
+#### The Thief now has its own neutral peer (`M1-015`–`M1-017` cross-check, 2026-08-06)
+
+This repository has had a conformance stub since `M5-03e`. The companion Thief did not —
+its equivalent rows had been PENDING since the wire realigned to the simulator profile
+and archived the old one. They are now closed, and deliberately **not** by copying
+anything from here: `M1-015` requires a stub "sharing no source file with any peer
+repository", and `THIEF-002` forbids that repository any access to this one. It authored
+its own from its own profile document.
+
+Two findings there are worth recording on this side.
+
+**Ordering has no rule, and the reference does not enforce it.** Asked directly, the
+reference does not gate message ingestion on step sequence — a duplicate or non-advancing
+step stays queued for the peer loop rather than being refused on arrival. Our stub here
+refuses one (`test_a_turn_that_does_not_advance_is_refused_by_the_stub`), which is
+stricter than the reference. That is defensible for a test peer, but it is *our*
+strictness and should not be read as a rule the wire imposes.
+
+**Our version negative-vector sits one layer up.** `M1-017`'s categories include version
+mismatch. This repository proves it in `tests/contract/` — against our own parser — not
+across the stub wire, where the other six are proven. A refusal demonstrated at the
+boundary by an independent implementation is stronger evidence than one demonstrated by
+the code that also produced the message. Noted rather than fixed; it is a small gap, not
+a hole.
+
+#### The Thief's config-integrity guards, and one worth mirroring (2026-08-06)
+
+The companion Thief closed its remaining `M1-017` vectors today with two guards this
+repository does not have, and one of them is worth considering here.
+
+**Duplicate JSON keys are unguarded by default, everywhere.** `json.loads` resolves
+`{"a":1,"a":2}` to `{"a": 2}` silently, so a check on the parsed object can never see it.
+Appendix E rule 11 (Mandatory) requires the configuration to be "identical, bit-for-bit,
+on both sides"; a document with a repeated key cannot satisfy that, and a signature over
+the raw bytes would verify a different object than the one parsed. The Thief now refuses
+it in `object_pairs_hook`. This repository loads its bundle fixtures and match configs
+with plain `json.loads` and has no equivalent — noted here rather than silently fixed,
+because it belongs to a row that does not yet exist.
+
+**Private fields in a shared config** are refused there too, against the classes the book
+assigns to the private `config/game.toml` (`:2901`). Our `M6-18` guard keeps belief off
+the *wire*; this is the neighbouring question of what may appear in the *negotiated
+config*, which we do not currently check either.
+
+Both are recorded as candidates rather than claimed as done here.
+
+#### Completing the pre-game declaration (`M7-22a`–`M7-22e`, 2026-08-06)
+
+The first M7 work in this repository, and step 1 reshaped it before a line was written.
+The companion Thief already builds all four artifacts; this repository has no `reporting/`
+package at all — so its M7 artifact rows are *build them*, not *emit them*, and `M7-14`
+(validate every artifact against its schema) cannot mean anything until they exist.
+
+It also turned out a declaration builder already existed, in `protocol/` rather than
+`reporting/`, carrying groups, members, repo links, token limit and times with a
+reproducible lock. Its own docstring names what M7 still owed: the schema envelope, file
+emission, and the fields M5 could not compute.
+
+`:2229` gives the authoritative roster — the declaration consolidates "both groups and
+their members, addresses of the police and the bank, **addresses of the MCP server,
+details of the hardware, language model**, agreed token limit, and start and end times".
+Two of those were missing.
+
+**MCP addresses, with a guard.** The declaration is committed to a public repository and
+emailed as an attachment, and rule 39 (Prohibited) forbids pushing secrets — sanction
+"severe security failure and project failure". A URL is the easiest way to leak one by
+accident, so an address carrying a credential is refused outright. That guard took two
+corrections to get right, and both are pinned: a key-bearing query parameter slipped
+through a pattern anchored at the leading `?`, and once that was widened
+`http://127.0.0.1:8000/mcp` was refused, because the port's colon read as `user:pass`.
+A guard that rejects the commonest local address is a guard someone switches off.
+
+**Hardware and model, read from the identity rather than passed in.** Rule 24 is
+Mandatory — "perform a cryptographic hardware declaration before the start of the game",
+sanction "denial of eligibility for computational bonuses". The first version threaded
+`host_spec` and `llm_model` through `play_match` as new parameters. That was the wrong
+shape: both are already members of the negotiated identity block, and a second source for
+the same fact is a second thing that can disagree. They are read from the identity.
+
+*What is not done, and the row says so.* `M7-22`'s parent stays open on **file emission** —
+nothing here writes `declaration_<game_id>.json` to disk yet, and `:3600` fixes that name.
+`M7-23` (config artifact) was claimed and returned to `DEFERRED` untouched rather than
+left looking started. Emission, the config artifact, the log artifact and schema
+validation are the next batch.
+
+*The secret scanner fired twice on this work, both times on the credential detector
+itself* — once on an explanatory comment containing an example parameter, once on a TODO
+row quoting it. Reworded rather than allowlisted, on the same reasoning as before: an
+allowlist entry weakens the scanner permanently to accommodate prose.
+
+#### The artifact layer, and a schema that could only validate a template (`M7-23`, `X-04`, 2026-08-06)
+
+`reporting/` now exists: the four filenames the book fixes at `:3600`, an atomic writer,
+and the agreed-configuration artifact with both of its cryptographic locks.
+
+**`M7-23`'s condition is sharper than it reads.** "The emitted config is the one actually
+played, **not a template**." `fixtures/match_config.example.json` is a valid config that
+describes no game — emitting it would produce an artifact that passes its own schema and
+a casual read while documenting a match nobody played. So `build_config` takes the
+negotiated game object and reads every section from it, and the test changes an agreed
+value and asserts the artifact follows, rather than comparing against a constant.
+
+**Two locks, because the book asks for two.** `config_sha256` covers the whole agreed
+object — rule 11 (Mandatory), configuration "identical, bit-for-bit on both sides",
+sanction "disqualification of the game due to lack of symmetry". `scent_model_sha256` is
+separate — rule 23 (Mandatory): "Lock the cryptographic hash of the scent model before
+the start of the game. Sanction: **deviation from the formula cancels the game**." A
+parameter table pinning `0.9` and `0.10` does not pin the model those numbers feed, which
+is exactly why the second lock exists.
+
+**Then the artifact failed its own schema — and the schema was wrong.**
+`per-subgame-config.schema.json` pinned `links.config` with `"pattern": "g<NN>"`. That is
+a **literal**, not a placeholder: it matched the fixture's `config_x_g<NN>.json` and
+**refused every real filename**. The schema could only ever validate a template — the
+precise failure `M7-23` exists to prevent, sitting inside the contract that was supposed
+to prevent it.
+
+Corrected to `^config_.+_g\d{2}\.json$`, with the valid fixture given real filenames.
+The *invalid* fixture needed fixing too: it exists to prove `sub_game > 6` is refused,
+and it had been failing on the placeholder instead — passing for the wrong reason, which
+would have masked the case it was written for the day someone relaxed that pattern. Both
+files are controlled, so `G-18` forced a bump: `0.2.7-proposed` → `0.2.8-proposed`,
+manifest `88df2089…`, and 18 current-state version claims updated while three genuinely
+historical ones were left alone.
+
+**Emission is transport-free by construction (`M7-25`).** "A disconnected game still
+produces its artifact set", so `write_artifact` takes a directory and an object — no
+socket, no peer — and a signature test pins that. It writes to a temporary file in the
+same directory then `os.replace`, so the visible file is either the old one or the
+complete new one, never a prefix. Same-directory matters: `os.replace` is only atomic
+within a filesystem. A half-written artifact is indistinguishable from a tampered one
+during rule 19's audit, whose sanction is "score of 0 for the falsifying group".
+
+*What is not done.* `M7-02a`/`M7-02b` stay open on one thing: the builders exist and are
+schema-valid, but nothing in `orchestration/match` calls them yet. Wiring emission into a
+played match, the log artifact (`M7-24`) and validation (`M7-14`) are the next batch.
+
+#### The log a stranger verifies, and a rule about *when* a byte exists (`M7-24`, 2026-08-06)
+
+The artifact layer is now wired: the declaration and the agreed config are written to
+disk **inside `play_match`, immediately after the declaration is locked and before the
+first turn is sent**. That timing is `M7-22`'s actual requirement, so it is proven by
+timing — a spy records whether the file existed at each outbound turn, and every one must
+see it already there. A declaration emitted at the end could have been edited to suit the
+result, which is precisely what locking it beforehand rules out.
+
+The third artifact is the one an auditor actually uses. `M7-24` asks that "a third party
+can re-verify **without our code**", and `:1690` gives the procedure: the replay viewer
+"takes the Nonce and the move appearing in the log, re-encodes them, and compares the
+result to the original Commitment value using the SHA-256 algorithm". So the binding test
+recomputes every commitment from the emitted file with nothing but `hashlib`, and a
+companion test alters one move and asserts the same recomputation fails.
+
+**The interesting constraint is `M7-24b`, and it is a constraint about time.** Rule 18 is
+Mandatory: "Keep the Nonce secret until the end of the game. Sanction: **Disqualification
+due to risk of dictionary attack**." A log written step-by-step with its nonces inline
+violates that the moment the file is shared or committed mid-game — and the finished
+artifact is **byte-identical** either way. No inspection of the final file can detect it.
+
+So the rule is made unrepresentable instead of observed: `build_log` refuses a step
+carrying `nonce` or `payload` at all, and `reveal_log` is the only way they enter. The
+forbidden intermediate state cannot be written with this module, whatever the caller
+intends — which for a property that leaves no trace is the only enforcement available.
+
+*Still open.* `M7-03a`'s consumer — feeding real per-turn records from the turn loop —
+plus `M7-14` (validate all four against their schemas) and `M7-03b` (the result artifact,
+the last builder).
+
+#### The report that gets emailed, and the gate in front of it (`M7-03b`, `M7-14`, 2026-08-06)
+
+The four artifact builders are complete. The last one is the only one that leaves the
+machine — `:2241` calls it "a summary of the game results, including the score of each
+group in all games and the cumulative result, for the lecturer to weigh the league score".
+
+Three Mandatory rules land in that single file, so its checks refuse rather than warn:
+rule 49's **exactly four** repository links (three means one side's submission is wrong),
+rule 53's per-game commit hash (code may change between games, so a result that does not
+say *which* code played it cannot be reproduced), and rule 54's tokens "for the game
+**and in the sequence**" — two numbers, not one.
+
+**The asymmetry that shaped the design.** Rule 35: "a conflicting report causes
+disqualification of the game and a score of 0 for **both teams**." `:2584`: a side that
+does not report "will not be credited". Not reporting costs us; reporting something
+contradictory costs the opponent too. So an unagreed result is refused at build time —
+there is no way to construct a report this repository is not entitled to send.
+
+**`M7-14` is a requirement about placement.** "An artifact that fails its own schema is
+never sent." A validator living in the test suite proves the artifacts were valid on a
+developer's machine; it says nothing about a file hand-edited at midnight. So
+`validated_write` sits between building and writing, and `play_match` calls it — an
+invalid config raises and leaves no file behind for anyone to attach.
+
+Two smaller decisions worth recording. An artifact kind with **no** controlled schema is
+refused rather than accepted, so "validated" never quietly means "unchecked" — which is
+how an unschema'd file ends up looking exactly as trustworthy as a checked one. And
+`M7-14e` compares artifacts *to each other*: a set spanning two games is the one failure
+no per-file schema can catch, because every file in it is individually valid.
+
+*Still open, and the rows now say why.* `M7-14a`/`c`/`d` are blocked on a **schema, not
+on code** — the bundle carries one for the per-sub-game config only, and authoring the
+declaration, log and result schemas is a contract change in its own right.
+
+#### Three gates in front of Gmail, and a limiter that was the wrong algorithm (`M7-04`, `M7-08`, 2026-08-06)
+
+`:2096` fixes the flow and it is not ours to rearrange: "Outgoing report → **Quota
+Manager** → **Token Bucket** → **DOS Detector** → Gmail API", with three distinct outcomes
+(`:2098`) — "Rejected (quota full)", "Blocked (no token)", "LOCKED (anomaly)". Three names
+because they differ in remedy: *try tomorrow*, *try shortly*, *the code is wrong*.
+
+**The gap step 1 found.** A gatekeeper already existed here, and `M7-04b` looked like
+bookkeeping. It was not: the existing limiter is a **sliding window** — it drops
+timestamps older than sixty seconds and counts what remains. Rule 28 (Mandatory) asks for
+"a rate-limiter based on asynchronous **tokens**", and `:2085` says why the difference
+matters — a bucket prevents the **bursts** that "trigger an immediate block from the
+provider". A window caps a *rate*; a bucket caps a *burst* and then refills. Those are
+different algorithms with different behaviour in exactly the case that draws a 429.
+
+**Why the DOS detector does not unlock itself.** `:2087` is specific about what it is
+for: "a bug or an infinite loop **in the agent's code**" — our own runaway, not a hostile
+peer. A lock that cleared after a quiet period would let the same loop resume the moment
+it briefly looked calm, so it stays locked until a human looks.
+
+**Fail-fast is correctness, not efficiency.** Each gate has a side effect, so a later gate
+running after an earlier refusal corrupts the counters the gates exist to protect. Two
+tests pin the consequences: a quota rejection must not consume a token, or a send that
+never went out would throttle tomorrow's; and a token-blocked send must not register in
+the DOS window, or a legitimately throttled burst would look like a runaway loop and lock
+the pipeline — a self-inflicted outage. A transmitter that *raises* still counts against
+every gate, because one that only counted successes would let a failing loop retry
+without limit.
+
+`M7-04a` — "no service calls an external API directly" — is a property of the call graph,
+so `send` takes the transmitting callable rather than importing one. This layer cannot
+name Gmail, and a module that cannot name the API cannot bypass the gates to reach it.
+
+*One number worth flagging:* Appendix F makes the rate a `Minimum` of 30, so a negotiated
+higher value is honoured rather than clamped back down. Clamping a minimum to its floor
+is the classic misreading of that table.
 
 ### 3. The implemented strategy
 
@@ -386,8 +1035,27 @@ exists that would justify weights, and a strict criterion order is auditable in 
 that tuned coefficients are not. Barrier placement is a separate, exclusive intent:
 the Cop either moves or places, never both in one turn.
 
-This is deliberately the floor, not the deliverable. The graded strategy must beat it
-using the belief map, and that work is `M6`.
+**The belief layer now exists** (`M6-01`…`M6-03`). Scent emission and multiplicative
+decay are implemented and hash-locked (see the `M6-07` section above); `strategy/belief.py`
+maintains a Cop-local probability distribution over the Thief's position, updated by
+Bayes from observation only, and `strategy/belief_pursuit.py` aims the policy at
+`argmax b(s)` rather than at a last-known cell. The belief is Cop-private and never
+crosses the wire.
+
+**The hint layer closed on 2026-08-06** (see the `M6-02`/`M6-11` section above).
+`strategy/hint_decode.py` turns an opponent's free text into a directional likelihood,
+`strategy/trust.py` carries the reliability factor and the lie test, and
+`strategy/consume.py` folds one turn of scent and one hint into belief in the book's
+order. The Cop now reads a hint as *evidence weighted by how honest that opponent has
+proved so far*, never as an instruction.
+
+What remains open is named rather than glossed: the optional **LLM adapter** (`M6-05`)
+behind the zero-token template provider, and wiring hint generation into every turn
+(`M6-10`). Neither changes how a move is chosen — the movement decision is pure Python
+and stays that way `[AE-25]`.
+
+This is still the floor rather than the deliverable — but it is no longer the *blind*
+floor it was, and it is no longer credulous either.
 
 ### 4. Learning curves
 

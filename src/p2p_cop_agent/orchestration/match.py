@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from pathlib import Path
 
 from p2p_cop_agent.orchestration.negotiation_handshake import Agreement, negotiate_match
 from p2p_cop_agent.orchestration.phases import PhaseMachine
@@ -27,6 +28,14 @@ from p2p_cop_agent.orchestration.sub_game import SubGameOutcome, run_sub_game_ov
 from p2p_cop_agent.orchestration.turn_loop import Decide, Receive
 from p2p_cop_agent.protocol.commit_reveal import TurnLedger
 from p2p_cop_agent.protocol.declaration import build_declaration, lock_declaration
+from p2p_cop_agent.reporting import (
+    MatchIdentity,
+    build_config,
+    config_filename,
+    declaration_filename,
+    validated_write,
+    write_artifact,
+)
 from p2p_cop_agent.shared.config import JsonObject
 
 COP_ROLE = "police"
@@ -66,6 +75,8 @@ def play_match(
     clock: Callable[[], float],
     sleep: Callable[[float], None],
     step_zero: Mapping[str, object] | None = None,
+    artifacts_dir: Path | None = None,
+    sub_game: int = 1,
     opens: bool = False,
     heartbeat: Heartbeat | None = None,
     poll_interval: float = DEFAULT_POLL_INTERVAL,
@@ -88,6 +99,23 @@ def play_match(
         max_tokens_per_game=max_tokens_per_game, started_at=started_at,
     )
     lock = lock_declaration(declaration)
+    if artifacts_dir is not None:
+        # `M7-22`: "the pre-game declaration is signed and fixed **before play begins**".
+        # Written here rather than after the match on purpose -- a declaration emitted at
+        # the end could have been edited to suit the result, which is the whole thing
+        # locking it beforehand is meant to rule out.
+        identity_for_files = MatchIdentity(game_id, game_uid)
+        write_artifact(
+            artifacts_dir, declaration_filename(identity_for_files),
+            {**declaration, "declaration_lock": lock},
+        )
+        validated_write(
+            artifacts_dir, config_filename(identity_for_files, sub_game),
+            build_config(
+                identity=identity_for_files, sub_game=sub_game, game=game,
+                config_sha256=sdk.config_sha256,  # type: ignore[attr-defined]
+            ),
+        )
     receive = turn_receiver(
         take_turn, clock=clock, sleep=sleep, timeout=timeout,
         poll_interval=poll_interval, heartbeat=heartbeat,

@@ -67,7 +67,7 @@ class MatchPeer:
         return {"ok": True}
 
 
-def _run(*replies: dict, agree: bool = True):
+def _run(*replies: dict, agree: bool = True, artifacts_dir=None):
     sdk = CopSDK.from_repository(ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
     offer = build_offer(dict(sdk.game_config), _identity("neutral-group-beta")) if agree else None
     inboxes = PeerInboxes()
@@ -81,6 +81,7 @@ def _run(*replies: dict, agree: bool = True):
         decide=decide, identity=_identity("neutral-group-alpha"),
         game_id="g1", game_uid="u1", started_at="2026-08-03T10:00:00Z",
         max_tokens_per_game=200000, clock=clock.time, sleep=clock.sleep,
+        artifacts_dir=artifacts_dir,
     )
     return result, peer
 
@@ -108,3 +109,41 @@ def test_no_agreement_means_no_declaration_and_no_play() -> None:
     assert result.agreement is None
     assert result.declaration is None and result.declaration_lock is None
     assert peer.sent == [], "no turn was ever sent"
+
+
+def test_the_declaration_is_on_disk_before_the_first_move(tmp_path) -> None:
+    """`M7-22`: "the pre-game declaration is signed and fixed **before play begins**".
+
+    Proven by timing, not by presence at the end. The peer records the sends it received;
+    the declaration file must already exist by the time the first one arrives, because a
+    declaration written afterwards could have been edited to suit the result — which is
+    exactly what locking it beforehand exists to rule out.
+    """
+    import json
+
+    seen: list[bool] = []
+    original = MatchPeer.receive_turn
+
+    def spy(self, message):
+        seen.append((tmp_path / "declaration_g1.json").exists())
+        return original(self, message)
+
+    MatchPeer.receive_turn = spy
+    try:
+        result, _ = _run(reply(1), reply(2, claim_response={"claim": [3, 3], "caught": True}),
+                         artifacts_dir=tmp_path)
+    finally:
+        MatchPeer.receive_turn = original
+
+    assert seen and all(seen), "a turn was sent before the declaration reached disk"
+    written = json.loads((tmp_path / "declaration_g1.json").read_text("utf-8"))
+    assert written["declaration_lock"] == result.declaration_lock
+    assert (tmp_path / "config_g1_g01.json").exists()
+
+
+def test_no_artifacts_dir_means_no_files_and_no_error(tmp_path) -> None:
+    """Emission is opt-in: the unit harness and the local rules harness play without a
+    directory, and a match that writes nothing must still be a valid match."""
+    result, _ = _run(reply(1), reply(2, claim_response={"claim": [3, 3], "caught": True}))
+    assert result.played
+    assert not list(tmp_path.iterdir())

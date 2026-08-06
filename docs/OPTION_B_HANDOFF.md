@@ -1,9 +1,9 @@
-# Option-B Contract Handoff — `0.2.5-proposed`
+# Option-B Contract Handoff — `0.2.8-proposed`
 
 Status: **TECHNICALLY READY FOR COORDINATOR REVIEW — UNFROZEN — NOT COPIED, NOT FROZEN**
 
 Branch: `agent/cop-m1.5-blockers-v022`
-Contract version: `0.2.5-proposed`
+Contract version: `0.2.8-proposed`
 Interoperability profile: Option B, pinned to simulator commit
 `960499fd5e8777b4929625f5d8fdcf2ab4677b54`.
 
@@ -108,6 +108,24 @@ simulator (authority #7 is a reference, not an override):
 
 The controlled file count rises from 33 to **35** with the two golden artifacts.
 
+### Revised in `0.2.6-proposed` (2026-08-06)
+
+One change, and it is a **relaxation**, so a peer conformant to `0.2.5-proposed` remains
+conformant here: the commitment-nonce pattern moved from `^[0-9a-f]{32}$` to
+`^[0-9a-f]+$` in `audit-record`, `audit-payload`, and the `negotiate` challenge.
+
+The old pattern imposed a length the book never requires. Appendix E rule 19 sanctions
+"any mismatch between the recomputed hash and the hash declared during the commitment
+phase" (`inst/police_thief_p2p_Summary.md:1270`) -- a *digest* mismatch. A peer revealing
+a longer nonce whose digest reproduces exactly was being reported `TAMPERED`, which is an
+iron-rule verdict with no appeal, so we were ending fairly played games and accusing
+classmates of forgery. The book shows `secrets.token_hex(16)` in its own example code
+but states no requirement, and the reference validates no nonce format at all. See
+`C-033`.
+
+Our own generation is unchanged and still emits exactly 32 lowercase hex; the relaxation
+governs only what we accept from an opponent.
+
 ### Closed in `0.2.5-proposed`
 
 11. **`result_claim` re-aligned to the simulator wire set.** After the
@@ -200,7 +218,7 @@ not prove semantic correctness or interoperability.
 
 ## What remains for the coordinator
 
-1. Review the `0.2.5-proposed` scope, the Option-B / simulator-v3.0.0 profile, and
+1. Review the `0.2.8-proposed` scope, the Option-B / simulator-v3.0.0 profile, and
    the eleven corrections above.
 2. If accepted, authorize copying the `shared_contract/` bundle into Thief
    byte-for-byte and independent cross-bundle verification

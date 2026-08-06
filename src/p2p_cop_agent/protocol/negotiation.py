@@ -27,6 +27,13 @@ from p2p_cop_agent.protocol.identity import require_complete_identity
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.contracts import shared_config_sha256
 
+# Negotiation-message members carrying the scent-model lock (`AE-23`). The values are
+# **injected** by the caller: this layer owns the wire, not the physics, so it never
+# imports the strategy package -- a protocol that depended on the decision module
+# could not be used without it.
+SCENT_LOCK_FIELD = "scent_model_hash"
+SCENT_OUTER_RING_FIELD = "scent_outer_ring_delta"
+
 # Signed-terms projection: term name -> (section, key) in the match config.
 TERM_SOURCES: tuple[tuple[str, tuple[str, str]], ...] = (
     ("board_size", ("board_and_agents", "grid_size")),
@@ -114,8 +121,10 @@ def build_offer(
     identity: Mapping[str, object],
     *,
     nonce: str | None = None,
+    scent_lock: str | None = None,
+    scent_outer_ring: float | None = None,
 ) -> JsonObject:
-    """Return a signed negotiation offer for this match (M5-04a).
+    """Return a signed negotiation offer for this match (M5-04a, M6-07).
 
     The nonce is the **public** negotiation challenge. It is generated with the
     same entropy source as a commitment nonce but is a distinct domain value and
@@ -126,19 +135,30 @@ def build_offer(
     carries a ``config_sha256`` lock over the *complete* game object -- the same
     digest the emitted artifacts use, distinct from the terms projection that gets
     signed. We do not require either of an opponent; see `verify_offer`.
+
+    ``scent_lock`` is the Appendix E rule 23 scent-model hash and ``scent_outer_ring``
+    the negotiated emission value it covers (`U-030`). Both are supplied by the caller
+    -- computed in ``strategy.scent_lock`` -- so this layer never imports the physics
+    it is only carrying. They ride **outside** the signed ``terms`` for the same
+    reason ``config_sha256`` does: a peer that publishes no lock must still be
+    playable, and the reference simulator publishes none.
     """
     terms = terms_from_config(game)
     check_appendix_f(terms)
     validate_participants(game, identity.get("group_id"))
     require_complete_identity(identity)
     challenge = nonce or generate_commitment_nonce()
-    return {
+    offer: JsonObject = {
         "terms": terms,
         "nonce": challenge,
         "signature": move_commit(terms, challenge),
         "identity": dict(identity),
         "config_sha256": shared_config_sha256(dict(game)),
     }
+    if scent_lock is not None:
+        offer[SCENT_LOCK_FIELD] = scent_lock
+        offer[SCENT_OUTER_RING_FIELD] = scent_outer_ring
+    return offer
 
 
 # Reviewing an incoming offer (``verify_offer``) is a separate responsibility and

@@ -25,6 +25,9 @@ def _identity(group_id: str, repos: dict[str, str] | None = None) -> dict:
         "members": ["a", "b"],
         "repos": repos or {"agent": f"https://example.com/{group_id}/agent",
                            "report": f"https://example.com/{group_id}/report"},
+        "mcp_servers": {"peer": f"https://{group_id}.example.com/mcp"},
+        "llm_model": "template-free",
+        "spec": {"cpu": "x86_64", "ram_gb": 31.8, "vram_gb": 6.0},
     }
 
 
@@ -86,3 +89,59 @@ def test_a_group_without_a_repo_link_is_refused() -> None:
 def test_a_group_without_a_group_id_is_refused() -> None:
     with pytest.raises(DeclarationError, match="group_id"):
         _declaration(opponent_identity={"members": [], "repos": {"a": "https://x/a"}})
+
+
+def test_the_declaration_carries_the_mcp_addresses_hardware_and_model() -> None:
+    """`:2229` requires "addresses of the MCP server… details of the hardware, language
+    model" (`M7-22c`, `M7-22d`); rule 24 is Mandatory —
+    "perform a cryptographic hardware declaration before the start of the game",
+    sanction "denial of eligibility for computational bonuses" (`M7-22d`)."""
+    decl = _declaration()
+    assert all(group["mcp_servers"] for group in decl["groups"])
+    assert decl["hardware"]["ram_gb"] == 31.8
+    assert decl["llm_model"] == "template-free"
+
+
+def test_a_group_without_an_mcp_address_is_refused() -> None:
+    identity = _identity("alpha")
+    del identity["mcp_servers"]
+    with pytest.raises(DeclarationError, match="MCP addresses"):
+        _declaration(our_identity=identity)
+
+
+@pytest.mark.parametrize("url", [
+    "https://user:pass@alpha.example.com/mcp",
+    "https://alpha.example.com/mcp?token=abc123",
+    "https://alpha.example.com/mcp?api_key=placeholder",
+])
+def test_an_mcp_address_carrying_a_credential_is_refused(url: str) -> None:
+    """The declaration is committed to a public repository and emailed as an attachment.
+    Rule 39 (Prohibited): "Do not push secrets and credentials to the repository, even if
+    it is private... Sanction: Severe security failure and project failure." A URL with a
+    credential in it is the easiest way to do that by accident."""
+    with pytest.raises(DeclarationError, match="carries a credential"):
+        _declaration(our_identity=_identity("alpha") | {"mcp_servers": {"peer": url}})
+
+
+def test_a_missing_model_or_hardware_is_refused_and_the_schema_is_stamped() -> None:
+    """Rule 24 is Mandatory and its sanction is losing the computational bonus, so an
+    absent declaration is not a soft default. The schema version rides along because
+    `M7-024` needs a schema change to be visible rather than silent."""
+    assert _declaration()["schema_version"] == "1.1"
+    with pytest.raises(DeclarationError, match=r"llm_model"):
+        _declaration(our_identity=_identity("alpha") | {"llm_model": ""})
+    with pytest.raises(DeclarationError, match=r"hardware spec"):
+        _declaration(our_identity=_identity("alpha") | {"spec": {}})
+
+
+@pytest.mark.parametrize("url", [
+    "https://alpha.example.com/mcp",
+    "http://127.0.0.1:8000/mcp",
+    "https://alpha.example.com:443/mcp/v1",
+    "https://alpha.example.com/mcp?game=1",
+])
+def test_an_ordinary_mcp_address_is_not_mistaken_for_a_credential(url: str) -> None:
+    """The guard's other half, and it caught a real bug: `127.0.0.1:8000` was refused
+    because the port's colon looked like `user:pass`. A guard that rejects the most
+    common local address would be worse than none — it would be switched off."""
+    _declaration(our_identity=_identity("alpha") | {"mcp_servers": {"peer": url}})

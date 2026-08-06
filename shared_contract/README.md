@@ -1,10 +1,31 @@
-# Shared Contract Bundle — `0.2.5-proposed`
+# Shared Contract Bundle — `0.2.8-proposed`
 
 Status: **PROPOSED / UNFROZEN — role-neutral**
 
-This directory is the single role-neutral, stable contract shared by both peers. It
-can be copied into the Thief repository byte-for-byte. It contains **specifications,
-schemas, fixtures, reproducible vectors, and read-only verification tooling only**.
+This directory is the single role-neutral, stable contract this peer implements. It
+contains **specifications, schemas, fixtures, reproducible vectors, and read-only
+verification tooling only**.
+
+**It may be offered to any opponent, and carries no live state.** The book recommends
+sharing the *formula* — chapter 6 recommends publishing the scent model so both sides
+run identical logic — while Appendix E rule 2 **prohibits** sharing memory or variables
+between parties, on pain of "immediate disqualification due to data leakage", and the
+same chapter extends that to importing "a shared module that maintains live state".
+Nothing here holds state, so offering it is the recommended half, not the prohibited one.
+
+**Copying it is not evidence that two agents can play.** The book's evidence of
+interoperability is a replay screenshot showing **`Verified OK`** for a real match
+(§7.4, and the submission requirements in Appendix C), which is why warm-up games are
+explicitly permitted — Appendix E
+rule 52: "warm-up games that do not count are permitted". Byte-parity with one peer is
+evidence about that peer and nothing else; an opponent conforms by implementing
+`PROTOCOL_PROFILE.md`, not by holding these bytes.
+
+**This bundle is not copied into our companion Thief repository.** That model was
+retired on 2026-07-28 under `THIEF-002`. The book names the exact hazard in the
+"each agent runs its own server instance" section: the separation matters "specifically
+during the development stage, when one team builds on the same machine both the Police
+and the Thief" — which is our situation.
 
 ## What it deliberately does not contain
 
@@ -23,7 +44,7 @@ bundle or its manifest.
 
 | Path | Purpose |
 |---|---|
-| `CONTRACT_VERSION` | `0.2.5-proposed` |
+| `CONTRACT_VERSION` | `0.2.8-proposed` |
 | `PROTOCOL_PROFILE.md` | `simulator-v3.0.0` compatibility tools, messages, and commit-reveal |
 | `MATCH_CONFIGURATION.md` | how a per-match config is supplied and the three hash domains |
 | `SHARED_RULES.md` | book-authoritative gameplay rules |

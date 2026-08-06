@@ -25,7 +25,17 @@ from p2p_cop_agent.protocol.commit import canonical_payload_bytes
 from p2p_cop_agent.shared.config import JsonObject
 
 DECLARATION_TYPE = "pre_game"
+SCHEMA_VERSION = "1.1"
 _SHA256 = re.compile(r"[0-9a-f]{64}")
+# `:2229` requires "addresses of the MCP server" in the declaration. Rule 39 (Prohibited)
+# forbids pushing secrets, so a URL carrying a credential must never reach a committed,
+# emailed artifact -- the two requirements meet here and only public URLs survive.
+_CREDENTIAL_IN_URL = re.compile(
+    r"://[^/@\s]+@"                                       # user:pass@host — the @ is
+    #   required, or a plain host:port like 127.0.0.1:8000 is refused as a credential
+    r"|[?&][^=&]*(token|key|secret|password|passwd|auth)[^=&]*=",  # a credential in a query parameter
+    re.I,
+)
 
 
 class DeclarationError(ValueError):
@@ -54,10 +64,20 @@ def build_declaration(
                         ("max_tokens_per_game", max_tokens_per_game)):
         if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
             raise DeclarationError(f"{name} must be a positive integer")
+    # `:2229` wants "details of the hardware, language model"; both are already members
+    # of the negotiated identity block, so they are read there rather than passed again --
+    # a second source for the same fact is a second thing that can disagree.
+    llm_model = our_identity.get("llm_model")
+    host_spec = our_identity.get("spec")
+    if not isinstance(llm_model, str) or not llm_model:
+        raise DeclarationError("our identity must declare llm_model [AE-24]")
+    if not isinstance(host_spec, Mapping) or not host_spec:
+        raise DeclarationError("our identity must declare its hardware spec [AE-24]")
     groups = [_group(our_identity), _group(opponent_identity)]
     links = [url for group in groups for url in group["repos"].values()]
     return {
         "_schema": "declaration",
+        "schema_version": SCHEMA_VERSION,
         "declaration_type": DECLARATION_TYPE,
         "game_id": game_id,
         "game_uid": game_uid,
@@ -66,6 +86,8 @@ def build_declaration(
         "links": links,
         "num_sub_games": num_sub_games,
         "max_tokens_per_game": max_tokens_per_game,
+        "hardware": dict(host_spec),
+        "llm_model": llm_model,
         "timezone": timezone,
         "game_started_at": started_at,
         "game_ended_at": None,
@@ -80,7 +102,23 @@ def _group(identity: Mapping[str, object]) -> JsonObject:
     repos = identity.get("repos")
     if not isinstance(repos, Mapping) or not repos:
         raise DeclarationError(f"group {group_id!r} must carry at least one repo link")
-    return {"group_id": group_id, "members": list(identity.get("members") or []), "repos": dict(repos)}
+    servers = identity.get("mcp_servers")
+    if not isinstance(servers, Mapping) or not servers:
+        raise DeclarationError(f"group {group_id!r} must declare its MCP addresses [`:2229`]")
+    for role, url in servers.items():
+        if not isinstance(url, str) or not url:
+            raise DeclarationError(f"group {group_id!r} MCP address {role!r} must be a URL")
+        if _CREDENTIAL_IN_URL.search(url):
+            raise DeclarationError(
+                f"group {group_id!r} MCP address {role!r} carries a credential; the "
+                "declaration is committed and emailed, and rule 39 forbids that"
+            )
+    return {
+        "group_id": group_id,
+        "members": list(identity.get("members") or []),
+        "repos": dict(repos),
+        "mcp_servers": dict(servers),
+    }
 
 
 def lock_declaration(declaration: Mapping[str, object]) -> str:

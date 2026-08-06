@@ -90,8 +90,9 @@ class TrustScore:
     def weakened(self, rate: float = TRUST_UPDATE_RATE) -> TrustScore:
         """Return trust moved a fraction ``rate`` toward 0.0 (a hint scent contradicted).
 
-        The update mechanism; the scent-contradiction *trigger* that calls it is
-        deferred to ``M6-02f``, which needs the landmark decode (``M6-02e``) first.
+        The update mechanism. Its trigger lives in ``M6-02f``'s
+        :func:`~p2p_cop_agent.strategy.trust.corroboration`, which measures the claim
+        against the scent; ``M6-12b`` proves the pair behaves as `:508` requires.
         """
         return TrustScore(self.value - rate * self.value)
 

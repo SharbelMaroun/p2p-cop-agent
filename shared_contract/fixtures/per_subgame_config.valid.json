@@ -2,8 +2,8 @@
   "game_id": "demo-series",
   "game_uid": "b1946ac92492d2347c6235b4d2611184",
   "links": {
-    "config": "config_demo-series_g<NN>.json",
-    "log": "log_demo-series_g<NN>.json"
+    "config": "config_demo-series_g01.json",
+    "log": "log_demo-series_g01.json"
   },
   "sub_game": 1,
   "config": {
