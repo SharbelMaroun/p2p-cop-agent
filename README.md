@@ -1184,6 +1184,32 @@ That is the second concrete cost of that habit within one session, after the dan
 `mutual_agreement` producer. The method now says to read answers with `read_page`; this is
 why.
 
+#### The rehearsal, and what it caught (`M7-20`, 2026-08-06)
+
+A clean end-to-end run already existed. It proves the pieces fit; it proves nothing about
+the states the rules attach sanctions to, and those are the expensive ones. So the
+rehearsal runs the full six sub-games twice more — once with a **technical loss**, once
+with a **tampered audit**.
+
+**A technical loss still produces its artifacts.** Sub-game 3 ends badly and both its files
+are still written, the log records the outcome, the file count is unchanged, and the series
+settles and reports with 0/0 for that sub-game. That is the case a happy-path pipeline
+quietly stops covering, and it is exactly when the evidence matters most.
+
+**A tampered audit is two behaviours, not one.** The forgery in sub-game 4 is detected and
+named — and then `require_reportable` refuses to report. Rule 19 costs *them* the sub-game;
+filing our own contradicting report over the top would invoke rule 35 and cost us **both**
+the game. A rehearsal that only proved detection would have left the expensive half
+untested. The artifacts stay on disk throughout, because a failed audit is evidence rather
+than a reason to withhold it.
+
+**And it caught something the unit tests could not.** The wire role vocabulary is
+`police`/`thief` (`OB-003`), while `series.Role` is an internal `cop`/`thief`. Feeding a
+real audit payload through the real schema surfaced the difference immediately —
+`require_wire_role` refuses `cop`. Nothing was broken, because the internal enum never
+reaches the wire, but the rehearsal is the only place that distinction is visible, which
+is the argument for having one.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

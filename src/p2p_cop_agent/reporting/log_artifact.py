@@ -55,7 +55,7 @@ def build_log(
     *,
     identity: MatchIdentity,
     sub_game: int,
-    steps: Sequence[Mapping[str, object]],
+    records: Sequence[Mapping[str, object]],
     summary: Mapping[str, object],
 ) -> JsonObject:
     """Assemble the in-play log: commitments and public moves, **no nonces**.
@@ -63,10 +63,10 @@ def build_log(
     Refuses a step carrying `nonce` or `payload`. Both are the reveal, and a reveal in
     the running log is rule 18's sanction waiting for someone to share the file.
     """
-    if not steps:
-        raise LogArtifactError("a log with no steps cannot be audited")
+    if not records:
+        raise LogArtifactError("a log with no records cannot be audited")
     recorded = []
-    for index, step in enumerate(steps):
+    for index, step in enumerate(records):
         leaked = [name for name in FORBIDDEN_IN_PLAY if name in step]
         if leaked:
             raise LogArtifactError(

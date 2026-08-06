@@ -48,7 +48,7 @@ SUMMARY = {"outcome": "capture", "turns": 2, "cop_score": 20, "tokens_total": 0}
 
 
 def _log():
-    return build_log(identity=IDENT, sub_game=1, steps=STEPS, summary=SUMMARY)
+    return build_log(identity=IDENT, sub_game=1, records=STEPS, summary=SUMMARY)
 
 
 # --- M7-24 / M7-24a: independently re-verifiable ---------------------------------------
@@ -97,14 +97,14 @@ def test_a_step_carrying_a_nonce_is_refused_at_build_time() -> None:
     artifact could ever catch it — only refusing to build the intermediate state can."""
     leaky = [{**STEPS[0], "nonce": NONCES[0]}, STEPS[1]]
     with pytest.raises(LogArtifactError, match="nonce stays secret"):
-        build_log(identity=IDENT, sub_game=1, steps=leaky, summary=SUMMARY)
+        build_log(identity=IDENT, sub_game=1, records=leaky, summary=SUMMARY)
 
 
 def test_a_step_carrying_the_revealed_payload_is_refused_too() -> None:
     """The payload is the other half of the reveal; a nonce guard alone would be theatre."""
     leaky = [{**STEPS[0], "payload": PAYLOADS[0]}, STEPS[1]]
     with pytest.raises(LogArtifactError, match="payload"):
-        build_log(identity=IDENT, sub_game=1, steps=leaky, summary=SUMMARY)
+        build_log(identity=IDENT, sub_game=1, records=leaky, summary=SUMMARY)
 
 
 def test_the_reveal_is_the_only_way_nonces_enter_and_it_is_visible() -> None:
@@ -135,7 +135,7 @@ def test_a_reveal_missing_its_nonce_or_payload_is_refused() -> None:
 
 def test_a_log_with_no_steps_is_refused_rather_than_emitted_empty() -> None:
     with pytest.raises(LogArtifactError, match="cannot be audited"):
-        build_log(identity=IDENT, sub_game=1, steps=[], summary=SUMMARY)
+        build_log(identity=IDENT, sub_game=1, records=[], summary=SUMMARY)
 
 
 def test_the_summary_and_identity_ride_along() -> None:
