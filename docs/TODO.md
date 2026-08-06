@@ -637,19 +637,19 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-01d | Prove the objective board is never renderable | DONE | P0 | `[AE-8]` `[AE-9]`; a view-model test asserts no opponent-truth field |
 | M8-02 | Implement replay verifier and tamper view | DONE | P1 | `Verified OK` and `TAMPERED` paths are demonstrable |
 | M8-02a | Load a saved match log and step forward/back | DONE | P1 | `[AE-20]` mandatory deliverable `[PRD-replay]` |
-| M8-02b | Recompute every step's hash and compare | IN PROGRESS | P0 | Uses the M4 construction, not the book's chapter-7 sketch |
+| M8-02b | Recompute every step's hash and compare | DONE | P0 | Uses the M4 construction, not the book's chapter-7 sketch |
 | M8-02c | Void the whole match on the first mismatch | DONE | P0 | A single tampered step yields `TAMPERED` for the match |
 | M8-02d | Record why the book's chapter-7 verifier is not used | DONE | P1 | Book p. 74 computes `SHA256("{nonce}|{move}")`, which cannot verify a chapter-5 commitment. Disclosed under the p. 5 contradiction clause |
 | M8-02e | Document the replay UI workflow and states | DONE | P2 | Screens, controls, and both verdict states described `[G§10.2]` |
-| M8-03 | Run neutral unknown-opponent interoperability suite | IN PROGRESS | P0 | Both proposal/acceptance directions pass remotely |
-| M8-03a | Rehearse against a stub that shares no source with this repo | IN PROGRESS | P0 | Independently authored; imports no project module |
-| M8-03b | Prove both proposal and acceptance directions | IN PROGRESS | P0 | Neither direction needs a profile file edited |
+| M8-03 | Run neutral unknown-opponent interoperability suite | DONE | P0 | Both proposal/acceptance directions pass remotely |
+| M8-03a | Rehearse against a stub that shares no source with this repo | DONE | P0 | Independently authored; imports no project module |
+| M8-03b | Prove both proposal and acceptance directions | DONE | P0 | Neither direction needs a profile file edited |
 | M8-03c | Rehearse against a real classmate agent before the counted league | DEFERRED | P0 | A warm-up game is permitted and uncounted `[AE-52]` |
-| M8-04 | Run fault, security, secret, and resource hardening | IN PROGRESS | P0 | Failure matrix and abuse tests pass |
-| M8-04c | Bound memory and queue growth under sustained load | IN PROGRESS | P1 | No unbounded queue or leak under a long series |
-| M8-04d | Apply Nielsen usability heuristics to both UIs | IN PROGRESS | P2 | Visibility of status, error prevention, recovery `[G§10.1]` |
+| M8-04 | Run fault, security, secret, and resource hardening | DONE | P0 | Failure matrix and abuse tests pass |
+| M8-04c | Bound memory and queue growth under sustained load | DONE | P1 | No unbounded queue or leak under a long series |
+| M8-04d | Apply Nielsen usability heuristics to both UIs | DONE | P2 | Visibility of status, error prevention, recovery `[G§10.1]` |
 | M8-04a | Inject crash, timeout, mismatch, and tamper faults | DONE | P0 | Each produces a defined, logged outcome |
-| M8-04b | Validate every inbound field before use | IN PROGRESS | P0 | Malformed peer input cannot reach domain code `[G§6.3]` |
+| M8-04b | Validate every inbound field before use | DONE | P0 | Malformed peer input cannot reach domain code `[G§6.3]` |
 | M8-05 | Capture required GUI/replay evidence | DONE | P1 | Submission-quality screenshots are reproducible |
 | M8-05a | Capture the belief-map GUI screenshot | DONE | P1 | Required README content `[AE-42]` |
 | M8-05b | Capture the replay `Verified OK` screenshot | DONE | P1 | Required README content `[AE-42]` |
@@ -673,9 +673,9 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-09b | Confirm no private field crosses the wire | DONE | P0 | Leakage vector per private field class |
 | M8-09c | Review third-party dependencies and pin them | DONE | P1 | `uv.lock` is authoritative `[G§8.4]` |
 | M8-09d | Confirm the LLM path cannot influence a move | DONE | P0 | Even with a provider enabled `[AE-25]` |
-| M8-10 | Run the resource and endurance pass | IN PROGRESS | P1 | A full six-sub-game series runs without degradation |
-| M8-10a | Run a long series and watch memory | IN PROGRESS | P1 | No unbounded growth across sub-games |
-| M8-10b | Confirm clean shutdown releases every resource | IN PROGRESS | P1 | Sockets, files, and threads all closed |
+| M8-10 | Run the resource and endurance pass | DONE | P1 | A full six-sub-game series runs without degradation |
+| M8-10a | Run a long series and watch memory | DONE | P1 | No unbounded growth across sub-games |
+| M8-10b | Confirm clean shutdown releases every resource | DONE | P1 | Sockets, files, and threads all closed |
 | M8-11 | Document both interfaces | DONE | P2 | Screens, states, and workflows described `[G§10.2]` |
 | M8-11a | Document the live GUI workflow | DONE | P2 | Turn banner states and what each means |
 | M8-11b | Document accessibility considerations | DONE | P2 | Colour is not the only signal `[G§10.2]` |
@@ -686,7 +686,7 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-13a | Rehearse an opponent crash mid-series | DONE | P0 | The series still produces artifacts |
 | M8-13b | Rehearse a tunnel drop mid-turn | DONE | P0 | Terminal outcome is defined, not a hang |
 | M8-13c | Rehearse a config mismatch at negotiation | DONE | P0 | The match is refused before play `[AE-11]` |
-| M8-14 | Freeze the interoperability profile before the counted league | IN PROGRESS | P0 | No wire change after the first counted game without a coordinator decision |
+| M8-14 | Freeze the interoperability profile before the counted league | DONE | P0 | No wire change after the first counted game without a coordinator decision |
 
 ---
 
