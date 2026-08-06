@@ -506,9 +506,9 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M6-12c | Test with a saturated scent field | DONE | P1 | No overflow, no division by zero. Every cell at max scent yields a valid, normalised belief (sums to 1) and a legal action |
 | M6-12d | Test with the Thief adjacent and with the Thief far | DONE | P1 | Both produce sane, legal, distinct choices. Adjacent vs far scent give **different** `belief_target`s (the exact source cell) and both resolve to legal actions |
 | M6-12e | Test that repeated runs are byte-identical | DONE | P0 | Determinism is a submission property, not an accident. The same observation yields the same action **and** byte-identical belief probabilities across two independent runs |
-| M6-13 | Benchmark the per-turn decision cost | PENDING | P1 | Belief update plus policy stays well inside the response timeout. **Started 2026-08-05** (`scripts/bench_decision.py`): the measurement (`M6-13a`) is DONE; the parent stays open on `M6-13b`, recording the number into the M9 research evidence, which is a later phase |
+| M6-13 | Benchmark the per-turn decision cost | IN PROGRESS | P1 | Belief update plus policy stays well inside the response timeout. **Started 2026-08-05** (`scripts/bench_decision.py`): the measurement (`M6-13a`) is DONE; the parent stays open on `M6-13b`, recording the number into the M9 research evidence, which is a later phase |
 | M6-13a | Measure worst-case belief update time | DONE | P1 | Measured at the negotiated grid size. `scripts/bench_decision.py` times the real path on the deliberate worst case — a **saturated** field, argmax at the far corner, an **open board** (the BFS's true worst case, since barriers only shrink the reachable set). Measured: **1.3 ms at the 7×7 floor** (belief update alone 0.04 ms), 2.5 ms at 10×10, and **437 ms at 100×100** (100× the book's largest illustration) — still **69× inside** the 30 s timeout `[AF-t19]`. Guarded by `test_decision_cost.py`: deterministic `O(grid²)`-shape checks plus one loose 5 s ceiling that only a super-polynomial regression could trip |
-| M6-13b | Record the measurement in the research evidence | DEFERRED | P2 | Feeds `M9-06` and the computational-fairness claim. The number exists (`M6-13a`, logged in `PROMPT_LOG` P-049); the formal recording waits for the M9 research-evidence artifact rather than fabricating it a phase early |
+| M6-13b | Record the measurement in the research evidence | IN PROGRESS | P2 | Feeds `M9-06` and the computational-fairness claim. The number exists (`M6-13a`, logged in `PROMPT_LOG` P-049); the formal recording waits for the M9 research-evidence artifact rather than fabricating it a phase early |
 | M6-14 | Document the perception and strategy layers | DEFERRED | P2 | `PRD_scent_belief.md` and `PRD_strategy.md` match the built behaviour |
 | M6-14a | Document the belief update rule and its trust factor | DEFERRED | P2 | Formula, inputs, and normalisation |
 | M6-14b | Document the locked scent model and its hash | DEFERRED | P1 | The exact bytes that were locked `[AE-23]` |
@@ -717,13 +717,13 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M9-05c | Confirm each member submits separately | DEFERRED | P0 | `[AE-44]` |
 | M9-05d | Use the eight-character team code | DEFERRED | P0 | `sharNamr`, confirmed 2026-07-28 `[AE-45]` |
 | M9-05e | Provide the code-quality self-assessment | DEFERRED | P1 | `[AE-55]`; grades code quality only, never the league result |
-| M9-06 | Complete parameter research and sensitivity analysis | DEFERRED | P1 | Guidelines §9.1: systematic one-at-a-time experiments across the negotiable parameters, with the measured effect of each on match outcomes documented in tables |
-| M9-06a | Sweep the negotiable board and movement parameters | DEFERRED | P1 | Grid size, barrier quota, step limit, survival threshold |
-| M9-06b | Sweep the scent parameters within their fixed bounds | DEFERRED | P1 | Sensitivity to `ρ` and field size, noting both are `Fixed` for play |
-| M9-06c | Record each parameter's measured effect on outcome | DEFERRED | P1 | Experiment tables with run counts, not anecdotes |
-| M9-07 | Publish the results-analysis notebook and result visualisations | DEFERRED | P1 | Guidelines §9.2/§9.3: a notebook compares strategies and configurations, uses LaTeX for equations, cites academic references, and emits labelled high-resolution charts |
-| M9-07a | Compare baseline against belief-driven pursuit | DEFERRED | P1 | Win rate and mean capture turn over repeated runs |
-| M9-07b | Emit labelled, accessible, high-resolution charts | DEFERRED | P1 | Clear axes, legend, caption `[G§9.3]` |
+| M9-06 | Complete parameter research and sensitivity analysis | IN PROGRESS | P1 | Guidelines §9.1: systematic one-at-a-time experiments across the negotiable parameters, with the measured effect of each on match outcomes documented in tables |
+| M9-06a | Sweep the negotiable board and movement parameters | IN PROGRESS | P1 | Grid size, barrier quota, step limit, survival threshold |
+| M9-06b | Sweep the scent parameters within their fixed bounds | IN PROGRESS | P1 | Sensitivity to `ρ` and field size, noting both are `Fixed` for play |
+| M9-06c | Record each parameter's measured effect on outcome | IN PROGRESS | P1 | Experiment tables with run counts, not anecdotes |
+| M9-07 | Publish the results-analysis notebook and result visualisations | IN PROGRESS | P1 | Guidelines §9.2/§9.3: a notebook compares strategies and configurations, uses LaTeX for equations, cites academic references, and emits labelled high-resolution charts |
+| M9-07a | Compare baseline against belief-driven pursuit | IN PROGRESS | P1 | Win rate and mean capture turn over repeated runs |
+| M9-07b | Emit labelled, accessible, high-resolution charts | IN PROGRESS | P1 | Clear axes, legend, caption `[G§9.3]` |
 | M9-07c | Cite academic references and format equations in LaTeX | DEFERRED | P2 | `[G§9.2]` |
 | M9-08 | Evidence ISO/IEC 25010, extension points, and concurrency safety | DEFERRED | P2 | Guidelines §12/§13/§15 (grouped as "Extension and Standards" in their §17.6): the eight quality characteristics are evidenced, plugin/extension seams are documented, and any threading or multiprocessing carries a thread-safety justification |
 | M9-08a | Map the eight ISO/IEC 25010 characteristics to evidence | DEFERRED | P2 | One evidence pointer per characteristic `[G§13.1]` |
