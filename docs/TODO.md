@@ -629,11 +629,11 @@ These run before every commit and in CI; they are not milestone-scoped.
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
-| M8-01 | Implement local-truth live GUI | DEFERRED | P1 | No objective opponent state is exposed |
-| M8-01a | Render the belief heatmap | DEFERRED | P1 | Deeper colour means higher probability `[PRD-gui]` `[ADR-009]` |
-| M8-01b | Render the turn banner | DEFERRED | P1 | Green `YOUR TURN`, grey `LOCKED` after commit |
-| M8-01c | Lock input while the banner is grey | DEFERRED | P1 | Out-of-turn input is ignored, not queued |
-| M8-01d | Prove the objective board is never renderable | DEFERRED | P0 | `[AE-8]` `[AE-9]`; a view-model test asserts no opponent-truth field |
+| M8-01 | Implement local-truth live GUI | IN PROGRESS | P1 | No objective opponent state is exposed |
+| M8-01a | Render the belief heatmap | IN PROGRESS | P1 | Deeper colour means higher probability `[PRD-gui]` `[ADR-009]` |
+| M8-01b | Render the turn banner | IN PROGRESS | P1 | Green `YOUR TURN`, grey `LOCKED` after commit |
+| M8-01c | Lock input while the banner is grey | IN PROGRESS | P1 | Out-of-turn input is ignored, not queued |
+| M8-01d | Prove the objective board is never renderable | IN PROGRESS | P0 | `[AE-8]` `[AE-9]`; a view-model test asserts no opponent-truth field |
 | M8-02 | Implement replay verifier and tamper view | DONE | P1 | `Verified OK` and `TAMPERED` paths are demonstrable |
 | M8-02a | Load a saved match log and step forward/back | DONE | P1 | `[AE-20]` mandatory deliverable `[PRD-replay]` |
 | M8-02b | Recompute every step's hash and compare | DEFERRED | P0 | Uses the M4 construction, not the book's chapter-7 sketch |
@@ -650,18 +650,18 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-04a | Inject crash, timeout, mismatch, and tamper faults | DEFERRED | P0 | Each produces a defined, logged outcome |
 | M8-04b | Validate every inbound field before use | DEFERRED | P0 | Malformed peer input cannot reach domain code `[G§6.3]` |
 | M8-05 | Capture required GUI/replay evidence | DONE | P1 | Submission-quality screenshots are reproducible |
-| M8-05a | Capture the belief-map GUI screenshot | DEFERRED | P1 | Required README content `[AE-42]` |
+| M8-05a | Capture the belief-map GUI screenshot | IN PROGRESS | P1 | Required README content `[AE-42]` |
 | M8-05b | Capture the replay `Verified OK` screenshot | DONE | P1 | Required README content `[AE-42]` |
 | M8-05c | Capture a `TAMPERED` screenshot from a deliberately corrupted log | DONE | P2 | Demonstrates the detection path, not just the happy path |
 | M8-05d | Make every screenshot reproducible from a stored fixture | DONE | P1 | A grader can regenerate them |
 | M8-06 | Build the GUI view-model behind the SDK | DONE | P1 | No widget touches domain or protocol code directly `[G§4.1]` |
 | M8-06a | Expose a read-only snapshot for rendering | DONE | P1 | The view cannot mutate game state |
-| M8-06b | Update the view on state change rather than polling | DEFERRED | P2 | Redraw follows the phase machine |
+| M8-06b | Update the view on state change rather than polling | IN PROGRESS | P2 | Redraw follows the phase machine |
 | M8-06c | Keep the GUI out of coverage requirements | DONE | P2 | Omitted per the guidelines' coverage config `[G§6.2]` |
-| M8-07 | Render the board and own position | DEFERRED | P1 | Own cell, disclosed barriers, and turn number are visible |
-| M8-07a | Render disclosed barriers only | DEFERRED | P0 | A barrier appears only once disclosed `[AE-15]` |
-| M8-07b | Render received hints as text | DEFERRED | P2 | The verbal channel is visible to the operator |
-| M8-07c | Show the current score and step count | DEFERRED | P2 | Operator can see progress toward the threshold |
+| M8-07 | Render the board and own position | IN PROGRESS | P1 | Own cell, disclosed barriers, and turn number are visible |
+| M8-07a | Render disclosed barriers only | IN PROGRESS | P0 | A barrier appears only once disclosed `[AE-15]` |
+| M8-07b | Render received hints as text | IN PROGRESS | P2 | The verbal channel is visible to the operator |
+| M8-07c | Show the current score and step count | IN PROGRESS | P2 | Operator can see progress toward the threshold |
 | M8-08 | Implement replay navigation | DONE | P1 | Step forward, step back, and jump to a step |
 | M8-08a | Recompute verification on every navigation | DONE | P0 | The verdict is derived, never cached from load time |
 | M8-08b | Show the per-step verdict alongside the board | DONE | P1 | Operator sees where a match failed |
@@ -675,9 +675,9 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-10 | Run the resource and endurance pass | DEFERRED | P1 | A full six-sub-game series runs without degradation |
 | M8-10a | Run a long series and watch memory | DEFERRED | P1 | No unbounded growth across sub-games |
 | M8-10b | Confirm clean shutdown releases every resource | DEFERRED | P1 | Sockets, files, and threads all closed |
-| M8-11 | Document both interfaces | DEFERRED | P2 | Screens, states, and workflows described `[G§10.2]` |
-| M8-11a | Document the live GUI workflow | DEFERRED | P2 | Turn banner states and what each means |
-| M8-11b | Document accessibility considerations | DEFERRED | P2 | Colour is not the only signal `[G§10.2]` |
+| M8-11 | Document both interfaces | IN PROGRESS | P2 | Screens, states, and workflows described `[G§10.2]` |
+| M8-11a | Document the live GUI workflow | IN PROGRESS | P2 | Turn banner states and what each means |
+| M8-11b | Document accessibility considerations | IN PROGRESS | P2 | Colour is not the only signal `[G§10.2]` |
 | M8-12 | Prove the replay app on a foreign log | DONE | P0 | It verifies a log this peer did not write |
 | M8-12a | Verify an opponent-produced log | DONE | P0 | The audit is mutual; both logs must verify `[AE-36]` |
 | M8-12b | Detect a foreign log that was tampered | DONE | P0 | The detection path is not self-only |
