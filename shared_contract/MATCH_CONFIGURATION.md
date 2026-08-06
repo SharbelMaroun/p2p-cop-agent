@@ -1,6 +1,6 @@
 # Per-Match Configuration and Hash Domains
 
-Contract version: `0.2.7-proposed`
+Contract version: `0.2.8-proposed`
 Status: **PROPOSED / UNFROZEN**
 
 The stable bundle does not contain an active match. A per-match shared game object

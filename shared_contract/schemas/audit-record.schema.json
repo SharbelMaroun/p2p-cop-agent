@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.7-proposed",
+  "x-contract-version": "0.2.8-proposed",
   "x-role-neutral": true,
   "title": "Option-B audit record",
   "description": "One post-game record whose payload and revealed commitment nonce must reproduce commit.",

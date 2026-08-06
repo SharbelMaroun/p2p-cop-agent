@@ -116,7 +116,7 @@ schedule.
   commitment-nonce profile) is **accepted for this project** under Option B.
 - The rejected `0.1.0-proposed` bundle is superseded by `0.2.0-proposed`, then by
   `0.2.1-proposed`, `0.2.2-proposed`, `0.2.3-proposed`, `0.2.4-proposed`, and
-  `0.2.7-proposed`; copying or freezing any earlier bundle is not authorized.
+  `0.2.8-proposed`; copying or freezing any earlier bundle is not authorized.
 - Role alternation is **not** accepted under Option B. It is recorded as `U-025`
   and carries no contract status.
 

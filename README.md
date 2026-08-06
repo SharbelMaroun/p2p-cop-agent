@@ -12,11 +12,11 @@ scoring, transport-free rules harness, and deterministic move-or-barrier baselin
 It also implements the M4 commit-reveal primitives (per-turn commitment, audit
 reveal, Step-0 attestation) and the inbound FastMCP tool surface. It contains the
 M1.5 Option-B contract repair: a role-neutral `shared_contract/` bundle at
-`0.2.7-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
+`0.2.8-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
 There is still no outbound peer client, public tunnel, scent field, belief map,
 LLM, Gmail, GUI, or replay runtime, so no live game has been played.
 
-The shared contract is `0.2.7-proposed` and **UNFROZEN**. It becomes frozen only
+The shared contract is `0.2.8-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
 identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
 a documented academic-freedom interoperability choice pinned to simulator commit
@@ -84,7 +84,7 @@ displays the equivalent PEP 440 form `1.0`.
 ## Configuration
 
 - The stable, role-neutral shared contract is the top-level `shared_contract/`
-  bundle at `0.2.7-proposed` (Option B). It holds specifications, schemas,
+  bundle at `0.2.8-proposed` (Option B). It holds specifications, schemas,
   fixtures, vectors, and the read-only verifier only — no active match.
 - A per-match shared game object and local rate-limit enforcement mirror are each
   supplied at runtime by explicit path; neither loader has a repository or example
@@ -872,6 +872,53 @@ validation are the next batch.
 itself* — once on an explanatory comment containing an example parameter, once on a TODO
 row quoting it. Reworded rather than allowlisted, on the same reasoning as before: an
 allowlist entry weakens the scanner permanently to accommodate prose.
+
+#### The artifact layer, and a schema that could only validate a template (`M7-23`, `X-04`, 2026-08-06)
+
+`reporting/` now exists: the four filenames the book fixes at `:3600`, an atomic writer,
+and the agreed-configuration artifact with both of its cryptographic locks.
+
+**`M7-23`'s condition is sharper than it reads.** "The emitted config is the one actually
+played, **not a template**." `fixtures/match_config.example.json` is a valid config that
+describes no game — emitting it would produce an artifact that passes its own schema and
+a casual read while documenting a match nobody played. So `build_config` takes the
+negotiated game object and reads every section from it, and the test changes an agreed
+value and asserts the artifact follows, rather than comparing against a constant.
+
+**Two locks, because the book asks for two.** `config_sha256` covers the whole agreed
+object — rule 11 (Mandatory), configuration "identical, bit-for-bit on both sides",
+sanction "disqualification of the game due to lack of symmetry". `scent_model_sha256` is
+separate — rule 23 (Mandatory): "Lock the cryptographic hash of the scent model before
+the start of the game. Sanction: **deviation from the formula cancels the game**." A
+parameter table pinning `0.9` and `0.10` does not pin the model those numbers feed, which
+is exactly why the second lock exists.
+
+**Then the artifact failed its own schema — and the schema was wrong.**
+`per-subgame-config.schema.json` pinned `links.config` with `"pattern": "g<NN>"`. That is
+a **literal**, not a placeholder: it matched the fixture's `config_x_g<NN>.json` and
+**refused every real filename**. The schema could only ever validate a template — the
+precise failure `M7-23` exists to prevent, sitting inside the contract that was supposed
+to prevent it.
+
+Corrected to `^config_.+_g\d{2}\.json$`, with the valid fixture given real filenames.
+The *invalid* fixture needed fixing too: it exists to prove `sub_game > 6` is refused,
+and it had been failing on the placeholder instead — passing for the wrong reason, which
+would have masked the case it was written for the day someone relaxed that pattern. Both
+files are controlled, so `G-18` forced a bump: `0.2.7-proposed` → `0.2.8-proposed`,
+manifest `88df2089…`, and 18 current-state version claims updated while three genuinely
+historical ones were left alone.
+
+**Emission is transport-free by construction (`M7-25`).** "A disconnected game still
+produces its artifact set", so `write_artifact` takes a directory and an object — no
+socket, no peer — and a signature test pins that. It writes to a temporary file in the
+same directory then `os.replace`, so the visible file is either the old one or the
+complete new one, never a prefix. Same-directory matters: `os.replace` is only atomic
+within a filesystem. A half-written artifact is indistinguishable from a tampered one
+during rule 19's audit, whose sanction is "score of 0 for the falsifying group".
+
+*What is not done.* `M7-02a`/`M7-02b` stay open on one thing: the builders exist and are
+schema-valid, but nothing in `orchestration/match` calls them yet. Wiring emission into a
+played match, the log artifact (`M7-24`) and validation (`M7-14`) are the next batch.
 
 ### 3. The implemented strategy
 
