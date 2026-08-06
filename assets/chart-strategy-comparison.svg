@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="720" height="400" role="img">
+<title>Cop strategy arms: capture rate and mean score</title><desc>40 paired seeds per arm; each seed gives every arm the identical Thief trajectory. Belief closes 100.0% of the blind-to-oracle gap.</desc>
+<rect width="720" height="400" fill="#ffffff"/>
+<text x="360.0" y="24.0" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#263238" text-anchor="middle" font-weight="bold">Cop strategy arms: capture rate and mean score</text>
+<text x="360.0" y="42.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">40 paired seeds per arm; each seed gives every arm the identical Thief trajectory. Belief closes 100.0% of the blind-to-oracle gap.</text>
+<text x="360.0" y="392.0" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#607d8b" text-anchor="middle" font-weight="normal">strategy arm</text>
+<g transform="translate(16,200.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#607d8b" text-anchor="middle" font-weight="normal">value</text></g>
+<line x1="70" y1="336.0" x2="690" y2="336.0" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="340.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0</text>
+<line x1="70" y1="279.6" x2="690" y2="279.6" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="283.6" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.2</text>
+<line x1="70" y1="223.2" x2="690" y2="223.2" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="227.2" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.4</text>
+<line x1="70" y1="166.8" x2="690" y2="166.8" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="170.8" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.6</text>
+<line x1="70" y1="110.4" x2="690" y2="110.4" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="114.4" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.8</text>
+<line x1="70" y1="54.0" x2="690" y2="54.0" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="58.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">1</text>
+<text x="173.3" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">blind</text>
+<rect x="104.4" y="187.9" width="65.9" height="148.1" fill="#2980b9"/>
+<text x="137.4" y="183.9" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#263238" text-anchor="middle" font-weight="normal">0.525</text>
+<rect x="173.3" y="154.5" width="65.9" height="181.5" fill="#e67e22"/>
+<text x="206.3" y="150.5" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#263238" text-anchor="middle" font-weight="normal">0.64375</text>
+<text x="380.0" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">belief</text>
+<rect x="311.1" y="54.0" width="65.9" height="282.0" fill="#2980b9"/>
+<text x="344.1" y="50.0" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#263238" text-anchor="middle" font-weight="normal">1</text>
+<rect x="380.0" y="54.0" width="65.9" height="282.0" fill="#e67e22"/>
+<text x="412.9" y="50.0" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#263238" text-anchor="middle" font-weight="normal">1</text>
+<text x="586.7" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">oracle</text>
+<rect x="517.8" y="54.0" width="65.9" height="282.0" fill="#2980b9"/>
+<text x="550.7" y="50.0" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#263238" text-anchor="middle" font-weight="normal">1</text>
+<rect x="586.7" y="54.0" width="65.9" height="282.0" fill="#e67e22"/>
+<text x="619.6" y="50.0" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#263238" text-anchor="middle" font-weight="normal">1</text>
+<rect x="70" y="366" width="11" height="11" fill="#2980b9"/>
+<text x="86.0" y="375.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#263238" text-anchor="start" font-weight="normal">capture rate</text>
+<rect x="220" y="366" width="11" height="11" fill="#e67e22"/>
+<text x="236.0" y="375.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#263238" text-anchor="start" font-weight="normal">mean cop score / 20</text>
+</svg>

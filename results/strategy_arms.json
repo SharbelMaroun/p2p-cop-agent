@@ -1,0 +1,87 @@
+{
+  "belief": {
+    "capture_rate": 1.0,
+    "cop_score": {
+      "max": 20.0,
+      "mean": 20.0,
+      "median": 20.0,
+      "min": 20.0,
+      "q1": 20.0,
+      "q3": 20.0,
+      "runs": 40,
+      "stdev": 0.0
+    },
+    "turns": {
+      "max": 26.0,
+      "mean": 9.675,
+      "median": 8.5,
+      "min": 3.0,
+      "q1": 5.0,
+      "q3": 12.0,
+      "runs": 40,
+      "stdev": 5.5626
+    }
+  },
+  "belief_share_of_available_gap": 1.0,
+  "blind": {
+    "capture_rate": 0.525,
+    "cop_score": {
+      "max": 20.0,
+      "mean": 12.875,
+      "median": 20.0,
+      "min": 5.0,
+      "q1": 5.0,
+      "q3": 20.0,
+      "runs": 40,
+      "stdev": 7.586
+    },
+    "turns": {
+      "max": 35.0,
+      "mean": 27.2,
+      "median": 35.0,
+      "min": 4.0,
+      "q1": 19.75,
+      "q3": 35.0,
+      "runs": 40,
+      "stdev": 10.1481
+    }
+  },
+  "oracle": {
+    "capture_rate": 1.0,
+    "cop_score": {
+      "max": 20.0,
+      "mean": 20.0,
+      "median": 20.0,
+      "min": 20.0,
+      "q1": 20.0,
+      "q3": 20.0,
+      "runs": 40,
+      "stdev": 0.0
+    },
+    "turns": {
+      "max": 18.0,
+      "mean": 8.625,
+      "median": 9.0,
+      "min": 3.0,
+      "q1": 6.0,
+      "q3": 10.25,
+      "runs": 40,
+      "stdev": 3.3565
+    }
+  },
+  "paired_belief_vs_blind": {
+    "losses": 0,
+    "pairs": 40,
+    "ties": 21,
+    "win_share_of_decisive": 1.0,
+    "wins": 19
+  },
+  "paired_oracle_vs_belief": {
+    "losses": 0,
+    "pairs": 40,
+    "ties": 40,
+    "win_share_of_decisive": 0.0,
+    "wins": 0
+  },
+  "runs_per_arm": 40
+}

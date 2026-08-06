@@ -1,0 +1,153 @@
+{
+  "appendix_f_status": "Minimum",
+  "arm": "belief",
+  "minimum": 7,
+  "parameter": "board_and_agents.grid_size",
+  "points": [
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 26.0,
+        "mean": 9.675,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 12.0,
+        "runs": 40,
+        "stdev": 5.5626
+      },
+      "value": 7
+    },
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 20.0,
+        "mean": 9.175,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 11.25,
+        "runs": 40,
+        "stdev": 4.6569
+      },
+      "value": 8
+    },
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 21.0,
+        "mean": 9.325,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 11.0,
+        "runs": 40,
+        "stdev": 4.8853
+      },
+      "value": 9
+    },
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 25.0,
+        "mean": 9.35,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 11.0,
+        "runs": 40,
+        "stdev": 5.0867
+      },
+      "value": 10
+    },
+    {
+      "capture_rate": 0.975,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 19.625,
+        "median": 20.0,
+        "min": 5.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 2.3717
+      },
+      "turns": {
+        "max": 35.0,
+        "mean": 9.6,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 11.0,
+        "runs": 40,
+        "stdev": 6.0332
+      },
+      "value": 11
+    },
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 35.0,
+        "mean": 9.6,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 11.0,
+        "runs": 40,
+        "stdev": 6.0332
+      },
+      "value": 12
+    }
+  ],
+  "runs_per_point": 40
+}

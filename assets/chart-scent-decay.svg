@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="720" height="400" role="img">
+<title>Scent decay from a single deposit</title><desc>Source 0.9, decay 0.1 per turn — both Appendix F **Fixed**, so this explains the model rather than proposing a change to it.</desc>
+<rect width="720" height="400" fill="#ffffff"/>
+<text x="360.0" y="24.0" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#263238" text-anchor="middle" font-weight="bold">Scent decay from a single deposit</text>
+<text x="360.0" y="42.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">Source 0.9, decay 0.1 per turn — both Appendix F **Fixed**, so this explains the model rather than proposing a change to it.</text>
+<text x="360.0" y="392.0" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#607d8b" text-anchor="middle" font-weight="normal">turns since deposit</text>
+<g transform="translate(16,200.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#607d8b" text-anchor="middle" font-weight="normal">intensity</text></g>
+<line x1="70" y1="336.0" x2="690" y2="336.0" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="340.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0</text>
+<line x1="70" y1="279.6" x2="690" y2="279.6" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="283.6" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.18</text>
+<line x1="70" y1="223.2" x2="690" y2="223.2" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="227.2" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.36</text>
+<line x1="70" y1="166.8" x2="690" y2="166.8" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="170.8" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.54</text>
+<line x1="70" y1="110.4" x2="690" y2="110.4" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="114.4" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.72</text>
+<line x1="70" y1="54.0" x2="690" y2="54.0" stroke="#e0e0e0" stroke-width="1"/>
+<text x="62.0" y="58.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="end" font-weight="normal">0.9</text>
+<text x="70.0" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">0</text>
+<text x="102.6" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">1</text>
+<text x="135.3" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">2</text>
+<text x="167.9" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">3</text>
+<text x="200.5" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">4</text>
+<text x="233.2" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">5</text>
+<text x="265.8" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">6</text>
+<text x="298.4" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">7</text>
+<text x="331.1" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">8</text>
+<text x="363.7" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">9</text>
+<text x="396.3" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">10</text>
+<text x="428.9" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">11</text>
+<text x="461.6" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">12</text>
+<text x="494.2" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">13</text>
+<text x="526.8" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">14</text>
+<text x="559.5" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">15</text>
+<text x="592.1" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">16</text>
+<text x="624.7" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">17</text>
+<text x="657.4" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">18</text>
+<text x="690.0" y="352.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#607d8b" text-anchor="middle" font-weight="normal">19</text>
+<circle cx="70.0" cy="54.0" r="3" fill="#2980b9"/>
+<circle cx="102.6" cy="82.2" r="3" fill="#2980b9"/>
+<circle cx="135.3" cy="107.6" r="3" fill="#2980b9"/>
+<circle cx="167.9" cy="130.4" r="3" fill="#2980b9"/>
+<circle cx="200.5" cy="151.0" r="3" fill="#2980b9"/>
+<circle cx="233.2" cy="169.5" r="3" fill="#2980b9"/>
+<circle cx="265.8" cy="186.1" r="3" fill="#2980b9"/>
+<circle cx="298.4" cy="201.1" r="3" fill="#2980b9"/>
+<circle cx="331.1" cy="214.6" r="3" fill="#2980b9"/>
+<circle cx="363.7" cy="226.7" r="3" fill="#2980b9"/>
+<circle cx="396.3" cy="237.7" r="3" fill="#2980b9"/>
+<circle cx="428.9" cy="247.5" r="3" fill="#2980b9"/>
+<circle cx="461.6" cy="256.4" r="3" fill="#2980b9"/>
+<circle cx="494.2" cy="264.3" r="3" fill="#2980b9"/>
+<circle cx="526.8" cy="271.5" r="3" fill="#2980b9"/>
+<circle cx="559.5" cy="277.9" r="3" fill="#2980b9"/>
+<circle cx="592.1" cy="283.7" r="3" fill="#2980b9"/>
+<circle cx="624.7" cy="289.0" r="3" fill="#2980b9"/>
+<circle cx="657.4" cy="293.7" r="3" fill="#2980b9"/>
+<circle cx="690.0" cy="297.9" r="3" fill="#2980b9"/>
+<polyline points="70.0,54.0 102.6,82.2 135.3,107.6 167.9,130.4 200.5,151.0 233.2,169.5 265.8,186.1 298.4,201.1 331.1,214.6 363.7,226.7 396.3,237.7 428.9,247.5 461.6,256.4 494.2,264.3 526.8,271.5 559.5,277.9 592.1,283.7 624.7,289.0 657.4,293.7 690.0,297.9" fill="none" stroke="#2980b9" stroke-width="2"/>
+<rect x="70" y="366" width="11" height="11" fill="#2980b9"/>
+<text x="86.0" y="375.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#263238" text-anchor="start" font-weight="normal">intensity</text>
+</svg>
