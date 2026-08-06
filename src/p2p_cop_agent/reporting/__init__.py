@@ -26,8 +26,16 @@ from p2p_cop_agent.reporting.naming import (
     match_filenames,
     result_filename,
 )
+from p2p_cop_agent.reporting.result_artifact import ResultArtifactError, build_result
+from p2p_cop_agent.reporting.validate import (
+    ArtifactInvalidError,
+    check_one_identity,
+    validate_artifact,
+    validated_write,
+)
 
 __all__ = [
+    "ArtifactInvalidError",
     "ConfigArtifactError",
     "EmitError",
     "LogArtifactError",
@@ -36,14 +44,19 @@ __all__ = [
     "artifact_bytes",
     "build_config",
     "build_log",
+    "build_result",
     "config_filename",
     "declaration_filename",
     "is_revealed",
     "log_filename",
     "match_filenames",
     "quantitative_parameters",
+    "ResultArtifactError",
+    "check_one_identity",
     "result_filename",
     "reveal_log",
     "write_all",
+    "validate_artifact",
+    "validated_write",
     "write_artifact",
 ]

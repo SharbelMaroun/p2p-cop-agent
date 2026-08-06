@@ -33,6 +33,7 @@ from p2p_cop_agent.reporting import (
     build_config,
     config_filename,
     declaration_filename,
+    validated_write,
     write_artifact,
 )
 from p2p_cop_agent.shared.config import JsonObject
@@ -108,7 +109,7 @@ def play_match(
             artifacts_dir, declaration_filename(identity_for_files),
             {**declaration, "declaration_lock": lock},
         )
-        write_artifact(
+        validated_write(
             artifacts_dir, config_filename(identity_for_files, sub_game),
             build_config(
                 identity=identity_for_files, sub_game=sub_game, game=game,

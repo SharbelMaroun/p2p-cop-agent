@@ -951,6 +951,40 @@ intends — which for a property that leaves no trace is the only enforcement av
 plus `M7-14` (validate all four against their schemas) and `M7-03b` (the result artifact,
 the last builder).
 
+#### The report that gets emailed, and the gate in front of it (`M7-03b`, `M7-14`, 2026-08-06)
+
+The four artifact builders are complete. The last one is the only one that leaves the
+machine — `:2241` calls it "a summary of the game results, including the score of each
+group in all games and the cumulative result, for the lecturer to weigh the league score".
+
+Three Mandatory rules land in that single file, so its checks refuse rather than warn:
+rule 49's **exactly four** repository links (three means one side's submission is wrong),
+rule 53's per-game commit hash (code may change between games, so a result that does not
+say *which* code played it cannot be reproduced), and rule 54's tokens "for the game
+**and in the sequence**" — two numbers, not one.
+
+**The asymmetry that shaped the design.** Rule 35: "a conflicting report causes
+disqualification of the game and a score of 0 for **both teams**." `:2584`: a side that
+does not report "will not be credited". Not reporting costs us; reporting something
+contradictory costs the opponent too. So an unagreed result is refused at build time —
+there is no way to construct a report this repository is not entitled to send.
+
+**`M7-14` is a requirement about placement.** "An artifact that fails its own schema is
+never sent." A validator living in the test suite proves the artifacts were valid on a
+developer's machine; it says nothing about a file hand-edited at midnight. So
+`validated_write` sits between building and writing, and `play_match` calls it — an
+invalid config raises and leaves no file behind for anyone to attach.
+
+Two smaller decisions worth recording. An artifact kind with **no** controlled schema is
+refused rather than accepted, so "validated" never quietly means "unchecked" — which is
+how an unschema'd file ends up looking exactly as trustworthy as a checked one. And
+`M7-14e` compares artifacts *to each other*: a set spanning two games is the one failure
+no per-file schema can catch, because every file in it is individually valid.
+
+*Still open, and the rows now say why.* `M7-14a`/`c`/`d` are blocked on a **schema, not
+on code** — the bundle carries one for the per-sub-game config only, and authoring the
+declaration, log and result schemas is a contract change in its own right.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
