@@ -1098,6 +1098,34 @@ One small thing worth naming: **an empty series does not pass the audit.** Audit
 must not read as auditing successfully, which is the commonest way an audit gate ends up
 bypassed in practice.
 
+#### Six sub-games, and three numbers that could have been the count (`M7-01`, `M7-07`, 2026-08-06)
+
+The role schedule is settled rather than inferred: `U-025` closed on 2026-07-31 with a
+lecturer answer relayed by the coordinator — sub-games **1, 3, 5 natural, 2, 4, 6 swapped,
+Thief moves first**. It is written out as constants rather than computed as an
+alternation, because a formula is one refactor away from silently disagreeing with the
+answer we were given. A test pins that the two sides are opposite in every sub-game, which
+is exactly the error a computed alternation makes without complaining.
+
+**The count took reading carefully.** Appendix F prints *two* rows under the same label
+`[Number of Agents]`: `:3484` is "number of players in the race | 2 | Fixed", and `:3540`
+is "number of agents **in a series against an opponent** | 6 | Fixed". The second is the
+games count under a mistranslated label — its own description gives it away. And the
+template at `:2963` carries `"num_games": 1`, a single-game default for the example file
+rather than the league requirement. Three plausible numbers; only one is the series
+length. Recorded as `X-05` so nobody re-derives it.
+
+**What resets between sub-games.** Each is a fresh game — own barrier quota, own scent
+field, own belief. Carrying belief across would be worse than a bug: our score in sub-game
+4 would depend on inference gathered while we were playing the *other role*, which is not
+a thing the rules contemplate. Only the series identity persists, so all fourteen
+artifacts share one `game_uid`.
+
+**`M7-07` is the first row that exercises everything together** rather than in isolation:
+schedule → six per-sub-game configs, each schema-validated and atomically written →
+cross-artifact identity check → settlement → result artifact. That ordering was deliberate
+before mirroring M7 to the Thief — a design worth copying should be one that has run.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
