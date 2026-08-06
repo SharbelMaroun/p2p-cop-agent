@@ -647,7 +647,7 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-04 | Run fault, security, secret, and resource hardening | IN PROGRESS | P0 | Failure matrix and abuse tests pass |
 | M8-04c | Bound memory and queue growth under sustained load | IN PROGRESS | P1 | No unbounded queue or leak under a long series |
 | M8-04d | Apply Nielsen usability heuristics to both UIs | DEFERRED | P2 | Visibility of status, error prevention, recovery `[G§10.1]` |
-| M8-04a | Inject crash, timeout, mismatch, and tamper faults | IN PROGRESS | P0 | Each produces a defined, logged outcome |
+| M8-04a | Inject crash, timeout, mismatch, and tamper faults | DONE | P0 | Each produces a defined, logged outcome |
 | M8-04b | Validate every inbound field before use | IN PROGRESS | P0 | Malformed peer input cannot reach domain code `[G§6.3]` |
 | M8-05 | Capture required GUI/replay evidence | DONE | P1 | Submission-quality screenshots are reproducible |
 | M8-05a | Capture the belief-map GUI screenshot | DONE | P1 | Required README content `[AE-42]` |
@@ -668,10 +668,10 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-08c | Load a malformed log without crashing | DONE | P1 | Corrupt input yields a clear error, not a stack trace |
 | M8-08d | Detect a reordered log | DONE | P0 | Step sequence is validated, not assumed |
 | M8-09 | Run the security review | IN PROGRESS | P0 | Secrets, identity, input validation, and dependencies all reviewed |
-| M8-09a | Confirm no secret is readable from any artifact | IN PROGRESS | P0 | Artifacts are shared; secrets must not travel in them `[AE-39]` |
+| M8-09a | Confirm no secret is readable from any artifact | DONE | P0 | Artifacts are shared; secrets must not travel in them `[AE-39]` |
 | M8-09b | Confirm no private field crosses the wire | IN PROGRESS | P0 | Leakage vector per private field class |
-| M8-09c | Review third-party dependencies and pin them | IN PROGRESS | P1 | `uv.lock` is authoritative `[G§8.4]` |
-| M8-09d | Confirm the LLM path cannot influence a move | IN PROGRESS | P0 | Even with a provider enabled `[AE-25]` |
+| M8-09c | Review third-party dependencies and pin them | DONE | P1 | `uv.lock` is authoritative `[G§8.4]` |
+| M8-09d | Confirm the LLM path cannot influence a move | DONE | P0 | Even with a provider enabled `[AE-25]` |
 | M8-10 | Run the resource and endurance pass | DEFERRED | P1 | A full six-sub-game series runs without degradation |
 | M8-10a | Run a long series and watch memory | DEFERRED | P1 | No unbounded growth across sub-games |
 | M8-10b | Confirm clean shutdown releases every resource | DEFERRED | P1 | Sockets, files, and threads all closed |
@@ -681,10 +681,10 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-12 | Prove the replay app on a foreign log | DONE | P0 | It verifies a log this peer did not write |
 | M8-12a | Verify an opponent-produced log | DONE | P0 | The audit is mutual; both logs must verify `[AE-36]` |
 | M8-12b | Detect a foreign log that was tampered | DONE | P0 | The detection path is not self-only |
-| M8-13 | Rehearse the full failure matrix end to end | IN PROGRESS | P0 | Every fault class has an observed outcome, not a predicted one |
-| M8-13a | Rehearse an opponent crash mid-series | IN PROGRESS | P0 | The series still produces artifacts |
-| M8-13b | Rehearse a tunnel drop mid-turn | IN PROGRESS | P0 | Terminal outcome is defined, not a hang |
-| M8-13c | Rehearse a config mismatch at negotiation | IN PROGRESS | P0 | The match is refused before play `[AE-11]` |
+| M8-13 | Rehearse the full failure matrix end to end | DONE | P0 | Every fault class has an observed outcome, not a predicted one |
+| M8-13a | Rehearse an opponent crash mid-series | DONE | P0 | The series still produces artifacts |
+| M8-13b | Rehearse a tunnel drop mid-turn | DONE | P0 | Terminal outcome is defined, not a hang |
+| M8-13c | Rehearse a config mismatch at negotiation | DONE | P0 | The match is refused before play `[AE-11]` |
 | M8-14 | Freeze the interoperability profile before the counted league | DEFERRED | P0 | No wire change after the first counted game without a coordinator decision |
 
 ---
