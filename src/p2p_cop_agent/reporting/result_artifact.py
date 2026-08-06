@@ -44,11 +44,15 @@ def build_result(
     groups: Sequence[Mapping[str, object]],
     sub_games: Sequence[Mapping[str, object]],
     commit_hash: str,
-    mutual_agreement: bool,
+    mutual_agreement: object,
     timezone: str = "UTC",
 ) -> JsonObject:
     """Assemble the emailed report, refusing anything that would be scored against us."""
-    if not mutual_agreement:
+    # A `Settlement` from `orchestration.settlement` reports its own `reportable`, so the
+    # flag can be *earned* by an audit-then-agree pass instead of asserted by a caller.
+    # A bare `True` still works for tests and for a caller that settled elsewhere.
+    agreed = getattr(mutual_agreement, "reportable", mutual_agreement)
+    if not agreed:
         raise ResultArtifactError(
             "the opponent has not agreed this result; rule 35 scores a conflicting report "
             "0 for BOTH teams, so an unagreed result is not reportable"

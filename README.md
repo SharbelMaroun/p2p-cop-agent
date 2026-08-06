@@ -1063,6 +1063,41 @@ consent flow means handling a real credential for a real account — the user's 
 their own machine, not something to automate from here. The code path is built and fails
 closed without a credential (`M7-15c`); creating the credential is not.
 
+#### Two sanctions that punish different people (`M7-06`, `M7-18`, 2026-08-06)
+
+This batch makes the reporting layer honest. `build_result` already refused
+`mutual_agreement=False` — but nothing set it to `True` legitimately; it was a flag a
+caller asserted. It now accepts a `Settlement`, whose `reportable` is only true after the
+audit passed **and** both sides returned the same outcome.
+
+**Rule 36 fixes the audit's position, not just its existence:** "Perform a comprehensive
+mutual audit log at the end of every game. Sanction: **Mandatory condition before
+agreement on the JSON result**." So `agree` takes the audit as its first argument. A
+precondition a caller can forget is not a precondition.
+
+**The distinction that shaped everything else.** Two rules, two different victims:
+
+* **Rule 19** — a technical mismatch at audit is an "iron rule" scoring 0 for **the
+  falsifying group**. One side, the guilty one.
+* **Rule 35** — a conflicting report scores 0 for **both teams**.
+
+Catching an opponent's forgery is therefore *not* a reason to race them to the lecturer
+with our own number: that converts their loss into a shared one. So a failed audit and a
+disagreed outcome are separate states with separate messages, and a test asserts the three
+refusals never collapse into one — a conflict needs a human, an audit failure needs the
+evidence preserved, and silence needs the *exchange* retried rather than the report.
+
+**Silence is not consent.** An unanswered agreement is its own state; treating a missing
+reply as agreement would let a peer that crashed decide our report for us.
+
+**A disagreement is kept, not smoothed over.** The temptation is to adopt their number to
+keep the peace. That files a result we do not believe and destroys exactly the evidence an
+auditor would need, so both claims sit side by side in the log's `mutual_agreement` block.
+
+One small thing worth naming: **an empty series does not pass the audit.** Auditing nothing
+must not read as auditing successfully, which is the commonest way an audit gate ends up
+bypassed in practice.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
