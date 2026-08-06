@@ -548,12 +548,12 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-04b | Implement the token bucket | DONE | P0 | **A real token bucket, and this was a genuine gap.** The existing `services/gatekeeper` is a *sliding window* — it drops timestamps older than 60s and counts what remains. Rule 28 (Mandatory) requires "a rate-limiter based on asynchronous **tokens**", and `:2085` says why: a bucket prevents the **bursts** that trigger an immediate provider block. A window caps a rate; a bucket caps a burst and then refills. `tokens ← min(C, tokens + r·Δt)`, allow iff `tokens ≥ 1`, with the `min(C, …)` clause tested separately — without it an idle agent banks an unbounded burst |
 | M7-04c | Queue overflow rather than rejecting | DONE | P1 | Already satisfied by `services/gatekeeper`: FIFO to `queue_depth` then backpressure; `submit` returns **queued, not rejected** and nothing is discarded |
 | M7-04d | Read every limit from configuration | DONE | P0 | `SendPipeline.from_match` reads `requests_per_minute` from the signed match object. Table 19 makes 30 a `Minimum`, so a negotiated higher value is **honoured rather than clamped back down** — clamping a minimum is the classic misreading |
-| M7-05 | Implement signed final JSON reporting adapter | DEFERRED | P1 | Attachment-only delivery uses least privilege and local ignored OAuth files |
-| M7-05a | Restrict the OAuth scope to `gmail.send` | DEFERRED | P0 | `[AE-30]`; no read or modify scope is requested |
-| M7-05b | Keep `credentials.json` and `token.json` git-ignored | DEFERRED | P0 | `[AE-39]` `[AE-40]`; added before the first commit that could carry them |
-| M7-05c | Send JSON as an attachment only | DEFERRED | P0 | `[AE-33]` `[AE-34]`; free-text reports are rejected |
-| M7-05d | Send to the confirmed reporting address | DEFERRED | P0 | `rmisegal+uoh26finalgame@gmail.com` per lecturer answer `AF-020`. The book's Table 20 spelling `rimesegal` is a source typo |
-| M7-05e | Back off on HTTP 429 rather than retrying immediately | DEFERRED | P0 | `[book §12]`; hammering risks account suspension |
+| M7-05 | Implement signed final JSON reporting adapter | IN PROGRESS | P1 | Attachment-only delivery uses least privilege and local ignored OAuth files |
+| M7-05a | Restrict the OAuth scope to `gmail.send` | IN PROGRESS | P0 | `[AE-30]`; no read or modify scope is requested |
+| M7-05b | Keep `credentials.json` and `token.json` git-ignored | IN PROGRESS | P0 | `[AE-39]` `[AE-40]`; added before the first commit that could carry them |
+| M7-05c | Send JSON as an attachment only | IN PROGRESS | P0 | `[AE-33]` `[AE-34]`; free-text reports are rejected |
+| M7-05d | Send to the confirmed reporting address | IN PROGRESS | P0 | `rmisegal+uoh26finalgame@gmail.com` per lecturer answer `AF-020`. The book's Table 20 spelling `rimesegal` is a source typo |
+| M7-05e | Back off on HTTP 429 rather than retrying immediately | IN PROGRESS | P0 | `[book §12]`; hammering risks account suspension |
 | M7-06 | Validate series audit and mutual-result agreement | DEFERRED | P0 | Conflicts/missing reports produce defined failure |
 | M7-06a | Run the full mutual audit before agreeing a result | DEFERRED | P0 | `[AE-36]`; audit precedes the JSON agreement |
 | M7-06b | Send both reports independently | DEFERRED | P0 | `[AE-32]` `[AE-35]`; a side that does not send scores nothing even if it won |
@@ -581,16 +581,16 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-15 | Implement the OAuth setup path | DEFERRED | P1 | First run creates a token; later runs refresh without human action |
 | M7-15a | Run the consent flow once and store the token locally | DEFERRED | P1 | `token.json` is created, never committed `[book App. A]` |
 | M7-15b | Refresh the access token automatically | DEFERRED | P1 | The refresh token gives months of autonomy |
-| M7-15c | Fail closed when no credential is present | DEFERRED | P0 | No silent skip of a mandatory report |
+| M7-15c | Fail closed when no credential is present | IN PROGRESS | P0 | No silent skip of a mandatory report |
 | M7-15d | Document the five setup steps for a fresh machine | DEFERRED | P2 | Reproducible by a teammate `[G§2.1]` |
-| M7-16 | Compose the report email | DEFERRED | P1 | MIME message with a JSON attachment and a machine-stable subject |
-| M7-16a | Attach the result artifact as a file | DEFERRED | P0 | Attachment only; body text is never the report `[AE-34]` |
-| M7-16b | Use a deterministic subject naming the game | DEFERRED | P1 | Auto-assignment depends on it `[AE-45]` |
-| M7-16c | Base64url-encode and send through the API | DEFERRED | P1 | `users().messages().send` with `userId="me"` |
-| M7-17 | Prove reporting under failure | DEFERRED | P0 | No failure mode silently loses a report |
-| M7-17a | Retry after a 429 with backoff | DEFERRED | P0 | Respect the throttle rather than hammering `[book §12]` |
-| M7-17b | Surface a permanently failed send loudly | DEFERRED | P0 | An unsent report costs the game's points `[AE-32]` |
-| M7-17c | Never send twice for one game | DEFERRED | P0 | Duplicate reports risk a conflict verdict `[AE-35]` |
+| M7-16 | Compose the report email | IN PROGRESS | P1 | MIME message with a JSON attachment and a machine-stable subject |
+| M7-16a | Attach the result artifact as a file | IN PROGRESS | P0 | Attachment only; body text is never the report `[AE-34]` |
+| M7-16b | Use a deterministic subject naming the game | IN PROGRESS | P1 | Auto-assignment depends on it `[AE-45]` |
+| M7-16c | Base64url-encode and send through the API | IN PROGRESS | P1 | `users().messages().send` with `userId="me"` |
+| M7-17 | Prove reporting under failure | IN PROGRESS | P0 | No failure mode silently loses a report |
+| M7-17a | Retry after a 429 with backoff | IN PROGRESS | P0 | Respect the throttle rather than hammering `[book §12]` |
+| M7-17b | Surface a permanently failed send loudly | IN PROGRESS | P0 | An unsent report costs the game's points `[AE-32]` |
+| M7-17c | Never send twice for one game | IN PROGRESS | P0 | Duplicate reports risk a conflict verdict `[AE-35]` |
 | M7-18 | Implement result agreement with the opponent | DEFERRED | P0 | Both sides converge on one result before either reports |
 | M7-18a | Exchange the computed outcome after the audit | DEFERRED | P0 | Agreement follows audit, never precedes it `[AE-36]` |
 | M7-18b | Detect and record a disagreement | DEFERRED | P0 | A conflict is 0/0 for both and must be visible, not silent `[AE-35]` |
