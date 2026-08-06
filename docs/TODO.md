@@ -599,9 +599,9 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-19 | Implement series-level score aggregation evidence | DEFERRED | P1 | The cumulative figure is reproducible from the artifact set |
 | M7-19a | Recompute the series total from stored artifacts | DEFERRED | P1 | No in-memory-only total is trusted |
 | M7-19b | Apply the diversity reward for a new opponent | DEFERRED | P1 | `[AF-t18]`; a repeat opponent adds nothing |
-| M7-20 | Run a full local series rehearsal before any counted game | DEFERRED | P0 | Six sub-games, four artifact families, audit, agreement, and a mocked send |
-| M7-20a | Rehearse with a deliberately failing sub-game | DEFERRED | P0 | A technical loss still produces a complete artifact set |
-| M7-20b | Rehearse with a tampered audit | DEFERRED | P0 | Detection, scoring, and reporting all behave |
+| M7-20 | Run a full local series rehearsal before any counted game | IN PROGRESS | P0 | Six sub-games, four artifact families, audit, agreement, and a mocked send |
+| M7-20a | Rehearse with a deliberately failing sub-game | IN PROGRESS | P0 | A technical loss still produces a complete artifact set |
+| M7-20b | Rehearse with a tampered audit | IN PROGRESS | P0 | Detection, scoring, and reporting all behave |
 | M7-21 | Document the reporting pipeline | DEFERRED | P2 | `PRD_gatekeeper_reporting.md` matches the built gates and flow |
 | M7-22 | Emit the declaration before the first move of each game | DONE | P0 | The declaration is now **written to disk inside `play_match`, immediately after it is locked and before the first turn is sent**. Proven by timing rather than presence: a spy records whether the file existed at each outbound turn, and every one must see it already there. A declaration emitted at the end could have been edited to suit the result, which is the whole thing locking it beforehand rules out |
 | M7-22a | Include both groups and their members | DONE | P1 | Both groups and their members ride in `groups`, each entry projected from the negotiated identity block |
