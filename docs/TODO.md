@@ -601,15 +601,15 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-20a | Rehearse with a deliberately failing sub-game | DEFERRED | P0 | A technical loss still produces a complete artifact set |
 | M7-20b | Rehearse with a tampered audit | DEFERRED | P0 | Detection, scoring, and reporting all behave |
 | M7-21 | Document the reporting pipeline | DEFERRED | P2 | `PRD_gatekeeper_reporting.md` matches the built gates and flow |
-| M7-22 | Emit the declaration before the first move of each game | IN PROGRESS | P0 | **Claimed by Sharbel 2026-08-06.** The pre-game declaration is signed and fixed before play begins |
-| M7-22a | Include both groups and their members | IN PROGRESS | P1 | Identity is public and agreed |
-| M7-22b | Include both repository links per group | IN PROGRESS | P0 | Four links total `[AE-49]` |
-| M7-22c | Include the MCP addresses in use | IN PROGRESS | P1 | Public URLs only; no credential |
-| M7-22d | Include the hardware and model declaration | IN PROGRESS | P0 | Carried from Step-0 `[AE-24]` |
-| M7-22e | Include the agreed token limit and game times | IN PROGRESS | P1 | Start and end recorded |
-| M7-23 | Bind the config artifact to the negotiated match | IN PROGRESS | P0 | The emitted config is the one actually played, not a template |
-| M7-23a | Include every quantitative parameter | IN PROGRESS | P0 | All Appendix F values with their agreed settings |
-| M7-23b | Include the cryptographic locks | IN PROGRESS | P0 | Config hash and the scent-model lock `[AE-23]` |
+| M7-22 | Emit the declaration before the first move of each game | IN PROGRESS | P0 | **Fields complete 2026-08-06**; `schema_version` stamped. The row stays open on **file emission**: nothing in this repository writes `declaration_<game_id>.json` to disk yet (`:3600` fixes the name). That is the next batch, with `M7-23` and `M7-24`. The pre-game declaration is signed and fixed before play begins |
+| M7-22a | Include both groups and their members | DONE | P1 | Both groups and their members ride in `groups`, each entry projected from the negotiated identity block |
+| M7-22b | Include both repository links per group | DONE | P0 | `links` collects every repo URL across both groups — rule 49 (Mandatory): "four links in the JSON files of the two teams" |
+| M7-22c | Include the MCP addresses in use | DONE | P1 | `groups[].mcp_servers`, required by `:2229` ("addresses of the MCP server"). **A URL carrying a credential is refused**: the declaration is committed and emailed, and rule 39 (Prohibited) forbids pushing secrets, sanction "severe security failure and project failure". The guard cost two bug-fixes to get right — a key-bearing query parameter slipped through a pattern anchored at the leading `?`, and `http://127.0.0.1:8000` was then refused because the port colon read as `user:pass`. Both directions are pinned |
+| M7-22d | Include the hardware and model declaration | DONE | P0 | `hardware` and `llm_model`, required by `:2229` and rule 24 (Mandatory, "perform a cryptographic hardware declaration before the start of the game", sanction "denial of eligibility for computational bonuses"). **Read from the negotiated identity block, not passed separately** — `spec` and `llm_model` are already two of its seven members, and a second source for the same fact is a second thing that can disagree |
+| M7-22e | Include the agreed token limit and game times | DONE | P1 | `max_tokens_per_game`, `game_started_at`, `game_ended_at` (null until the post-game re-lock) and `timezone` |
+| M7-23 | Bind the config artifact to the negotiated match | DEFERRED | P0 | The emitted config is the one actually played, not a template |
+| M7-23a | Include every quantitative parameter | DEFERRED | P0 | All Appendix F values with their agreed settings |
+| M7-23b | Include the cryptographic locks | DEFERRED | P0 | Config hash and the scent-model lock `[AE-23]` |
 | M7-24 | Make the log artifact sufficient for an independent audit | DEFERRED | P0 | A third party can re-verify without our code |
 | M7-24a | Record each step's commitment and revealed payload | DEFERRED | P0 | Enough to recompute every hash |
 | M7-24b | Record nonces only in the final audit section | DEFERRED | P0 | Nonce secrecy holds until the end `[AE-18]` |

@@ -829,6 +829,50 @@ config*, which we do not currently check either.
 
 Both are recorded as candidates rather than claimed as done here.
 
+#### Completing the pre-game declaration (`M7-22a`–`M7-22e`, 2026-08-06)
+
+The first M7 work in this repository, and step 1 reshaped it before a line was written.
+The companion Thief already builds all four artifacts; this repository has no `reporting/`
+package at all — so its M7 artifact rows are *build them*, not *emit them*, and `M7-14`
+(validate every artifact against its schema) cannot mean anything until they exist.
+
+It also turned out a declaration builder already existed, in `protocol/` rather than
+`reporting/`, carrying groups, members, repo links, token limit and times with a
+reproducible lock. Its own docstring names what M7 still owed: the schema envelope, file
+emission, and the fields M5 could not compute.
+
+`:2229` gives the authoritative roster — the declaration consolidates "both groups and
+their members, addresses of the police and the bank, **addresses of the MCP server,
+details of the hardware, language model**, agreed token limit, and start and end times".
+Two of those were missing.
+
+**MCP addresses, with a guard.** The declaration is committed to a public repository and
+emailed as an attachment, and rule 39 (Prohibited) forbids pushing secrets — sanction
+"severe security failure and project failure". A URL is the easiest way to leak one by
+accident, so an address carrying a credential is refused outright. That guard took two
+corrections to get right, and both are pinned: a key-bearing query parameter slipped
+through a pattern anchored at the leading `?`, and once that was widened
+`http://127.0.0.1:8000/mcp` was refused, because the port's colon read as `user:pass`.
+A guard that rejects the commonest local address is a guard someone switches off.
+
+**Hardware and model, read from the identity rather than passed in.** Rule 24 is
+Mandatory — "perform a cryptographic hardware declaration before the start of the game",
+sanction "denial of eligibility for computational bonuses". The first version threaded
+`host_spec` and `llm_model` through `play_match` as new parameters. That was the wrong
+shape: both are already members of the negotiated identity block, and a second source for
+the same fact is a second thing that can disagree. They are read from the identity.
+
+*What is not done, and the row says so.* `M7-22`'s parent stays open on **file emission** —
+nothing here writes `declaration_<game_id>.json` to disk yet, and `:3600` fixes that name.
+`M7-23` (config artifact) was claimed and returned to `DEFERRED` untouched rather than
+left looking started. Emission, the config artifact, the log artifact and schema
+validation are the next batch.
+
+*The secret scanner fired twice on this work, both times on the credential detector
+itself* — once on an explanatory comment containing an example parameter, once on a TODO
+row quoting it. Reworded rather than allowlisted, on the same reasoning as before: an
+allowlist entry weakens the scanner permanently to accommodate prose.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
