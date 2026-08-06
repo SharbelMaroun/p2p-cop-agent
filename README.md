@@ -558,6 +558,39 @@ intensities are authoritative and are used verbatim; its cell labels are not. Co
 faithfully, it would have pinned an inverted board into the suite and the Cop would have
 chased every lie instead of catching it.
 
+#### Keeping the guesses private (`M6-18`, 2026-08-06)
+
+The belief map is not a secret in the cryptographic sense — nothing hashes it, nothing
+hides it. That is precisely why it needed a *structural* guard: a `belief` field added to
+a turn message would work perfectly, pass every test, and be caught by nothing.
+
+Two properties are now pinned. The public turn schema's roster is fixed and carries no
+belief, certainty, probability or trust member, and the existing guard against publishing
+our own `position`/`move`/`nonce`/`intent`/`verdict` is pinned so it cannot quietly erode.
+Then a walk over the wire and transport layers proves they import no inference module at
+all — which catches the subtler case the roster test cannot: inference imported into the
+wire layer and its output smuggled into a field that already exists, a hint or the scent
+grid.
+
+**The guard was verified to bite**, not merely to pass. Injecting
+`from strategy.belief import Belief` into the wire layer fails it; the injection was then
+reverted. A guard that has never been seen to fail is a guard nobody has tested.
+
+**It deliberately does not over-reach.** `strategy.scent` and `strategy.scent_field` are
+outside the ban, because emitting scent is an *obligation* — the model is hash-locked
+under rule 23 and the book requires that "each side emits its own scent". A guard that
+forbade the wire layer from touching scent would forbid the very thing we are committed
+to doing.
+
+*Worth correcting, because it is widely misquoted.* Appendix E rules 8 and 9 are usually
+cited as the authority for this. Read verbatim, they are narrower: rule 8 is "**display**
+true local information only in the **live user interface**" and rule 9 is "do not
+**display** the full objective board state in the **live user interface**". They govern
+the UI, which is a later milestone. The constraint on the *wire* comes from Zero-Trust
+instead — sharing state creates "a 'backdoor' through which one agent might see the local
+truth of its rival". Citing 8 and 9 here would have been an invented requirement wearing a
+real rule number.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
