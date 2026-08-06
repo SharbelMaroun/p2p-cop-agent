@@ -554,10 +554,10 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-05c | Send JSON as an attachment only | DONE | P0 | The artifact rides as an `application/json` attachment and the body is a fixed pointer carrying no report data -- tested by asserting the result's own values do **not** appear in the body. Rule 34 (Prohibited): free text "will be rejected and result in a zero score", so a helpful covering note *is* the violation |
 | M7-05d | Send to the confirmed reporting address | DONE | P0 | `rmisegal+uoh26finalgame@gmail.com`, on lecturer answer `AF-020`. **The book prints both spellings** -- `:3040` has `rmisegal`, `:3605-3606` have `rimesegal` -- so this is a confirmed source inconsistency (`C-004`) rather than a choice. Not read from the shared config: a peer able to move our reporting destination could silence it |
 | M7-05e | Back off on HTTP 429 rather than retrying immediately | DONE | P0 | Backoff on 429 only, doubling from the Appendix F table 19 `Minimum` of 5s. A non-429 is **not** retried -- retrying a 400 spends quota on a request that will fail identically |
-| M7-06 | Validate series audit and mutual-result agreement | DEFERRED | P0 | Conflicts/missing reports produce defined failure |
-| M7-06a | Run the full mutual audit before agreeing a result | DEFERRED | P0 | `[AE-36]`; audit precedes the JSON agreement |
-| M7-06b | Send both reports independently | DEFERRED | P0 | `[AE-32]` `[AE-35]`; a side that does not send scores nothing even if it won |
-| M7-06c | Treat conflicting reports as 0/0 for both | DEFERRED | P0 | `[AE-35]` |
+| M7-06 | Validate series audit and mutual-result agreement | IN PROGRESS | P0 | Conflicts/missing reports produce defined failure |
+| M7-06a | Run the full mutual audit before agreeing a result | IN PROGRESS | P0 | `[AE-36]`; audit precedes the JSON agreement |
+| M7-06b | Send both reports independently | IN PROGRESS | P0 | `[AE-32]` `[AE-35]`; a side that does not send scores nothing even if it won |
+| M7-06c | Treat conflicting reports as 0/0 for both | IN PROGRESS | P0 | `[AE-35]` |
 | M7-07 | Run a complete six-sub-game stub series | DEFERRED | P0 | Four artifact families are emitted, audited, and reconciled across the accepted role schedule |
 | M7-08 | Implement the Quota Manager and DOS Detector gates | DONE | P0 | All three gates in the book's order. `:2096`: "Outgoing report → Quota Manager → Token Bucket → DOS Detector → Gmail API", with three distinct outcomes (`:2098`) because they differ in remedy — *try tomorrow*, *try shortly*, *the code is wrong* |
 | M7-08a | Implement the daily quota counter | DONE | P0 | `QuotaManager`, a per-day counter that rolls over. `:2083`: "the **final line before account blocking**: if the quota is exhausted, no further requests are sent" |
@@ -591,10 +591,10 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-17a | Retry after a 429 with backoff | DONE | P0 | Retries only on 429, sleeping `5s, 10s, …`. Appendix F table 19 makes the delay a `Minimum` of 5s and attempts a `Minimum` of 3 -- **floors to honour, not values to tune down**, and a constructor below either is refused |
 | M7-17b | Surface a permanently failed send loudly | DONE | P0 | Raises `ReportNotSentError` naming the game and the last error. Rule 32 (Mandatory): "absence of reporting **disqualifies the game points**", so there is no useful fallback -- a caller that could quietly continue would convert a lost game into a silent one |
 | M7-17c | Never send twice for one game | DONE | P0 | Keyed on `game_id` and not resettable through the API. Rule 35: a conflicting report scores **0 for BOTH teams**, and two sends for one game is the easiest way to produce one by accident |
-| M7-18 | Implement result agreement with the opponent | DEFERRED | P0 | Both sides converge on one result before either reports |
-| M7-18a | Exchange the computed outcome after the audit | DEFERRED | P0 | Agreement follows audit, never precedes it `[AE-36]` |
-| M7-18b | Detect and record a disagreement | DEFERRED | P0 | A conflict is 0/0 for both and must be visible, not silent `[AE-35]` |
-| M7-18c | Refuse to report an unagreed result | DEFERRED | P0 | Reporting a disputed outcome invites the conflict sanction |
+| M7-18 | Implement result agreement with the opponent | IN PROGRESS | P0 | Both sides converge on one result before either reports |
+| M7-18a | Exchange the computed outcome after the audit | IN PROGRESS | P0 | Agreement follows audit, never precedes it `[AE-36]` |
+| M7-18b | Detect and record a disagreement | IN PROGRESS | P0 | A conflict is 0/0 for both and must be visible, not silent `[AE-35]` |
+| M7-18c | Refuse to report an unagreed result | IN PROGRESS | P0 | Reporting a disputed outcome invites the conflict sanction |
 | M7-19 | Implement series-level score aggregation evidence | DEFERRED | P1 | The cumulative figure is reproducible from the artifact set |
 | M7-19a | Recompute the series total from stored artifacts | DEFERRED | P1 | No in-memory-only total is trusted |
 | M7-19b | Apply the diversity reward for a new opponent | DEFERRED | P1 | `[AF-t18]`; a repeat opponent adds nothing |
