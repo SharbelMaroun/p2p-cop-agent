@@ -529,11 +529,11 @@ These run before every commit and in CI; they are not milestone-scoped.
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
-| M7-01 | Implement six-sub-game series orchestration | DEFERRED | P1 | Accepted role schedule and identities drive all six games |
-| M7-01a | Run six sub-games under one series identity | DEFERRED | P1 | `[AF-t18]`; `sub_game_number` increments and is carried into artifacts |
-| M7-01b | Implement the confirmed six-sub-game role schedule | DEFERRED | P0 | `U-025` closed 2026-07-31 on a coordinator-relayed lecturer answer: sub-games 1, 3, 5 natural role, 2, 4, 6 swapped, Thief moves first. Keep the schedule injected rather than hard-coded so a later correction is a one-line change; see `C-029` |
-| M7-01c | Aggregate cumulative series score | DEFERRED | P1 | Per-sub-game lines sum to a series result |
-| M7-01d | Apply the tie award on a cumulative tie | DEFERRED | P1 | `[AF-t17]`; no meeting is left undecided |
+| M7-01 | Implement six-sub-game series orchestration | IN PROGRESS | P1 | Accepted role schedule and identities drive all six games |
+| M7-01a | Run six sub-games under one series identity | IN PROGRESS | P1 | `[AF-t18]`; `sub_game_number` increments and is carried into artifacts |
+| M7-01b | Implement the confirmed six-sub-game role schedule | IN PROGRESS | P0 | `U-025` closed 2026-07-31 on a coordinator-relayed lecturer answer: sub-games 1, 3, 5 natural role, 2, 4, 6 swapped, Thief moves first. Keep the schedule injected rather than hard-coded so a later correction is a one-line change; see `C-029` |
+| M7-01c | Aggregate cumulative series score | IN PROGRESS | P1 | Per-sub-game lines sum to a series result |
+| M7-01d | Apply the tie award on a cumulative tie | IN PROGRESS | P1 | `[AF-t17]`; no meeting is left undecided |
 | M7-02 | Finalize artifact identity and generate declaration/per-game config artifacts | DEFERRED | P1 | Accepted `game_id`/UUID protocol, schemas, logical links, and resolved filenames validate |
 | M7-02a | Emit `declaration_<game_id>.json` | DONE | P1 | `declaration_<game_id>.json`, written atomically by `reporting.emit` with the lock folded in as `declaration_lock` |
 | M7-02b | Emit `config_<game_id>_g<NN>.json` | DONE | P1 | `config_<game_id>_g<NN>.json`, built from the negotiated game object and written in the same pre-play step, so the config on disk describes the match about to be played |
@@ -558,7 +558,7 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-06a | Run the full mutual audit before agreeing a result | DONE | P0 | `audit_series` runs `audit_reveal` over **every** sub-game and stops at the first mismatch, naming it. Rule 19 calls a mismatch an "iron rule", so there is nothing to weigh once one is found. **An empty series does not pass** — auditing nothing must not read as auditing successfully, which is the commonest way an audit gate is bypassed |
 | M7-06b | Send both reports independently | DONE | P0 | Each side sends its own report; `ReportSender` is per-peer and keyed on `game_id`. `:2584`: a side that does not send "will not be credited" even if it won |
 | M7-06c | Treat conflicting reports as 0/0 for both | DONE | P0 | `require_reportable` refuses a `CONFLICT` naming rule 35's "0 for BOTH teams". Sending ours is not a way to win the argument — it is how the argument costs us the game |
-| M7-07 | Run a complete six-sub-game stub series | DEFERRED | P0 | Four artifact families are emitted, audited, and reconciled across the accepted role schedule |
+| M7-07 | Run a complete six-sub-game stub series | IN PROGRESS | P0 | Four artifact families are emitted, audited, and reconciled across the accepted role schedule |
 | M7-08 | Implement the Quota Manager and DOS Detector gates | DONE | P0 | All three gates in the book's order. `:2096`: "Outgoing report → Quota Manager → Token Bucket → DOS Detector → Gmail API", with three distinct outcomes (`:2098`) because they differ in remedy — *try tomorrow*, *try shortly*, *the code is wrong* |
 | M7-08a | Implement the daily quota counter | DONE | P0 | `QuotaManager`, a per-day counter that rolls over. `:2083`: "the **final line before account blocking**: if the quota is exhausted, no further requests are sent" |
 | M7-08b | Implement the DOS detector and pipeline lock | DONE | P0 | `DosDetector` locks the pipeline on a burst. `:2087` says what it is *for* — "a bug or an infinite loop **in the agent's code**", not a hostile peer — which is why the lock is deliberately **not self-clearing**: a detector that reset itself would let the same loop resume the moment it briefly looked calm |
