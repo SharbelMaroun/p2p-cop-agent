@@ -534,9 +534,9 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-01c | Aggregate cumulative series score | DEFERRED | P1 | Per-sub-game lines sum to a series result |
 | M7-01d | Apply the tie award on a cumulative tie | DEFERRED | P1 | `[AF-t17]`; no meeting is left undecided |
 | M7-02 | Finalize artifact identity and generate declaration/per-game config artifacts | DEFERRED | P1 | Accepted `game_id`/UUID protocol, schemas, logical links, and resolved filenames validate |
-| M7-02a | Emit `declaration_<game_id>.json` | DEFERRED | P1 | Groups, members, both repos, MCP addresses, hardware, model, token budget, times |
-| M7-02b | Emit `config_<game_id>_g<NN>.json` | DEFERRED | P1 | All quantitative parameters plus crypto locks and identity |
-| M7-02c | Share one `game_uid` across all four artifacts | DEFERRED | P1 | Filenames derive from `game_id`; artifacts from different games cannot mix |
+| M7-02a | Emit `declaration_<game_id>.json` | IN PROGRESS | P1 | Groups, members, both repos, MCP addresses, hardware, model, token budget, times |
+| M7-02b | Emit `config_<game_id>_g<NN>.json` | IN PROGRESS | P1 | All quantitative parameters plus crypto locks and identity |
+| M7-02c | Share one `game_uid` across all four artifacts | IN PROGRESS | P1 | Filenames derive from `game_id`; artifacts from different games cannot mix |
 | M7-03 | Generate game logs and final result | DEFERRED | P1 | Audit links, commits, tokens, and scores are consistent |
 | M7-03a | Emit `log_<game_id>_g<NN>.json` with full commit-reveal | DEFERRED | P1 | Every step records hash, nonce, move, and hint — enough to re-audit |
 | M7-03b | Emit `result_<game_id>.json` as the emailed report | DEFERRED | P0 | Per-group scores plus cumulative result |
@@ -607,14 +607,14 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-22c | Include the MCP addresses in use | DONE | P1 | `groups[].mcp_servers`, required by `:2229` ("addresses of the MCP server"). **A URL carrying a credential is refused**: the declaration is committed and emailed, and rule 39 (Prohibited) forbids pushing secrets, sanction "severe security failure and project failure". The guard cost two bug-fixes to get right — a key-bearing query parameter slipped through a pattern anchored at the leading `?`, and `http://127.0.0.1:8000` was then refused because the port colon read as `user:pass`. Both directions are pinned |
 | M7-22d | Include the hardware and model declaration | DONE | P0 | `hardware` and `llm_model`, required by `:2229` and rule 24 (Mandatory, "perform a cryptographic hardware declaration before the start of the game", sanction "denial of eligibility for computational bonuses"). **Read from the negotiated identity block, not passed separately** — `spec` and `llm_model` are already two of its seven members, and a second source for the same fact is a second thing that can disagree |
 | M7-22e | Include the agreed token limit and game times | DONE | P1 | `max_tokens_per_game`, `game_started_at`, `game_ended_at` (null until the post-game re-lock) and `timezone` |
-| M7-23 | Bind the config artifact to the negotiated match | DEFERRED | P0 | The emitted config is the one actually played, not a template |
-| M7-23a | Include every quantitative parameter | DEFERRED | P0 | All Appendix F values with their agreed settings |
-| M7-23b | Include the cryptographic locks | DEFERRED | P0 | Config hash and the scent-model lock `[AE-23]` |
+| M7-23 | Bind the config artifact to the negotiated match | IN PROGRESS | P0 | The emitted config is the one actually played, not a template |
+| M7-23a | Include every quantitative parameter | IN PROGRESS | P0 | All Appendix F values with their agreed settings |
+| M7-23b | Include the cryptographic locks | IN PROGRESS | P0 | Config hash and the scent-model lock `[AE-23]` |
 | M7-24 | Make the log artifact sufficient for an independent audit | DEFERRED | P0 | A third party can re-verify without our code |
 | M7-24a | Record each step's commitment and revealed payload | DEFERRED | P0 | Enough to recompute every hash |
 | M7-24b | Record nonces only in the final audit section | DEFERRED | P0 | Nonce secrecy holds until the end `[AE-18]` |
 | M7-24c | Record the hint and intent per step | DEFERRED | P1 | The verbal layer is auditable too |
-| M7-25 | Keep artifact emission independent of transport health | DEFERRED | P0 | A disconnected game still produces its artifact set |
+| M7-25 | Keep artifact emission independent of transport health | IN PROGRESS | P0 | A disconnected game still produces its artifact set |
 | M7-26 | Version the artifact schemas | DEFERRED | P1 | A schema change is visible, not silent `[G§8.1]` |
 | M7-27 | Verify every emitted artifact is committed | DEFERRED | P1 | Appendix F.2 item 4; nothing exists only on a local disk |
 
