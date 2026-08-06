@@ -1,5 +1,11 @@
 """The pre-game declaration, written after negotiation and locked before play (M5-17f-iii).
 
+**`links` names the four artifacts; `repositories` carries rule 49's four repo URLs.**
+Those were one field until `X-06`, which was a conflation rather than a shortcut: the
+template's `links` points at `declaration`/`config`/`log`/`result` filenames, while rule
+49 requires "four links in the JSON files of the two teams" meaning the two repositories
+per group. Both are required; neither substitutes for the other.
+
 The book requires a pre-game declaration "signed and locked cryptographically before
 play". This module builds that object from already-agreed, injected sources and
 produces its lock -- a plain canonical SHA-256 over the declaration, the same public,
@@ -74,7 +80,11 @@ def build_declaration(
     if not isinstance(host_spec, Mapping) or not host_spec:
         raise DeclarationError("our identity must declare its hardware spec [AE-24]")
     groups = [_group(our_identity), _group(opponent_identity)]
-    links = [url for group in groups for url in group["repos"].values()]
+    # `X-06`: two different requirements had been collapsed into one field. The template's
+    # `links` points at the four ARTIFACT filenames; rule 49's "four links in the JSON
+    # files of the two teams" is about REPOSITORY urls. Both are required and they are not
+    # the same thing, so they get separate keys.
+    repositories = [url for group in groups for url in group["repos"].values()]
     return {
         "_schema": "declaration",
         "schema_version": SCHEMA_VERSION,
@@ -83,7 +93,13 @@ def build_declaration(
         "game_uid": game_uid,
         "config_sha256": config_sha256,
         "groups": groups,
-        "links": links,
+        "links": {
+            "declaration": f"declaration_{game_id}.json",
+            "config": f"config_{game_id}_g<NN>.json",
+            "log": f"log_{game_id}_g<NN>.json",
+            "result": f"result_{game_id}.json",
+        },
+        "repositories": repositories,
         "num_sub_games": num_sub_games,
         "max_tokens_per_game": max_tokens_per_game,
         "hardware": dict(host_spec),

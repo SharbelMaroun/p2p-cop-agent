@@ -20,7 +20,7 @@ FILE_SHA = "70758af55f178a049a438b81eb5f9acd389c568214cb3006358c66f8d10abd06"
 
 def test_example_template_loads_with_expected_identity() -> None:
     contract = load_match_contract(PROJECT_ROOT, EXAMPLE, rate_limits_path=RATE_LIMITS)
-    assert contract.version == "0.2.8-proposed"
+    assert contract.version == "0.2.9-proposed"
     assert contract.game["board_and_agents"]["grid_size"] == 7  # type: ignore[index]
     assert contract.config_sha256 == CANONICAL_SHA
     assert contract.config_file_sha256 == FILE_SHA

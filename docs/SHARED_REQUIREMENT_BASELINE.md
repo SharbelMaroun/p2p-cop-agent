@@ -1,7 +1,7 @@
 # Shared Requirement Baseline
 
 This is a source-backed baseline, not proof of cross-repository byte parity. The
-current proposed contract is `0.2.8-proposed` and **UNFROZEN** until independent peer
+current proposed contract is `0.2.9-proposed` and **UNFROZEN** until independent peer
 acceptance and matching controlled hashes are demonstrated.
 
 | ID | Confirmed shared requirement | Direct source |

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.8-proposed",
+  "x-contract-version": "0.2.9-proposed",
   "x-role-neutral": true,
   "title": "Option-B per-sub-game config artifact",
   "description": "Emitted config artifact wrapping one sub-game's agreed match object. The config_sha256 claim is stored outside the hashed game object. Exhaustive artifact rules remain M7 work.",
@@ -9,7 +9,7 @@
     "game_id",
     "game_uid",
     "links",
-    "sub_game",
+    "sub_game_number",
     "config",
     "config_sha256"
   ],
@@ -41,17 +41,17 @@
         }
       }
     },
-    "sub_game": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 6
-    },
     "config": {
       "type": "object"
     },
     "config_sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "sub_game_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
     }
   }
 }

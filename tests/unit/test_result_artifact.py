@@ -101,3 +101,18 @@ def test_a_report_with_no_sub_games_is_refused() -> None:
 def test_a_sub_game_line_missing_a_field_is_refused_by_name() -> None:
     with pytest.raises(ResultArtifactError, match="tokens"):
         _result(sub_games=[{k: v for k, v in SUB_GAMES[0].items() if k != "tokens"}])
+
+
+def test_agreement_can_be_earned_by_a_settlement_rather_than_asserted() -> None:
+    """`M7-18c` closing the loop. `mutual_agreement` began as a bool a caller asserted —
+    which meant a report could claim agreement that never happened. It now also accepts a
+    `Settlement`, whose `reportable` is only true after the audit passed *and* both sides
+    returned the same outcome."""
+    from p2p_cop_agent.orchestration.settlement import Settled, Settlement
+
+    agreed = Settlement(Settled.AGREED, "capture", "capture")
+    assert _result(mutual_agreement=agreed)["mutual_agreement"] is True
+
+    conflicted = Settlement(Settled.CONFLICT, "capture", "survival")
+    with pytest.raises(ResultArtifactError, match="0 for BOTH teams"):
+        _result(mutual_agreement=conflicted)

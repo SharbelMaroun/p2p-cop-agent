@@ -12,11 +12,18 @@ scoring, transport-free rules harness, and deterministic move-or-barrier baselin
 It also implements the M4 commit-reveal primitives (per-turn commitment, audit
 reveal, Step-0 attestation) and the inbound FastMCP tool surface. It contains the
 M1.5 Option-B contract repair: a role-neutral `shared_contract/` bundle at
-`0.2.8-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
-There is still no outbound peer client, public tunnel, scent field, belief map,
-LLM, Gmail, GUI, or replay runtime, so no live game has been played.
+`0.2.9-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
 
-The shared contract is `0.2.8-proposed` and **UNFROZEN**. It becomes frozen only
+Since then: the M6 scent field and belief map, the outbound FastMCP client, the M7
+artifact/reporting pipeline (declaration, per-sub-game config and log, final result,
+settlement, six-sub-game series) with the Gmail sender, and the M8 **replay verifier** —
+which reaches `Verified OK` or `TAMPERED` on a saved log, including one this peer did not
+write. Still absent: a public tunnel, an LLM provider, any GUI (`ui/` is an empty package),
+and the replay *view* that would make the verifier's banner photographable. Gmail
+credentials are deliberately not in the repository (rules 39–40), so the sender is built
+but unexercised. **No live game against a real opponent has been played.**
+
+The shared contract is `0.2.9-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
 identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
 a documented academic-freedom interoperability choice pinned to simulator commit
@@ -84,7 +91,7 @@ displays the equivalent PEP 440 form `1.0`.
 ## Configuration
 
 - The stable, role-neutral shared contract is the top-level `shared_contract/`
-  bundle at `0.2.8-proposed` (Option B). It holds specifications, schemas,
+  bundle at `0.2.9-proposed` (Option B). It holds specifications, schemas,
   fixtures, vectors, and the read-only verifier only — no active match.
 - A per-match shared game object and local rate-limit enforcement mirror are each
   supplied at runtime by explicit path; neither loader has a repository or example
@@ -1022,6 +1029,194 @@ name Gmail, and a module that cannot name the API cannot bypass the gates to rea
 higher value is honoured rather than clamped back down. Clamping a minimum to its floor
 is the classic misreading of that table.
 
+#### Reporting: the rules here have unusually blunt sanctions (`M7-05`, `M7-16`, `M7-17`, 2026-08-06)
+
+Most rules in this project cost a point or invite a review. The reporting ones do not:
+rule 32 — "absence of reporting **disqualifies the game points**"; rule 34 — free text
+instead of an attached JSON file "will be rejected and **result in a zero score**"; rule
+35 — a conflicting report scores **0 for both teams**. So every check in this layer
+refuses rather than warns, and the code says which rule it is refusing on behalf of.
+
+**The body is not a place to be helpful.** Rule 34 prohibits free text, and a polite
+covering note *is* free text. The body is a fixed pointer to the attachment, and the test
+asserts the result's own values do not appear in it — a check that would fail the moment
+someone "improved" the email by summarising the score.
+
+**The subject is generated because a machine reads it.** Rule 45 ties automatic report
+assignment to the eight-character team code, so the code and `game_id` appear in a fixed
+order. A subject written per game would sort and assign inconsistently the first time
+someone was in a hurry.
+
+**The address is a confirmed source inconsistency, not a choice.** The book prints both
+spellings — `:3040` has `rmisegal`, `:3605-3606` have `rimesegal` — and lecturer answer
+`AF-020` settles it (`C-004`). It is a constant here rather than a configuration value:
+the destination is not negotiable with an opponent, and a peer able to move it could
+silence our reporting entirely.
+
+**Three failures, three different answers.** A 429 retries with backoff from the Appendix
+F `Minimum` of 5 seconds; a constructor asking for less is refused, because a minimum is a
+floor to honour rather than a value to tune down. A non-429 is *not* retried — retrying a
+400 spends quota on a request that will fail identically. A permanent failure raises
+loudly, since a caller that could quietly continue would convert a lost game into a silent
+one. And a second send for one game is refused outright.
+
+*Nothing here imports a Google library.* `transmit` is injected and the credential path is
+checked for presence but never read, so this module cannot reach the API by itself and
+cannot leak a credential. Consistent with the gates: what a module cannot name, it cannot
+bypass.
+
+*Not claimed:* `M7-15a`/`b`/`d`, the OAuth consent flow and its setup guide. Running a
+consent flow means handling a real credential for a real account — the user's action on
+their own machine, not something to automate from here. The code path is built and fails
+closed without a credential (`M7-15c`); creating the credential is not.
+
+#### Two sanctions that punish different people (`M7-06`, `M7-18`, 2026-08-06)
+
+This batch makes the reporting layer honest. `build_result` already refused
+`mutual_agreement=False` — but nothing set it to `True` legitimately; it was a flag a
+caller asserted. It now accepts a `Settlement`, whose `reportable` is only true after the
+audit passed **and** both sides returned the same outcome.
+
+**Rule 36 fixes the audit's position, not just its existence:** "Perform a comprehensive
+mutual audit log at the end of every game. Sanction: **Mandatory condition before
+agreement on the JSON result**." So `agree` takes the audit as its first argument. A
+precondition a caller can forget is not a precondition.
+
+**The distinction that shaped everything else.** Two rules, two different victims:
+
+* **Rule 19** — a technical mismatch at audit is an "iron rule" scoring 0 for **the
+  falsifying group**. One side, the guilty one.
+* **Rule 35** — a conflicting report scores 0 for **both teams**.
+
+Catching an opponent's forgery is therefore *not* a reason to race them to the lecturer
+with our own number: that converts their loss into a shared one. So a failed audit and a
+disagreed outcome are separate states with separate messages, and a test asserts the three
+refusals never collapse into one — a conflict needs a human, an audit failure needs the
+evidence preserved, and silence needs the *exchange* retried rather than the report.
+
+**Silence is not consent.** An unanswered agreement is its own state; treating a missing
+reply as agreement would let a peer that crashed decide our report for us.
+
+**A disagreement is kept, not smoothed over.** The temptation is to adopt their number to
+keep the peace. That files a result we do not believe and destroys exactly the evidence an
+auditor would need, so both claims sit side by side in the log's `mutual_agreement` block.
+
+One small thing worth naming: **an empty series does not pass the audit.** Auditing nothing
+must not read as auditing successfully, which is the commonest way an audit gate ends up
+bypassed in practice.
+
+#### Six sub-games, and three numbers that could have been the count (`M7-01`, `M7-07`, 2026-08-06)
+
+The role schedule is settled rather than inferred: `U-025` closed on 2026-07-31 with a
+lecturer answer relayed by the coordinator — sub-games **1, 3, 5 natural, 2, 4, 6 swapped,
+Thief moves first**. It is written out as constants rather than computed as an
+alternation, because a formula is one refactor away from silently disagreeing with the
+answer we were given. A test pins that the two sides are opposite in every sub-game, which
+is exactly the error a computed alternation makes without complaining.
+
+**The count took reading carefully.** Appendix F prints *two* rows under the same label
+`[Number of Agents]`: `:3484` is "number of players in the race | 2 | Fixed", and `:3540`
+is "number of agents **in a series against an opponent** | 6 | Fixed". The second is the
+games count under a mistranslated label — its own description gives it away. And the
+template at `:2963` carries `"num_games": 1`, a single-game default for the example file
+rather than the league requirement. Three plausible numbers; only one is the series
+length. Recorded as `X-05` so nobody re-derives it.
+
+**What resets between sub-games.** Each is a fresh game — own barrier quota, own scent
+field, own belief. Carrying belief across would be worse than a bug: our score in sub-game
+4 would depend on inference gathered while we were playing the *other role*, which is not
+a thing the rules contemplate. Only the series identity persists, so all fourteen
+artifacts share one `game_uid`.
+
+**`M7-07` is the first row that exercises everything together** rather than in isolation:
+schedule → six per-sub-game configs, each schema-validated and atomically written →
+cross-artifact identity check → settlement → result artifact. That ordering was deliberate
+before mirroring M7 to the Thief — a design worth copying should be one that has run.
+
+#### Closing a gap in the method itself (2026-08-06)
+
+Eight M7 batches ran that day — the four artifacts, the three Gmail gates, the reporting
+path, the settlement layer and the six-sub-game series — and each of them ran **seven** of
+the eight method steps. Step 3 asks both notebooks; I asked only the book one. Steps 6 and
+7 ask for docs in both repositories; I updated only this one, on the reasoning that the
+work was "Cop-only", which is not an exemption the rule offers.
+
+I did not notice. It was caught by being asked directly whether the method had been
+followed. Recorded here rather than quietly backfilled, because a method that is
+selectively applied is worth less than its record suggests.
+
+**Asking the code notebook the skipped questions found three things.**
+
+*Two where we are stricter than the reference, deliberately.* Its artifact writer
+(`report/emit.py`) writes **non-atomically** — `path.write_text(json.dumps(...))` straight
+to the destination, no temp file, no `os.replace`. And its log carries nonces **inline per
+record**, added only at the end. Our atomic write and our separate `audit` section both go
+further; the justification is rule 19's audit phase rather than conformance, and neither
+is a claim that the reference does it this way.
+
+*One that was an actual gap.* The reference's log carries `mutual_agreement` as a
+top-level key. Ours did not — while `settlement_record`'s own docstring described itself
+as "the `mutual_agreement` block for the log artifact". The producer had been built and
+the consumer never wired. `reveal_log` now accepts it, and it stays optional, because a
+game that ended without agreement still needs its reveal written: that log *is* the
+evidence of what happened.
+
+That last one is the argument for the rule. Seven batches of correct work, and the eighth
+step would have caught a dangling producer within minutes of writing it.
+
+#### The artifacts were the wrong shape, and both notebooks had already said so (`X-06`, 2026-08-06)
+
+Three mismatches against the lecturer's four artifact templates, all in this repository
+and none in the companion Thief — so the two of us were emitting **different shapes for
+the same game**, which is the first thing an auditor comparing them would notice.
+
+* **Config**: missing `agreed_between` (`inst/:2928`) and `config_name`, and calling the
+  sub-game key `sub_game` where the template and `:3019` say `sub_game_number`.
+* **Log**: a `steps` array plus a separate `audit` section, where the template uses one
+  **`records[]`** whose entries gain `payload` and `nonce` once the game ends. Same rule 18
+  timing guarantee — the nonce still cannot exist early — but our own structure, invented
+  for no gain, made the artifact diff as though fields were missing.
+* **Declaration**: `links` held four repository URLs. The template's `links` names the four
+  **artifact filenames**; rule 49's "four links in the JSON files of the two teams" is a
+  *separate* requirement about repositories. Two requirements collapsed into one field —
+  a conflation, not a shortcut, and both are now carried separately.
+
+Our own `per-subgame-config` schema had required `sub_game`, so the correction cost a
+bundle bump: `0.2.8-proposed` → `0.2.9-proposed`, manifest `245c10f1…`.
+
+**The uncomfortable part is that this was already answered.** The code notebook had given
+the exact config roster — `sub_game_number`, `config_name` and all — days-old advice from
+earlier the same day. It was read off a screenshot and the significance did not register.
+That is the second concrete cost of that habit within one session, after the dangling
+`mutual_agreement` producer. The method now says to read answers with `read_page`; this is
+why.
+
+#### The rehearsal, and what it caught (`M7-20`, 2026-08-06)
+
+A clean end-to-end run already existed. It proves the pieces fit; it proves nothing about
+the states the rules attach sanctions to, and those are the expensive ones. So the
+rehearsal runs the full six sub-games twice more — once with a **technical loss**, once
+with a **tampered audit**.
+
+**A technical loss still produces its artifacts.** Sub-game 3 ends badly and both its files
+are still written, the log records the outcome, the file count is unchanged, and the series
+settles and reports with 0/0 for that sub-game. That is the case a happy-path pipeline
+quietly stops covering, and it is exactly when the evidence matters most.
+
+**A tampered audit is two behaviours, not one.** The forgery in sub-game 4 is detected and
+named — and then `require_reportable` refuses to report. Rule 19 costs *them* the sub-game;
+filing our own contradicting report over the top would invoke rule 35 and cost us **both**
+the game. A rehearsal that only proved detection would have left the expensive half
+untested. The artifacts stay on disk throughout, because a failed audit is evidence rather
+than a reason to withhold it.
+
+**And it caught something the unit tests could not.** The wire role vocabulary is
+`police`/`thief` (`OB-003`), while `series.Role` is an internal `cop`/`thief`. Feeding a
+real audit payload through the real schema surfaced the difference immediately —
+`require_wire_role` refuses `cop`. Nothing was broken, because the internal enum never
+reaches the wire, but the rehearsal is the only place that distinction is visible, which
+is the argument for having one.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
@@ -1065,16 +1260,62 @@ adopted later, this section gains the curves; adding a chart now would be decora
 
 ### 5. Live belief map and "Verified OK" replay screenshots
 
-**Still blocked, but for a narrower reason than before.** A bounded sub-game now runs
-end to end and its audit is delivered: every turn and the final reveal cross a real
-socket into a separate operating-system process, which validates each one — and a
-*tampered* audit is rejected there, so rule 19 is enforced over a real carrier rather
-than asserted locally.
+**The verifier behind the `Verified OK` stamp now exists; the screen that shows it does
+not yet.** That is a narrower gap than before, and worth stating precisely because rule 20
+is Mandatory with the sanction "threshold condition for confirmation of logs and submission
+of the project" (p. 129/272) — this is the one deliverable whose absence is a rejected
+submission rather than a lost mark.
 
-What is still missing for a screenshot is a **second peer that plays back**. The
-opponent's replies in those runs come from a local script, so there is no live belief
-map to photograph yet, and there is no GUI. Both arrive with `M6` (belief) and `M7`
-(two peers, mutual audit verification).
+`src/p2p_cop_agent/replay/` loads a saved log, recomputes every SHA-256 commitment from the
+file's own bytes, and reaches one of exactly two verdicts. `:1753` decides the scope: one
+altered step invalidates the entire match, so the banner is a match verdict, not a per-step
+annotation. The cursor steps forward, back, jumps to a step, and jumps straight to the
+first divergence — and the verdict is **recomputed on every one of those moves**. It is a
+property with nowhere to cache; a stamp computed once at load and painted thereafter would
+be a claim about the past tense, which is not what a submission screenshot should be.
+
+**It verifies logs we did not write.** Rule 36 mandates a "comprehensive mutual log audit"
+as a necessary condition for agreement (p. 131/276), and p. 39/102 spells it out: "each
+side presents its full log … each side reconstructs the opponent's data through the
+revealed nonces". The test fixtures are therefore built by a writer that imports nothing
+from this package and emits a deliberately foreign shape — an unknown `schema_version`,
+keys we never write. A verifier fed only its own output would confirm that our writer
+agrees with our reader, which it always will.
+
+**A test we nearly wrote as a formality found a real hole.** Forging a log by copying a
+real record and changing only its *visible* `step` passed cleanly: the commitment binds the
+sealed payload and says nothing about the `step` and `move` keys a viewer actually paints
+on the board. A forger could leave the seal untouched, rewrite only the display, and
+collect a green stamp over a game nobody played. `:1691` closes it — the viewer re-encodes
+"the Nonce and the move **appearing in the log**" — and the verifier now cross-checks every
+visible field against the sealed one.
+
+**A structural hole the first batch shipped, found by reading the other repository's
+requirement list.** Every commitment covers a single record, so a log with its records
+shuffled, one deleted, or one duplicated survives every digest. Measured directly against
+the shipped verifier: all three came back `Verified OK`. Both repositories carried a
+"detect a reordered log" row; only one list was read in full, and the row that was never
+claimed is precisely the one that shipped broken.
+
+The fix deliberately does **not** turn those into a red banner. Rule 19 is "any mismatch
+**in the digest**" (p.129/271), so structural damage is a different rule with a different
+sanction — a gap makes the two peers' reports contradictory under rule 35 (p.131/275),
+which scores zero for **both** teams, and shows an illegal state jump under rule 5. Neither
+the book nor the reference checks ordering at all; the reference verifies each record "with
+no reference to its place in the sequence". So an opponent's log that is merely ordered
+differently is not evidence of forgery, and red-bannering it would be a false accusation
+carrying "no appeal process". Findings are reported with the rule they answer to and left
+for settlement, where both logs are actually compared. Recorded as `U-032`.
+
+One test also had to be replaced rather than extended: it asserted that its own fixture had
+a gap and never that the verifier noticed, so it would have passed against no
+implementation at all.
+
+What remains for the screenshot is the **view**: a window that paints the banner, plus the
+belief map from a live two-peer run. The `Verified OK` capture belongs "within the README.md
+academic report" (p. 81/189, "absolute mandatory"); the exact filename and directory are
+**not specified** by Appendix E or the submission checklist, so that will be a recorded
+project choice rather than an inferred one.
 
 ### 6. Companion repository
 

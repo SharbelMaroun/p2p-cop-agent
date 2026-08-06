@@ -440,6 +440,8 @@ These run before every commit and in CI; they are not milestone-scoped.
 | X-02 | Make the two peers agree on unmodelled wire fields | DONE | P0 | The Cop tolerated an extra field and the Thief refused it, so one classmate message played fine against one peer and silently starved the other into a technical loss. Both now ignore extras on turn, control and audit messages, matching the reference; missing **required** fields still refuse |
 | X-03 | Stop the bundle advertising the retired copy model | DONE | P0 | **Fixed 2026-08-06**, bundle `0.2.6-proposed` → `0.2.7-proposed`, manifest `4dd5d18a…`. The correction is not "copying is wrong" — the book **recommends** sharing the *formula* (ch. 6, the scent model) and Appendix E rule 2 prohibits only sharing memory or variables, sanction "immediate disqualification". The bundle holds no live state, so offering it to **any opponent** is the recommended half. Three things were actually wrong: it named our **companion Thief repo** (retired under `THIEF-002`, and the book names that exact hazard — a team building both sides on one machine); it implied copying establishes conformance, when the book's evidence is a `Verified OK` replay of a real match (§7.4, Appendix C) and rule 52 permits warm-ups for exactly that; and it cited **our own summary's line numbers**, useless to the stranger the file is written for — now cited by chapter and rule. 12 in-bundle `x-contract-version` declarations still said `0.2.6` after the bump and would have shipped an internally inconsistent bundle; 19 current-state claims updated, 3 historical ones deliberately left |
 | X-04 | Stop the per-sub-game config schema validating only a template | DONE | P0 | Found 2026-08-06 while building the artifact it governs. `schemas/per-subgame-config.schema.json` pinned `links.config` with `"pattern": "g<NN>"` — a **literal**, matching the fixture's placeholder rather than a filename. It accepted `config_x_g<NN>.json` and **refused every real emitted artifact**, so the schema could only ever validate a template: exactly the failure `M7-23` exists to prevent, baked into the contract. Patterns corrected to `^config_.+_g\d{2}\.json$` / `^log_…$`, the valid fixture given real filenames, and the invalid fixture too — it exists to prove `sub_game > 6` is refused and was failing on the placeholder instead, masking the case it was written for. Bundle `0.2.7-proposed` → `0.2.8-proposed`, manifest `88df2089…` `[G-18]` |
+| X-05 | Read the six-sub-game count off the right Appendix F row | DONE | P1 | Found 2026-08-06 while implementing `M7-01b`. Appendix F prints **two rows with the same label** `[Number of Agents]`: `:3484` is "number of players in the race | 2 | Fixed" and `:3540` is "number of agents **in a series against an opponent** | 6 | Fixed". The second is the *games* count under a mistranslated label -- its own description says so. The template at `:2963` further carries `"num_games": 1`, a single-game default for the example file rather than the league requirement. Reading either of the other two would have produced a series of 2 or of 1. Recorded so the next reader does not have to re-derive it |
+| X-06 | Align the artifacts to the lecturer's templates | DONE | P0 | **Fixed 2026-08-06**, bundle `0.2.8-proposed` → `0.2.9-proposed`, manifest `245c10f1…`. Config now uses `sub_game_number` (`inst/:3019`) and carries `agreed_between` (`:2928`) and `config_name`. The log uses **one `records[]`** whose entries gain `payload` and `nonce` at reveal, instead of a `steps` array plus a separate `audit` section -- same rule 18 timing guarantee, the template's structure. The declaration's `links` now names the four artifact files and rule 49's four repo URLs moved to `repositories`; **those were one field, which was a conflation of two different requirements, not a shortcut**. Our own schema had required `sub_game`, so this cost a bundle bump; 18 current-state version claims updated line by line. **Both notebooks had already said this** -- the code notebook gave the exact roster including `sub_game_number` and `config_name`, and it went unregistered because it was read from a screenshot. Second concrete cost of that habit in one day |
 
 ---
 
@@ -529,11 +531,11 @@ These run before every commit and in CI; they are not milestone-scoped.
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
-| M7-01 | Implement six-sub-game series orchestration | DEFERRED | P1 | Accepted role schedule and identities drive all six games |
-| M7-01a | Run six sub-games under one series identity | DEFERRED | P1 | `[AF-t18]`; `sub_game_number` increments and is carried into artifacts |
-| M7-01b | Implement the confirmed six-sub-game role schedule | DEFERRED | P0 | `U-025` closed 2026-07-31 on a coordinator-relayed lecturer answer: sub-games 1, 3, 5 natural role, 2, 4, 6 swapped, Thief moves first. Keep the schedule injected rather than hard-coded so a later correction is a one-line change; see `C-029` |
-| M7-01c | Aggregate cumulative series score | DEFERRED | P1 | Per-sub-game lines sum to a series result |
-| M7-01d | Apply the tie award on a cumulative tie | DEFERRED | P1 | `[AF-t17]`; no meeting is left undecided |
+| M7-01 | Implement six-sub-game series orchestration | DONE | P1 | `orchestration/series.py`. `run_series` plays all six on the ruled schedule with `play` injected, so it orchestrates without owning transport, strategy or artifacts |
+| M7-01a | Run six sub-games under one series identity | DONE | P1 | One `MatchIdentity` across the series: `artifact_names` yields **2 per-series + 2 per-sub-game = 14** filenames, all sharing one `game_uid` (`M7-02c`). Each sub-game is otherwise a fresh game -- own barrier quota, own scent field, own belief. Carrying belief across would mean our score in sub-game 4 depended on inference gathered while we were the *other role* |
+| M7-01b | Implement the confirmed six-sub-game role schedule | DONE | P0 | `U-025`, closed 2026-07-31 on a coordinator-relayed lecturer answer: 1/3/5 natural, 2/4/6 swapped, Thief first. **Written out as constants, not computed.** A formula is one refactor away from silently disagreeing with the ruling, and a test pins the two sides are opposite in every sub-game -- the error a computed alternation makes silently |
+| M7-01c | Aggregate cumulative series score | DONE | P1 | `SeriesResult.cumulative` sums the six lines |
+| M7-01d | Apply the tie award on a cumulative tie | DONE | P1 | A cumulative tie awards the `tie_score` to each side while keeping the raw totals visible. `:2042`: "no meeting remains without a decision" -- a draw is decided, not undecided |
 | M7-02 | Finalize artifact identity and generate declaration/per-game config artifacts | DEFERRED | P1 | Accepted `game_id`/UUID protocol, schemas, logical links, and resolved filenames validate |
 | M7-02a | Emit `declaration_<game_id>.json` | DONE | P1 | `declaration_<game_id>.json`, written atomically by `reporting.emit` with the lock folded in as `declaration_lock` |
 | M7-02b | Emit `config_<game_id>_g<NN>.json` | DONE | P1 | `config_<game_id>_g<NN>.json`, built from the negotiated game object and written in the same pre-play step, so the config on disk describes the match about to be played |
@@ -548,17 +550,17 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-04b | Implement the token bucket | DONE | P0 | **A real token bucket, and this was a genuine gap.** The existing `services/gatekeeper` is a *sliding window* — it drops timestamps older than 60s and counts what remains. Rule 28 (Mandatory) requires "a rate-limiter based on asynchronous **tokens**", and `:2085` says why: a bucket prevents the **bursts** that trigger an immediate provider block. A window caps a rate; a bucket caps a burst and then refills. `tokens ← min(C, tokens + r·Δt)`, allow iff `tokens ≥ 1`, with the `min(C, …)` clause tested separately — without it an idle agent banks an unbounded burst |
 | M7-04c | Queue overflow rather than rejecting | DONE | P1 | Already satisfied by `services/gatekeeper`: FIFO to `queue_depth` then backpressure; `submit` returns **queued, not rejected** and nothing is discarded |
 | M7-04d | Read every limit from configuration | DONE | P0 | `SendPipeline.from_match` reads `requests_per_minute` from the signed match object. Table 19 makes 30 a `Minimum`, so a negotiated higher value is **honoured rather than clamped back down** — clamping a minimum is the classic misreading |
-| M7-05 | Implement signed final JSON reporting adapter | IN PROGRESS | P1 | Attachment-only delivery uses least privilege and local ignored OAuth files |
-| M7-05a | Restrict the OAuth scope to `gmail.send` | IN PROGRESS | P0 | `[AE-30]`; no read or modify scope is requested |
-| M7-05b | Keep `credentials.json` and `token.json` git-ignored | IN PROGRESS | P0 | `[AE-39]` `[AE-40]`; added before the first commit that could carry them |
-| M7-05c | Send JSON as an attachment only | IN PROGRESS | P0 | `[AE-33]` `[AE-34]`; free-text reports are rejected |
-| M7-05d | Send to the confirmed reporting address | IN PROGRESS | P0 | `rmisegal+uoh26finalgame@gmail.com` per lecturer answer `AF-020`. The book's Table 20 spelling `rimesegal` is a source typo |
-| M7-05e | Back off on HTTP 429 rather than retrying immediately | IN PROGRESS | P0 | `[book §12]`; hammering risks account suspension |
-| M7-06 | Validate series audit and mutual-result agreement | DEFERRED | P0 | Conflicts/missing reports produce defined failure |
-| M7-06a | Run the full mutual audit before agreeing a result | DEFERRED | P0 | `[AE-36]`; audit precedes the JSON agreement |
-| M7-06b | Send both reports independently | DEFERRED | P0 | `[AE-32]` `[AE-35]`; a side that does not send scores nothing even if it won |
-| M7-06c | Treat conflicting reports as 0/0 for both | DEFERRED | P0 | `[AE-35]` |
-| M7-07 | Run a complete six-sub-game stub series | DEFERRED | P0 | Four artifact families are emitted, audited, and reconciled across the accepted role schedule |
+| M7-05 | Implement signed final JSON reporting adapter | DONE | P1 | `reporting/gmail_message.py` + `send_report.py`. Attachment-only delivery, send-only scope, credential files already git-ignored, and no Google library imported anywhere -- `transmit` is injected, so this layer cannot reach the API on its own |
+| M7-05a | Restrict the OAuth scope to `gmail.send` | DONE | P0 | `REQUIRED_SCOPE` is `.../auth/gmail.send`, asserted to contain neither `readonly` nor `modify`. Rule 30 (Mandatory), sanction "security breach that will lead to code disqualification" |
+| M7-05b | Keep `credentials.json` and `token.json` git-ignored | DONE | P0 | **Already satisfied; verified rather than added.** `.gitignore` carries `credentials.json`, `token.json`, `*credentials*.json`, `.env` and `.env.*` with an `!.env-example` exception, all present before any commit that could have carried one `[AE-39]` `[AE-40]` |
+| M7-05c | Send JSON as an attachment only | DONE | P0 | The artifact rides as an `application/json` attachment and the body is a fixed pointer carrying no report data -- tested by asserting the result's own values do **not** appear in the body. Rule 34 (Prohibited): free text "will be rejected and result in a zero score", so a helpful covering note *is* the violation |
+| M7-05d | Send to the confirmed reporting address | DONE | P0 | `rmisegal+uoh26finalgame@gmail.com`, on lecturer answer `AF-020`. **The book prints both spellings** -- `:3040` has `rmisegal`, `:3605-3606` have `rimesegal` -- so this is a confirmed source inconsistency (`C-004`) rather than a choice. Not read from the shared config: a peer able to move our reporting destination could silence it |
+| M7-05e | Back off on HTTP 429 rather than retrying immediately | DONE | P0 | Backoff on 429 only, doubling from the Appendix F table 19 `Minimum` of 5s. A non-429 is **not** retried -- retrying a 400 spends quota on a request that will fail identically |
+| M7-06 | Validate series audit and mutual-result agreement | DONE | P0 | `orchestration/settlement.py`. Four settled states, each with its own remedy: `AGREED`, `CONFLICT` (rule 35, 0/0 both), `AUDIT_FAILED` (rule 19, 0 for the falsifying group) and `UNANSWERED`. One generic "not agreed" would send all three down the same wrong path |
+| M7-06a | Run the full mutual audit before agreeing a result | DONE | P0 | `audit_series` runs `audit_reveal` over **every** sub-game and stops at the first mismatch, naming it. Rule 19 calls a mismatch an "iron rule", so there is nothing to weigh once one is found. **An empty series does not pass** — auditing nothing must not read as auditing successfully, which is the commonest way an audit gate is bypassed |
+| M7-06b | Send both reports independently | DONE | P0 | Each side sends its own report; `ReportSender` is per-peer and keyed on `game_id`. `:2584`: a side that does not send "will not be credited" even if it won |
+| M7-06c | Treat conflicting reports as 0/0 for both | DONE | P0 | `require_reportable` refuses a `CONFLICT` naming rule 35's "0 for BOTH teams". Sending ours is not a way to win the argument — it is how the argument costs us the game |
+| M7-07 | Run a complete six-sub-game stub series | DONE | P0 | `test_series_run.py` drives the whole stack: schedule → six per-sub-game configs, each schema-validated and written → `check_one_identity` across the set → settlement → result artifact. **The first row that exercises everything together rather than in isolation**, which is why it ran before the M7 mirror to the Thief: a design worth copying should be one that has actually run |
 | M7-08 | Implement the Quota Manager and DOS Detector gates | DONE | P0 | All three gates in the book's order. `:2096`: "Outgoing report → Quota Manager → Token Bucket → DOS Detector → Gmail API", with three distinct outcomes (`:2098`) because they differ in remedy — *try tomorrow*, *try shortly*, *the code is wrong* |
 | M7-08a | Implement the daily quota counter | DONE | P0 | `QuotaManager`, a per-day counter that rolls over. `:2083`: "the **final line before account blocking**: if the quota is exhausted, no further requests are sent" |
 | M7-08b | Implement the DOS detector and pipeline lock | DONE | P0 | `DosDetector` locks the pipeline on a burst. `:2087` says what it is *for* — "a bug or an infinite loop **in the agent's code**", not a hostile peer — which is why the lock is deliberately **not self-clearing**: a detector that reset itself would let the same loop resume the moment it briefly looked calm |
@@ -581,26 +583,26 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-15 | Implement the OAuth setup path | DEFERRED | P1 | First run creates a token; later runs refresh without human action |
 | M7-15a | Run the consent flow once and store the token locally | DEFERRED | P1 | `token.json` is created, never committed `[book App. A]` |
 | M7-15b | Refresh the access token automatically | DEFERRED | P1 | The refresh token gives months of autonomy |
-| M7-15c | Fail closed when no credential is present | IN PROGRESS | P0 | No silent skip of a mandatory report |
+| M7-15c | Fail closed when no credential is present | DONE | P0 | `require_credential` raises rather than skipping. A missing `token.json` degrading into "skipped the report" is indistinguishable from success in a log that only records errors |
 | M7-15d | Document the five setup steps for a fresh machine | DEFERRED | P2 | Reproducible by a teammate `[G§2.1]` |
-| M7-16 | Compose the report email | IN PROGRESS | P1 | MIME message with a JSON attachment and a machine-stable subject |
-| M7-16a | Attach the result artifact as a file | IN PROGRESS | P0 | Attachment only; body text is never the report `[AE-34]` |
-| M7-16b | Use a deterministic subject naming the game | IN PROGRESS | P1 | Auto-assignment depends on it `[AE-45]` |
-| M7-16c | Base64url-encode and send through the API | IN PROGRESS | P1 | `users().messages().send` with `userId="me"` |
-| M7-17 | Prove reporting under failure | IN PROGRESS | P0 | No failure mode silently loses a report |
-| M7-17a | Retry after a 429 with backoff | IN PROGRESS | P0 | Respect the throttle rather than hammering `[book §12]` |
-| M7-17b | Surface a permanently failed send loudly | IN PROGRESS | P0 | An unsent report costs the game's points `[AE-32]` |
-| M7-17c | Never send twice for one game | IN PROGRESS | P0 | Duplicate reports risk a conflict verdict `[AE-35]` |
-| M7-18 | Implement result agreement with the opponent | DEFERRED | P0 | Both sides converge on one result before either reports |
-| M7-18a | Exchange the computed outcome after the audit | DEFERRED | P0 | Agreement follows audit, never precedes it `[AE-36]` |
-| M7-18b | Detect and record a disagreement | DEFERRED | P0 | A conflict is 0/0 for both and must be visible, not silent `[AE-35]` |
-| M7-18c | Refuse to report an unagreed result | DEFERRED | P0 | Reporting a disputed outcome invites the conflict sanction |
+| M7-16 | Compose the report email | DONE | P1 | `build_report_message` assembles the MIME message; `encoded_message` returns the base64url `raw` body |
+| M7-16a | Attach the result artifact as a file | DONE | P0 | Attachment read back **out of the assembled message** rather than trusting the object that went in -- the only way to know it survived encoding intact |
+| M7-16b | Use a deterministic subject naming the game | DONE | P1 | `[<team_code>] final-result <game_id>`, generated rather than written. Rule 45 (Mandatory) ties **automatic report assignment** to the 8-character code, and a per-game hand-written subject would sort inconsistently the first time someone was in a hurry. A code that is not exactly 8 characters is refused |
+| M7-16c | Base64url-encode and send through the API | DONE | P1 | `base64.urlsafe_b64encode` of the raw MIME, shaped for `users().messages().send` |
+| M7-17 | Prove reporting under failure | DONE | P0 | `ReportSender` covers all three failure modes; no path loses a report silently |
+| M7-17a | Retry after a 429 with backoff | DONE | P0 | Retries only on 429, sleeping `5s, 10s, …`. Appendix F table 19 makes the delay a `Minimum` of 5s and attempts a `Minimum` of 3 -- **floors to honour, not values to tune down**, and a constructor below either is refused |
+| M7-17b | Surface a permanently failed send loudly | DONE | P0 | Raises `ReportNotSentError` naming the game and the last error. Rule 32 (Mandatory): "absence of reporting **disqualifies the game points**", so there is no useful fallback -- a caller that could quietly continue would convert a lost game into a silent one |
+| M7-17c | Never send twice for one game | DONE | P0 | Keyed on `game_id` and not resettable through the API. Rule 35: a conflicting report scores **0 for BOTH teams**, and two sends for one game is the easiest way to produce one by accident |
+| M7-18 | Implement result agreement with the opponent | DONE | P0 | Both sides converge before either reports, and `build_result` now accepts a `Settlement` so `mutual_agreement` can be **earned** rather than asserted. Previously it was a bool a caller passed, which meant a report could claim an agreement that never happened |
+| M7-18a | Exchange the computed outcome after the audit | DONE | P0 | `agree(audit, ours, theirs)` **takes the audit as its first argument**, so agreement cannot be reached without one. Rule 36 makes the audit "a mandatory condition before agreement on the JSON result" — a precondition a caller can forget is not a precondition |
+| M7-18b | Detect and record a disagreement | DONE | P0 | A conflict keeps **both** claims side by side in `settlement_record`, for the log's `mutual_agreement` block. The temptation is to adopt their number to keep the peace; that files a result we do not believe and destroys the evidence an auditor needs. **Silence is its own state**, not agreement — treating a missing reply as consent would let a crashed peer decide our report |
+| M7-18c | Refuse to report an unagreed result | DONE | P0 | `require_reportable` is the only gate to reporting, and the audit-failure message differs deliberately: their forgery is *their* rule 19 loss, and firing off our own contradicting report would convert it into a **shared** rule 35 loss. A test asserts the three refusals carry three distinct messages |
 | M7-19 | Implement series-level score aggregation evidence | DEFERRED | P1 | The cumulative figure is reproducible from the artifact set |
 | M7-19a | Recompute the series total from stored artifacts | DEFERRED | P1 | No in-memory-only total is trusted |
 | M7-19b | Apply the diversity reward for a new opponent | DEFERRED | P1 | `[AF-t18]`; a repeat opponent adds nothing |
-| M7-20 | Run a full local series rehearsal before any counted game | DEFERRED | P0 | Six sub-games, four artifact families, audit, agreement, and a mocked send |
-| M7-20a | Rehearse with a deliberately failing sub-game | DEFERRED | P0 | A technical loss still produces a complete artifact set |
-| M7-20b | Rehearse with a tampered audit | DEFERRED | P0 | Detection, scoring, and reporting all behave |
+| M7-20 | Run a full local series rehearsal before any counted game | DONE | P0 | `tests/integration/test_series_rehearsal.py` + `_tampered` + `_invariants`. A clean six-sub-game run emits all 12 per-sub-game files, settles, and reports; identity consistency and schedule adherence are then checked across that **real run** rather than a constructed pair. Run against the `X-06`-corrected shapes -- rehearsing before that would have produced a green result making the wrong shape look settled |
+| M7-20a | Rehearse with a deliberately failing sub-game | DONE | P0 | A technical loss in sub-game 3 still writes its config and log, the log records the outcome, the file count is unchanged, and the series still settles and reports with 0/0 for that sub-game. **The sub-game that goes wrong is when the evidence matters most, and when a happy-path pipeline quietly stops producing it** |
+| M7-20b | Rehearse with a tampered audit | DONE | P0 | A forged payload in sub-game 4 is detected and named, and `require_reportable` then **refuses to report** -- two separate behaviours. Rule 19 costs *them* the sub-game; filing our own contradicting report over the top would invoke rule 35 and cost us **both** the game. The artifacts stay on disk either way, because a failed audit is evidence rather than a reason to withhold it |
 | M7-21 | Document the reporting pipeline | DEFERRED | P2 | `PRD_gatekeeper_reporting.md` matches the built gates and flow |
 | M7-22 | Emit the declaration before the first move of each game | DONE | P0 | The declaration is now **written to disk inside `play_match`, immediately after it is locked and before the first turn is sent**. Proven by timing rather than presence: a spy records whether the file existed at each outbound turn, and every one must see it already there. A declaration emitted at the end could have been edited to suit the result, which is the whole thing locking it beforehand rules out |
 | M7-22a | Include both groups and their members | DONE | P1 | Both groups and their members ride in `groups`, each entry projected from the negotiated identity block |
@@ -632,11 +634,11 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-01b | Render the turn banner | DEFERRED | P1 | Green `YOUR TURN`, grey `LOCKED` after commit |
 | M8-01c | Lock input while the banner is grey | DEFERRED | P1 | Out-of-turn input is ignored, not queued |
 | M8-01d | Prove the objective board is never renderable | DEFERRED | P0 | `[AE-8]` `[AE-9]`; a view-model test asserts no opponent-truth field |
-| M8-02 | Implement replay verifier and tamper view | DEFERRED | P1 | `Verified OK` and `TAMPERED` paths are demonstrable |
-| M8-02a | Load a saved match log and step forward/back | DEFERRED | P1 | `[AE-20]` mandatory deliverable `[PRD-replay]` |
+| M8-02 | Implement replay verifier and tamper view | IN PROGRESS | P1 | `Verified OK` and `TAMPERED` paths are demonstrable |
+| M8-02a | Load a saved match log and step forward/back | DONE | P1 | `[AE-20]` mandatory deliverable `[PRD-replay]` |
 | M8-02b | Recompute every step's hash and compare | DEFERRED | P0 | Uses the M4 construction, not the book's chapter-7 sketch |
-| M8-02c | Void the whole match on the first mismatch | DEFERRED | P0 | A single tampered step yields `TAMPERED` for the match |
-| M8-02d | Record why the book's chapter-7 verifier is not used | DEFERRED | P1 | Book p. 74 computes `SHA256("{nonce}|{move}")`, which cannot verify a chapter-5 commitment. Disclosed under the p. 5 contradiction clause |
+| M8-02c | Void the whole match on the first mismatch | DONE | P0 | A single tampered step yields `TAMPERED` for the match |
+| M8-02d | Record why the book's chapter-7 verifier is not used | DONE | P1 | Book p. 74 computes `SHA256("{nonce}|{move}")`, which cannot verify a chapter-5 commitment. Disclosed under the p. 5 contradiction clause |
 | M8-02e | Document the replay UI workflow and states | DEFERRED | P2 | Screens, controls, and both verdict states described `[G§10.2]` |
 | M8-03 | Run neutral unknown-opponent interoperability suite | DEFERRED | P0 | Both proposal/acceptance directions pass remotely |
 | M8-03a | Rehearse against a stub that shares no source with this repo | DEFERRED | P0 | Independently authored; imports no project module |
@@ -660,11 +662,11 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-07a | Render disclosed barriers only | DEFERRED | P0 | A barrier appears only once disclosed `[AE-15]` |
 | M8-07b | Render received hints as text | DEFERRED | P2 | The verbal channel is visible to the operator |
 | M8-07c | Show the current score and step count | DEFERRED | P2 | Operator can see progress toward the threshold |
-| M8-08 | Implement replay navigation | DEFERRED | P1 | Step forward, step back, and jump to a step |
-| M8-08a | Recompute verification on every navigation | DEFERRED | P0 | The verdict is derived, never cached from load time |
+| M8-08 | Implement replay navigation | DONE | P1 | Step forward, step back, and jump to a step |
+| M8-08a | Recompute verification on every navigation | DONE | P0 | The verdict is derived, never cached from load time |
 | M8-08b | Show the per-step verdict alongside the board | DEFERRED | P1 | Operator sees where a match failed |
-| M8-08c | Load a malformed log without crashing | DEFERRED | P1 | Corrupt input yields a clear error, not a stack trace |
-| M8-08d | Detect a reordered log | DEFERRED | P0 | Step sequence is validated, not assumed |
+| M8-08c | Load a malformed log without crashing | DONE | P1 | Corrupt input yields a clear error, not a stack trace |
+| M8-08d | Detect a reordered log | DONE | P0 | Step sequence is validated, not assumed |
 | M8-09 | Run the security review | DEFERRED | P0 | Secrets, identity, input validation, and dependencies all reviewed |
 | M8-09a | Confirm no secret is readable from any artifact | DEFERRED | P0 | Artifacts are shared; secrets must not travel in them `[AE-39]` |
 | M8-09b | Confirm no private field crosses the wire | DEFERRED | P0 | Leakage vector per private field class |
@@ -676,9 +678,9 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M8-11 | Document both interfaces | DEFERRED | P2 | Screens, states, and workflows described `[G§10.2]` |
 | M8-11a | Document the live GUI workflow | DEFERRED | P2 | Turn banner states and what each means |
 | M8-11b | Document accessibility considerations | DEFERRED | P2 | Colour is not the only signal `[G§10.2]` |
-| M8-12 | Prove the replay app on a foreign log | DEFERRED | P0 | It verifies a log this peer did not write |
-| M8-12a | Verify an opponent-produced log | DEFERRED | P0 | The audit is mutual; both logs must verify `[AE-36]` |
-| M8-12b | Detect a foreign log that was tampered | DEFERRED | P0 | The detection path is not self-only |
+| M8-12 | Prove the replay app on a foreign log | DONE | P0 | It verifies a log this peer did not write |
+| M8-12a | Verify an opponent-produced log | DONE | P0 | The audit is mutual; both logs must verify `[AE-36]` |
+| M8-12b | Detect a foreign log that was tampered | DONE | P0 | The detection path is not self-only |
 | M8-13 | Rehearse the full failure matrix end to end | DEFERRED | P0 | Every fault class has an observed outcome, not a predicted one |
 | M8-13a | Rehearse an opponent crash mid-series | DEFERRED | P0 | The series still produces artifacts |
 | M8-13b | Rehearse a tunnel drop mid-turn | DEFERRED | P0 | Terminal outcome is defined, not a hang |
@@ -928,7 +930,7 @@ Terms used throughout this ledger, for anyone joining mid-project.
 |---|---|
 | Option B | The decision to adopt the pinned simulator's wire shape wherever the book leaves a wire detail open, while the book still governs rules and scoring |
 | Wire | The exact bytes exchanged between peers. Two agents must agree byte-for-byte or every hash comparison fails |
-| `shared_contract/` | The controlled bundle of schemas, fixtures, and golden vectors that both peers must satisfy. Currently `0.2.8-proposed`, `UNFROZEN` |
+| `shared_contract/` | The controlled bundle of schemas, fixtures, and golden vectors that both peers must satisfy. Currently `0.2.9-proposed`, `UNFROZEN` |
 | Mailbox semantics | The server tools enqueue a message and always acknowledge; a content rejection is a game outcome, decided later, not a transport error `[ADR-002]` |
 | Commit-reveal | Send a hash of the move first, reveal the move after, disclose the nonce only at the final audit. Any mismatch is a technical loss |
 | Nonce | A fresh random value per commitment. Prevents identical moves producing identical hashes and defeats dictionary attacks |

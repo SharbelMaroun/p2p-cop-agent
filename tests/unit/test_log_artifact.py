@@ -48,7 +48,7 @@ SUMMARY = {"outcome": "capture", "turns": 2, "cop_score": 20, "tokens_total": 0}
 
 
 def _log():
-    return build_log(identity=IDENT, sub_game=1, steps=STEPS, summary=SUMMARY)
+    return build_log(identity=IDENT, sub_game=1, records=STEPS, summary=SUMMARY)
 
 
 # --- M7-24 / M7-24a: independently re-verifiable ---------------------------------------
@@ -57,8 +57,7 @@ def _log():
 def test_a_stranger_can_recompute_every_commitment_from_the_file_alone() -> None:
     """`M7-24`'s condition — "a third party can re-verify **without our code**" — and
     `:1690`'s procedure. This is the test that matters; the rest are its preconditions."""
-    revealed = reveal_log(_log(), REVEALS)
-    for record in revealed["audit"]["records"]:
+    for record in reveal_log(_log(), REVEALS)["records"]:
         recomputed = hashlib.sha256(
             canonical_payload_bytes(record["payload"]) + b"|" + record["nonce"].encode()
         ).hexdigest()
@@ -68,8 +67,7 @@ def test_a_stranger_can_recompute_every_commitment_from_the_file_alone() -> None
 def test_a_tampered_payload_fails_that_recomputation() -> None:
     """The `TAMPERED` path. If altering a move still verified, the log would be evidence
     of nothing — `:1693` invalidates the replay on "even the slightest change"."""
-    revealed = reveal_log(_log(), REVEALS)
-    record = revealed["audit"]["records"][0]
+    record = reveal_log(_log(), REVEALS)["records"][0]
     forged = {**record["payload"], "move": "S"}
     recomputed = hashlib.sha256(
         canonical_payload_bytes(forged) + b"|" + record["nonce"].encode()
@@ -80,7 +78,7 @@ def test_a_tampered_payload_fails_that_recomputation() -> None:
 def test_every_step_records_its_hint_and_intent() -> None:
     """`M7-24c`: the verbal layer is auditable too, and a hint without its intent flag
     cannot be judged — there would be no way to tell a bluff from a mistake."""
-    for step in _log()["steps"]:
+    for step in _log()["records"]:
         assert "hint" in step and "intent" in step
 
 
@@ -89,8 +87,8 @@ def test_every_step_records_its_hint_and_intent() -> None:
 
 def test_the_in_play_log_carries_no_nonce_anywhere() -> None:
     """Rule 18 (Mandatory), sanction "disqualification due to risk of dictionary attack"."""
-    assert "nonce" not in repr(_log()["steps"])
-    assert _log()["audit"] is None
+    assert "nonce" not in repr(_log()["records"])
+    assert not is_revealed(_log())
 
 
 def test_a_step_carrying_a_nonce_is_refused_at_build_time() -> None:
@@ -99,14 +97,14 @@ def test_a_step_carrying_a_nonce_is_refused_at_build_time() -> None:
     artifact could ever catch it — only refusing to build the intermediate state can."""
     leaky = [{**STEPS[0], "nonce": NONCES[0]}, STEPS[1]]
     with pytest.raises(LogArtifactError, match="nonce stays secret"):
-        build_log(identity=IDENT, sub_game=1, steps=leaky, summary=SUMMARY)
+        build_log(identity=IDENT, sub_game=1, records=leaky, summary=SUMMARY)
 
 
 def test_a_step_carrying_the_revealed_payload_is_refused_too() -> None:
     """The payload is the other half of the reveal; a nonce guard alone would be theatre."""
     leaky = [{**STEPS[0], "payload": PAYLOADS[0]}, STEPS[1]]
     with pytest.raises(LogArtifactError, match="payload"):
-        build_log(identity=IDENT, sub_game=1, steps=leaky, summary=SUMMARY)
+        build_log(identity=IDENT, sub_game=1, records=leaky, summary=SUMMARY)
 
 
 def test_the_reveal_is_the_only_way_nonces_enter_and_it_is_visible() -> None:
@@ -137,7 +135,7 @@ def test_a_reveal_missing_its_nonce_or_payload_is_refused() -> None:
 
 def test_a_log_with_no_steps_is_refused_rather_than_emitted_empty() -> None:
     with pytest.raises(LogArtifactError, match="cannot be audited"):
-        build_log(identity=IDENT, sub_game=1, steps=[], summary=SUMMARY)
+        build_log(identity=IDENT, sub_game=1, records=[], summary=SUMMARY)
 
 
 def test_the_summary_and_identity_ride_along() -> None:

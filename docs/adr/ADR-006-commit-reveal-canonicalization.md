@@ -52,4 +52,4 @@ serialization is a book requirement.
 - Field mutation, byte mutation, wrong commitment nonce, wrong delimiter, and
   duplicate-key loading all fail (WP5).
 - No per-turn commitment nonce appears before final reveal.
-- Locked in the `0.2.8-proposed` bundle; contract freeze remains a later gate.
+- Locked in the `0.2.9-proposed` bundle; contract freeze remains a later gate.
