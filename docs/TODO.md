@@ -543,11 +543,11 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-03b | Emit `result_<game_id>.json` as the emailed report | DONE | P0 | `build_result` produces the emailed report -- per-group blocks, per-sub-game score lines and the cumulative `final_result`. `:2241`: "the score of each group in all games and the cumulative result". **An unagreed result is refused at build time**: rule 35 (Mandatory) scores a conflicting report 0 for **both** teams, while `:2584` says a side that does not report merely "will not be credited" -- so sending a contradictory report is strictly worse than sending none, and the asymmetry is encoded rather than commented |
 | M7-03c | Carry four repository links in the result artifact | DONE | P0 | Exactly four links, refused otherwise -- rule 49 (Mandatory), "four links in the JSON files of the two teams". Three means one side's submission is wrong, and failing here beats filing a report the lecturer cannot trace back to the code |
 | M7-03d | Carry the per-game commit hash and total tokens | DONE | P0 | `commit_hash` -- rule 53 (Mandatory), code may change between games so a result that does not say *which* code played cannot be reproduced. Tokens **per sub-game and for the series**, because rule 54 asks for the total "for the game **and in the sequence**": two numbers, not one |
-| M7-04 | Implement API Gatekeeper and token-bucket/FIFO limits | DEFERRED | P1 | Appendix F minimums and backpressure pass load tests |
-| M7-04a | Route every external call through one gatekeeper | DEFERRED | P0 | No service calls an external API directly `[G§5.1]` |
-| M7-04b | Implement the token bucket | DEFERRED | P0 | `tokens ← min(C, tokens + r·Δt)`; allow iff `tokens ≥ 1` `[AE-28]` |
-| M7-04c | Queue overflow rather than rejecting | DEFERRED | P1 | FIFO to `queue_depth`, then backpressure `[G§5.3]` |
-| M7-04d | Read every limit from configuration | DEFERRED | P0 | No hard-coded rate values `[G§7.2]` `[AF-t19]` |
+| M7-04 | Implement API Gatekeeper and token-bucket/FIFO limits | IN PROGRESS | P1 | Appendix F minimums and backpressure pass load tests |
+| M7-04a | Route every external call through one gatekeeper | IN PROGRESS | P0 | No service calls an external API directly `[G§5.1]` |
+| M7-04b | Implement the token bucket | IN PROGRESS | P0 | `tokens ← min(C, tokens + r·Δt)`; allow iff `tokens ≥ 1` `[AE-28]` |
+| M7-04c | Queue overflow rather than rejecting | IN PROGRESS | P1 | FIFO to `queue_depth`, then backpressure `[G§5.3]` |
+| M7-04d | Read every limit from configuration | IN PROGRESS | P0 | No hard-coded rate values `[G§7.2]` `[AF-t19]` |
 | M7-05 | Implement signed final JSON reporting adapter | DEFERRED | P1 | Attachment-only delivery uses least privilege and local ignored OAuth files |
 | M7-05a | Restrict the OAuth scope to `gmail.send` | DEFERRED | P0 | `[AE-30]`; no read or modify scope is requested |
 | M7-05b | Keep `credentials.json` and `token.json` git-ignored | DEFERRED | P0 | `[AE-39]` `[AE-40]`; added before the first commit that could carry them |
@@ -559,10 +559,10 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-06b | Send both reports independently | DEFERRED | P0 | `[AE-32]` `[AE-35]`; a side that does not send scores nothing even if it won |
 | M7-06c | Treat conflicting reports as 0/0 for both | DEFERRED | P0 | `[AE-35]` |
 | M7-07 | Run a complete six-sub-game stub series | DEFERRED | P0 | Four artifact families are emitted, audited, and reconciled across the accepted role schedule |
-| M7-08 | Implement the Quota Manager and DOS Detector gates | DEFERRED | P0 | Appendix E rules 28/29 and chapter 9 require **three** gates in series before any Gmail call: a daily Quota Manager, the token bucket (`M7-04`), and a DOS detector that locks the pipeline on runaway-send patterns. Fail-fast at the first gate that rejects; the lock is observable |
-| M7-08a | Implement the daily quota counter | DEFERRED | P0 | Exhausted quota stops all further sends `[book §9]` |
-| M7-08b | Implement the DOS detector and pipeline lock | DEFERRED | P0 | A runaway-send pattern locks the pipeline to save the account `[AE-29]` |
-| M7-08c | Prove fail-fast ordering across the three gates | DEFERRED | P0 | Quota → bucket → detector; the first rejection stops the request |
+| M7-08 | Implement the Quota Manager and DOS Detector gates | IN PROGRESS | P0 | Appendix E rules 28/29 and chapter 9 require **three** gates in series before any Gmail call: a daily Quota Manager, the token bucket (`M7-04`), and a DOS detector that locks the pipeline on runaway-send patterns. Fail-fast at the first gate that rejects; the lock is observable |
+| M7-08a | Implement the daily quota counter | IN PROGRESS | P0 | Exhausted quota stops all further sends `[book §9]` |
+| M7-08b | Implement the DOS detector and pipeline lock | IN PROGRESS | P0 | A runaway-send pattern locks the pipeline to save the account `[AE-29]` |
+| M7-08c | Prove fail-fast ordering across the three gates | IN PROGRESS | P0 | Quota → bucket → detector; the first rejection stops the request |
 | M7-09 | Declare games already played against each opponent | DEFERRED | P0 | Appendix E rules 37/38: every game start carries an accurate count of prior counted games against that opponent, derived from emitted result artifacts rather than hand-entered. A false declaration is absolute disqualification, so the count is reproducible from the artifact set |
 | M7-09a | Derive the count from emitted result artifacts | DEFERRED | P0 | No hand-entered figure can enter the declaration |
 | M7-09b | Exclude warm-up games from the counted total | DEFERRED | P1 | `[AE-52]`; warm-ups are permitted but uncounted |
