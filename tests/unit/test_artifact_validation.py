@@ -40,8 +40,8 @@ def test_a_valid_artifact_passes_and_is_written(tmp_path: Path) -> None:
 def test_an_invalid_artifact_is_refused_and_leaves_no_file(tmp_path: Path) -> None:
     """`M7-14`'s condition is about *placement*: validation before the write, so a bad
     artifact never reaches a disk anyone could email it from."""
-    broken = {**_config(), "sub_game": 99}  # schema caps sub_game at 6
-    with pytest.raises(ArtifactInvalidError, match="sub_game"):
+    broken = {**_config(), "sub_game_number": 99}  # schema caps sub_game at 6
+    with pytest.raises(ArtifactInvalidError, match="sub_game_number"):
         validated_write(tmp_path, "config_demo-series_g99.json", broken)
     assert not list(tmp_path.iterdir())
 

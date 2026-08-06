@@ -1,6 +1,6 @@
 # `simulator-v3.0.0` Compatibility Profile
 
-Contract version: `0.2.8-proposed`
+Contract version: `0.2.9-proposed`
 Status: **PROPOSED / UNFROZEN**
 
 This document records the project's `simulator-v3.0.0 compatibility profile`,

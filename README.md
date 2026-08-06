@@ -12,11 +12,11 @@ scoring, transport-free rules harness, and deterministic move-or-barrier baselin
 It also implements the M4 commit-reveal primitives (per-turn commitment, audit
 reveal, Step-0 attestation) and the inbound FastMCP tool surface. It contains the
 M1.5 Option-B contract repair: a role-neutral `shared_contract/` bundle at
-`0.2.8-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
+`0.2.9-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
 There is still no outbound peer client, public tunnel, scent field, belief map,
 LLM, Gmail, GUI, or replay runtime, so no live game has been played.
 
-The shared contract is `0.2.8-proposed` and **UNFROZEN**. It becomes frozen only
+The shared contract is `0.2.9-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
 identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
 a documented academic-freedom interoperability choice pinned to simulator commit
@@ -84,7 +84,7 @@ displays the equivalent PEP 440 form `1.0`.
 ## Configuration
 
 - The stable, role-neutral shared contract is the top-level `shared_contract/`
-  bundle at `0.2.8-proposed` (Option B). It holds specifications, schemas,
+  bundle at `0.2.9-proposed` (Option B). It holds specifications, schemas,
   fixtures, vectors, and the read-only verifier only — no active match.
 - A per-match shared game object and local rate-limit enforcement mirror are each
   supplied at runtime by explicit path; neither loader has a repository or example
@@ -1156,6 +1156,33 @@ evidence of what happened.
 
 That last one is the argument for the rule. Seven batches of correct work, and the eighth
 step would have caught a dangling producer within minutes of writing it.
+
+#### The artifacts were the wrong shape, and both notebooks had already said so (`X-06`, 2026-08-06)
+
+Three mismatches against the lecturer's four artifact templates, all in this repository
+and none in the companion Thief — so the two of us were emitting **different shapes for
+the same game**, which is the first thing an auditor comparing them would notice.
+
+* **Config**: missing `agreed_between` (`inst/:2928`) and `config_name`, and calling the
+  sub-game key `sub_game` where the template and `:3019` say `sub_game_number`.
+* **Log**: a `steps` array plus a separate `audit` section, where the template uses one
+  **`records[]`** whose entries gain `payload` and `nonce` once the game ends. Same rule 18
+  timing guarantee — the nonce still cannot exist early — but our own structure, invented
+  for no gain, made the artifact diff as though fields were missing.
+* **Declaration**: `links` held four repository URLs. The template's `links` names the four
+  **artifact filenames**; rule 49's "four links in the JSON files of the two teams" is a
+  *separate* requirement about repositories. Two requirements collapsed into one field —
+  a conflation, not a shortcut, and both are now carried separately.
+
+Our own `per-subgame-config` schema had required `sub_game`, so the correction cost a
+bundle bump: `0.2.8-proposed` → `0.2.9-proposed`, manifest `245c10f1…`.
+
+**The uncomfortable part is that this was already answered.** The code notebook had given
+the exact config roster — `sub_game_number`, `config_name` and all — days-old advice from
+earlier the same day. It was read off a screenshot and the significance did not register.
+That is the second concrete cost of that habit within one session, after the dangling
+`mutual_agreement` producer. The method now says to read answers with `read_page`; this is
+why.
 
 ### 3. The implemented strategy
 

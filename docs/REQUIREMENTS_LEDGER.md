@@ -44,7 +44,7 @@ accepted ADR.
 | PS-008 | External APIs use one Gatekeeper with limiting, FIFO, backpressure, retry, and monitoring | Professional Guidelines v3.0, pp. 13–14 | Gatekeeper tests later |
 | PS-009 | Maintain `docs/PROMPT_LOG.md` | Professional Guidelines v3.0, p. 19 | Presence/provenance check |
 | PS-010 | Code, shared JSON, and rate-limit configuration revisions begin at `1.00` and validate supported versions independently of schema profiles | Professional Guidelines v3.0 section 8.1, p. 19 | Version/config contract tests |
-| OB-001 | The project selects Option B (simulator-v3 profile) as a documented academic-freedom interoperability choice where the book leaves wire details open | Coordinator project decision dated 2026-07-28; [OPTION_B_DECISION.md](OPTION_B_DECISION.md) | Current `0.2.8-proposed` bundle; conformance suite |
+| OB-001 | The project selects Option B (simulator-v3 profile) as a documented academic-freedom interoperability choice where the book leaves wire details open | Coordinator project decision dated 2026-07-28; [OPTION_B_DECISION.md](OPTION_B_DECISION.md) | Current `0.2.9-proposed` bundle; conformance suite |
 | OB-002 | Interoperability is pinned to simulator commit `960499fd5e8777b4929625f5d8fdcf2ab4677b54`; the simulator is a wire reference, not a source to copy | Coordinator project decision dated 2026-07-28; ADR-008 governs reuse | Behavioural parity target; import scan |
 | OB-003 | Exposed FastMCP tools are `negotiate`, `receive_turn`, `submit_audit`, and optional `receive_control`; `exchange_audit` is only a client transport method, `receive_move` is excluded, and wire roles are `police`/`thief` | ADR-001 accepted under Option B | Protocol schemas and conformance tests |
 | OB-004 | Per-turn commitment is `sha256(canonical_json(payload) + "\|" + nonce)` with a literal `\|` delimiter; the commitment nonce is 16 random bytes as 32 lowercase hex, outside the payload, revealed only in the post-game audit | ADR-006 per-turn commitment accepted under Option B | Canonicalization vectors (WP5) |
@@ -52,7 +52,7 @@ accepted ADR.
 | OB-006 | `negotiate.nonce` is a public pre-play negotiation challenge, distinct from the secret per-turn commitment nonce even though both use 32 lowercase hexadecimal characters | Owner confirmation dated 2026-07-28; [OPTION_B_DECISION.md](OPTION_B_DECISION.md) | Schema purpose/visibility annotations and independent leak-rejection tests |
 
 The previous `0.1.0-proposed` bundle was rejected. The active proposed contract is
-`0.2.8-proposed`, **UNFROZEN**, built as the role-neutral top-level
+`0.2.9-proposed`, **UNFROZEN**, built as the role-neutral top-level
 `shared_contract/` subtree. It preserves the `0.2.1` barrier/role-schedule repairs,
 the `0.2.2` schema/cross-field repairs, and the `0.2.3` explicit-runtime-input and
 nonce-domain fixes, while `0.2.4`/`0.2.5-proposed` reconcile the simulator-v3.0.0

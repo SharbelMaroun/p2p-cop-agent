@@ -19,6 +19,18 @@ perfectly correct, because the finished file is identical either way. The rule i
 `build_log` therefore refuses a step that carries a nonce at all, and `reveal_log` is the
 only way to add them. The constraint becomes unrepresentable rather than merely observed:
 you cannot write the forbidden intermediate state with this module, whatever you intend.
+
+**The shape is the lecturer's template's, not ours (`X-06`).** An earlier version invented
+a `steps` array plus a separate `audit` section. The template — and the companion Thief
+repository, which had it right — uses a single **`records`** array whose entries carry
+`payload`, `nonce` and `commit`, with the nonce written in only once the game ends. Asked
+directly, the sources confirm the nonce "appears as a top-level key within each entry of
+the `records` array" and that reveals "are integrated directly into the `records` list
+once the game concludes".
+
+That is the same *timing* guarantee with the template's *structure*: rule 18 constrains
+when the nonce exists, not which array it sits in, and inventing a second array bought
+nothing while making our artifact diff against the template as though fields were missing.
 """
 
 from __future__ import annotations
@@ -31,7 +43,7 @@ from p2p_cop_agent.shared.config import JsonObject
 SCHEMA_VERSION = "1.2"
 # What a step records while the game is running. `intent` is the bluff flag: `M7-24c`
 # wants the verbal layer auditable too, and a hint without its intent cannot be judged.
-STEP_FIELDS = ("step", "sender", "commit", "move", "hint", "intent")
+RECORD_FIELDS = ("step", "sender", "commit", "move", "hint", "intent")
 FORBIDDEN_IN_PLAY = ("nonce", "payload")
 
 
@@ -61,23 +73,24 @@ def build_log(
                 f"step {index} carries {', '.join(leaked)}; the nonce stays secret until the "
                 "end of the game [AE-18], so reveals belong in the audit section"
             )
-        missing = [name for name in STEP_FIELDS if name not in step]
+        missing = [name for name in RECORD_FIELDS if name not in step]
         if missing:
             raise LogArtifactError(f"step {index} is missing {', '.join(missing)}")
-        recorded.append({name: step[name] for name in STEP_FIELDS})
+        recorded.append({name: step[name] for name in RECORD_FIELDS})
     return {
         "_schema": "game-log",
         "schema_version": SCHEMA_VERSION,
         "game_id": identity.game_id,
         "game_uid": identity.game_uid,
-        "sub_game": sub_game,
+        "sub_game_number": sub_game,
         "links": {
             "config": config_filename(identity, sub_game),
             "log": log_filename(identity, sub_game),
         },
         "summary": dict(summary),
-        "steps": recorded,
-        "audit": None,  # explicit: the reveal has not happened yet, rather than absent
+        # One `records` array, as the template has it. Entries gain `payload` and `nonce`
+        # only at `reveal_log`; until then their absence *is* the in-play state.
+        "records": recorded,
     }
 
 
@@ -97,9 +110,9 @@ def reveal_log(
     Every reveal must line up with a recorded step, because a reveal for a step that was
     never played — or a step left unrevealed — is exactly what an auditor is looking for.
     """
-    steps = log.get("steps")
+    steps = log.get("records")
     if not isinstance(steps, Sequence) or not steps:
-        raise LogArtifactError("cannot reveal a log that has no steps")
+        raise LogArtifactError("cannot reveal a log that has no records")
     if len(reveals) != len(steps):
         raise LogArtifactError(
             f"{len(reveals)} reveals for {len(steps)} steps; every step is revealed exactly once"
@@ -113,13 +126,10 @@ def reveal_log(
             raise LogArtifactError(
                 f"reveal {index} is for step {reveal.get('step')!r}, log has {step.get('step')!r}"
             )
-        records.append({
-            "step": step["step"],
-            "commit": step["commit"],
-            "nonce": reveal["nonce"],
-            "payload": reveal["payload"],
-        })
-    revealed: JsonObject = {**dict(log), "audit": {"records": records}}
+        # The revealed record is the in-play one *plus* payload and nonce -- the same
+        # entry gaining two keys, not a parallel object in another array.
+        records.append({**dict(step), "payload": reveal["payload"], "nonce": reveal["nonce"]})
+    revealed: JsonObject = {**dict(log), "records": records}
     if mutual_agreement is not None:
         revealed["mutual_agreement"] = dict(mutual_agreement)
     return revealed
@@ -127,4 +137,7 @@ def reveal_log(
 
 def is_revealed(log: Mapping[str, object]) -> bool:
     """Whether the reveal has happened — the one check a caller needs before sharing."""
-    return isinstance(log.get("audit"), Mapping)
+    records = log.get("records")
+    return bool(records) and all(
+        isinstance(r, Mapping) and "nonce" in r for r in records  # type: ignore[union-attr]
+    )

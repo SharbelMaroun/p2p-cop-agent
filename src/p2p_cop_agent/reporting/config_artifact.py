@@ -13,6 +13,11 @@ passes its own schema, passes a casual read, and describes a game nobody played.
 object rather than accepting a hash argument — the artifact cannot claim a lock it did
 not compute.
 
+**The key names are the templates', not ours (`X-06`).** `sub_game_number` rather than
+`sub_game`, plus `agreed_between` (`:2928`) and `config_name`. An auditor diffs our
+artifact against the lecturer's template; a key that is merely *equivalent* still reads as
+missing. This cost a contract bump, because our own schema had required `sub_game`.
+
 **Two locks, not one (`M7-23b`).**
 
 * `config_sha256` — over the whole agreed game object. Rule 11 (Mandatory) requires the
@@ -25,12 +30,15 @@ not compute.
 
 The second is a top-level member rather than something buried in `config`, so an auditor
 comparing two teams' artifacts sees both locks side by side without parsing a subtree.
-The schema leaves top-level properties open, so carrying it needs no contract revision.
+**Where it goes is explicitly not specified** — asked directly, the sources do not say
+whether the scent lock is a separate field or implicitly covered by `config_sha256` once
+the formula is in the configuration. Rule 23 mandates the lock's *existence*, not its
+placement, so this position is ours and is recorded as such.
 """
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from p2p_cop_agent.reporting.naming import MatchIdentity, config_filename, log_filename
 from p2p_cop_agent.shared.config import JsonObject
@@ -61,6 +69,7 @@ def build_config(
     sub_game: int,
     game: Mapping[str, object],
     config_sha256: str,
+    agreed_between: Sequence[str] | None = None,
 ) -> JsonObject:
     """Assemble the per-sub-game configuration artifact from the negotiated game object.
 
@@ -83,7 +92,14 @@ def build_config(
         "schema_version": SCHEMA_VERSION,
         "game_id": identity.game_id,
         "game_uid": identity.game_uid,
-        "sub_game": sub_game,
+        # `sub_game_number`, not `sub_game`: the lecturer's template and `inst/:3019` both
+        # use the longer name, and an auditor diffing our artifact against the template
+        # would see a key that simply is not there (`X-06`).
+        "sub_game_number": sub_game,
+        # `:2928` shows `"agreed_between": ["group-a", "group-b"]` -- who agreed this
+        # configuration, which is not derivable from the game object itself.
+        "agreed_between": list(agreed_between or game.get("agreed_between") or []),
+        "config_name": config_filename(identity, sub_game),
         "links": {
             "config": config_filename(identity, sub_game),
             "log": log_filename(identity, sub_game),
@@ -92,6 +108,14 @@ def build_config(
         "config_sha256": config_sha256,
         "scent_model_sha256": scent_model_hash(),
     }
+
+
+def sub_game_number(artifact: Mapping[str, object]) -> int:
+    """Read the sub-game from an artifact, accepting only the template's key name."""
+    value = artifact.get("sub_game_number")
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ConfigArtifactError("artifact carries no integer `sub_game_number`")
+    return value
 
 
 def quantitative_parameters(artifact: Mapping[str, object]) -> dict[str, object]:
