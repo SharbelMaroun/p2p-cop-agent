@@ -432,12 +432,13 @@ These run before every commit and in CI; they are not milestone-scoped.
 
 ## X — Interoperability defects found by probing (2026-08-06)
 
-*Not a milestone. Defects found by sending our own peers the messages a classmate would send, rather than the messages we send ourselves. Neither had an owning row — a ledger defect, not an exemption.*
+*Not a milestone. Cross-repo defects that had no owning row — a ledger defect, not an exemption. `X-01`/`X-02` were found by sending our own peers the messages a classmate would send; `X-03` was found by reading the bundle as a stranger would.*
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
 | X-01 | Stop scoring a verifying audit as forgery over nonce shape `C-033` | DONE | P0 | Found 2026-08-06 by probing our own peers. `verify_commit` hashes whatever nonce it is given; only a digest mismatch is `TAMPERED` `[AE-19]` `[book :1270]`. Generation stays strict at 32 lowercase hex. Schemas relaxed to `^[0-9a-f]+$`; bundle bumped to `0.2.6-proposed` `[G-18]`. `test_audit_nonce_tolerance.py` |
 | X-02 | Make the two peers agree on unmodelled wire fields | DONE | P0 | The Cop tolerated an extra field and the Thief refused it, so one classmate message played fine against one peer and silently starved the other into a technical loss. Both now ignore extras on turn, control and audit messages, matching the reference; missing **required** fields still refuse |
+| X-03 | Stop the bundle advertising the retired copy model | IN PROGRESS | P0 | **Claimed by Sharbel 2026-08-06.** `shared_contract/README.md` and `shared_contract/verify.py` still tell a reader the bundle "can be copied into the Thief repository byte-for-byte" — the distribution model team direction retired on 2026-07-28 under `THIEF-002`, and which the Thief's `CONTRACT_HANDOFF_CHECKLIST` says "must not be revived". The Cop records the withdrawal only in a doc marked SUPERSEDED, so the **deliverable itself** contradicts the companion repo. Both files are controlled, so `G-18` forces a version bump and a regenerated manifest |
 
 ---
 
