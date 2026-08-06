@@ -81,8 +81,18 @@ def build_log(
     }
 
 
-def reveal_log(log: Mapping[str, object], reveals: Sequence[Mapping[str, object]]) -> JsonObject:
+def reveal_log(
+    log: Mapping[str, object],
+    reveals: Sequence[Mapping[str, object]],
+    mutual_agreement: Mapping[str, object] | None = None,
+) -> JsonObject:
     """Return the log with its final audit section: the nonces and payloads, at the end.
+
+    ``mutual_agreement`` takes `orchestration.settlement.settlement_record`. Added
+    2026-08-06 after asking the reference-code notebook what its log actually carries:
+    `mutual_agreement` is a **top-level key** there, and `settlement_record`'s own
+    docstring had claimed to produce "the `mutual_agreement` block for the log artifact"
+    while nothing consumed it. The producer existed and the consumer did not.
 
     Every reveal must line up with a recorded step, because a reveal for a step that was
     never played — or a step left unrevealed — is exactly what an auditor is looking for.
@@ -109,7 +119,10 @@ def reveal_log(log: Mapping[str, object], reveals: Sequence[Mapping[str, object]
             "nonce": reveal["nonce"],
             "payload": reveal["payload"],
         })
-    return {**dict(log), "audit": {"records": records}}
+    revealed: JsonObject = {**dict(log), "audit": {"records": records}}
+    if mutual_agreement is not None:
+        revealed["mutual_agreement"] = dict(mutual_agreement)
+    return revealed
 
 
 def is_revealed(log: Mapping[str, object]) -> bool:

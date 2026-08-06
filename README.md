@@ -1126,6 +1126,37 @@ schedule → six per-sub-game configs, each schema-validated and atomically writ
 cross-artifact identity check → settlement → result artifact. That ordering was deliberate
 before mirroring M7 to the Thief — a design worth copying should be one that has run.
 
+#### Closing a gap in the method itself (2026-08-06)
+
+Eight M7 batches ran that day — the four artifacts, the three Gmail gates, the reporting
+path, the settlement layer and the six-sub-game series — and each of them ran **seven** of
+the eight method steps. Step 3 asks both notebooks; I asked only the book one. Steps 6 and
+7 ask for docs in both repositories; I updated only this one, on the reasoning that the
+work was "Cop-only", which is not an exemption the rule offers.
+
+I did not notice. It was caught by being asked directly whether the method had been
+followed. Recorded here rather than quietly backfilled, because a method that is
+selectively applied is worth less than its record suggests.
+
+**Asking the code notebook the skipped questions found three things.**
+
+*Two where we are stricter than the reference, deliberately.* Its artifact writer
+(`report/emit.py`) writes **non-atomically** — `path.write_text(json.dumps(...))` straight
+to the destination, no temp file, no `os.replace`. And its log carries nonces **inline per
+record**, added only at the end. Our atomic write and our separate `audit` section both go
+further; the justification is rule 19's audit phase rather than conformance, and neither
+is a claim that the reference does it this way.
+
+*One that was an actual gap.* The reference's log carries `mutual_agreement` as a
+top-level key. Ours did not — while `settlement_record`'s own docstring described itself
+as "the `mutual_agreement` block for the log artifact". The producer had been built and
+the consumer never wired. `reveal_log` now accepts it, and it stays optional, because a
+game that ended without agreement still needs its reveal written: that log *is* the
+evidence of what happened.
+
+That last one is the argument for the rule. Seven batches of correct work, and the eighth
+step would have caught a dangling producer within minutes of writing it.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
