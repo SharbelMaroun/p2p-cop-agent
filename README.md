@@ -558,6 +558,41 @@ intensities are authoritative and are used verbatim; its cell labels are not. Co
 faithfully, it would have pinned an inverted board into the suite and the Cop would have
 chased every lie instead of catching it.
 
+#### What a hint is actually about (`M6-10`, `M6-10e`, 2026-08-06)
+
+Until now this peer sent the same five words every turn: *"holding position"*. That is a
+hint in name only — constant text carries no information, true or false, and the verbal
+layer is half the game the book is about. A real hint now goes out each turn, its intent
+alternating so both honesty and bluff are exercised, and sealed in the commitment so a
+bluff cannot be denied at the audit.
+
+**The interesting part is what a hint is a claim *about*.** Our own ledger said the place
+descriptor should be "belief-derived" — that we should hint about where we think the
+Thief is. That is wrong twice over, and both notebooks plus the book agree.
+
+It would be **unfalsifiable**. Chapter 4.4's whole lie-detection mechanism works by
+testing a verbal claim against *the claimant's own scent*: the Thief says "I am moving
+North", the pursuer measures no scent there, and "the physical evidence contradicts the
+verbal claim, revealing the thief's true location". You can only check a claim against
+the scent of the peer who made it. A hint about the *opponent's* position could never be
+tested by anyone, so it would carry no strategic weight at all.
+
+And it would be **a leak**. A place computed from our belief argmax publishes our private
+inference on the wire — exactly what the `M6-18` guard above exists to prevent. Asked
+directly, the reference confirms its own `place` comes from the negotiated `setting` and
+is "not derived from the belief heatmap".
+
+So `place_for` takes **our own cell** and dresses it in a landmark from the agreed
+`map_area`. When no area is agreed the book is explicit that generic bearings are used,
+so an unset area is an ordinary supported configuration rather than a gap — as are an
+unknown city, a malformed value, and a missing section. Every word in the vocabulary is
+asserted coordinate-free, because a landmark that smuggled a digit would be the numeric
+protocol rule 27 forbids, just wearing a nicer coat.
+
+*A note on where the words came from.* The mechanism is the reference's; the vocabularies
+are ours. Copying its landmark lists verbatim would be source reuse under `ADR-008`, and
+the lists are the one part with no engineering content.
+
 #### Keeping the guesses private (`M6-18`, 2026-08-06)
 
 The belief map is not a secret in the cryptographic sense — nothing hashes it, nothing

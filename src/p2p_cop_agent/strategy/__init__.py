@@ -39,6 +39,13 @@ from p2p_cop_agent.strategy.hints import (
     template_hint,
     validate_hint,
 )
+from p2p_cop_agent.strategy.landmarks import (
+    GENERIC_BEARINGS,
+    LANDMARKS,
+    map_area,
+    place_for,
+    vocabulary,
+)
 from p2p_cop_agent.strategy.pursuit import choose_action, step_distances
 from p2p_cop_agent.strategy.scent import (
     CENTER_INTENSITY,
@@ -86,6 +93,7 @@ from p2p_cop_agent.strategy.verbal import (
 )
 
 __all__ = [
+    "GENERIC_BEARINGS", "LANDMARKS", "map_area", "place_for", "vocabulary",
     "BarrierIntent", "Belief", "BeliefError", "CENTER_INTENSITY", "DECAY_RATE", "DEFAULT_OUTER_RING_DELTA",
     "DIRECTION_WORDS", "DOCUMENTED_EMISSION", "FIELD_SIZE", "HINT_MAX_WORDS_DEFAULT",
     "Hint", "HintError", "HintProviderError", "MIN_ESCAPES_REMOVED", "MoveIntent", "NEUTRAL_SUPPORT",

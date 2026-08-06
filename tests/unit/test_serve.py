@@ -56,6 +56,7 @@ def test_serve_decide_emits_a_legal_placeholder_turn() -> None:
     decide = serve_decide(
         Board(grid_size=7, axis_start_index=0, axis_origin_corner="top-left"),
         Coordinate(0, 0),
+        {"world": {"map_area": "New York", "hint_max_words": 15}},
     )
     payload_1, public_1 = decide(None)
     _, public_2 = decide(None)

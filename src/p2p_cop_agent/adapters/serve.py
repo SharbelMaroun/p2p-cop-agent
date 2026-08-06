@@ -34,7 +34,10 @@ from p2p_cop_agent.services.readiness import timeouts_from_private_config, wait_
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.private_config import load_private_config, opponent_url
 from p2p_cop_agent.shared.team_config import load_host_spec, load_identity
+from p2p_cop_agent.strategy.hints import hint_max_words
+from p2p_cop_agent.strategy.landmarks import place_for
 from p2p_cop_agent.strategy.scent_field import ScentField
+from p2p_cop_agent.strategy.verbal import generate_hint
 
 _DEFAULT_PORTS = {"https": 443, "http": 80}
 
@@ -68,8 +71,8 @@ def cop_start(game: JsonObject) -> Coordinate:
     return Coordinate(int(row), int(col))
 
 
-def serve_decide(board: Board, start: Coordinate) -> Decide:
-    """The placeholder policy: a legal STAY each turn, but with a **real trail** (M6-08a).
+def serve_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
+    """The placeholder policy: a legal STAY each turn, with a real trail and a real hint.
 
     The move is still the documented M5 placeholder; belief-driven pursuit replaces it.
     What is no longer a placeholder is the ``smell_grid``. It used to be a hard-coded
@@ -81,6 +84,18 @@ def serve_decide(board: Board, start: Coordinate) -> Decide:
     So the trail is now maintained and sent. Emission is involuntary by construction: a
     `STAY` deposits precisely as a move does, because :meth:`ScentField.advance` takes
     the cell and no action (M6-09a, M6-09c).
+
+    **A hint now goes out every turn too (M6-10).** It used to be the fixed string
+    "holding position", which is a hint in name only: constant text carries no
+    information, true or false, and the verbal layer is half the game the book is about.
+    The place descriptor comes from **our own cell** dressed by the agreed `map_area`
+    (M6-10e) -- never from belief, because a hint is a claim about the sender that the
+    opponent tests against the sender's own scent (`:1020`), and a belief-derived place
+    would publish private inference the `M6-18` guard exists to keep off the wire.
+
+    The intent alternates so both a truthful and a bluffed hint are exercised in any
+    real match; it is sealed in the commitment, so the audit reveals which was which
+    and a bluff cannot be denied afterwards (M6-10a).
     """
     trail = ScentField(board=board)
     count = 0
@@ -89,10 +104,18 @@ def serve_decide(board: Board, start: Coordinate) -> Decide:
         nonlocal count
         count += 1
         trail.advance(start)  # a STAY: the placeholder never leaves its start cell
+        bluff = count % 2 == 0
+        hint = generate_hint(
+            place_for(board, start, game),
+            provider=None,          # zero-token template: the always-available floor
+            bluff=bluff,
+            variant=count,
+            max_words=hint_max_words(game),
+        )
         return (
-            {"move": "MOVE:STAY", "intent": "truth"},
+            {"move": "MOVE:STAY", "intent": hint.intent},
             {
-                "hint": "holding position",
+                "hint": hint.text,
                 "smell_grid": encode_scent(trail.window(start)),
                 "timestamp": f"t{count}",
             },
@@ -143,7 +166,8 @@ def serve_match(
         sdk=sdk, transport=FastMCPClient(opponent_url(config)),
         take_offer=lambda: _drain(inboxes.agreements),
         take_turn=lambda: take_turn(inboxes, peer),
-        decide=serve_decide(sdk.board(), cop_start(dict(sdk.game_config))), identity=identity,
+        decide=serve_decide(sdk.board(), cop_start(dict(sdk.game_config)), dict(sdk.game_config)),
+        identity=identity,
         step_zero=attestation_wire(sealed),
         game_id=game_id, game_uid=sdk.config_sha256[:32],
         started_at=datetime.now(UTC).isoformat(),
