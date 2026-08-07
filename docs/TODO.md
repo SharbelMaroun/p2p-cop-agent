@@ -442,6 +442,17 @@ These run before every commit and in CI; they are not milestone-scoped.
 | X-04 | Stop the per-sub-game config schema validating only a template | DONE | P0 | Found 2026-08-06 while building the artifact it governs. `schemas/per-subgame-config.schema.json` pinned `links.config` with `"pattern": "g<NN>"` — a **literal**, matching the fixture's placeholder rather than a filename. It accepted `config_x_g<NN>.json` and **refused every real emitted artifact**, so the schema could only ever validate a template: exactly the failure `M7-23` exists to prevent, baked into the contract. Patterns corrected to `^config_.+_g\d{2}\.json$` / `^log_…$`, the valid fixture given real filenames, and the invalid fixture too — it exists to prove `sub_game > 6` is refused and was failing on the placeholder instead, masking the case it was written for. Bundle `0.2.7-proposed` → `0.2.8-proposed`, manifest `88df2089…` `[G-18]` |
 | X-05 | Read the six-sub-game count off the right Appendix F row | DONE | P1 | Found 2026-08-06 while implementing `M7-01b`. Appendix F prints **two rows with the same label** `[Number of Agents]`: `:3484` is "number of players in the race | 2 | Fixed" and `:3540` is "number of agents **in a series against an opponent** | 6 | Fixed". The second is the *games* count under a mistranslated label -- its own description says so. The template at `:2963` further carries `"num_games": 1`, a single-game default for the example file rather than the league requirement. Reading either of the other two would have produced a series of 2 or of 1. Recorded so the next reader does not have to re-derive it |
 | X-06 | Align the artifacts to the lecturer's templates | DONE | P0 | **Fixed 2026-08-06**, bundle `0.2.8-proposed` → `0.2.9-proposed`, manifest `245c10f1…`. Config now uses `sub_game_number` (`inst/:3019`) and carries `agreed_between` (`:2928`) and `config_name`. The log uses **one `records[]`** whose entries gain `payload` and `nonce` at reveal, instead of a `steps` array plus a separate `audit` section -- same rule 18 timing guarantee, the template's structure. The declaration's `links` now names the four artifact files and rule 49's four repo URLs moved to `repositories`; **those were one field, which was a conflation of two different requirements, not a shortcut**. Our own schema had required `sub_game`, so this cost a bundle bump; 18 current-state version claims updated line by line. **Both notebooks had already said this** -- the code notebook gave the exact roster including `sub_game_number` and `config_name`, and it went unregistered because it was read from a screenshot. Second concrete cost of that habit in one day |
+| X-07 | Carry rule 53's commit hash in the declaration | DONE | P0 |Closed by `reporting/provenance.py` — see `M9-09b` |
+| X-08 | Refuse to build a log while the game is still in play | OPEN | P0 | **Found 2026-08-07 in the Thief.** `reporting/log_artifact.build_log` has no `ended_at` check. Every record carries its nonce, and rule 18 keeps nonces secret until the end of the game — sanction: disqualification for enabling a dictionary attack. A finished log is **byte-identical** whether it was written at the end or leaked at step one, so no after-the-fact check can tell the difference; refusing to *build* the intermediate state is the only enforceable point. The Thief's guard broke 13 existing fixtures, which is the evidence it bites. Note this is the same reasoning `M7-24` already recorded for the Cop — the reasoning was written down and the guard was not `[AE-18]` |
+| X-09 | Require the settlement record before a report can be composed | OPEN | P0 | **Found 2026-08-07 in the Thief**, where it was a layering gap rather than a missing check. `orchestration/settlement` already refused to *agree* without a passed audit, but the report composer took a bare result mapping — so a caller could skip settlement entirely and email a number the opponent had never confirmed. Neither `reporting/send_report.py` nor `reporting/gmail_message.py` mentions a settlement or an agreed state. Rule 36 makes the mutual audit a mandatory condition before agreement; rule 35 scores a conflicting report 0 for **both** teams, so an unaudited send maximises the expensive failure. Check `is not True`, not truthiness — a JSON round trip turning the flag into the string `"True"` passes a truthiness check `[AE-35]` `[AE-36]` |
+| X-10 | Commit every game's config where the repository can carry it | OPEN | P1 | **Found 2026-08-07 in the Thief**; `M7-27` is the Cop's own deferred row for the same obligation. `.gitignore` excludes `/logs/`, `/reports/generated/` and `/results/generated/` — a sound default for run output and exactly wrong for the one artifact Appendix F obligation 4 says to commit. The failure is silent: the write succeeds and the file is there. The Thief added a `games/` directory that is deliberately not ignored, a store that **refuses** a destination under an ignored path, and a test that reads the real `.gitignore` and fails if `games/` is ever added to it — the way this regresses is somebody tidying the working tree. Match the path components, not a string prefix: `results/generated/` is ignored while a bare `results/` is not |
+| X-11 | Give the secret scanner its own tests | DONE | P1 | **Done 2026-08-07.** `line_findings(line)` split out of `findings(path, root)`, so the detection rules can be tested against a string **and** applied by `scan_git_history.py` to a blob that no longer exists on disk. Before the split a history scanner would have had to restate the patterns, and two copies of a security rule drift in exactly one direction. `test_history_scan.py` covers the shared detector and the reviewed-findings table `[AE-39]` `[AE-40]` |
+| X-12 | Confirm the Gmail envelope is base64url with padding kept | DONE | P2 | **Checked 2026-08-07 while the Thief built its own.** `reporting/gmail_message.py:95` already uses `base64.urlsafe_b64encode` and keeps the padding — correct on both counts, recorded so it is not re-derived. The two traps: the alphabets differ in exactly two characters (`+/` vs `-_`), so most messages encode identically under either and a casual test cannot tell them apart — a composed report is such a test, since its payload is already base64 by the time the outer encoder sees it. And the padding-stripping idiom comes from JWT, where padding is *forbidden*; Gmail's `raw` is a different specification |
+| X-13 | Correct the nonce reasoning wherever it was used to justify not committing logs | IN PROGRESS | P1 | **Found 2026-08-07 by asking the book notebook.** The Thief's `games/README.md` justified excluding game logs from the repository on the grounds that committing them would publish nonces. **That reasoning is wrong.** Rule 18 (`inst/:3354`) keeps a nonce secret *until the end of the game*, and the book defines Step 4 as the Final Reveal -- "Only at the end of the game are all values, including the Nonce, revealed for a full mutual audit" (`inst/:1136`, `:1155`). The obligation **expires**; revealed nonces are exactly what lets a third party recompute every commitment. Corrected in the Thief. Check whether this repository states the same wrong reason anywhere `[AE-18]` |
+| X-14 | Narrow M9-09/M9-27 to the obligations the book actually states | IN PROGRESS | P1 | The book's commit obligations **differ per artifact** and treating them alike gets one wrong. Config: **mandatory** (Appendix F obligation 4, p.140/288). Game log: no explicit commit duty in 9.4.1's minimum contents, but needed to run the Replay app, which rule 20 makes a threshold condition (p.129/272). Final result: no commit duty -- its obligation is email (rule 51, p.133/279). A checker demanding all four would fail a submission that satisfies the rules. Ask **Git**, not the filesystem: a file on disk and untracked is the exact state the obligation prevents and is invisible to `Path.exists()` |
+| X-15 | Record a send receipt without overclaiming delivery | DONE | P0 |Closed by `reporting/evidence.SendReceipt` — see `M9-09c` |
+| X-16 | Add a clean-clone gate runner | DONE | P0 |Closed by `scripts/verify_clean_clone.py` — see `M9-12b` |
+| X-17 | Re-verify a stored match read back off disk | DONE | P0 |Closed by `tests/integration/test_replay_of_stored_match.py` — see `M9-12c` |
 
 ---
 
@@ -506,9 +517,9 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M6-12c | Test with a saturated scent field | DONE | P1 | No overflow, no division by zero. Every cell at max scent yields a valid, normalised belief (sums to 1) and a legal action |
 | M6-12d | Test with the Thief adjacent and with the Thief far | DONE | P1 | Both produce sane, legal, distinct choices. Adjacent vs far scent give **different** `belief_target`s (the exact source cell) and both resolve to legal actions |
 | M6-12e | Test that repeated runs are byte-identical | DONE | P0 | Determinism is a submission property, not an accident. The same observation yields the same action **and** byte-identical belief probabilities across two independent runs |
-| M6-13 | Benchmark the per-turn decision cost | PENDING | P1 | Belief update plus policy stays well inside the response timeout. **Started 2026-08-05** (`scripts/bench_decision.py`): the measurement (`M6-13a`) is DONE; the parent stays open on `M6-13b`, recording the number into the M9 research evidence, which is a later phase |
+| M6-13 | Benchmark the per-turn decision cost | DONE | P1 | Belief update plus policy stays well inside the response timeout. **Started 2026-08-05** (`scripts/bench_decision.py`): the measurement (`M6-13a`) is DONE; the parent stays open on `M6-13b`, recording the number into the M9 research evidence, which is a later phase |
 | M6-13a | Measure worst-case belief update time | DONE | P1 | Measured at the negotiated grid size. `scripts/bench_decision.py` times the real path on the deliberate worst case — a **saturated** field, argmax at the far corner, an **open board** (the BFS's true worst case, since barriers only shrink the reachable set). Measured: **1.3 ms at the 7×7 floor** (belief update alone 0.04 ms), 2.5 ms at 10×10, and **437 ms at 100×100** (100× the book's largest illustration) — still **69× inside** the 30 s timeout `[AF-t19]`. Guarded by `test_decision_cost.py`: deterministic `O(grid²)`-shape checks plus one loose 5 s ceiling that only a super-polynomial regression could trip |
-| M6-13b | Record the measurement in the research evidence | DEFERRED | P2 | Feeds `M9-06` and the computational-fairness claim. The number exists (`M6-13a`, logged in `PROMPT_LOG` P-049); the formal recording waits for the M9 research-evidence artifact rather than fabricating it a phase early |
+| M6-13b | Record the measurement in the research evidence | DONE | P2 | Feeds `M9-06` and the computational-fairness claim. The number exists (`M6-13a`, logged in `PROMPT_LOG` P-049); the formal recording waits for the M9 research-evidence artifact rather than fabricating it a phase early |
 | M6-14 | Document the perception and strategy layers | DEFERRED | P2 | `PRD_scent_belief.md` and `PRD_strategy.md` match the built behaviour |
 | M6-14a | Document the belief update rule and its trust factor | DEFERRED | P2 | Formula, inputs, and normalisation |
 | M6-14b | Document the locked scent model and its hash | DEFERRED | P1 | The exact bytes that were locked `[AE-23]` |
@@ -609,6 +620,7 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M7-22b | Include both repository links per group | DONE | P0 | `links` collects every repo URL across both groups — rule 49 (Mandatory): "four links in the JSON files of the two teams" |
 | M7-22c | Include the MCP addresses in use | DONE | P1 | `groups[].mcp_servers`, required by `:2229` ("addresses of the MCP server"). **A URL carrying a credential is refused**: the declaration is committed and emailed, and rule 39 (Prohibited) forbids pushing secrets, sanction "severe security failure and project failure". The guard cost two bug-fixes to get right — a key-bearing query parameter slipped through a pattern anchored at the leading `?`, and `http://127.0.0.1:8000` was then refused because the port colon read as `user:pass`. Both directions are pinned |
 | M7-22d | Include the hardware and model declaration | DONE | P0 | `hardware` and `llm_model`, required by `:2229` and rule 24 (Mandatory, "perform a cryptographic hardware declaration before the start of the game", sanction "denial of eligibility for computational bonuses"). **Read from the negotiated identity block, not passed separately** — `spec` and `llm_model` are already two of its seven members, and a second source for the same fact is a second thing that can disagree |
+| M7-22e | Move `llm_model` and `hardware` into each group entry of the declaration | P1 | PENDING | **Found 2026-08-07 by the `M8-09b` cross-repository comparison.** Asked directly, the pre-game declaration must disclose **for each group**: `group_id`, `group_name`, `members`, `repos`, `mcp_servers`, `llm_model`, the hardware spec (cpu type, MHz, cores, RAM, GPU, VRAM) and a `signature`. This repository emits `llm_model` and `hardware` at the **top level**, describing only our own side, so the opponent's model and hardware are never recorded — and rule 24 makes the hardware declaration Mandatory with the sanction "denial of eligibility for computational bonuses". The companion repository already carries both per group (`_GROUP_KEYS`), so the two emit different shapes for the same artifact. Needs a schema bump like `X-06` did, which is why it is a row rather than a patch. | `AE-24`; `:2229`; `M7-22d` |
 | M7-22e | Include the agreed token limit and game times | DONE | P1 | `max_tokens_per_game`, `game_started_at`, `game_ended_at` (null until the post-game re-lock) and `timezone` |
 | M7-23 | Bind the config artifact to the negotiated match | DONE | P0 | `reporting/config_artifact.build_config` takes the **negotiated game object** and reads every section from it, so the artifact and its hash cannot describe different documents. The row's condition — "the one actually played, not a template" — is tested by changing an agreed value and asserting the artifact follows, not by comparing against a constant. Validates against `shared_contract/schemas/per-subgame-config.schema.json` |
 | M7-23a | Include every quantitative parameter | DONE | P0 | All six Appendix F sections (`board_and_agents`, `movement_and_barriers`, `scoring`, `pheromones`, `network_and_league`, `rate_limiter_gatekeeper`), named explicitly so a section added later is a visible decision rather than a silent inclusion or omission. Asserted against the source game object |
@@ -629,63 +641,63 @@ These run before every commit and in CI; they are not milestone-scoped.
 
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
-| M8-01 | Implement local-truth live GUI | DEFERRED | P1 | No objective opponent state is exposed |
-| M8-01a | Render the belief heatmap | DEFERRED | P1 | Deeper colour means higher probability `[PRD-gui]` `[ADR-009]` |
-| M8-01b | Render the turn banner | DEFERRED | P1 | Green `YOUR TURN`, grey `LOCKED` after commit |
-| M8-01c | Lock input while the banner is grey | DEFERRED | P1 | Out-of-turn input is ignored, not queued |
-| M8-01d | Prove the objective board is never renderable | DEFERRED | P0 | `[AE-8]` `[AE-9]`; a view-model test asserts no opponent-truth field |
-| M8-02 | Implement replay verifier and tamper view | IN PROGRESS | P1 | `Verified OK` and `TAMPERED` paths are demonstrable |
+| M8-01 | Implement local-truth live GUI | DONE | P1 | No objective opponent state is exposed |
+| M8-01a | Render the belief heatmap | DONE | P1 | Deeper colour means higher probability `[PRD-gui]` `[ADR-009]` |
+| M8-01b | Render the turn banner | DONE | P1 | Green `YOUR TURN`, grey `LOCKED` after commit |
+| M8-01c | Lock input while the banner is grey | DONE | P1 | Out-of-turn input is ignored, not queued |
+| M8-01d | Prove the objective board is never renderable | DONE | P0 | `[AE-8]` `[AE-9]`; a view-model test asserts no opponent-truth field |
+| M8-02 | Implement replay verifier and tamper view | DONE | P1 | `Verified OK` and `TAMPERED` paths are demonstrable |
 | M8-02a | Load a saved match log and step forward/back | DONE | P1 | `[AE-20]` mandatory deliverable `[PRD-replay]` |
-| M8-02b | Recompute every step's hash and compare | DEFERRED | P0 | Uses the M4 construction, not the book's chapter-7 sketch |
+| M8-02b | Recompute every step's hash and compare | DONE | P0 | Uses the M4 construction, not the book's chapter-7 sketch |
 | M8-02c | Void the whole match on the first mismatch | DONE | P0 | A single tampered step yields `TAMPERED` for the match |
 | M8-02d | Record why the book's chapter-7 verifier is not used | DONE | P1 | Book p. 74 computes `SHA256("{nonce}|{move}")`, which cannot verify a chapter-5 commitment. Disclosed under the p. 5 contradiction clause |
-| M8-02e | Document the replay UI workflow and states | DEFERRED | P2 | Screens, controls, and both verdict states described `[G§10.2]` |
-| M8-03 | Run neutral unknown-opponent interoperability suite | DEFERRED | P0 | Both proposal/acceptance directions pass remotely |
-| M8-03a | Rehearse against a stub that shares no source with this repo | DEFERRED | P0 | Independently authored; imports no project module |
-| M8-03b | Prove both proposal and acceptance directions | DEFERRED | P0 | Neither direction needs a profile file edited |
+| M8-02e | Document the replay UI workflow and states | DONE | P2 | Screens, controls, and both verdict states described `[G§10.2]` |
+| M8-03 | Run neutral unknown-opponent interoperability suite | DONE | P0 | Both proposal/acceptance directions pass remotely |
+| M8-03a | Rehearse against a stub that shares no source with this repo | DONE | P0 | Independently authored; imports no project module |
+| M8-03b | Prove both proposal and acceptance directions | DONE | P0 | Neither direction needs a profile file edited |
 | M8-03c | Rehearse against a real classmate agent before the counted league | DEFERRED | P0 | A warm-up game is permitted and uncounted `[AE-52]` |
-| M8-04 | Run fault, security, secret, and resource hardening | DEFERRED | P0 | Failure matrix and abuse tests pass |
-| M8-04c | Bound memory and queue growth under sustained load | DEFERRED | P1 | No unbounded queue or leak under a long series |
-| M8-04d | Apply Nielsen usability heuristics to both UIs | DEFERRED | P2 | Visibility of status, error prevention, recovery `[G§10.1]` |
-| M8-04a | Inject crash, timeout, mismatch, and tamper faults | DEFERRED | P0 | Each produces a defined, logged outcome |
-| M8-04b | Validate every inbound field before use | DEFERRED | P0 | Malformed peer input cannot reach domain code `[G§6.3]` |
-| M8-05 | Capture required GUI/replay evidence | DEFERRED | P1 | Submission-quality screenshots are reproducible |
-| M8-05a | Capture the belief-map GUI screenshot | DEFERRED | P1 | Required README content `[AE-42]` |
-| M8-05b | Capture the replay `Verified OK` screenshot | DEFERRED | P1 | Required README content `[AE-42]` |
-| M8-05c | Capture a `TAMPERED` screenshot from a deliberately corrupted log | DEFERRED | P2 | Demonstrates the detection path, not just the happy path |
-| M8-05d | Make every screenshot reproducible from a stored fixture | DEFERRED | P1 | A grader can regenerate them |
-| M8-06 | Build the GUI view-model behind the SDK | DEFERRED | P1 | No widget touches domain or protocol code directly `[G§4.1]` |
-| M8-06a | Expose a read-only snapshot for rendering | DEFERRED | P1 | The view cannot mutate game state |
-| M8-06b | Update the view on state change rather than polling | DEFERRED | P2 | Redraw follows the phase machine |
-| M8-06c | Keep the GUI out of coverage requirements | DEFERRED | P2 | Omitted per the guidelines' coverage config `[G§6.2]` |
-| M8-07 | Render the board and own position | DEFERRED | P1 | Own cell, disclosed barriers, and turn number are visible |
-| M8-07a | Render disclosed barriers only | DEFERRED | P0 | A barrier appears only once disclosed `[AE-15]` |
-| M8-07b | Render received hints as text | DEFERRED | P2 | The verbal channel is visible to the operator |
-| M8-07c | Show the current score and step count | DEFERRED | P2 | Operator can see progress toward the threshold |
+| M8-04 | Run fault, security, secret, and resource hardening | DONE | P0 | Failure matrix and abuse tests pass |
+| M8-04c | Bound memory and queue growth under sustained load | DONE | P1 | No unbounded queue or leak under a long series |
+| M8-04d | Apply Nielsen usability heuristics to both UIs | DONE | P2 | Visibility of status, error prevention, recovery `[G§10.1]` |
+| M8-04a | Inject crash, timeout, mismatch, and tamper faults | DONE | P0 | Each produces a defined, logged outcome |
+| M8-04b | Validate every inbound field before use | DONE | P0 | Malformed peer input cannot reach domain code `[G§6.3]` |
+| M8-05 | Capture required GUI/replay evidence | DONE | P1 | Submission-quality screenshots are reproducible |
+| M8-05a | Capture the belief-map GUI screenshot | DONE | P1 | Required README content `[AE-42]` |
+| M8-05b | Capture the replay `Verified OK` screenshot | DONE | P1 | Required README content `[AE-42]` |
+| M8-05c | Capture a `TAMPERED` screenshot from a deliberately corrupted log | DONE | P2 | Demonstrates the detection path, not just the happy path |
+| M8-05d | Make every screenshot reproducible from a stored fixture | DONE | P1 | A grader can regenerate them |
+| M8-06 | Build the GUI view-model behind the SDK | DONE | P1 | No widget touches domain or protocol code directly `[G§4.1]` |
+| M8-06a | Expose a read-only snapshot for rendering | DONE | P1 | The view cannot mutate game state |
+| M8-06b | Update the view on state change rather than polling | DONE | P2 | Redraw follows the phase machine |
+| M8-06c | Keep the GUI out of coverage requirements | DONE | P2 | Omitted per the guidelines' coverage config `[G§6.2]` |
+| M8-07 | Render the board and own position | DONE | P1 | Own cell, disclosed barriers, and turn number are visible |
+| M8-07a | Render disclosed barriers only | DONE | P0 | A barrier appears only once disclosed `[AE-15]` |
+| M8-07b | Render received hints as text | DONE | P2 | The verbal channel is visible to the operator |
+| M8-07c | Show the current score and step count | DONE | P2 | Operator can see progress toward the threshold |
 | M8-08 | Implement replay navigation | DONE | P1 | Step forward, step back, and jump to a step |
 | M8-08a | Recompute verification on every navigation | DONE | P0 | The verdict is derived, never cached from load time |
-| M8-08b | Show the per-step verdict alongside the board | DEFERRED | P1 | Operator sees where a match failed |
+| M8-08b | Show the per-step verdict alongside the board | DONE | P1 | Operator sees where a match failed |
 | M8-08c | Load a malformed log without crashing | DONE | P1 | Corrupt input yields a clear error, not a stack trace |
 | M8-08d | Detect a reordered log | DONE | P0 | Step sequence is validated, not assumed |
-| M8-09 | Run the security review | DEFERRED | P0 | Secrets, identity, input validation, and dependencies all reviewed |
-| M8-09a | Confirm no secret is readable from any artifact | DEFERRED | P0 | Artifacts are shared; secrets must not travel in them `[AE-39]` |
-| M8-09b | Confirm no private field crosses the wire | DEFERRED | P0 | Leakage vector per private field class |
-| M8-09c | Review third-party dependencies and pin them | DEFERRED | P1 | `uv.lock` is authoritative `[G§8.4]` |
-| M8-09d | Confirm the LLM path cannot influence a move | DEFERRED | P0 | Even with a provider enabled `[AE-25]` |
-| M8-10 | Run the resource and endurance pass | DEFERRED | P1 | A full six-sub-game series runs without degradation |
-| M8-10a | Run a long series and watch memory | DEFERRED | P1 | No unbounded growth across sub-games |
-| M8-10b | Confirm clean shutdown releases every resource | DEFERRED | P1 | Sockets, files, and threads all closed |
-| M8-11 | Document both interfaces | DEFERRED | P2 | Screens, states, and workflows described `[G§10.2]` |
-| M8-11a | Document the live GUI workflow | DEFERRED | P2 | Turn banner states and what each means |
-| M8-11b | Document accessibility considerations | DEFERRED | P2 | Colour is not the only signal `[G§10.2]` |
+| M8-09 | Run the security review | DONE | P0 | Secrets, identity, input validation, and dependencies all reviewed |
+| M8-09a | Confirm no secret is readable from any artifact | DONE | P0 | Artifacts are shared; secrets must not travel in them `[AE-39]` |
+| M8-09b | Confirm no private field crosses the wire | DONE | P0 | Leakage vector per private field class |
+| M8-09c | Review third-party dependencies and pin them | DONE | P1 | `uv.lock` is authoritative `[G§8.4]` |
+| M8-09d | Confirm the LLM path cannot influence a move | DONE | P0 | Even with a provider enabled `[AE-25]` |
+| M8-10 | Run the resource and endurance pass | DONE | P1 | A full six-sub-game series runs without degradation |
+| M8-10a | Run a long series and watch memory | DONE | P1 | No unbounded growth across sub-games |
+| M8-10b | Confirm clean shutdown releases every resource | DONE | P1 | Sockets, files, and threads all closed |
+| M8-11 | Document both interfaces | DONE | P2 | Screens, states, and workflows described `[G§10.2]` |
+| M8-11a | Document the live GUI workflow | DONE | P2 | Turn banner states and what each means |
+| M8-11b | Document accessibility considerations | DONE | P2 | Colour is not the only signal `[G§10.2]` |
 | M8-12 | Prove the replay app on a foreign log | DONE | P0 | It verifies a log this peer did not write |
 | M8-12a | Verify an opponent-produced log | DONE | P0 | The audit is mutual; both logs must verify `[AE-36]` |
 | M8-12b | Detect a foreign log that was tampered | DONE | P0 | The detection path is not self-only |
-| M8-13 | Rehearse the full failure matrix end to end | DEFERRED | P0 | Every fault class has an observed outcome, not a predicted one |
-| M8-13a | Rehearse an opponent crash mid-series | DEFERRED | P0 | The series still produces artifacts |
-| M8-13b | Rehearse a tunnel drop mid-turn | DEFERRED | P0 | Terminal outcome is defined, not a hang |
-| M8-13c | Rehearse a config mismatch at negotiation | DEFERRED | P0 | The match is refused before play `[AE-11]` |
-| M8-14 | Freeze the interoperability profile before the counted league | DEFERRED | P0 | No wire change after the first counted game without a coordinator decision |
+| M8-13 | Rehearse the full failure matrix end to end | DONE | P0 | Every fault class has an observed outcome, not a predicted one |
+| M8-13a | Rehearse an opponent crash mid-series | DONE | P0 | The series still produces artifacts |
+| M8-13b | Rehearse a tunnel drop mid-turn | DONE | P0 | Terminal outcome is defined, not a hang |
+| M8-13c | Rehearse a config mismatch at negotiation | DONE | P0 | The match is refused before play `[AE-11]` |
+| M8-14 | Freeze the interoperability profile before the counted league | DONE | P0 | No wire change after the first counted game without a coordinator decision |
 
 ---
 
@@ -699,68 +711,68 @@ These run before every commit and in CI; they are not milestone-scoped.
 | M9-01a | Play at least two counted games against at least two groups | DEFERRED | P0 | `[AE-31]` `[AF-t18]`; below the minimum scores zero |
 | M9-01b | Count only one scoring game per opponent | DEFERRED | P0 | `[AE-52]`; repeats add nothing |
 | M9-01c | Secure opponent scheduling early | DEFERRED | P0 | External dependency on other teams; longest lead time in the project |
-| M9-02 | Complete six-section academic README report | DEFERRED | P0 | Model, protocol, strategy, results, screenshots, and links are present |
-| M9-02a | Describe the Dec-POMDP model | DEFERRED | P0 | State space, observations, uncertainty `[AE-42]` |
-| M9-02b | Discuss the FastMCP communication dilemma | DEFERRED | P0 | Queues, failures, orchestrator, gatekeeper |
-| M9-02c | Describe the implemented strategy | DEFERRED | P0 | Heuristic, belief, and barrier policy |
-| M9-02d | Include learning curves if RL is used | DEFERRED | P2 | Not applicable while the policy stays deterministic |
-| M9-02e | Embed the GUI and replay screenshots | DEFERRED | P0 | From `M8-05a`/`M8-05b` |
-| M9-02f | Cross-link the companion repository | DEFERRED | P0 | `[AE-49]` |
-| M9-03 | Complete performance, token, and cost evidence | DEFERRED | P1 | Results derive from reproducible runs |
-| M9-03a | Tabulate input/output tokens and cost per model | DEFERRED | P1 | `[G§11.1]` `[AE-54]` |
+| M9-02 | Complete six-section academic README report | DONE | P0 | Verified present by `scripts/check_submission_contents.py` against book 9.4.2 (`inst/:2283`) -- README sections 1-6 all matched on their own headings. Presence only; quality stays a human judgement |
+| M9-02a | Describe the Dec-POMDP model | DONE | P0 | README section 1 `The Dec-POMDP model` |
+| M9-02b | Discuss the FastMCP communication dilemma | DONE | P0 | README section 2 `The FastMCP communication dilemma` |
+| M9-02c | Describe the implemented strategy | DONE | P0 | README section 3 `The implemented strategy` |
+| M9-02d | Include learning curves if RL is used | DONE | P2 | README section 4. **Conditional** -- 9.4.2 says "if RL is used" and no agent here is RL-trained |
+| M9-02e | Embed the GUI and replay screenshots | DONE | P0 | README section 5 `Live belief map and "Verified OK" replay screenshots` `[AE-20]` |
+| M9-02f | Cross-link the companion repository | DONE | P0 | README section 6 `Companion repository`, matched on a real `p2p-thief-agent` URL `[AE-49]` |
+| M9-03 | Complete performance, token, and cost evidence | IN PROGRESS | P1 | Results derive from reproducible runs |
+| M9-03a | Tabulate input/output tokens and cost per model | IN PROGRESS | P1 | `[G§11.1]` `[AE-54]` |
 | M9-04 | Run final two-repository submission audit | DEFERRED | P0 | Access, secrets, reports, artifacts, and quality gates pass |
 | M9-04a | Verify lecturer access to both repositories | DEFERRED | P0 | Public, or shared with `rmisegal@gmail.com` `[AE-49]` |
-| M9-04b | Verify no secret exists anywhere in Git history | DEFERRED | P0 | `[AE-39]`; a secret committed once requires credential rotation |
+| M9-04b | Verify no secret exists anywhere in Git history | DONE | P0 | `scripts/scan_git_history.py`; `test_history_scan.py` (23 tests). **Run 2026-08-07: 2350 objects, 1 finding.** The finding is a **false positive in immutable history** -- `docs/PROMPT_LOG.md` prose quoting a dummy test vector built by concatenation, reviewed with the value redacted; no credential is present. The working-tree copy was rephrased when the file gate flagged it, but that blob is in every clone. Pinned in `REVIEWED_HISTORY` by **full blob SHA**, which is deliberately not an allowlist: a pattern allowlist suppresses a rule everywhere and forever, a content address suppresses exactly the bytes a human read. Different content is a different SHA and fires again. Rewriting history over a false positive would invalidate every clone and change every commit hash after it -- including hashes already recorded under rule 53 |
 | M9-05 | Create annotated release tag and submit | DEFERRED | P0 | Current Moodle tag/form/PDF instructions are followed |
 | M9-05a | Push an annotated `v1.0-submission` tag | DEFERRED | P0 | `[AE-41]` |
 | M9-05b | Fill the Moodle template without moving fields | DEFERRED | P0 | `[AE-43]`; save as PDF |
 | M9-05c | Confirm each member submits separately | DEFERRED | P0 | `[AE-44]` |
 | M9-05d | Use the eight-character team code | DEFERRED | P0 | `sharNamr`, confirmed 2026-07-28 `[AE-45]` |
-| M9-05e | Provide the code-quality self-assessment | DEFERRED | P1 | `[AE-55]`; grades code quality only, never the league result |
-| M9-06 | Complete parameter research and sensitivity analysis | DEFERRED | P1 | Guidelines §9.1: systematic one-at-a-time experiments across the negotiable parameters, with the measured effect of each on match outcomes documented in tables |
-| M9-06a | Sweep the negotiable board and movement parameters | DEFERRED | P1 | Grid size, barrier quota, step limit, survival threshold |
-| M9-06b | Sweep the scent parameters within their fixed bounds | DEFERRED | P1 | Sensitivity to `ρ` and field size, noting both are `Fixed` for play |
-| M9-06c | Record each parameter's measured effect on outcome | DEFERRED | P1 | Experiment tables with run counts, not anecdotes |
-| M9-07 | Publish the results-analysis notebook and result visualisations | DEFERRED | P1 | Guidelines §9.2/§9.3: a notebook compares strategies and configurations, uses LaTeX for equations, cites academic references, and emits labelled high-resolution charts |
-| M9-07a | Compare baseline against belief-driven pursuit | DEFERRED | P1 | Win rate and mean capture turn over repeated runs |
-| M9-07b | Emit labelled, accessible, high-resolution charts | DEFERRED | P1 | Clear axes, legend, caption `[G§9.3]` |
-| M9-07c | Cite academic references and format equations in LaTeX | DEFERRED | P2 | `[G§9.2]` |
-| M9-08 | Evidence ISO/IEC 25010, extension points, and concurrency safety | DEFERRED | P2 | Guidelines §12/§13/§15 (grouped as "Extension and Standards" in their §17.6): the eight quality characteristics are evidenced, plugin/extension seams are documented, and any threading or multiprocessing carries a thread-safety justification |
-| M9-08a | Map the eight ISO/IEC 25010 characteristics to evidence | DEFERRED | P2 | One evidence pointer per characteristic `[G§13.1]` |
-| M9-08b | Document the strategy and verbal-provider extension seams | DEFERRED | P2 | How a third party swaps a policy without editing core `[G§12.1]` |
-| M9-08c | Justify every thread or process with a safety note | DEFERRED | P2 | Locks, queues, and shutdown paths described `[G§15.2]` |
-| M9-09 | Assemble the league evidence bundle | DEFERRED | P0 | Every counted game's four artifacts, commit hashes, and sent-report proof |
-| M9-09a | Archive the artifact set per counted game | DEFERRED | P0 | Retrievable by `game_id` |
-| M9-09b | Record the commit hash that ran each game | DEFERRED | P0 | `[AE-53]`; code may change between games |
-| M9-09c | Record proof that each report was sent | DEFERRED | P0 | An unsent report voids that game's points `[AE-32]` |
-| M9-09d | Reconcile declared game counts against the artifact set | DEFERRED | P0 | A false declaration is absolute disqualification `[AE-38]` |
-| M9-10 | Write the academic report body | DEFERRED | P0 | A scientific document, not an installation guide `[AE-42]` |
-| M9-10a | Justify the architectural decisions and trade-offs | DEFERRED | P1 | ADRs summarised with rationale `[G§20.1]` |
-| M9-10b | Present empirical results, not claims | DEFERRED | P1 | Numbers come from reproducible runs |
-| M9-10c | Disclose every book contradiction relied on | DEFERRED | P0 | Book p. 5 requires where, what, and why; see `M0-04` |
-| M9-10d | Cite the reference list | DEFERRED | P2 | Academic citation format `[G§9.2]` |
-| M9-11 | Complete the installation and usage documentation | DEFERRED | P1 | A grader can install and run from the README alone `[G§2.1]` |
-| M9-11a | Document system requirements and setup | DEFERRED | P1 | Including `uv` and Python version |
-| M9-11b | Document every run mode and flag | DEFERRED | P1 | Peer, replay, and CLI paths |
-| M9-11c | Document the configuration files and their effect | DEFERRED | P1 | Shared JSON versus private TOML `[ADR-004]` |
-| M9-11d | Document troubleshooting for common failures | DEFERRED | P2 | Tunnel down, opponent unreachable, credential missing |
-| M9-11e | State the licence and third-party attributions | DEFERRED | P2 | `[G§2.1]` |
+| M9-05e | Provide the code-quality self-assessment | DONE | P1 |**26/30 (87%)**, four partial, none zero |
+| M9-06 | Complete parameter research and sensitivity analysis | DONE | P1 | Guidelines §9.1: systematic one-at-a-time experiments across the negotiable parameters, with the measured effect of each on match outcomes documented in tables |
+| M9-06a | Sweep the negotiable board and movement parameters | DONE | P1 | Grid size, barrier quota, step limit, survival threshold |
+| M9-06b | Sweep the scent parameters within their fixed bounds | DONE | P1 | Sensitivity to `ρ` and field size, noting both are `Fixed` for play |
+| M9-06c | Record each parameter's measured effect on outcome | DONE | P1 | Experiment tables with run counts, not anecdotes |
+| M9-07 | Publish the results-analysis notebook and result visualisations | DONE | P1 | Guidelines §9.2/§9.3: a notebook compares strategies and configurations, uses LaTeX for equations, cites academic references, and emits labelled high-resolution charts |
+| M9-07a | Compare baseline against belief-driven pursuit | DONE | P1 | Win rate and mean capture turn over repeated runs |
+| M9-07b | Emit labelled, accessible, high-resolution charts | DONE | P1 | Clear axes, legend, caption `[G§9.3]` |
+| M9-07c | Cite academic references and format equations in LaTeX | IN PROGRESS | P2 | `[G§9.2]` |
+| M9-08 | Evidence ISO/IEC 25010, extension points, and concurrency safety | DONE | P2 |`docs/QUALITY_EVIDENCE.md`. **ISO/IEC 25010 is not in the book** (`NOT-SPECIFIED-IN-BOOK`); the eight characteristics are guidelines 13.1. The four metrics are Table 4 (p.94/211) |
+| M9-08a | Map the eight ISO/IEC 25010 characteristics to evidence | DONE | P2 |Eight characteristics mapped, each with a named weakness. Coverage 97.28% is lower than the companion's 99.26% and that is recorded rather than smoothed |
+| M9-08b | Document the strategy and verbal-provider extension seams | DONE | P2 |Strategy, verbal provider and transport seams, each injected rather than selected internally |
+| M9-08c | Justify every thread or process with a safety note | DONE | P2 |Every thread and process with why it is safe; no shared mutable state crosses a thread boundary in `src/` — chosen so rule 2 is satisfied by construction |
+| M9-09 | Assemble the league evidence bundle | DONE | P0 |`reporting/evidence.py` + `reporting/provenance.py`; `test_cop_evidence.py`, `test_cop_provenance.py` (29 tests) |
+| M9-09a | Archive the artifact set per counted game | DONE | P0 |`archive_is_complete` requires all four kinds — three of four is not a set, and the missing one is what an auditor asks for. `missing_evidence` returns every gap at once |
+| M9-09b | Record the commit hash that ran each game | DONE | P0 |`reporting/provenance.py` closes `X-07`. `running_git_commit` existed for the Step-0 seal; what was missing is **whether the tree was clean** — `git rev-parse HEAD` answers happily with uncommitted changes, so a resolved hash can be a truthful answer to the wrong question. The reference hard-codes `unknown` [AE-53] |
+| M9-09c | Record proof that each report was sent | DONE | P0 |`SendReceipt`, **deliberately not `ProofOfDelivery`** — the book's decisive layer is receipt at the lecturer's address (p.78/183) and a sender cannot observe it. Every record carries `evidences: API acceptance, not receipt by the lecturer`. Closes `X-15` [AE-32] |
+| M9-09d | Reconcile declared game counts against the artifact set | DONE | P0 |`reconcile` checks every opponent in one pass — rule 38's sanction is absolute disqualification of the project [AE-38] |
+| M9-10 | Write the academic report body | IN PROGRESS | P0 | A scientific document, not an installation guide `[AE-42]` |
+| M9-10a | Justify the architectural decisions and trade-offs | IN PROGRESS | P1 | ADRs summarised with rationale `[G§20.1]` |
+| M9-10b | Present empirical results, not claims | IN PROGRESS | P1 | Numbers come from reproducible runs |
+| M9-10c | Disclose every book contradiction relied on | IN PROGRESS | P0 | Book p. 5 requires where, what, and why; see `M0-04` |
+| M9-10d | Cite the reference list | IN PROGRESS | P2 | Academic citation format `[G§9.2]` |
+| M9-11 | Complete the installation and usage documentation | DONE | P1 |`docs/USAGE.md` |
+| M9-11a | Document system requirements and setup | DONE | P1 |Python >=3.11, uv, Windows-only, git required |
+| M9-11b | Document every run mode and flag | DONE | P1 |`p2p-cop serve --root --match --rate-limits --private` documented with why the three-way config split is required, plus every gate and evidence script. `build_parser` imports no transport, so `--version` cannot fail on a missing dependency |
+| M9-11c | Document the configuration files and their effect | DONE | P1 |Every config path, effect and commit status, including `shared_contract/` which this repository owns under `G-18` |
+| M9-11d | Document troubleshooting for common failures | DONE | P2 |Seven failure modes with cause and fix, each tied to the rule that makes it matter |
+| M9-11e | State the licence and third-party attributions | DONE | P2 |MIT, dependencies with roles, nothing vendored, `inst/` cited |
 | M9-12 | Run the pre-submission dry run | DEFERRED | P0 | Clone fresh, install frozen, run every gate, run a game, produce artifacts |
 | M9-12a | Verify from a clean clone on a second machine | DEFERRED | P0 | Nothing depends on an untracked local file |
-| M9-12b | Verify every gate passes from that clean clone | DEFERRED | P0 | `G-01`…`G-09` |
-| M9-12c | Verify the replay app validates a real stored match | DEFERRED | P0 | `[AE-20]` |
+| M9-12b | Verify every gate passes from that clean clone | DONE | P0 |`scripts/verify_clean_clone.py`; closes `X-16`. Clones `HEAD`, `uv sync --frozen`, re-runs the gates inside the clone. A gate script living untracked in a working tree passes everywhere except there |
+| M9-12c | Verify the replay app validates a real stored match | DONE | P0 |`tests/integration/test_replay_of_stored_match.py` (5 tests); closes `X-17`. Every other replay test builds records in memory; `json` round-tripping is not identity and the commitment is over canonical bytes, so an in-memory-only verifier can pass forever while every stored log fails. A forged reveal survives the round trip as `TAMPERED` [AE-20] |
 | M9-13 | Complete the Moodle submission | DEFERRED | P0 | Form, PDF, per-member submission, and team code all correct |
 | M9-13a | Confirm the reporting and sharing addresses one final time | DEFERRED | P0 | `rmisegal@gmail.com` and `rmisegal+uoh26finalgame@gmail.com`; the book's Table 20 spelling is a typo |
 | M9-13b | Confirm both repositories are reachable by the grader | DEFERRED | P0 | Public, or shared `[AE-49]` |
-| M9-13c | Confirm the cross-links resolve in both READMEs | DEFERRED | P0 | Cop links Thief and Thief links Cop `[AE-49]` |
-| M9-14 | Complete the code-quality self-assessment | DEFERRED | P1 | Graded against the guidelines' quick-reference card, never the league result `[AE-55]` |
-| M9-14a | Score each guidelines requirement honestly | DEFERRED | P1 | SDK, OOP, gatekeeper, TDD, coverage, linter, secrets, `uv` `[G§19.1]` |
-| M9-14b | Name the requirements not met and why | DEFERRED | P1 | An honest gap costs less than an overclaim |
-| M9-15 | Verify the four success metrics are demonstrable | DEFERRED | P1 | Coordination, adaptation, integrity, architecture — each with evidence `[book §11.4]` |
-| M9-15a | Evidence coordination | DEFERRED | P1 | Turn management and P2P synchronisation without a judge |
-| M9-15b | Evidence adaptation | DEFERRED | P1 | Belief updating under partial observation |
-| M9-15c | Evidence integrity | DEFERRED | P1 | Commit-reveal plus a passing mutual audit |
-| M9-15d | Evidence architecture | DEFERRED | P1 | Orchestrator and gatekeeper patterns under load |
+| M9-13c | Confirm the cross-links resolve in both READMEs | IN PROGRESS | P0 | Cop links Thief and Thief links Cop `[AE-49]` |
+| M9-14 | Complete the code-quality self-assessment | DONE | P1 |`docs/SELF_ASSESSMENT.md`, 26/30 |
+| M9-14a | Score each guidelines requirement honestly | DONE | P1 |Fifteen requirements scored with evidence; #9 was 1 until CI actually ran the history scanner |
+| M9-14b | Name the requirements not met and why | DONE | P1 |Four partial scores with reasons, plus two the guidelines do not ask about — lower coverage than the companion, and the companion agent not being launchable |
+| M9-15 | Verify the four success metrics are demonstrable | DONE | P1 |`docs/QUALITY_EVIDENCE.md`, Table 4 quoted per metric |
+| M9-15a | Evidence coordination | DONE | P1 |Coordination — and **names the asymmetry**: `p2p-cop serve` plays a real match while the companion Thief's CLI is a scaffold, so a counted game is not launchable end-to-end today |
+| M9-15b | Evidence adaptation | DONE | P1 |Adaptation: belief by Bayes from observation only, aimed at `argmax b(s)`, scent hash-locked under rule 23, belief never crosses the wire |
+| M9-15c | Evidence integrity | DONE | P1 |Integrity: commit-reveal, audit before agreement, rule 19 and rule 35 kept distinct, stored match re-verifies off disk, 2363 history objects with 0 unreviewed findings |
+| M9-15d | Evidence architecture | DONE | P1 |Architecture: one gatekeeper, orchestrator owns the series, artifacts survive a dead transport, a technical loss and a forged audit both still emit |
 | M9-16 | Archive the final submission state | DEFERRED | P1 | The tagged commit, artifacts, and evidence bundle are retained together |
 
 ---

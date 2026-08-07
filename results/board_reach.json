@@ -1,0 +1,28 @@
+{
+  "horizon": 35,
+  "runs_per_size": 40,
+  "sizes": [
+    {
+      "distinct_final_cells": 24,
+      "grid_size": 7,
+      "max_index_available": 6,
+      "max_index_reached": 6
+    },
+    {
+      "distinct_final_cells": 25,
+      "grid_size": 9,
+      "max_index_available": 8,
+      "max_index_reached": 8
+    },
+    {
+      "distinct_final_cells": 26,
+      "grid_size": 12,
+      "max_index_available": 11,
+      "max_index_reached": 9
+    }
+  ],
+  "thief_start": [
+    3,
+    3
+  ]
+}

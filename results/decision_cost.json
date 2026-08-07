@@ -1,0 +1,15 @@
+{
+  "max": 4.4328,
+  "mean": 1.978,
+  "median": 1.8525,
+  "min": 1.4552,
+  "p95": 3.0498,
+  "q1": 1.7095,
+  "q3": 2.0697,
+  "response_timeout_ms": 30000,
+  "runs": 400,
+  "samples": 400,
+  "stdev": 0.4551,
+  "unit": "milliseconds",
+  "worst_case_share_of_timeout": 0.000148
+}

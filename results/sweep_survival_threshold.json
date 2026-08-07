@@ -1,0 +1,129 @@
+{
+  "appendix_f_status": "Minimum",
+  "arm": "belief",
+  "minimum": 35,
+  "parameter": "movement_and_barriers.survival_threshold",
+  "points": [
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 26.0,
+        "mean": 9.675,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 12.0,
+        "runs": 40,
+        "stdev": 5.5626
+      },
+      "value": 35
+    },
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 26.0,
+        "mean": 9.675,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 12.0,
+        "runs": 40,
+        "stdev": 5.5626
+      },
+      "value": 45
+    },
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 26.0,
+        "mean": 9.675,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 12.0,
+        "runs": 40,
+        "stdev": 5.5626
+      },
+      "value": 55
+    },
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 26.0,
+        "mean": 9.675,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 12.0,
+        "runs": 40,
+        "stdev": 5.5626
+      },
+      "value": 65
+    },
+    {
+      "capture_rate": 1.0,
+      "cop_score": {
+        "max": 20.0,
+        "mean": 20.0,
+        "median": 20.0,
+        "min": 20.0,
+        "q1": 20.0,
+        "q3": 20.0,
+        "runs": 40,
+        "stdev": 0.0
+      },
+      "turns": {
+        "max": 26.0,
+        "mean": 9.675,
+        "median": 8.5,
+        "min": 3.0,
+        "q1": 5.0,
+        "q3": 12.0,
+        "runs": 40,
+        "stdev": 5.5626
+      },
+      "value": 75
+    }
+  ],
+  "runs_per_point": 40
+}

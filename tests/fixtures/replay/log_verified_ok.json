@@ -1,0 +1,130 @@
+{
+  "_schema": "game-log",
+  "schema_version": "1.2",
+  "game_id": "demo-vs-rival",
+  "game_uid": "ffffffffffffffffffffffffffffffff",
+  "sub_game_number": 1,
+  "links": {
+    "config": "config_demo-vs-rival_g01.json",
+    "log": "log_demo-vs-rival_g01.json"
+  },
+  "summary": {
+    "outcome": "capture",
+    "turns": 8,
+    "cop_score": 20
+  },
+  "records": [
+    {
+      "step": 1,
+      "sender": "police",
+      "commit": "05ac824afe3f8154e0ee5cc6e369d010413d87458e443574b802824000fa3e17",
+      "move": "N",
+      "hint": "closing in from the north",
+      "intent": true,
+      "payload": {
+        "step": 1,
+        "move": "N",
+        "intent": true
+      },
+      "nonce": "20697e8442f2e6d6268b3d4f918df8e8"
+    },
+    {
+      "step": 2,
+      "sender": "thief",
+      "commit": "e0d8ad2de6358d62b68daa92c26105771c75730feefe6ed9ca373c80bd407602",
+      "move": "E",
+      "hint": "closing in from the north",
+      "intent": true,
+      "payload": {
+        "step": 2,
+        "move": "E",
+        "intent": true
+      },
+      "nonce": "87a8205de1d1405bbbeda919c6a8ac26"
+    },
+    {
+      "step": 3,
+      "sender": "police",
+      "commit": "1ae6d0c9f51a7a23b256589f42767428ad040e7d6b4a7f1cee943eca04de1cda",
+      "move": "E",
+      "hint": "closing in from the north",
+      "intent": false,
+      "payload": {
+        "step": 3,
+        "move": "E",
+        "intent": false
+      },
+      "nonce": "5fa9621de1bc4252cd9493f86ed1c9f8"
+    },
+    {
+      "step": 4,
+      "sender": "thief",
+      "commit": "eccd6834c6aefc7dad8c4ce5d46313ca5ca7f619b0ed25a21c8454990fd73982",
+      "move": "S",
+      "hint": "closing in from the north",
+      "intent": true,
+      "payload": {
+        "step": 4,
+        "move": "S",
+        "intent": true
+      },
+      "nonce": "ec1b3a37be8f637ba26d3eb873e5d9d0"
+    },
+    {
+      "step": 5,
+      "sender": "police",
+      "commit": "102544b4b6fb718a4b4a5dfab037e42be9c6c53c03e4ad696f4329cb38898f6b",
+      "move": "E",
+      "hint": "closing in from the north",
+      "intent": true,
+      "payload": {
+        "step": 5,
+        "move": "E",
+        "intent": true
+      },
+      "nonce": "c37ec50e3d9c72a699c1f03f57514c9b"
+    },
+    {
+      "step": 6,
+      "sender": "thief",
+      "commit": "043ba516332c117b8566464611dfe9eee6f2da69d527fdbe856837ad681743fe",
+      "move": "N",
+      "hint": "closing in from the north",
+      "intent": false,
+      "payload": {
+        "step": 6,
+        "move": "N",
+        "intent": false
+      },
+      "nonce": "3700f7fa7d82ed4b266c793a4a128372"
+    },
+    {
+      "step": 7,
+      "sender": "police",
+      "commit": "d991d34f0c961ad56b6cc23a7a1ee71b05394dff27dc678a5aa341a0257ef9da",
+      "move": "E",
+      "hint": "closing in from the north",
+      "intent": true,
+      "payload": {
+        "step": 7,
+        "move": "E",
+        "intent": true
+      },
+      "nonce": "dcec3b3de0e4b991c363b0b944134a1c"
+    },
+    {
+      "step": 8,
+      "sender": "thief",
+      "commit": "bbdc5766f00f7a623f4b09086b5d8973de69ddc1ed7306f8dd70cb6eb5083d71",
+      "move": "S",
+      "hint": "closing in from the north",
+      "intent": true,
+      "payload": {
+        "step": 8,
+        "move": "S",
+        "intent": true
+      },
+      "nonce": "e5a36d7961a335431349926db2beb98a"
+    }
+  ]
+}

@@ -1217,6 +1217,108 @@ real audit payload through the real schema surfaced the difference immediately �
 reaches the wire, but the rehearsal is the only place that distinction is visible, which
 is the argument for having one.
 
+#### What finishing the Thief's M7 found here (`X-07`…`X-12`, 2026-08-07)
+
+The Thief's M7 closed on 2026-08-07 — 42 rows in three waves — and four of the defects it
+found are **in this repository too**. Recorded here rather than silently fixed, because they
+are Cop-owned rows and the batch that found them was a Thief batch; the eight-step method
+wants both ledgers updated, and the one time that was skipped on "this work is Cop-only"
+grounds cost two later batches a rediscovery.
+
+**Rule 53's commit hash is missing entirely** (`X-07`). `github_commit` appears nowhere in
+`src/p2p_cop_agent/`. The declaration names who played, on what hardware and with which
+model, and never *which code* — the single field that makes a later audit reproducible.
+Every row about the declaration passes; the field nothing asked for is the one that was
+absent.
+
+**`build_log` has no `ended_at` guard** (`X-08`), and this is the uncomfortable one: `M7-24`
+already wrote down the reasoning. Rule 18's secrecy is about *when a byte exists*, a finished
+log is byte-identical either way, so the only enforceable point is refusing to build the
+intermediate state. The reasoning was recorded and the guard was not. In the Thief the same
+guard broke thirteen existing fixtures, which is what a guard that bites looks like.
+
+**Nothing requires a settlement before a report is composed** (`X-09`). Neither
+`reporting/send_report.py` nor `reporting/gmail_message.py` mentions an agreed state.
+`require_reportable` exists and is correct — but it is a call a caller can forget, and the
+Thief's fix was to make the settlement record a *required argument* of the composer, on the
+same argument that put the audit first in `agree(audit, ours, theirs)`.
+
+**Configs are still not committed** (`X-10`, and `M7-27` is this repository's own deferred
+row for it). `.gitignore` excludes `/logs/`, `/reports/generated/` and `/results/generated/`,
+so an artifact written under any of them lives on one laptop and nowhere Appendix F
+obligation 4 can see. The Thief's fix is worth copying in design: a `games/` directory that
+is deliberately not ignored, a store that *refuses* an ignored destination, and a test that
+reads the real `.gitignore` — because the way this regresses is somebody tidying the tree.
+
+**One thing was already right** (`X-12`): `gmail_message.py` uses `urlsafe_b64encode` and
+keeps its padding. Recorded so it is not re-derived. The two traps are worth knowing anyway —
+the two base64 alphabets differ in exactly two characters, so most messages encode
+identically under either and a casually chosen fixture cannot tell them apart; and the
+padding-stripping idiom comes from JWT, where padding is forbidden, which is a different
+specification for a different field.
+
+#### M9 begins with the scan that gets more expensive every commit (`M9-04b`, 2026-08-07)
+
+`check_secrets.py` answers "is there a secret in the files that exist now". At submission
+that is the wrong question: rule 39 forbids secrets being *in the repository*, and a
+credential deleted three commits ago is still in every clone. `scripts/scan_git_history.py`
+walks every blob reachable from any ref.
+
+**It found one thing, and it is a false positive that can never be edited.** A
+`docs/PROMPT_LOG.md` blob contains my own prose describing a dummy test vector built by
+string concatenation. The working-tree copy was rephrased the day the file-level scanner
+flagged it — correctly — but that blob is in 2350 objects' worth of history and in every
+clone.
+
+The resolution is the interesting part. Rewriting history over a false positive would
+invalidate every clone and change every commit hash after it, **including hashes already
+recorded in emitted artifacts under rule 53** — a cost only worth paying for a real leak. An
+allowlist was refused for the reason it is always refused here: a pattern suppression turns
+off a rule everywhere and forever, including on a credential committed tomorrow.
+
+So the finding is pinned by **blob SHA**. A content address is the hash of exact bytes a
+human read; different content is a different SHA and fires again, so a secret cannot hide
+behind the entry without producing a collision. `test_history_scan.py` holds that distinction
+in place: pins must be full 40-hex SHAs, must carry a written reason and a review date, must
+point at a blob history still contains, and the table must stay small enough to re-read. The
+Thief has no such table and a test asserts it stays absent — an unused suppression mechanism
+is one somebody eventually reaches for.
+
+`X-11` closed on the way: `line_findings(line)` is split out of `findings(path, root)`, so
+the detection rules can be tested directly *and* applied to a blob that no longer exists on
+disk. Without the split the history scanner would have restated the patterns, and two copies
+of a security rule drift in exactly one direction.
+
+#### What the Thief's M9 batch found for here (`X-13`…`X-17`, 2026-08-07)
+
+Five rows, recorded rather than fixed — they are Cop-owned, and the batch that found them was
+a Thief batch. One of them is a correction to reasoning, not to code.
+
+**A nonce argument used in both repositories is wrong** (`X-13`). The Thief's `games/README.md`
+justified excluding game logs from the repository because committing them would publish
+nonces, "and git history has no end". Rule 18 (`inst/:3354`) keeps a nonce secret **until the
+end of the game**, and the book defines Step 4 as the Final Reveal: "Only at the end of the
+game are all values, including the Nonce, revealed for a full mutual audit" (`inst/:1136`).
+The obligation *expires* — revealed nonces are precisely what lets a third party recompute
+every commitment. Worth checking whether the same wrong reason appears here.
+
+**The commit obligations differ per artifact** (`X-14`), and `M9-27` reads as though they do
+not. Config is mandatory (Appendix F obligation 4); the log has no explicit commit duty but is
+needed for the Replay threshold; the result's duty is email. A checker demanding all four
+would fail a submission that satisfies the rules.
+
+**`M9-09c`'s wording overclaims** (`X-15`). "Record proof that each report was sent" invites a
+delivery claim, and the book's decisive layer is receipt at the lecturer's address (p.78/183)
+— which a sender cannot observe. The Thief named its type `SendReceipt` rather than
+`ProofOfDelivery` and writes the limit into every record.
+
+**Two gates are missing here** (`X-16`, `X-17`). A clean-clone runner — the Thief's caught two
+failures on its first run with every gate green in the working tree, because a clone holds
+only what was committed. And a replay of a match read back **off disk**: every replay test in
+both repositories builds records in memory, `json` round-tripping is not identity, and the
+commitment is over canonical bytes, so an in-memory-only verifier can pass forever while every
+stored log fails.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
@@ -1254,9 +1356,46 @@ floor it was, and it is no longer credulous either.
 
 ### 4. Learning curves
 
-**Not applicable.** No reinforcement learning is used. The movement policy is
-deterministic by design, so there is no training run and no curve to plot. If RL is
-adopted later, this section gains the curves; adding a chart now would be decoration.
+The book requires learning curves **"if RL was used"** (p.81/189). This policy is
+deterministic and weight-free — a fixed lexicographic ranking, nothing fitted from data —
+so there is no convergence to plot, and asked directly, the book is silent on a substitute.
+
+In its place, [`docs/RESEARCH-REPORT-Performance-Analysis.md`](docs/RESEARCH-REPORT-Performance-Analysis.md)
+answers the question a learning curve answers — *is this policy actually better, and by how
+much* — by measurement over **40 paired seeds**:
+
+![Capture rate and mean score by strategy arm](assets/chart-strategy-comparison.svg)
+
+| Arm | Capture rate | Mean turns | Mean Cop score |
+|---|---|---|---|
+| blind | 0.225 | 32.83 | 8.38 |
+| **belief** | **0.975** | **12.83** | **19.62** |
+| oracle (illegal ceiling) | 1.000 | 12.10 | 20.00 |
+
+Belief closes **96.8%** of the blind-to-oracle gap, wins **30 of 40** paired seeds and
+**loses none**.
+
+![Cop score distribution by arm](assets/chart-strategy-distribution.svg)
+
+The distribution is where a mean alone would have misled: the blind arm's median score is
+**5.0**, with Q1 = Q3 = 5.0. It is not a weak pursuer — it is almost always a *non*-pursuer
+that occasionally stumbles into a capture, and its 8.38 mean is that rarity averaged over
+many failures.
+
+**Two sweeps came back flat, and probing them found more than the sweeps did.** The barrier
+quota is identical to four decimals at every value — not because the quota is irrelevant,
+but because this arm places **zero barriers in 501 decisions**; the squeeze machinery exists
+and is tested but is not wired into it. Board size is flat because on a 12×12 board the
+Thief never reaches past index 7 of 11 within the horizon, so the extra ranks are space
+nobody visits. Both are recorded as findings about our own agent rather than as parameter
+conclusions.
+
+Nine charts, all SVG, all regenerable:
+
+```text
+uv run python scripts/run_experiments.py
+uv run python scripts/render_charts.py
+```
 
 ### 5. Live belief map and "Verified OK" replay screenshots
 
@@ -1316,6 +1455,98 @@ belief map from a live two-peer run. The `Verified OK` capture belongs "within t
 academic report" (p. 81/189, "absolute mandatory"); the exact filename and directory are
 **not specified** by Appendix E or the submission checklist, so that will be a recorded
 project choice rather than an inferred one.
+
+### The replay viewer
+
+![Replay viewer showing a green Verified OK stamp over an eight-step log](assets/replay-verified-ok.png)
+
+*`assets/replay-verified-ok.png` — the mandatory submission capture (`:1769`; "absolute
+mandatory" at p.81/189). Every commitment in `log_verified_ok.json` was recomputed from the
+file's own bytes at the moment the picture was taken.*
+
+The screen shows what the book asks a replay viewer to show: for each entry the `nonce`,
+the `move` and the original `commit` (p.56/142); a verdict indicator — a green
+`Verified OK` stamp or a red `TAMPERED` banner; and controls to move "back and forth in
+time" (p.56/141). It does **not** draw the board, because the board is not a requirement
+and the belief map belongs to the live GUI, where the book puts it.
+
+![Replay viewer showing a red TAMPERED banner with step 5 highlighted](assets/replay-tampered.png)
+
+*`assets/replay-tampered.png` — the detection path. Not a mandatory submission item; asked
+directly, only `Verified OK` is. It is captured anyway because a viewer shown only passing
+is a viewer that might not be checking anything.*
+
+Both images are regenerated from committed fixtures rather than kept as session artefacts,
+which is `M8-05d`'s condition — "a grader can regenerate them":
+
+```text
+uv run python scripts/capture_replay_screenshots.py
+```
+
+They are real screen captures of the real widget tree, photographed through the Windows
+GDI. Drawing a picture of what the app *would* look like would be a fabricated exhibit,
+which is the one thing a verification screenshot must never be.
+
+**The widgets contain no logic.** `M8-06` requires that "no widget touches domain or
+protocol code directly", so `replay/view_model.py` turns a cursor into frozen,
+display-ready values and `ui/replay_app.py` reads nothing else. That boundary is what makes
+the screenshot testable: a Tk window cannot be asserted about in CI, but the frame behind
+it can, so the stamp text and colour in these pictures are pinned by
+`test_replay_view_model.py` rather than by someone having looked once. The reference
+simulator draws the same boundary — its widgets are dumb components handed ready-made
+strings.
+
+Two things about the capture were not free. The first attempt came out shifted, with a
+strip of desktop down one edge and the title bar along the top, because Tk reports logical
+pixels while the GDI works in physical ones — on a scaled display every window coordinate
+is wrong by the scale factor. Declaring the process DPI-aware is what makes the output a
+function of the fixture rather than of the machine's display settings.
+
+### The live GUI
+
+![Live GUI showing a belief heatmap with a green YOUR TURN banner](assets/live-gui-belief-map.png)
+
+*`assets/live-gui-belief-map.png` — the second mandatory submission capture (p.81/189,
+"absolute mandatory"). Taken during a live match: a second operating-system process was
+started, turns crossed a real socket, and the heat map is whatever this agent believed at
+step 2. Asked directly, a reconstructed state would not satisfy the requirement — that is
+the replay viewer's separate exhibit.*
+
+**The opponent is a scripted local peer, not a classmate.** A second agent that plays back
+is still open work, so this is a live match against a stub and is described as such rather
+than implied to be a league game.
+
+**What the screen can never contain.** Rule 8 (Mandatory) — "display true local information
+only", sanction "disqualification due to data breach". Rule 9 (Prohibited) — "do not display
+the full objective board state", sanction **project disqualification**. That is the whole
+project, not a game, so it is enforced structurally rather than by discipline: `LocalTruth`
+has a closed field set with nowhere to hold the opponent's real position, and
+`test_local_truth_boundary.py` fails if anyone adds a field or if the live package imports
+anything that knows one. The reference does the same — its snapshot fixes what crosses to
+the GUI, so its window "is incapable of drawing" the opponent.
+
+The `T?` mark is not a leak. It is *our inference* from scent, which is what a trust map is
+for; `:1647` forbids showing the objective board, not showing a guess.
+
+**Colour is not the only signal.** Every believed cell also prints its probability, and the
+most likely one is marked in text, so a greyscale print or a red-green deficiency loses
+nothing.
+
+Two findings came out of producing this picture rather than out of building the widget.
+The first capture rendered sixty-three cells as `0%` and one as `100%`: belief converges
+fast because scent evidence is strong and consistent — measured at peak 0.28 after one
+update, 0.32 after two, 0.86 after three and 0.99 by the fourth. Capturing "later in the
+match" is not more impressive, only less informative, so the script captures at step 2 where
+the inference is still visibly an inference. The second is that rounding a diffuse belief to
+`0%` prints a board claiming the opponent is nowhere, which is the opposite of what the
+number is for; below one percent the label now reads `<1%`.
+
+Both images regenerate from committed inputs:
+
+```text
+uv run python scripts/capture_replay_screenshots.py
+uv run python scripts/capture_live_gui_screenshot.py
+```
 
 ### 6. Companion repository
 

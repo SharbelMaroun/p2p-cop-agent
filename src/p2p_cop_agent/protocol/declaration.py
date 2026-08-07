@@ -28,6 +28,7 @@ import re
 from collections.abc import Mapping
 
 from p2p_cop_agent.protocol.commit import canonical_payload_bytes
+from p2p_cop_agent.protocol.private_fields import check_outbound
 from p2p_cop_agent.shared.config import JsonObject
 
 DECLARATION_TYPE = "pre_game"
@@ -85,7 +86,7 @@ def build_declaration(
     # files of the two teams" is about REPOSITORY urls. Both are required and they are not
     # the same thing, so they get separate keys.
     repositories = [url for group in groups for url in group["repos"].values()]
-    return {
+    declaration: JsonObject = {
         "_schema": "declaration",
         "schema_version": SCHEMA_VERSION,
         "declaration_type": DECLARATION_TYPE,
@@ -108,6 +109,11 @@ def build_declaration(
         "game_started_at": started_at,
         "game_ended_at": None,
     }
+    # `M8-09b`: refuse to ship a private field. The declaration is the one artifact
+    # *required* to disclose `llm_model` and `mcp_servers`, so the check is channel-aware
+    # rather than a blanket ban -- see `private_fields.CHANNEL_DISCLOSURES`.
+    check_outbound(declaration, "declaration")
+    return declaration
 
 
 def _group(identity: Mapping[str, object]) -> JsonObject:

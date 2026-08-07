@@ -1,0 +1,9 @@
+{
+  "barrier_intents": 0,
+  "barrier_share": 0.0,
+  "by_type": {
+    "Action": 375
+  },
+  "decisions": 375,
+  "matches": 40
+}
