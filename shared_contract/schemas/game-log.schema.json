@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.9-proposed",
+  "x-role-neutral": true,
+  "title": "Per-sub-game log artifact",
+  "description": "The artifact the Replay app reads, and the one rule 20 makes a threshold condition. Every `required` entry is book-mandated: the per-step commit data (State, Move, Intent, Nonce) and its SHA-256 signature at p.34/94 and p.58/146, the sub-game number at p.131/276, the verbal hint at p.35/96, and the mutual agreement at p.131/276 under rule 36. additionalProperties is TRUE -- the book is NOT-SPECIFIED on extra fields in reporting artifacts, and refusing an opponent's log over a key no source forbids would fail the very audit rule 36 requires.",
+  "type": "object",
+  "required": ["game_id", "game_uid", "sub_game_number", "records", "mutual_agreement"],
+  "additionalProperties": true,
+  "properties": {
+    "game_id": { "type": "string", "minLength": 1 },
+    "game_uid": {
+      "description": "AR-001: every artifact of one match shares this. Four files that each validate and disagree here describe a match that never happened.",
+      "type": "string",
+      "minLength": 1
+    },
+    "sub_game_number": {
+      "description": "p.131/276. Appendix F table 18 fixes six sub-games in a series.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "records": {
+      "description": "One entry per step. A commitment with no revealed payload cannot be checked; a payload with no commitment was never bound to anything.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["step", "commit"],
+        "additionalProperties": true,
+        "properties": {
+          "step": { "type": "integer", "minimum": 1 },
+          "commit": {
+            "description": "Hcommit -- the SHA-256 over state, move, intent and nonce (p.34/94).",
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "move": { "type": "string", "minLength": 1 },
+          "intent": {
+            "description": "p.35/96: whether the hint was truthful. A hint without its intent flag cannot be judged, and rule 22 punishes only the deliberate lie.",
+            "type": "boolean"
+          },
+          "hint": { "type": "string" },
+          "nonce": {
+            "description": "Present only after the Final Reveal. Rule 18 keeps the nonce secret UNTIL THE END OF THE GAME (inst/:3354); Step 4 is where all nonces are revealed for the mutual audit (inst/:1136). It is therefore absent mid-game and required in the finished artifact -- which is why it is not in the top-level `required` list but is validated when present.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "mutual_agreement": {
+      "description": "Rule 36, p.131/276: the comprehensive mutual audit is a mandatory condition before agreement on the JSON result.",
+      "type": "object",
+      "required": ["confirmed"],
+      "additionalProperties": true,
+      "properties": {
+        "confirmed": { "type": "boolean" },
+        "opponent_group_id": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

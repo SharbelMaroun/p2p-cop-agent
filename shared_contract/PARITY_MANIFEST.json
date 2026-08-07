@@ -106,6 +106,18 @@
       "sha256": "583b8e84fda0148c6bb9c2d540851da6029f478e54706cf86ca14c5c0e1e2cb4"
     },
     {
+      "path": "schemas/declaration.schema.json",
+      "sha256": "9c49243fef52cf8c9c717b134baae268e1c1f77b1468051720c0601801a8da0f"
+    },
+    {
+      "path": "schemas/final-result.schema.json",
+      "sha256": "cbd3b5c6f0b05de96c42352b749dd4ff0758264a328984c7016075e5412ba5b5"
+    },
+    {
+      "path": "schemas/game-log.schema.json",
+      "sha256": "8262941f31e153bcfb584fa74038c9b71176c61e7ffc555b1ada53b475b50e59"
+    },
+    {
       "path": "schemas/match-config.schema.json",
       "sha256": "66decc67c964c724f8220b262f2153df0d9ac1ec84ec69819b9759a7d31538b1"
     },

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.9-proposed",
+  "x-role-neutral": true,
+  "title": "Pre-game declaration artifact",
+  "description": "Every `required` entry below is mandated by the BOOK, not inferred from a template. `U-019` records that the example artifacts prove only that keys occur in the inspected bytes -- they establish no requiredness -- and `X-04` is what happens when a schema asserts more than the sources support: it validated a template and refused every real artifact. additionalProperties is TRUE because the book was asked directly and is NOT-SPECIFIED on whether extra non-contradicting fields are forbidden in the reporting artifacts. Refusing an opponent's declaration over a key no source forbids would fail rule 36's mutual audit for no reason.",
+  "type": "object",
+  "required": [
+    "groups",
+    "github_commit",
+    "max_tokens_per_game",
+    "game_started_at",
+    "game_ended_at",
+    "games_played_declaration"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "groups": {
+      "description": "Both groups. Rule 49 wants four repository links across the pair, and p.78/183 wants the MCP addresses.",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["group_id", "group_name", "members", "repos", "mcp_servers", "llm_model", "hardware_spec"],
+        "additionalProperties": true,
+        "properties": {
+          "group_id": { "type": "string", "minLength": 1 },
+          "group_name": { "type": "string", "minLength": 1 },
+          "members": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "repos": {
+            "description": "Rule 49: both repositories per group.",
+            "type": "object",
+            "required": ["cop", "thief"],
+            "additionalProperties": true
+          },
+          "mcp_servers": {
+            "description": "Public addresses only. A URL carrying a credential breaches rule 39, which forbids secrets in the repository even when it is private.",
+            "type": "object",
+            "minProperties": 1
+          },
+          "llm_model": {
+            "description": "Rule 24, p.39/104. Sanction: denial of eligibility for computational bonuses.",
+            "type": "string",
+            "minLength": 1
+          },
+          "hardware_spec": {
+            "description": "p.39/104 and inst/:1278 list Operating System first, then CPU cores and frequency, RAM, and GPU/VRAM presence. `os` is required here because the book requires it -- it was absent from both repositories until 2026-08-07.",
+            "type": "object",
+            "required": ["os", "cpu_type", "cpu_cores", "ram_gb", "gpu_model", "vram_gb"],
+            "additionalProperties": true,
+            "properties": {
+              "os": { "type": "string", "minLength": 1 },
+              "cpu_type": { "type": "string", "minLength": 1 },
+              "cpu_cores": { "type": "integer", "minimum": 1 },
+              "ram_gb": { "type": "number", "exclusiveMinimum": 0 },
+              "gpu_model": { "type": "string" },
+              "vram_gb": { "type": "number", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "github_commit": {
+      "description": "Rule 53, p.40/106: the exact commit of the code that plays. Hex-only, seven to forty characters. minLength alone was not enough -- the reference hard-codes the string 'unknown', which is exactly seven characters and passed a length check while identifying nothing.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "max_tokens_per_game": {
+      "description": "The agreed token ceiling, p.78/183.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "game_started_at": { "type": "string", "minLength": 1 },
+    "game_ended_at": { "type": "string", "minLength": 1 },
+    "games_played_declaration": {
+      "description": "Rule 37, p.131/275: an accurate count of games actually played, declared at the start of each game. Rule 38 makes a false declaration absolute disqualification of the project, which is why the count is derived from emitted result artifacts rather than entered by hand.",
+      "type": "object",
+      "required": ["opponent_group_id", "games_played_including_this"],
+      "additionalProperties": true,
+      "properties": {
+        "opponent_group_id": { "type": "string", "minLength": 1 },
+        "games_played_including_this": { "type": "integer", "minimum": 1 },
+        "counted_games_before_this": { "type": "integer", "minimum": 0 },
+        "warm_ups_excluded": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

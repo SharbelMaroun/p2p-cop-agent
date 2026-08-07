@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.9-proposed",
+  "x-role-neutral": true,
+  "title": "Final result artifact",
+  "description": "The report sent to the lecturer and the input to the league table. Every `required` entry is book-mandated: tokens per game and per series under rule 54 (p.133/280), four repository links under rule 49 (p.133/279), per-sub-game scores and the cumulative series result (p.78/182), the commit hash used in each game (p.40/106), and mutual agreement under rule 35 (p.131/275). additionalProperties is TRUE because the book is NOT-SPECIFIED on extra fields here; what it does forbid is a CONTRADICTING report, which scores 0 for both teams.",
+  "type": "object",
+  "required": ["game_id", "game_uid", "groups", "sub_games", "final_result", "mutual_agreement"],
+  "additionalProperties": true,
+  "properties": {
+    "game_id": { "type": "string", "minLength": 1 },
+    "game_uid": { "type": "string", "minLength": 1 },
+    "groups": {
+      "description": "Rule 49 wants four repository links across both groups. Counted per group, because one group carrying four would satisfy a naive total.",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["group_id", "repos"],
+        "additionalProperties": true,
+        "properties": {
+          "group_id": { "type": "string", "minLength": 1 },
+          "repos": {
+            "type": "object",
+            "required": ["cop", "thief"],
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "sub_games": {
+      "description": "p.78/182: results and score for each of the six sub-games separately.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["sub_game_number", "result", "score", "tokens", "github_commit"],
+        "additionalProperties": true,
+        "properties": {
+          "sub_game_number": { "type": "integer", "minimum": 1, "maximum": 6 },
+          "result": { "type": "string", "minLength": 1 },
+          "score": { "type": "integer" },
+          "tokens": {
+            "description": "Rule 54: per game. A missing count and a zero count are different claims.",
+            "type": "integer",
+            "minimum": 0
+          },
+          "github_commit": {
+            "description": "p.40/106: the commit used in THIS game. The reference hard-codes the string 'unknown' here. Hex-only rather than a length floor, because 'unknown' is exactly seven characters and passed minLength -- caught by this schema's own test.",
+            "type": "string",
+            "pattern": "^[0-9a-f]{7,40}$"
+          }
+        }
+      }
+    },
+    "final_result": {
+      "description": "p.78/182: the cumulative weighted series result, plus rule 54's series token total.",
+      "type": "object",
+      "required": ["total_score", "tokens_total_series"],
+      "additionalProperties": true,
+      "properties": {
+        "total_score": { "type": "integer" },
+        "tokens_total_series": { "type": "integer", "minimum": 0 },
+        "winner_group": { "type": "string" },
+        "series_tie": { "type": "boolean" }
+      }
+    },
+    "mutual_agreement": {
+      "description": "Rule 35, p.131/275: both sides agree the outcome. A conflicting report disqualifies the game and scores 0 for BOTH teams, which is why catching an opponent's forgery is not a reason to file our own contradicting report.",
+      "type": "object",
+      "required": ["confirmed"],
+      "additionalProperties": true,
+      "properties": {
+        "confirmed": { "type": "boolean" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}
