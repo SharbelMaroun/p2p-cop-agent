@@ -87,7 +87,12 @@ Three findings, each carrying a design decision:
    play changes nothing) and not fixable by more walls under this stack: the probe shows
    the terminal shape is a locked orbit the quota cannot cut fast enough. Recorded open,
    exactly as the companion records its anticipating-Cop gap; the two are the same
-   phenomenon seen from opposite sides of the board.
+   phenomenon seen from opposite sides of the board. *(Cross-reference, 2026-08-08 (ii):
+   the companion's sixth evasion attempt localised its side of the phenomenon to the
+   **estimator** — truth-fed, its exact planner escapes every committed pursuer 24/24,
+   argmax-fed it collapses. Its committed archetypes also strengthened the measured
+   opposition: its shipped evasion now reads 23/8/5 against greedy/herding/anticipating.
+   See the companion's `results/pursuer_grid.json`.)*
 
 Measured here and **reverted**: a Bayes-recursive belief (prior carried and multiplied
 every turn) collapsed tracking — `flee_greedy` went 40/40 → 0/40 on that change alone.
