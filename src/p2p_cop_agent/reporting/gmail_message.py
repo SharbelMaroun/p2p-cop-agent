@@ -60,15 +60,48 @@ def report_subject(team_code: str, game_id: str) -> str:
     return f"[{team_code}] final-result {game_id}"
 
 
+def _require_agreed(settlement: Mapping[str, object]) -> None:
+    """Refuse to compose a report for a result that was not audited and then agreed.
+
+    Rule 36 puts the comprehensive mutual audit **before** agreement on the JSON result, and
+    rule 35 scores a conflicting report 0 for *both* teams. So the expensive mistake is not
+    sending a wrong number — it is sending one the opponent contradicts, and an unaudited
+    send maximises exactly that.
+
+    `is not True`, never truthiness: a JSON round trip that turned the flag into the string
+    `"True"` would satisfy a truthiness check while proving nothing.
+    """
+    if not isinstance(settlement, Mapping):
+        raise ReportMessageError("build_report_message needs the settlement record [AE-36]")
+    if settlement.get("state") != "agreed" or settlement.get("audit_passed") is not True:
+        raise ReportMessageError(
+            f"refusing to compose a report for a settlement in state "
+            f"{settlement.get('state')!r} with audit_passed="
+            f"{settlement.get('audit_passed')!r}; rule 36 makes the mutual audit a mandatory "
+            "condition before agreement, and rule 35 scores a conflicting report 0 for BOTH "
+            "teams [AE-35] [AE-36]"
+        )
+
+
 def build_report_message(
     *,
     team_code: str,
     game_id: str,
     result: Mapping[str, object],
+    settlement: Mapping[str, object],
     sender: str,
     to: str = REPORT_ADDRESS,
 ) -> EmailMessage:
-    """Assemble the MIME message: fixed body, JSON attachment, generated subject."""
+    """Assemble the MIME message: fixed body, JSON attachment, generated subject.
+
+    `settlement` is `orchestration.settlement.settlement_record` (`X-09`). Passing it is not
+    ceremony: `require_reportable` already refuses a non-agreed settlement, but it is a call
+    a caller can forget, and nothing here would have noticed. Rule 36 makes the mutual audit
+    "a mandatory condition before agreement on the JSON result", so the ordering belongs in
+    the signature rather than in a caller's discipline — the same argument that made
+    `agree()` take its audit first.
+    """
+    _require_agreed(settlement)
     if not isinstance(result, Mapping) or not result:
         raise ReportMessageError("the result artifact is the report; it cannot be empty")
     if result.get("_schema") != "result-report":

@@ -68,6 +68,21 @@ def is_dummy(value: str) -> bool:
     return not normalized or any(marker in normalized for marker in DUMMY_MARKERS)
 
 
+# A bare Python type annotation — a name, a colon, a type and nothing else — declares that
+# the name exists, never what it holds. The assignment pattern cannot tell one from a JSON
+# member with the same key, so it is excluded here rather than by weakening that pattern.
+#
+# Deliberately narrow: no equals sign, no quotes, no digits, and the whole line must be the
+# annotation. An annotated field *with a value* still fires, and so does every JSON form.
+# This is a precision fix, not an exemption — an allowlist entry for the same line would
+# suppress a real value assigned to it later, which is exactly where a leak hides.
+TYPE_ANNOTATION_PATTERN = re.compile(
+    r"""^\s*[A-Za-z_]\w*\s*:\s*[A-Za-z_][\w.]*(?:\s*\[[\w.,\s|\[\]]+\])?
+        (?:\s*\|\s*[A-Za-z_][\w.]*(?:\s*\[[\w.,\s|\[\]]+\])?)*\s*$""",
+    re.VERBOSE,
+)
+
+
 def line_findings(line: str) -> list[str]:
     """Return the labels one line trips, with no path formatting.
 
@@ -77,6 +92,8 @@ def line_findings(line: str) -> list[str]:
     two copies of a security rule drift in exactly one direction.
     """
     labels = [label for label, pattern in TOKEN_PATTERNS.items() if pattern.search(line)]
+    if TYPE_ANNOTATION_PATTERN.match(line):
+        return labels
     assignment = ASSIGNMENT_PATTERN.search(line)
     if assignment and not is_dummy(assignment.group(1)):
         labels.append("credential assignment")

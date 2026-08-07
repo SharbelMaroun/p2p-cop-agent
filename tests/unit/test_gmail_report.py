@@ -29,8 +29,18 @@ TEAM = "sharNamr"
 RESULT = {"_schema": "result-report", "game_id": "g1", "final_result": {"winner": "cop"}}
 
 
+# `X-09`: the audited-and-agreed settlement is now a required argument rather than a
+# caller's discipline. This is the shape `orchestration.settlement.settlement_record`
+# produces, so the fixture and the producer cannot drift into disagreeing about key names.
+AGREED = {"state": "agreed", "our_outcome": "capture", "their_outcome": "capture",
+          "audit_passed": True, "audit_failed_at": None}
+
+
 def _message(**kw):
-    kwargs = {"team_code": TEAM, "game_id": "g1", "result": RESULT, "sender": "us@example.com"}
+    """Build a report message. `settlement` defaults to agreed and is **overridable**, so a
+    test can drive the `X-09` refusals through the same path a caller uses."""
+    kwargs = {"team_code": TEAM, "game_id": "g1", "result": RESULT,
+              "sender": "us@example.com", "settlement": AGREED}
     kwargs.update(kw)
     return build_report_message(**kwargs)
 
@@ -92,3 +102,42 @@ def test_the_subject_is_deterministic_for_a_game() -> None:
 def test_a_team_code_that_is_not_eight_characters_is_refused(bad: str) -> None:
     with pytest.raises(ReportMessageError, match="exactly 8 characters"):
         report_subject(bad, "g1")
+
+
+# --- X-09: the audit must precede the report -------------------------------------------------
+
+
+@pytest.mark.parametrize("settlement", [
+    {"state": "audit_failed", "audit_passed": False},
+    {"state": "conflict", "audit_passed": True},
+    {"state": "unanswered", "audit_passed": True},
+    {"state": "agreed", "audit_passed": False},
+    {"state": "agreed"},
+    None,
+])
+def test_no_settlement_short_of_agreed_can_be_composed(settlement) -> None:
+    """`X-09`. `require_reportable` already refuses these, but it is a call a caller can
+    forget and nothing here would have noticed. Rule 36 puts the audit before agreement, so
+    the ordering belongs in the signature — the same argument that made `agree()` take its
+    audit first.
+
+    `{"state": "agreed", "audit_passed": False}` is the shape that matters: a hand-assembled
+    record claiming agreement without the audit that must precede it.
+    """
+    with pytest.raises(ReportMessageError, match=r"AE-3[56]"):
+        _message(settlement=settlement)
+
+
+@pytest.mark.parametrize("truthy", [1, "yes", "True", [1]])
+def test_a_truthy_non_boolean_audit_flag_is_refused(truthy) -> None:
+    """`is not True`, not truthiness — a JSON round trip turning the flag into the string
+    "True" would otherwise pass while proving nothing."""
+    with pytest.raises(ReportMessageError, match="AE-36"):
+        _message(settlement={"state": "agreed", "audit_passed": truthy})
+
+
+def test_the_refusal_names_the_state_so_the_operator_knows_the_remedy() -> None:
+    """A conflict needs a human and the lecturer; a failed audit needs the evidence
+    preserved. "Refused" alone sends someone to read the source."""
+    with pytest.raises(ReportMessageError, match="'conflict'"):
+        _message(settlement={"state": "conflict", "audit_passed": True})
