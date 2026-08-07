@@ -1257,6 +1257,38 @@ identically under either and a casually chosen fixture cannot tell them apart; a
 padding-stripping idiom comes from JWT, where padding is forbidden, which is a different
 specification for a different field.
 
+#### M9 begins with the scan that gets more expensive every commit (`M9-04b`, 2026-08-07)
+
+`check_secrets.py` answers "is there a secret in the files that exist now". At submission
+that is the wrong question: rule 39 forbids secrets being *in the repository*, and a
+credential deleted three commits ago is still in every clone. `scripts/scan_git_history.py`
+walks every blob reachable from any ref.
+
+**It found one thing, and it is a false positive that can never be edited.** A
+`docs/PROMPT_LOG.md` blob contains my own prose describing a dummy test vector built by
+string concatenation. The working-tree copy was rephrased the day the file-level scanner
+flagged it — correctly — but that blob is in 2350 objects' worth of history and in every
+clone.
+
+The resolution is the interesting part. Rewriting history over a false positive would
+invalidate every clone and change every commit hash after it, **including hashes already
+recorded in emitted artifacts under rule 53** — a cost only worth paying for a real leak. An
+allowlist was refused for the reason it is always refused here: a pattern suppression turns
+off a rule everywhere and forever, including on a credential committed tomorrow.
+
+So the finding is pinned by **blob SHA**. A content address is the hash of exact bytes a
+human read; different content is a different SHA and fires again, so a secret cannot hide
+behind the entry without producing a collision. `test_history_scan.py` holds that distinction
+in place: pins must be full 40-hex SHAs, must carry a written reason and a review date, must
+point at a blob history still contains, and the table must stay small enough to re-read. The
+Thief has no such table and a test asserts it stays absent — an unused suppression mechanism
+is one somebody eventually reaches for.
+
+`X-11` closed on the way: `line_findings(line)` is split out of `findings(path, root)`, so
+the detection rules can be tested directly *and* applied to a blob that no longer exists on
+disk. Without the split the history scanner would have restated the patterns, and two copies
+of a security rule drift in exactly one direction.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

@@ -68,18 +68,27 @@ def is_dummy(value: str) -> bool:
     return not normalized or any(marker in normalized for marker in DUMMY_MARKERS)
 
 
+def line_findings(line: str) -> list[str]:
+    """Return the labels one line trips, with no path formatting.
+
+    Split out of `findings` so the detection rules can be tested against a string, and so
+    `scan_git_history.py` can apply the **same** rules to a blob that no longer exists on
+    disk. Before this split, a history scanner would have had to restate the patterns, and
+    two copies of a security rule drift in exactly one direction.
+    """
+    labels = [label for label, pattern in TOKEN_PATTERNS.items() if pattern.search(line)]
+    assignment = ASSIGNMENT_PATTERN.search(line)
+    if assignment and not is_dummy(assignment.group(1)):
+        labels.append("credential assignment")
+    return labels
+
+
 def findings(path: Path, root: Path) -> list[str]:
-    """Return line-level findings for one text file."""
+    """Return line-level findings for one text file, located for a human to open."""
     text = path.read_text(encoding="utf-8", errors="replace")
-    matches: list[str] = []
-    for line_number, line in enumerate(text.splitlines(), start=1):
-        for label, pattern in TOKEN_PATTERNS.items():
-            if pattern.search(line):
-                matches.append(f"{path.relative_to(root)}:{line_number}: {label}")
-        assignment = ASSIGNMENT_PATTERN.search(line)
-        if assignment and not is_dummy(assignment.group(1)):
-            matches.append(f"{path.relative_to(root)}:{line_number}: credential assignment")
-    return matches
+    return [f"{path.relative_to(root)}:{number}: {label}"
+            for number, line in enumerate(text.splitlines(), start=1)
+            for label in line_findings(line)]
 
 
 def scan(root: Path) -> list[str]:
