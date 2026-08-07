@@ -70,7 +70,7 @@ def _emit(directory: Path, sub_game: int, outcome: str) -> SubGameLine:
     log = build_log(identity=IDENT, sub_game=sub_game,
                     records=[{"step": 1, "sender": "police", "commit": "a" * 64,
                               "move": "N", "hint": "north", "intent": True}],
-                    summary={"outcome": outcome, "turns": 1})
+                    summary={"ended_at": "2026-08-07T12:00:00+03:00", "outcome": outcome, "turns": 1})
     (directory / log_filename(IDENT, sub_game)).write_text(json.dumps(log), "utf-8")
     scores = {"capture": (20, 5), "technical_loss": (0, 0)}[outcome]
     return SubGameLine(sub_game, Role.COP, outcome, scores[0], scores[1], 0)

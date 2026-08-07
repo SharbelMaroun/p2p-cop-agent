@@ -113,6 +113,25 @@ def reveal_log(
     steps = log.get("records")
     if not isinstance(steps, Sequence) or not steps:
         raise LogArtifactError("cannot reveal a log that has no records")
+    # `X-08`, placed here rather than on `build_log`. The row was written from the Thief's
+    # design, where one builder produces the finished artifact and therefore needs an
+    # end-of-game check. This repository splits the two: `build_log` refuses any record
+    # carrying a nonce, so the in-play artifact *cannot* hold a reveal — a stronger
+    # guarantee, and the reason the guard does not belong there.
+    #
+    # The exposure is this function. Rule 18 keeps nonces secret "until the end of the
+    # game" (`inst/:3354`) and Step 4 is the Final Reveal (`inst/:1136`); calling this
+    # mid-game produces exactly the artifact the rule forbids. A revealed log is
+    # byte-identical whether it was built at the end or leaked at step one, so refusing to
+    # build it early is the only enforceable moment.
+    summary = log.get("summary")
+    ended = isinstance(summary, Mapping) and summary.get("ended_at")
+    if not ended:
+        raise LogArtifactError(
+            "refusing to reveal: the log summary carries no `ended_at`, so this game is "
+            "still in play. Revealing now publishes every nonce before the end of the game "
+            "[AE-18] — sanction: disqualification for enabling a dictionary attack"
+        )
     if len(reveals) != len(steps):
         raise LogArtifactError(
             f"{len(reveals)} reveals for {len(steps)} steps; every step is revealed exactly once"

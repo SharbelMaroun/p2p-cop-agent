@@ -75,7 +75,7 @@ def _artifacts() -> dict[str, object]:
         "config": build_config(identity=IDENT, sub_game=1, game=GAME,
                                config_sha256="b" * 64),
         "log": build_log(identity=IDENT, sub_game=1, records=records,
-                         summary={"outcome": "capture", "turns": 1}),
+                         summary={"ended_at": "2026-08-07T12:00:00+03:00", "outcome": "capture", "turns": 1}),
     }
 
 
