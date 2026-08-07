@@ -589,3 +589,16 @@ cell is ever in the Thief's sooner-region). **"Re-measure after every belief cha
 the Bayes-recursion calcification (40/40 → 0/40 tracking) before it shipped into the live
 loop — a regression a unit test would never have seen, because every single-turn assertion
 still passed.
+
+## 2026-08-08 — the first real match: end on the claim, owe nothing after
+
+The first two-process rehearsal against the companion Thief negotiated cleanly on the first
+try — the offer rosters, signature construction, and identity blocks of two independently
+written peers verified both ways, which is what all that conformance work was for. The bug
+it found here was in the ending: the Thief claims survival at the inclusive horizon and
+hangs up; our loop still owed a reply it could not deliver and recorded a technical loss —
+their 35 against our 34, two disagreeing artifacts, 0/0 on reconciliation. The fix moves the
+terminal check to immediately after receive (`TerminalClaimReceived`): a decided game is
+owed nothing — no decide, no seal, no send. Re-rehearsed: both sides SURVIVAL at 35, replay
+`Verified OK`. Three tests had pinned the reply-anyway behaviour; a test that pins a bug is
+how a bug survives, and the rehearsal is what outranked them.

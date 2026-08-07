@@ -109,14 +109,18 @@ def test_a_whole_sub_game_plays_with_no_message_fed_in_by_hand() -> None:
     )
     assert result.outcome is Outcome.CAPTURE
     assert result.steps == 2
-    assert len(opponent.sent) == 2
+    # The confirming claim ends the game before our second turn exists; nothing
+    # further is owed on a decided game (first-rehearsal finding, 2026-08-08).
+    assert len(opponent.sent) == 1
 
 
 def test_the_opponent_reply_really_travels_through_the_mailbox() -> None:
     """If the poller were bypassed the peer would stall on step 2, not answer it."""
     result, opponent, _ = play(reply(1), reply(2, win_claim={"type": "survival"}))
     assert result.outcome is Outcome.SURVIVAL
-    assert [m["step"] for m in opponent.sent] == [1, 2]
+    assert result.steps == 2, "the survival claim's own step number settles the count"
+    assert [m["step"] for m in opponent.sent] == [1], (
+        "the win_claim decided the game; no further turn is owed")
 
 
 def test_the_audit_still_closes_the_sub_game_and_verifies() -> None:

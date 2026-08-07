@@ -94,7 +94,9 @@ def test_a_confirmed_capture_ends_the_run_early_over_the_wire(remote_peer) -> No
     assert result.audit["result_claim"] == "capture"
 
     turns = [e for e in transcript_entries(transcript) if e["tool"] == "receive_turn"]
-    assert len(turns) == 2, "the run must stop sending once the game is decided"
+    assert len(turns) == 1, (
+        "the confirming claim decides the game before our next turn exists; replying "
+        "to a decided game is how one survival became two disagreeing artifacts")
 
 
 def test_a_tampered_audit_is_rejected_by_the_remote_peer(remote_peer) -> None:
