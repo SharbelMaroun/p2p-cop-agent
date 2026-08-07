@@ -71,6 +71,8 @@ def _artifacts() -> dict[str, object]:
             game_id=IDENT.game_id, game_uid=IDENT.game_uid,
             our_identity=_identity("sharNamr"), opponent_identity=_identity("opponent"),
             config_sha256="c" * 64, num_sub_games=6, max_tokens_per_game=200_000,
+            github_commit="a" * 40,
+            games_played_declaration={"opponent_group_id": "rival", "games_played_including_this": 1},
             started_at="2026-08-07T10:00:00Z"),
         "config": build_config(identity=IDENT, sub_game=1, game=GAME,
                                config_sha256="b" * 64),

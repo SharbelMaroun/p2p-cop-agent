@@ -45,11 +45,15 @@ def declaration() -> dict:
         "group_id": "sharNamr", "group_name": "sharNamr", "members": ["s1", "s2"],
         "repos": {"cop": "https://x/1", "thief": "https://x/2"},
         "mcp_servers": {"peer": "https://x.example.com/mcp"},
-        "llm_model": "template-free",
-        "hardware_spec": {"os": "Windows 11", "cpu_type": "x86_64", "cpu_cores": 8,
-                          "ram_gb": 16, "gpu_model": "none", "vram_gb": 0},
     }
     return {"_schema": "declaration", "groups": [group, {**group, "group_id": "rival"}],
+            "llm_model": "template-free",
+            "hardware": {"os": "Windows 11", "cpu_type": "x86_64", "cpu_cores": 8,
+                         "ram_gb": 16, "gpu_model": "none", "vram_gb": 0},
+            # `M7-02`: resolved filenames, never the `g<NN>` pattern the book's naming table
+            # writes. A placeholder here names no file that exists.
+            "links": {"declaration": "declaration_g.json", "result": "result_g.json",
+                      "config": ["config_g_g01.json"], "log": ["log_g_g01.json"]},
             "github_commit": SHA, "max_tokens_per_game": 200_000,
             "game_started_at": "t0", "game_ended_at": "t1",
             "games_played_declaration": {"opponent_group_id": "rival",
@@ -113,14 +117,19 @@ def test_the_real_shape_validates(kind: str) -> None:
 # --- book-mandated fields that were missing --------------------------------------------------
 
 
-def test_the_hardware_spec_requires_the_operating_system() -> None:
-    """**`inst/:1278` lists Operating System first**, and neither repository required it
-    until 2026-08-07. Rule 24 is Mandatory with sanction "denial of eligibility for
-    computational bonuses"."""
+def test_the_declaration_carries_the_hardware_and_model_at_the_root() -> None:
+    """Rule 24 (Mandatory), sanction "denial of eligibility for computational bonuses".
+
+    **Declared once, not per group** — this peer can only speak for itself, and repeating an
+    opponent's spec would assert something it never measured. The Thief nests them per group;
+    both satisfy the rule. `inst/:1278` lists the OS first, absent from both until 2026-08-07.
+    """
     document = declaration()
-    del document["groups"][0]["hardware_spec"]["os"]
-    with pytest.raises(ArtifactInvalidError, match="os"):
-        validate_artifact(document)
+    assert document["hardware"]["os"]
+    for missing in ("llm_model", "hardware"):
+        broken = {k: v for k, v in declaration().items() if k != missing}
+        with pytest.raises(ArtifactInvalidError, match=missing):
+            validate_artifact(broken)
 
 
 def test_the_declaration_requires_the_games_played_count() -> None:

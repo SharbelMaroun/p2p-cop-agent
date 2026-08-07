@@ -29,11 +29,19 @@ from collections.abc import Mapping
 
 from p2p_cop_agent.protocol.commit import canonical_payload_bytes
 from p2p_cop_agent.protocol.private_fields import check_outbound
+from p2p_cop_agent.reporting.naming import (
+    MatchIdentity,
+    config_filename,
+    declaration_filename,
+    log_filename,
+    result_filename,
+)
 from p2p_cop_agent.shared.config import JsonObject
 
 DECLARATION_TYPE = "pre_game"
 SCHEMA_VERSION = "1.1"
 _SHA256 = re.compile(r"[0-9a-f]{64}")
+_COMMIT = re.compile(r"[0-9a-f]{7,40}")
 # `:2229` requires "addresses of the MCP server" in the declaration. Rule 39 (Prohibited)
 # forbids pushing secrets, so a URL carrying a credential must never reach a committed,
 # emailed artifact -- the two requirements meet here and only public URLs survive.
@@ -59,6 +67,8 @@ def build_declaration(
     num_sub_games: int,
     max_tokens_per_game: int,
     started_at: str,
+    github_commit: str,
+    games_played_declaration: Mapping[str, object],
     timezone: str = "UTC",
 ) -> JsonObject:
     """Assemble the pre-game declaration from injected, already-agreed sources."""
@@ -67,6 +77,21 @@ def build_declaration(
             raise DeclarationError(f"{name} must be a non-empty string")
     if not isinstance(config_sha256, str) or _SHA256.fullmatch(config_sha256) is None:
         raise DeclarationError("config_sha256 must be 64 lowercase hexadecimal characters")
+    # Rule 53 (Mandatory), p.40/106: the commit hash of the code that played. Hex-only
+    # rather than a length floor — the reference hard-codes the string "unknown", which is
+    # exactly seven characters and would pass any minimum while identifying nothing.
+    if not isinstance(github_commit, str) or _COMMIT.fullmatch(github_commit) is None:
+        raise DeclarationError(
+            "github_commit must be 7-40 lowercase hex characters; rule 53 requires the "
+            "commit of the code that plays, and 'unknown' identifies nothing [AE-53]")
+    # Rule 37 (Mandatory), p.131/275: an accurate count of games already played against
+    # this opponent, declared at the start. Rule 38 makes a false one absolute
+    # disqualification of the project, which is why `reporting.league` derives it from
+    # emitted result artifacts instead of accepting a hand-entered figure.
+    if not isinstance(games_played_declaration, Mapping) or not games_played_declaration:
+        raise DeclarationError(
+            "games_played_declaration is required; rule 37 wants the count at the start "
+            "of each game and rule 38 disqualifies the project for a false one [AE-37]")
     for name, value in (("num_sub_games", num_sub_games),
                         ("max_tokens_per_game", max_tokens_per_game)):
         if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
@@ -86,6 +111,10 @@ def build_declaration(
     # files of the two teams" is about REPOSITORY urls. Both are required and they are not
     # the same thing, so they get separate keys.
     repositories = [url for group in groups for url in group["repos"].values()]
+    # Names come from `reporting.naming`, the single source that already derives every
+    # filename from one identity. Restating the f-strings here is how the declaration and
+    # the files on disk would drift apart without anything noticing.
+    _identity = MatchIdentity(game_id=game_id, game_uid=game_uid)
     declaration: JsonObject = {
         "_schema": "declaration",
         "schema_version": SCHEMA_VERSION,
@@ -93,12 +122,30 @@ def build_declaration(
         "game_id": game_id,
         "game_uid": game_uid,
         "config_sha256": config_sha256,
+        "github_commit": github_commit,
+        "games_played_declaration": dict(games_played_declaration),
         "groups": groups,
+        # `M7-02`: **resolved** filenames, not the naming pattern. Until 2026-08-07 this
+        # emitted the literal `g<NN>` — the book's table at `inst/:3600-3602` writes the
+        # convention that way, and copying it into the artifact conflated "how a name is
+        # formed" with "the name of a file that exists". `:2243` is explicit that each name
+        # is derived from the `game_id` so files from different games do not get mixed up,
+        # which a placeholder cannot do.
+        #
+        # This is `X-04` seen from the other side. That defect was fixed in the *schema* —
+        # the pattern now demands `_g\d{2}\.json` — and the **producer was left emitting the
+        # placeholder**, so the contract became right while the artifact stayed wrong. The
+        # declaration's own links would have failed the pattern its own bundle publishes.
+        #
+        # Arrays because a series has `num_sub_games` configs and logs, not one of each. The
+        # key names are kept (`U-019`: the template proves key presence, never types), so a
+        # reader looking for `links.config` finds it — holding real filenames instead of one
+        # that matches no file on disk.
         "links": {
-            "declaration": f"declaration_{game_id}.json",
-            "config": f"config_{game_id}_g<NN>.json",
-            "log": f"log_{game_id}_g<NN>.json",
-            "result": f"result_{game_id}.json",
+            "declaration": declaration_filename(_identity),
+            "config": [config_filename(_identity, n) for n in range(1, num_sub_games + 1)],
+            "log": [log_filename(_identity, n) for n in range(1, num_sub_games + 1)],
+            "result": result_filename(_identity),
         },
         "repositories": repositories,
         "num_sub_games": num_sub_games,

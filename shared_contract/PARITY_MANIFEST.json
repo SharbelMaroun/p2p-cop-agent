@@ -107,7 +107,7 @@
     },
     {
       "path": "schemas/declaration.schema.json",
-      "sha256": "9c49243fef52cf8c9c717b134baae268e1c1f77b1468051720c0601801a8da0f"
+      "sha256": "fdd99d3c19d1d76a5870a718f5fa0280f3d4d8e94e6d3c403a71b7632b24bd38"
     },
     {
       "path": "schemas/final-result.schema.json",
