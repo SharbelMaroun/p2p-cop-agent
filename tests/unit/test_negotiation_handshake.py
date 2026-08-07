@@ -36,6 +36,7 @@ def _game(**world: object) -> dict:
 def _identity(group_id: str) -> dict:
     return {
         "group_id": group_id,
+        "group_name": group_id,
         "members": ["a", "b"],
         "repos": {"cop": "https://example.com/cop"},
         "mcp_servers": {"cop": "https://example.com/mcp"},
@@ -142,7 +143,6 @@ def test_a_transport_missing_negotiate_is_a_handshake_error() -> None:
             transport=object(), take_offer=lambda: None,
             clock=clock.time, sleep=clock.sleep, timeout=1.0,
         )
-
 
 def test_a_malformed_incoming_offer_refuses_the_match() -> None:
     peer = Counterparty({"terms": {}, "nonce": "x", "signature": "y"})

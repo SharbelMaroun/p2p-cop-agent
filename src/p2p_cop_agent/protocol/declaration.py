@@ -1,24 +1,16 @@
-"""The pre-game declaration, written after negotiation and locked before play (M5-17f-iii).
+"""The pre-game declaration: written after negotiation, locked before the first move.
 
-**`links` names the four artifacts; `repositories` carries rule 49's four repo URLs.**
-Those were one field until `X-06`, which was a conflation rather than a shortcut: the
-template's `links` points at `declaration`/`config`/`log`/`result` filenames, while rule
-49 requires "four links in the JSON files of the two teams" meaning the two repositories
-per group. Both are required; neither substitutes for the other.
+Two requirements were one field until `X-06`, and the collapse was a conflation rather than
+a shortcut. `links` names the four **artifact** filenames; `repositories` carries rule 49's
+four **repository** URLs. Both are required and neither substitutes for the other.
 
-The book requires a pre-game declaration "signed and locked cryptographically before
-play". This module builds that object from already-agreed, injected sources and
-produces its lock -- a plain canonical SHA-256 over the declaration, the same public,
-reproducible construction as the config lock (nothing here is secret, so no nonce).
+The book requires this artifact "signed and locked cryptographically before play". The lock
+is a plain canonical SHA-256 over the declaration — public and reproducible, like the config
+lock, because nothing here is secret and an auditor must be able to recompute it.
 
-Deliberately the **minimal M5 form**. What M5 owns is the *timing-and-lock* obligation:
-a declaration exists after negotiation, complete in the fields both peers can compute
-before the first move, and cryptographically locked before it. The full declaration
-*artifact* -- its JSON Schema envelope (`_schema`/`schema_version`), file emission, and
-email reporting -- is M7 (`M7-02a`, `M7-22`), and the exact ``game_id``/``game_uid``
-derivation is M7's to fix; both are **injected** here rather than invented, so pulling
-this forward does not pre-empt M7's contract. ``game_ended_at`` is null at lock time
-and is M7's to fill and re-lock post-game.
+`game_ended_at` is null at lock time by design: the declaration is written before the first
+move, so the end time is not knowable when the artifact is created. It is filled and
+re-locked post-game.
 """
 
 from __future__ import annotations
@@ -77,17 +69,14 @@ def build_declaration(
             raise DeclarationError(f"{name} must be a non-empty string")
     if not isinstance(config_sha256, str) or _SHA256.fullmatch(config_sha256) is None:
         raise DeclarationError("config_sha256 must be 64 lowercase hexadecimal characters")
-    # Rule 53 (Mandatory), p.40/106: the commit hash of the code that played. Hex-only
-    # rather than a length floor — the reference hard-codes the string "unknown", which is
-    # exactly seven characters and would pass any minimum while identifying nothing.
+    # Rule 53, p.40/106. Hex-only, not a length floor: the reference ships "unknown",
+    # which is exactly seven characters and identifies nothing.
     if not isinstance(github_commit, str) or _COMMIT.fullmatch(github_commit) is None:
         raise DeclarationError(
             "github_commit must be 7-40 lowercase hex characters; rule 53 requires the "
             "commit of the code that plays, and 'unknown' identifies nothing [AE-53]")
-    # Rule 37 (Mandatory), p.131/275: an accurate count of games already played against
-    # this opponent, declared at the start. Rule 38 makes a false one absolute
-    # disqualification of the project, which is why `reporting.league` derives it from
-    # emitted result artifacts instead of accepting a hand-entered figure.
+    # Rule 37, p.131/275: the count at game start. Rule 38 makes a false one absolute
+    # disqualification, so `reporting.league` derives it from emitted result artifacts.
     if not isinstance(games_played_declaration, Mapping) or not games_played_declaration:
         raise DeclarationError(
             "games_played_declaration is required; rule 37 wants the count at the start "
@@ -105,7 +94,7 @@ def build_declaration(
         raise DeclarationError("our identity must declare llm_model [AE-24]")
     if not isinstance(host_spec, Mapping) or not host_spec:
         raise DeclarationError("our identity must declare its hardware spec [AE-24]")
-    groups = [_group(our_identity), _group(opponent_identity)]
+    groups = [_group(our_identity), _group(opponent_identity, ours=False)]
     # `X-06`: two different requirements had been collapsed into one field. The template's
     # `links` points at the four ARTIFACT filenames; rule 49's "four links in the JSON
     # files of the two teams" is about REPOSITORY urls. Both are required and they are not
@@ -125,22 +114,10 @@ def build_declaration(
         "github_commit": github_commit,
         "games_played_declaration": dict(games_played_declaration),
         "groups": groups,
-        # `M7-02`: **resolved** filenames, not the naming pattern. Until 2026-08-07 this
-        # emitted the literal `g<NN>` — the book's table at `inst/:3600-3602` writes the
-        # convention that way, and copying it into the artifact conflated "how a name is
-        # formed" with "the name of a file that exists". `:2243` is explicit that each name
-        # is derived from the `game_id` so files from different games do not get mixed up,
-        # which a placeholder cannot do.
-        #
-        # This is `X-04` seen from the other side. That defect was fixed in the *schema* —
-        # the pattern now demands `_g\d{2}\.json` — and the **producer was left emitting the
-        # placeholder**, so the contract became right while the artifact stayed wrong. The
-        # declaration's own links would have failed the pattern its own bundle publishes.
-        #
-        # Arrays because a series has `num_sub_games` configs and logs, not one of each. The
-        # key names are kept (`U-019`: the template proves key presence, never types), so a
-        # reader looking for `links.config` finds it — holding real filenames instead of one
-        # that matches no file on disk.
+        # `M7-02`: **resolved** filenames, never the `g<NN>` pattern the book's naming
+        # table writes. `X-04` fixed that pattern in the schema and left this builder
+        # emitting the placeholder; the schema's own `links` description carries the
+        # full reasoning. Arrays: a series has `num_sub_games` configs and logs.
         "links": {
             "declaration": declaration_filename(_identity),
             "config": [config_filename(_identity, n) for n in range(1, num_sub_games + 1)],
@@ -163,8 +140,13 @@ def build_declaration(
     return declaration
 
 
-def _group(identity: Mapping[str, object]) -> JsonObject:
-    """Project one peer's identity into the declaration's group entry."""
+def _group(identity: Mapping[str, object], *, ours: bool = True) -> JsonObject:
+    """Project one peer's identity into the declaration's group entry.
+
+    `ours` decides how strict `group_name` is (`M7-28`). The obligation is about what
+    **we** declare; we cannot make a classmate send a display name, and refusing to play
+    over a missing one would assert more across the wire than any source supports.
+    """
     group_id = identity.get("group_id")
     if not isinstance(group_id, str) or not group_id:
         raise DeclarationError("each group needs a non-empty group_id")
@@ -182,8 +164,14 @@ def _group(identity: Mapping[str, object]) -> JsonObject:
                 f"group {group_id!r} MCP address {role!r} carries a credential; the "
                 "declaration is committed and emailed, and rule 39 forbids that"
             )
+    name = identity.get("group_name")
+    if not isinstance(name, str) or not name:
+        if ours:  # `inst/:1278`, p.39/104; rule 24 is Mandatory [AE-24]
+            raise DeclarationError("our identity must declare group_name [AE-24]")
+        name = group_id  # theirs: name it after the id, visibly, rather than refuse
     return {
         "group_id": group_id,
+        "group_name": name,
         "members": list(identity.get("members") or []),
         "repos": dict(repos),
         "mcp_servers": dict(servers),

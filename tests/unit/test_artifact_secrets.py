@@ -52,6 +52,7 @@ def _identity(group_id: str) -> dict:
     to carry a leak: repository URLs, an MCP endpoint and a model name."""
     return {
         "group_id": group_id,
+        "group_name": group_id,
         "repos": {"cop": f"https://github.com/{group_id}/cop",
                   "thief": f"https://github.com/{group_id}/thief"},
         "links": {"agent": f"https://example.com/{group_id}/agent",

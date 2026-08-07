@@ -26,6 +26,7 @@
         "type": "object",
         "required": [
           "group_id",
+          "group_name",
           "members",
           "repos",
           "mcp_servers"
@@ -39,7 +40,7 @@
           "group_name": {
             "type": "string",
             "minLength": 1,
-            "description": "The book requires the group NAME alongside the group_id (p.39/104, 78/183). It is validated when present but NOT required here, because `protocol/declaration._group` does not yet emit it — and a schema that rejects the only artifact this repository can produce is the X-04 failure again. Tracked as M7-28; promote to required once the builder supplies it."
+            "description": "Required since M7-28 (2026-08-07). inst/:1278 says the Step-0 declaration documents the group name, and p.39/104 lists group identity as name, id and members. Our own name is enforced at build time; an opponent who omits one gets their group_id as the name, because refusing to play over a missing display name would assert more over the wire than any source supports."
           },
           "members": {
             "type": "array",

@@ -22,6 +22,7 @@ CONFIG_SHA = "a" * 64
 def _identity(group_id: str, repos: dict[str, str] | None = None) -> dict:
     return {
         "group_id": group_id,
+        "group_name": group_id,
         "members": ["a", "b"],
         "repos": repos or {"agent": f"https://example.com/{group_id}/agent",
                            "report": f"https://example.com/{group_id}/report"},
@@ -96,9 +97,7 @@ def test_a_group_without_a_group_id_is_refused() -> None:
 
 
 def test_the_declaration_carries_the_mcp_addresses_hardware_and_model() -> None:
-    """`:2229` requires the MCP addresses and the hardware and model details (`M7-22c`,
-    `M7-22d`); rule 24 is Mandatory, sanction "denial of eligibility for computational
-    bonuses"."""
+    """`:2229` wants the MCP addresses plus hardware and model; rule 24 is Mandatory."""
     decl = _declaration()
     assert all(group["mcp_servers"] for group in decl["groups"])
     assert decl["hardware"]["ram_gb"] == 31.8
