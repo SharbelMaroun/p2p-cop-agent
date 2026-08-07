@@ -87,11 +87,16 @@ Three findings, each carrying a design decision:
    play changes nothing) and not fixable by more walls under this stack: the probe shows
    the terminal shape is a locked orbit the quota cannot cut fast enough. Recorded open,
    exactly as the companion records its anticipating-Cop gap; the two are the same
-   phenomenon seen from opposite sides of the board. *(Cross-reference, 2026-08-08 (ii):
-   the companion's sixth evasion attempt localised its side of the phenomenon to the
-   **estimator** — truth-fed, its exact planner escapes every committed pursuer 24/24,
-   argmax-fed it collapses. Its committed archetypes also strengthened the measured
-   opposition: its shipped evasion now reads 23/8/5 against greedy/herding/anticipating.
+   phenomenon seen from opposite sides of the board. *(Cross-reference, 2026-08-08:
+   the companion **closed its side of the mirror**. Its sixth attempt localised the gap
+   to the estimator — truth-fed, its exact planner escapes every committed pursuer
+   24/24 — and its seventh rebuilt the estimator as a model-matched emitter decoder
+   that inverts the hash-locked scent physics. Its live evasion now scores **24/24
+   against all three pursuit archetypes, 240/240 league points, robustness configs
+   included**. For this repository that cuts both ways: our own `flee_smart` boundary
+   stands on even firmer ground — a decoded-belief evader is strictly stronger than
+   the archetype every arm here already fails to corner — and any classmate Cop that
+   emits per the locked model is now near-exactly localised by the companion's belief.
    See the companion's `results/pursuer_grid.json`.)*
 
 Measured here and **reverted**: a Bayes-recursive belief (prior carried and multiplied
