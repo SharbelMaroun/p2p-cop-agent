@@ -92,7 +92,8 @@ def test_a_match_negotiates_locks_the_declaration_then_plays() -> None:
     assert result.agreement is not None
     assert result.outcome.outcome is Outcome.CAPTURE
     assert result.declaration["game_id"] == "g1"
-    assert len(peer.sent) == 2 and peer.audits, "we played two turns and sent the audit"
+    # The confirming claim decides the game before our second turn exists (`M9-021a`).
+    assert len(peer.sent) == 1 and peer.audits, "one turn, the claim decided, audit sent"
 
 
 def test_the_declaration_is_locked_and_reproduces() -> None:

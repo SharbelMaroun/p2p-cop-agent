@@ -1357,6 +1357,22 @@ conceded on the walk (39/40), and `flee_smart` — distance *plus* mobility, the
 evasion shape — escapes everything including the truth-aimed stack, recorded as an open
 structural boundary, the mirror image of the companion's anticipating-Cop gap.
 
+#### The first real match found the reply nobody owed (`M5-18`, 2026-08-08)
+
+The first two-process rehearsal against the companion Thief — both `serve` CLIs, localhost
+HTTP, one byte-identical shared config, real negotiation, real strategies — ended its first
+full run with a scar this repository had to own: the Thief completed the inclusive horizon,
+claimed survival, and legitimately hung up, while this loop still owed a reply it could no
+longer deliver. Result: their SURVIVAL at 35 against our TECHNICAL_LOSS at 34 — two
+disagreeing artifacts, which the league reconciles to **0/0 for both** (`M9-021a`). The turn
+loop now takes the terminal check as a hook evaluated immediately after receive: a
+`win_claim` or a confirming `claim_response` ends the sub-game with the claim's own step
+number — no decide, no seal (so no commitment is abandoned), no send. Three tests that had
+pinned the old reply-anyway behaviour were updated, one per layer, and the re-rehearsal
+closed the loop: **both peers record SURVIVAL after 35**, and the Thief's log replays
+`Verified OK — 35 steps re-verified`. The tunnel run with screenshots remains the operator's
+step; what it rehearses is now known to work end to end.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

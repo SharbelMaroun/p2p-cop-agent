@@ -39,6 +39,25 @@ class TurnLoopError(RuntimeError):
     """Raised when a turn cannot be completed and no phase transition covers it."""
 
 
+class TerminalClaimReceived(Exception):  # noqa: N818 - a control signal, not an error
+    """The opponent's incoming message decided the game before our turn existed.
+
+    Found by the first two-process rehearsal (2026-08-08): the Thief completes the
+    inclusive horizon, says so in ``win_claim``, and legitimately hangs up — while
+    this loop still owed a reply it could no longer deliver, recording a technical
+    loss at step 34 against the opponent's survival at 35. Two artifacts disagreeing
+    reconcile to 0/0 for both (`M9-021a`), so a terminal claim must end the game
+    *before* this peer decides, seals, or sends anything further. Nothing is owed on
+    a decided game: no seal happens, so no commitment is abandoned.
+    """
+
+    def __init__(self, outcome: object, reason: str, step: object = None) -> None:
+        super().__init__(reason)
+        self.outcome = outcome
+        self.reason = reason
+        self.step = step
+
+
 @dataclass(frozen=True, slots=True)
 class TurnRecord:
     """What one completed turn did, in enough detail to reconstruct it."""
@@ -59,6 +78,7 @@ def run_turn(
     decide: Decide,
     opens: bool = False,
     on_transition: OnTransition | None = None,
+    terminal: Callable[[JsonObject], tuple[object, str] | None] | None = None,
 ) -> TurnRecord:
     """Run one turn through the phase machine and return what it did.
 
@@ -75,6 +95,11 @@ def run_turn(
             on_transition(phase)
 
     incoming = None if opens else _await_opponent(machine, receive, enter)
+    if terminal is not None and incoming is not None:
+        verdict = terminal(incoming)
+        if verdict is not None:
+            outcome, reason = verdict
+            raise TerminalClaimReceived(outcome, reason, incoming.get("step"))
 
     # Deciding and sealing both happen in COMPUTING_MOVE, because that is the only
     # phase from which the table permits TECHNICAL_LOSS. Entering COMMITTING means

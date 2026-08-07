@@ -31,6 +31,7 @@ from p2p_cop_agent.orchestration.turn_loop import (
     Decide,
     OnTransition,
     Receive,
+    TerminalClaimReceived,
     TurnLoopError,
     TurnRecord,
     run_turn,
@@ -93,16 +94,19 @@ def run_sub_game_over_wire(
                 decide=decide,
                 opens=opens and step == 1,
                 on_transition=on_transition,
+                terminal=_decided_by,
             )
+        except TerminalClaimReceived as claim:
+            # The opponent's message decided the game before our turn existed —
+            # nothing further is owed, and replying to a finished game is how the
+            # first rehearsal turned one survival into two disagreeing artifacts.
+            settled = claim.step if isinstance(claim.step, int) else step - 1
+            return _finish(claim.outcome, settled, claim.reason, turns,
+                           ledger, transport, send_audit)
         except TurnLoopError as exc:
             return _finish(Outcome.TECHNICAL_LOSS, step - 1, str(exc), turns,
                            ledger, transport, send_audit)
         turns.append(record)
-
-        decided = _decided_by(record.received)
-        if decided is not None:
-            outcome, reason = decided
-            return _finish(outcome, step, reason, turns, ledger, transport, send_audit)
 
     return _finish(
         Outcome.SURVIVAL,
