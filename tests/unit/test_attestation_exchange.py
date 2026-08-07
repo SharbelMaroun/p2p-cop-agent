@@ -26,7 +26,7 @@ from tests.unit.test_polling import FakeClock
 
 
 def _sealed(game: dict):
-    host = HostSpec(os="linux", cpu="x", ram_gb=8, gpu="none", vram_gb=1)
+    host = HostSpec(os="linux", cpu_type="x", cpu_freq_mhz=3600, cpu_cores=8, ram_gb=8, gpu_model="none", vram_gb=1)
     payload = build_step_zero(
         host=host, model="template", group_id="neutral-group-beta",
         game_id="g1", git_commit="a" * 40, config_sha256=shared_config_sha256(game),

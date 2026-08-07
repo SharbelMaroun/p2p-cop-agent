@@ -27,7 +27,7 @@ NONCE = "1234567890abcdef1234567890abcdef"
 
 def host() -> HostSpec:
     """Return a valid hardware declaration."""
-    return HostSpec(os="Windows 11", cpu="Ryzen 9", ram_gb=64, gpu="RTX 4090", vram_gb=24)
+    return HostSpec(os="Windows 11", cpu_type="Ryzen 9", cpu_freq_mhz=3600, cpu_cores=8, ram_gb=64, gpu_model="RTX 4090", vram_gb=24)
 
 
 def declaration(git_commit: str = GIT_COMMIT) -> dict:
@@ -47,7 +47,8 @@ def test_build_step_zero_seals_all_required_evidence() -> None:
     assert payload["code"]["git_commit"] == GIT_COMMIT
     assert payload["game"] == {"game_id": "game-001", "config_sha256": CONFIG_SHA}
     assert payload["group"]["group_id"] == "team-cop"
-    assert set(payload["host"]) == {"os", "cpu", "ram_gb", "gpu", "vram_gb"}
+    assert set(payload["host"]) == {"os", "cpu_type", "cpu_freq_mhz", "cpu_cores",
+                                    "ram_gb", "gpu_model", "vram_gb"}
     assert payload["model"] == "claude-opus-4-8"
 
 
@@ -76,12 +77,12 @@ def test_empty_identity_fields_are_rejected(field: str) -> None:
 
 def test_non_positive_hardware_values_are_rejected() -> None:
     with pytest.raises(AttestationError, match="ram_gb"):
-        HostSpec(os="o", cpu="c", ram_gb=0, gpu="g", vram_gb=8).as_dict()
+        HostSpec(os="o", cpu_type="c", cpu_freq_mhz=3600, cpu_cores=8, ram_gb=0, gpu_model="g", vram_gb=8).as_dict()
 
 
 def test_empty_host_string_is_rejected() -> None:
     with pytest.raises(AttestationError, match="host os"):
-        HostSpec(os="", cpu="c", ram_gb=8, gpu="g", vram_gb=8).as_dict()
+        HostSpec(os="", cpu_type="c", cpu_freq_mhz=3600, cpu_cores=8, ram_gb=8, gpu_model="g", vram_gb=8).as_dict()
 
 
 def test_non_hex_git_output_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:

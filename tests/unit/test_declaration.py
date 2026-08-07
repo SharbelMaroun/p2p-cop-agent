@@ -28,7 +28,7 @@ def _identity(group_id: str, repos: dict[str, str] | None = None) -> dict:
                            "report": f"https://example.com/{group_id}/report"},
         "mcp_servers": {"peer": f"https://{group_id}.example.com/mcp"},
         "llm_model": "template-free",
-        "spec": {"cpu": "x86_64", "ram_gb": 31.8, "vram_gb": 6.0},
+        "spec": {"os": "Windows 11", "cpu_type": "x86_64", "cpu_freq_mhz": 3600, "cpu_cores": 8, "ram_gb": 31.8, "gpu_model": "RTX 3060", "vram_gb": 6.0},
     }
 
 
@@ -97,16 +97,17 @@ def test_a_group_without_a_group_id_is_refused() -> None:
 
 
 def test_the_declaration_carries_the_mcp_addresses_hardware_and_model() -> None:
-    """`:2229` wants the MCP addresses plus hardware and model; rule 24 is Mandatory."""
+    """`:2229` wants the MCP addresses plus hardware and model, per group since `M7-22f`:
+    the bonus rule 24 sanctions compares two machines, so one root spec cannot express it."""
     decl = _declaration()
+    ours = decl["groups"][0]
     assert all(group["mcp_servers"] for group in decl["groups"])
-    assert decl["hardware"]["ram_gb"] == 31.8
-    assert decl["llm_model"] == "template-free"
+    assert ours["hardware_spec"]["ram_gb"] == 31.8 and ours["llm_model"] == "template-free"
+    assert "hardware" not in decl and "llm_model" not in decl
 
 
 def test_a_group_without_an_mcp_address_is_refused() -> None:
-    identity = _identity("alpha")
-    del identity["mcp_servers"]
+    identity = {k: v for k, v in _identity("alpha").items() if k != "mcp_servers"}
     with pytest.raises(DeclarationError, match="MCP addresses"):
         _declaration(our_identity=identity)
 

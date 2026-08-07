@@ -151,6 +151,41 @@ converts their loss into a shared one.
 **Cost:** a game we know we won can end unreported and unscored. That is the correct trade —
 0 is better than −(our own points too).
 
+### 2.6 An undeclared opponent is recorded as undeclared — `M7-22f`
+
+The pre-game declaration names both groups' hardware and language model, **per group**. That
+placement is not cosmetic. Chapter 5 asks whether it is fair for an agent on a phone to race
+one on a machine running heavy models, says computational fairness "will be graded", and
+puts Step-0 before the first move to answer it; rule 24's sanction is denial of eligibility
+for the **computational bonus**. A bonus that compares two machines cannot be computed from
+one machine's spec. This repository emitted the pair once at the document root until
+2026-08-07, describing only itself — the companion Thief had nested them from the start, and
+the cross-repository comparison is what surfaced it.
+
+The interesting case is an opponent that declares nothing. The reference implementation
+resolves it as `opp = series.peer_identity or own`: an empty peer identity is falsy in
+Python, so it copies **its own** hardware and model into the opponent's slot. Its sample
+artifacts show two groups sharing one machine, which is why the behaviour is easy to miss —
+it looks like a match played on one laptop rather than like a defect.
+
+**We decline to copy it.** The declaration is signed, committed and emailed; rule 38 makes a
+false declaration an absolute disqualification; and stating that an opponent ran on hardware
+we invented is a false declaration however plausible the number. The entry carries `null`
+plus an `undeclared` list naming what was withheld.
+
+**Gained:** the artifact never asserts a fact nobody supplied, and rule 24's sanction lands
+on whoever actually failed to declare rather than being papered over.
+**Cost:** our declaration can be incomplete through no fault of ours, and a grader reading it
+sees a gap. That gap is the true state of the exchange; the alternative is a tidy document
+that is wrong.
+
+A group's `signature` follows the same line. Ours is a canonical SHA-256 over our own entry —
+the public, reproducible primitive the config lock already uses, not an asymmetric signature,
+since this project has no key pairs and the book's own scheme is SHA-256 commit-reveal. An
+opponent's is `null`: their negotiation signature covers the terms and the challenge nonce,
+**not** their identity block, so presenting it there would claim an authentication that does
+not exist.
+
 ## 3. Empirical results — `M9-10b`
 
 40 paired seeds; seed $i$ gives every arm the identical Thief trajectory. Protocol and threats

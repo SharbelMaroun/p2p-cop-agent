@@ -49,7 +49,12 @@ All four local artifacts use `schema_version: "1.1"` and connect through observe
 `game_id`, `game_uid`, and `links` members.
 
 - Declaration: identity, links, timezone/times, series counts/token cap, and group
-  objects containing members, repositories, MCP URLs, LLM model, hardware, and
+  objects containing members, repositories, MCP URLs, `llm_model`, `hardware_spec`, and
+  a per-group `signature`. **Per group, not per document** — this repository emitted the
+  model and hardware once at the root until 2026-08-07 (`M7-22f`), which described only
+  our own machine and left the artifact unable to support the computational-fairness
+  comparison rule 24 sanctions. The observed templates always nested them; so did the
+  companion Thief. Only this repository was wrong, and
   signature.
 - Agreed config: board/agents, world/hints, movement/barriers, scoring, scent,
   network/league, Gatekeeper, identifiers, links, filename, and `config_sha256`.

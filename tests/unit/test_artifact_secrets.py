@@ -59,7 +59,7 @@ def _identity(group_id: str) -> dict:
                   "report": f"https://example.com/{group_id}/report"},
         "mcp_servers": {"peer": f"https://{group_id}.example.com/mcp"},
         "llm_model": "template-free",
-        "spec": {"cpu": "x86_64", "ram_gb": 31.8, "vram_gb": 6.0},
+        "spec": {"os": "Windows 11", "cpu_type": "x86_64", "cpu_freq_mhz": 3600, "cpu_cores": 8, "ram_gb": 31.8, "gpu_model": "RTX 3060", "vram_gb": 6.0},
     }
 
 

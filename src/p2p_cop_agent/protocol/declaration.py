@@ -20,6 +20,7 @@ import re
 from collections.abc import Mapping
 
 from p2p_cop_agent.protocol.commit import canonical_payload_bytes
+from p2p_cop_agent.protocol.declaration_groups import DeclarationError, _group
 from p2p_cop_agent.protocol.private_fields import check_outbound
 from p2p_cop_agent.reporting.naming import (
     MatchIdentity,
@@ -34,19 +35,6 @@ DECLARATION_TYPE = "pre_game"
 SCHEMA_VERSION = "1.1"
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 _COMMIT = re.compile(r"[0-9a-f]{7,40}")
-# `:2229` requires "addresses of the MCP server" in the declaration. Rule 39 (Prohibited)
-# forbids pushing secrets, so a URL carrying a credential must never reach a committed,
-# emailed artifact -- the two requirements meet here and only public URLs survive.
-_CREDENTIAL_IN_URL = re.compile(
-    r"://[^/@\s]+@"                                       # user:pass@host — the @ is
-    #   required, or a plain host:port like 127.0.0.1:8000 is refused as a credential
-    r"|[?&][^=&]*(token|key|secret|password|passwd|auth)[^=&]*=",  # a credential in a query parameter
-    re.I,
-)
-
-
-class DeclarationError(ValueError):
-    """Raised when a pre-game declaration lacks a member it must carry before play."""
 
 
 def build_declaration(
@@ -85,15 +73,10 @@ def build_declaration(
                         ("max_tokens_per_game", max_tokens_per_game)):
         if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
             raise DeclarationError(f"{name} must be a positive integer")
-    # `:2229` wants "details of the hardware, language model"; both are already members
-    # of the negotiated identity block, so they are read there rather than passed again --
-    # a second source for the same fact is a second thing that can disagree.
-    llm_model = our_identity.get("llm_model")
-    host_spec = our_identity.get("spec")
-    if not isinstance(llm_model, str) or not llm_model:
-        raise DeclarationError("our identity must declare llm_model [AE-24]")
-    if not isinstance(host_spec, Mapping) or not host_spec:
-        raise DeclarationError("our identity must declare its hardware spec [AE-24]")
+    # `:2229` wants "details of the hardware, language model". Both are members of the
+    # negotiated identity block, so they are read there rather than passed again -- a
+    # second source for the same fact is a second thing that can disagree -- and they are
+    # emitted **per group** by `_disclosure`, never once for the document (`M7-22f`).
     groups = [_group(our_identity), _group(opponent_identity, ours=False)]
     # `X-06`: two different requirements had been collapsed into one field. The template's
     # `links` points at the four ARTIFACT filenames; rule 49's "four links in the JSON
@@ -127,8 +110,6 @@ def build_declaration(
         "repositories": repositories,
         "num_sub_games": num_sub_games,
         "max_tokens_per_game": max_tokens_per_game,
-        "hardware": dict(host_spec),
-        "llm_model": llm_model,
         "timezone": timezone,
         "game_started_at": started_at,
         "game_ended_at": None,
@@ -138,44 +119,6 @@ def build_declaration(
     # rather than a blanket ban -- see `private_fields.CHANNEL_DISCLOSURES`.
     check_outbound(declaration, "declaration")
     return declaration
-
-
-def _group(identity: Mapping[str, object], *, ours: bool = True) -> JsonObject:
-    """Project one peer's identity into the declaration's group entry.
-
-    `ours` decides how strict `group_name` is (`M7-28`). The obligation is about what
-    **we** declare; we cannot make a classmate send a display name, and refusing to play
-    over a missing one would assert more across the wire than any source supports.
-    """
-    group_id = identity.get("group_id")
-    if not isinstance(group_id, str) or not group_id:
-        raise DeclarationError("each group needs a non-empty group_id")
-    repos = identity.get("repos")
-    if not isinstance(repos, Mapping) or not repos:
-        raise DeclarationError(f"group {group_id!r} must carry at least one repo link")
-    servers = identity.get("mcp_servers")
-    if not isinstance(servers, Mapping) or not servers:
-        raise DeclarationError(f"group {group_id!r} must declare its MCP addresses [`:2229`]")
-    for role, url in servers.items():
-        if not isinstance(url, str) or not url:
-            raise DeclarationError(f"group {group_id!r} MCP address {role!r} must be a URL")
-        if _CREDENTIAL_IN_URL.search(url):
-            raise DeclarationError(
-                f"group {group_id!r} MCP address {role!r} carries a credential; the "
-                "declaration is committed and emailed, and rule 39 forbids that"
-            )
-    name = identity.get("group_name")
-    if not isinstance(name, str) or not name:
-        if ours:  # `inst/:1278`, p.39/104; rule 24 is Mandatory [AE-24]
-            raise DeclarationError("our identity must declare group_name [AE-24]")
-        name = group_id  # theirs: name it after the id, visibly, rather than refuse
-    return {
-        "group_id": group_id,
-        "group_name": name,
-        "members": list(identity.get("members") or []),
-        "repos": dict(repos),
-        "mcp_servers": dict(servers),
-    }
 
 
 def lock_declaration(declaration: Mapping[str, object]) -> str:

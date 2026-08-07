@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.9-proposed",
+  "x-contract-version": "0.2.10-proposed",
   "x-role-neutral": true,
   "title": "Final result artifact",
   "description": "The report sent to the lecturer and the input to the league table. Every `required` entry is book-mandated: tokens per game and per series under rule 54 (p.133/280), four repository links under rule 49 (p.133/279), per-sub-game scores and the cumulative series result (p.78/182), the commit hash used in each game (p.40/106), and mutual agreement under rule 35 (p.131/275). additionalProperties is TRUE because the book is NOT-SPECIFIED on extra fields here; what it does forbid is a CONTRADICTING report, which scores 0 for both teams.",

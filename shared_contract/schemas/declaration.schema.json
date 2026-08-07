@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.9-proposed",
+  "x-contract-version": "0.2.10-proposed",
   "x-role-neutral": true,
   "title": "Pre-game declaration artifact",
   "description": "Every `required` entry below is mandated by the BOOK, not inferred from a template. `U-019` records that the example artifacts prove only that keys occur in the inspected bytes -- they establish no requiredness -- and `X-04` is what happens when a schema asserts more than the sources support: it validated a template and refused every real artifact. additionalProperties is TRUE because the book was asked directly and is NOT-SPECIFIED on whether extra non-contradicting fields are forbidden in the reporting artifacts. Refusing an opponent's declaration over a key no source forbids would fail rule 36's mutual audit for no reason.",
@@ -12,9 +12,7 @@
     "game_ended_at",
     "games_played_declaration",
     "links",
-    "groups",
-    "llm_model",
-    "hardware"
+    "groups"
   ],
   "additionalProperties": true,
   "properties": {
@@ -29,7 +27,10 @@
           "group_name",
           "members",
           "repos",
-          "mcp_servers"
+          "mcp_servers",
+          "llm_model",
+          "hardware_spec",
+          "signature"
         ],
         "additionalProperties": true,
         "properties": {
@@ -63,6 +64,77 @@
             "description": "Public addresses only. A URL carrying a credential breaches rule 39, which forbids secrets in the repository even when it is private.",
             "type": "object",
             "minProperties": 1
+          },
+          "llm_model": {
+            "description": "Rule 24 (Mandatory), p.39/104 — declared PER GROUP since 0.2.10-proposed (M7-22f). It sat at the top level until 2026-08-07, describing only this peer, which made the artifact unable to answer the question it exists for: inst/:1276 asks whether an agent on a phone races one on a workstation fairly, and rule 24's sanction is denial of the COMPUTATIONAL BONUS — a comparison between two machines. Null is permitted only for an opponent that withheld it; see `undeclared`.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "hardware_spec": {
+            "description": "Rule 24, and inst/:1278 which names the members one by one: operating system first, then processor cores AND their frequency, RAM, and the graphics card with its video memory. Not a free-form object: a spec that cannot be compared cannot earn a computational bonus. Null only for an opponent that withheld it.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "os",
+              "cpu_type",
+              "cpu_freq_mhz",
+              "cpu_cores",
+              "ram_gb",
+              "gpu_model",
+              "vram_gb"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "os": {
+                "type": "string",
+                "minLength": 1
+              },
+              "cpu_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "cpu_freq_mhz": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "cpu_cores": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "ram_gb": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "gpu_model": {
+                "type": "string",
+                "minLength": 1
+              },
+              "vram_gb": {
+                "type": "number",
+                "minimum": 0,
+                "description": "0 is valid and means no graphics card. Refusing it would push an honest operator into inventing one."
+              }
+            }
+          },
+          "signature": {
+            "description": "This group's own commitment over its declared block. Ours is a canonical SHA-256 of the entry with this field removed — the same public, reproducible primitive the config lock uses, not an asymmetric signature; this project has no key pairs and the book's own scheme is SHA-256 commit-reveal. An OPPONENT's is null: their negotiation signature covers the terms and the challenge nonce, NOT their identity block, so copying it here would claim an authentication that does not exist.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "undeclared": {
+            "description": "Members an OPPONENT withheld in the pre-game exchange. Present only when something is missing. The reference implementation resolves a missing peer identity as `opp = series.peer_identity or own`, copying its OWN hardware and model into the opponent's slot — visible in its samples as two groups sharing one machine. We record the absence instead: this artifact is signed and emailed, rule 38 makes a false declaration an absolute disqualification, and rule 24's sanction belongs to whoever failed to declare.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
@@ -167,16 +239,6 @@
           ]
         }
       }
-    },
-    "llm_model": {
-      "description": "Rule 24 (Mandatory), p.39/104. Declared once, for this peer.",
-      "type": "string",
-      "minLength": 1
-    },
-    "hardware": {
-      "description": "Rule 24, p.39/104 and inst/:1278, which lists Operating System first, then CPU, RAM and GPU/VRAM. Sanction for an incomplete spec is denial of eligibility for computational bonuses. Declared once, for this peer.",
-      "type": "object",
-      "minProperties": 1
     }
   }
 }

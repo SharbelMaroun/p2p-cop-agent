@@ -29,8 +29,8 @@ import pytest
 from p2p_cop_agent.protocol.declaration import build_declaration
 from p2p_cop_agent.reporting.validate import validate_artifact
 
-SPEC = {"os": "Windows 11", "cpu_type": "x86_64", "cpu_cores": 8, "ram_gb": 16,
-        "gpu_model": "none", "vram_gb": 0}
+SPEC = {"os": "Windows 11", "cpu_type": "x86_64", "cpu_freq_mhz": 3600, "cpu_cores": 8,
+        "ram_gb": 16, "gpu_model": "none", "vram_gb": 0}
 
 
 def identity(gid: str) -> dict:

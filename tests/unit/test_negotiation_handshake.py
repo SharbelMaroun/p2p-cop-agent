@@ -41,7 +41,7 @@ def _identity(group_id: str) -> dict:
         "repos": {"cop": "https://example.com/cop"},
         "mcp_servers": {"cop": "https://example.com/mcp"},
         "llm_model": "template-zero-token",
-        "spec": {"os": "linux", "cpu": "x", "ram_gb": 8, "gpu": "none", "vram_gb": 0},
+        "spec": {"os": "linux", "cpu_type": "x", "cpu_freq_mhz": 2400, "cpu_cores": 4, "ram_gb": 8, "gpu_model": "none", "vram_gb": 0},
     }
 
 

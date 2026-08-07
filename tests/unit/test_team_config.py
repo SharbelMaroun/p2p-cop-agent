@@ -1,8 +1,14 @@
 """M5-07c: the team identity comes from the private game.toml, not the shared JSON.
 
 Settled from the book (Appendix B.4): identity lives in [game]/[llm], the MCP URL from
-[network].public_url, and the hardware spec is os/cpu auto-detected with ram/gpu/vram
-declared. These pin that loader and its refusals.
+[network].public_url, and the hardware spec is part detected and part declared. These pin that loader and its
+refusals.
+
+Since `M7-22f` the spec carries the seven members `inst/:1278` names one by one. `os`,
+`cpu_type` and `cpu_cores` are detected because the standard library answers them
+truthfully; clock speed, RAM and the graphics card are declared because it cannot. `cpu`
+and `gpu` still work as aliases — an existing private config holds the same facts under
+the old names, and a rename is no reason to refuse to start.
 """
 
 from __future__ import annotations
@@ -23,7 +29,8 @@ def _config(**overrides: object) -> dict:
         },
         "llm": {"model": "template-zero-token"},
         "network": {"public_url": "https://self.ngrok.app/mcp"},
-        "hardware": {"os": "Linux-6", "cpu": "x86_64", "ram_gb": 16, "gpu": "none", "vram_gb": 1},
+        "hardware": {"os": "Linux-6", "cpu": "x86_64", "cpu_freq_mhz": 3600, "ram_gb": 16,
+                     "gpu": "none", "vram_gb": 1},
     }
     config.update(overrides)
     return config
@@ -43,16 +50,43 @@ def test_the_mcp_url_comes_from_the_network_public_url() -> None:
     assert identity["mcp_servers"] == {"sharNamr": "https://self.ngrok.app/mcp"}
 
 
-def test_os_and_cpu_are_auto_detected_when_left_blank() -> None:
-    spec = load_host_spec(_config(hardware={"ram_gb": 8, "gpu": "none", "vram_gb": 1}))
+def test_what_can_be_detected_truthfully_is_detected() -> None:
+    spec = load_host_spec(_config(hardware={"cpu_freq_mhz": 2400, "ram_gb": 8,
+                                            "gpu": "none", "vram_gb": 1}))
     facts = spec.as_dict()
-    assert facts["os"] and facts["cpu"], "blank os/cpu fall back to platform detection"
+    assert facts["os"] and facts["cpu_type"], "blank os/cpu_type fall back to detection"
+    assert facts["cpu_cores"] >= 1, "cores come from os.cpu_count(), never 0"
     assert facts["ram_gb"] == 8
 
 
 def test_a_declared_spec_overrides_auto_detection() -> None:
     spec = load_host_spec(_config()).as_dict()
-    assert spec["os"] == "Linux-6" and spec["cpu"] == "x86_64" and spec["gpu"] == "none"
+    assert spec["os"] == "Linux-6" and spec["cpu_type"] == "x86_64"
+    assert spec["gpu_model"] == "none"
+
+
+def test_the_old_cpu_and_gpu_names_still_work() -> None:
+    """A private config written before the rename holds the same facts. Refusing to start
+    over a field name would cost a match for no gain in truthfulness."""
+    spec = load_host_spec(_config(hardware={"cpu": "old-name", "gpu": "old-gpu",
+                                            "cpu_freq_mhz": 3000, "ram_gb": 4,
+                                            "vram_gb": 0})).as_dict()
+    assert spec["cpu_type"] == "old-name" and spec["gpu_model"] == "old-gpu"
+
+
+def test_a_machine_with_no_graphics_card_may_declare_zero_vram() -> None:
+    """"Presence of a graphics card" (`inst/:1278`) has a legitimate no. Refusing 0 would
+    push an honest operator into inventing a number for a card they do not own."""
+    spec = load_host_spec(_config(hardware={"cpu_freq_mhz": 3000, "ram_gb": 4,
+                                            "gpu": "none", "vram_gb": 0})).as_dict()
+    assert spec["vram_gb"] == 0
+
+
+def test_a_missing_clock_speed_is_refused_and_says_so() -> None:
+    """The one genuinely new fact. `inst/:1278` asks for cores **and their frequency**, and
+    the old single `cpu` string could not carry it, so there is nothing to alias."""
+    with pytest.raises(PrivateConfigError, match="cpu_freq_mhz"):
+        load_host_spec(_config(hardware={"ram_gb": 4, "gpu": "none", "vram_gb": 0}))
 
 
 @pytest.mark.parametrize("overrides", [
