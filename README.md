@@ -147,6 +147,12 @@ coverage only and will not be restored as an executable plan.
 The graded report has six sections. Sections that need a completed match are marked
 as blocked rather than filled with claims we cannot yet show.
 
+The full academic report body — the formalism in LaTeX, every architectural decision with
+what it cost, the measured results and the token/cost accounting — is in
+[docs/ACADEMIC_REPORT.md](docs/ACADEMIC_REPORT.md). Quality evidence against ISO/IEC 25010
+and the book’s four success metrics is in [docs/QUALITY_EVIDENCE.md](docs/QUALITY_EVIDENCE.md);
+the scoring is in [docs/SELF_ASSESSMENT.md](docs/SELF_ASSESSMENT.md).
+
 ### 1. The Dec-POMDP model
 
 The game is a **decentralised, partially observable Markov decision process**. Each
