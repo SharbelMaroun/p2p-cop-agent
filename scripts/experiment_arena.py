@@ -45,19 +45,26 @@ class Trace:
     one being played, which is exactly how the first run failed.
     """
 
-    def __init__(self, config: dict, rng: random.Random) -> None:
+    def __init__(self, config: dict, rng: random.Random, chooser=None) -> None:
         agents = config["board_and_agents"]
         self.board = Board(agents["grid_size"], agents["axis_start_index"],
                            agents["axis_origin_corner"])
         self.field = ScentField(self.board)
         self.thief: tuple[int, int] | None = None
         self.rng = rng
+        # An injectable evasion brain (`scripts/experiment_opponents.py`), so stronger
+        # Thief archetypes reuse this class's emission and position tracking instead of
+        # re-implementing them subtly differently. `None` keeps the seeded random walk.
+        self.chooser = chooser
 
-    def thief_policy(self, board, thief, _cop, barriers):
-        """A seeded random legal walk that also emits, exactly as a real Thief would."""
+    def thief_policy(self, board, thief, cop, barriers):
+        """One Thief step that also emits, exactly as a real Thief would."""
         blocked = barriers.cells
-        action = self.rng.choice(
-            sorted(legal_moves(board, thief, blocked), key=lambda a: a.name))
+        if self.chooser is not None:
+            action = self.chooser(board, thief, cop, blocked)
+        else:
+            action = self.rng.choice(
+                sorted(legal_moves(board, thief, blocked), key=lambda a: a.name))
         self.thief = apply_move(board, thief, action, blocked)
         self.field.advance(self.thief)  # `:917`: moving or staying creates scent
         return action

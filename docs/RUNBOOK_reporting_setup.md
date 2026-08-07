@@ -11,6 +11,29 @@ Everything downstream of consent — the refresh policy, the message envelope, t
 is built and tested against injected doubles, which is how the rest of M7 finished with no
 credential in existence.
 
+## 0. Do not reuse a token from another project
+
+Checked on 2026-08-07: an existing `C:\cop-thief-secrets\token.json` from a different course
+assignment carries the scopes **`gmail.modify`** and **`calendar`**. It has a live refresh
+token and would work, which is exactly the problem.
+
+`gmail.modify` can read, alter and delete mail. Rule 30 asks for send-only, and a game agent
+holding read-write access to a personal mailbox is a bigger problem than the rule: a bug in
+an unattended series could touch messages that have nothing to do with this course. Broad
+scope is also unnecessary — the report is one outbound message.
+
+**The OAuth client (`client_secret.json`) is reusable**; it is an application registration,
+not a grant, and its `redirect_uris` already include `http://localhost`, which is what the
+consent flow below needs. **The token is not.** Mint a new one with `gmail.send` alone, and
+write it to a *different* filename so the other project's token keeps working.
+
+Keep both files where they are — **outside every repository**. `send_report` takes
+`credential_path` as an argument precisely so the secret never has to live next to the code.
+`.gitignore` now covers `client_secret*.json` and `*.apps.googleusercontent.com.json` as
+well, because the console's own download name matched none of the previous patterns; a copy
+dropped into the tree used to be committable, and `test_credential_files_ignored.py` asks
+Git directly so that cannot come back.
+
 ## 1. Create the OAuth client
 
 In the Google Cloud console, on a project you own:

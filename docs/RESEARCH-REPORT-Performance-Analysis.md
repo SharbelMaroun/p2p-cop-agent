@@ -54,6 +54,57 @@ many failures, and quoting the mean alone would describe an agent that does not 
 Same story in the turn count: blind has median 35 (the survival horizon — i.e. no capture),
 belief has median **11**.
 
+## 1b. The opponent grid (`M9-30`) — every number above has an asterisk
+
+**The opponent model was the untested half of section 1.** Every figure there is earned
+against a seeded random walk — the weakest plausible Thief. Re-measured 2026-08-08 against
+two deterministic fleeing archetypes (`scripts/experiment_opponents.py`,
+`results/opponent_grid.json`; same 40 paired seeds):
+
+| Cop arm | random walk | flee-greedy (reference shape) | flee-smart (distance+mobility) |
+|---|---:|---:|---:|
+| belief (pursuit only) | 40/40 | **0/40** | 0/40 |
+| anticipating (pursuit only) | 40/40 | **0/40** | 0/40 |
+| **barrier stack (what we serve)** | 39/40 | **40/40** | 0/40 |
+| oracle (pursuit only, sees truth) | 40/40 | **0/40** | 0/40 |
+| oracle + barrier stack | 40/40 | **40/40** | 0/40 |
+
+Three findings, each carrying a design decision:
+
+1. **Pursuit alone never captures a competent evader — the oracle included.** An
+   equal-speed evader on an open board holds distance forever; the 96.7–97.5% headline is
+   a property of the random walk, not of the pursuit. Barriers are the entire capture
+   mechanism against real opposition, which is why the served policy is now the full
+   trap → squeeze → containment-ratchet → anticipating-chase stack (`M6-21..23`), not
+   `pursue_belief`.
+2. **The stack converts the likeliest league opponent completely.** `flee_greedy` is the
+   reference simulator's own `ThiefBrain` shape — maximise distance from the Cop — and the
+   probable classmate default. 0/40 → **40/40**, at the cost of one game against the walk
+   (39/40): the containment ratchet's wall turns stall pursuit exactly once in forty walks.
+3. **`flee_smart` is an honest open boundary, and it is structural.** Distance *plus
+   mobility* — the companion repository's own evasion shape — escapes every arm, including
+   the barrier stack aimed with referee truth. The failure is not belief error (truth-aimed
+   play changes nothing) and not fixable by more walls under this stack: the probe shows
+   the terminal shape is a locked orbit the quota cannot cut fast enough. Recorded open,
+   exactly as the companion records its anticipating-Cop gap; the two are the same
+   phenomenon seen from opposite sides of the board. *(Cross-reference, 2026-08-08:
+   the companion **closed its side of the mirror**. Its sixth attempt localised the gap
+   to the estimator — truth-fed, its exact planner escapes every committed pursuer
+   24/24 — and its seventh rebuilt the estimator as a model-matched emitter decoder
+   that inverts the hash-locked scent physics. Its live evasion now scores **24/24
+   against all three pursuit archetypes, 240/240 league points, robustness configs
+   included**. For this repository that cuts both ways: our own `flee_smart` boundary
+   stands on even firmer ground — a decoded-belief evader is strictly stronger than
+   the archetype every arm here already fails to corner — and any classmate Cop that
+   emits per the locked model is now near-exactly localised by the companion's belief.
+   See the companion's `results/pursuer_grid.json`.)*
+
+Measured here and **reverted**: a Bayes-recursive belief (prior carried and multiplied
+every turn) collapsed tracking — `flee_greedy` went 40/40 → 0/40 on that change alone.
+Recursion under a static likelihood has no motion model, so history accumulates and the
+argmax calcifies on old trail. Both live loops now rebuild belief fresh per observation and
+carry the prior only across silent turns.
+
 ## 2. Parameter sweeps (`M9-06a`)
 
 Appendix F marks each parameter `Fixed`, `Minimum` or `Negotiation`. Asked directly:

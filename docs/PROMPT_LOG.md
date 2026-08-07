@@ -565,3 +565,27 @@
 7. **Derive bounds, do not eyeball them** - a validation limit that looked obviously right (0.9) rejected our own output; the real bound was the model fixed point (9.0).
 8. **Audit passes are prompts too** — schedule an explicit "find what's missing" pass after any large generation; it found 4 real gaps here.
 > Canonical prompt-engineering log path confirmed by Professional Software Submission Guidelines v3.0, page 19.
+
+## 2026-08-08 — "make them win": the live loop, the opponent grid, and the endgame
+
+The prompt was "analyze how my cop and thief plays, and make them win in every game." The
+honest deliverable is that no one can promise wins, but the batch found something better
+than tuning: **the served Cop was still the M5 `STAY` placeholder** — the measured pursuit
+had never been wired into a live match, so every served game was a forfeit with commit
+hashes. The eight-step method earned its keep again: the code notebook was asked how the
+*reference* chooses its live moves (`brains.py`, chases `belief.most_likely()`, LLM never
+moves), the book notebook what the rules require of turn order and strategy (simultaneous
+commit-reveal; minimax/expectimax explicitly permitted; capture 20/5, survival 10/5,
+technical loss 0/0) — different questions to different notebooks, and both answers shaped
+the design before any code moved.
+
+Three prompts-to-self worth recording. **"Measure the opponent model, not just the policy"**
+produced the opponent grid, whose first row was humiliating and decisive: every pursuit-only
+arm including the oracle captures a fleeing archetype 0/40 — the 96.7% headline was a
+property of the random walk. **"Probe the terminal shape before designing"** turned two dead
+containment designs into one that works: the probe showed a locked orbit at distance 3 with
+zero barriers ever placed, and *proved* why area-priced walls can never fire (no cop-adjacent
+cell is ever in the Thief's sooner-region). **"Re-measure after every belief change"** caught
+the Bayes-recursion calcification (40/40 → 0/40 tracking) before it shipped into the live
+loop — a regression a unit test would never have seen, because every single-turn assertion
+still passed.
