@@ -1289,6 +1289,36 @@ the detection rules can be tested directly *and* applied to a blob that no longe
 disk. Without the split the history scanner would have restated the patterns, and two copies
 of a security rule drift in exactly one direction.
 
+#### What the Thief's M9 batch found for here (`X-13`…`X-17`, 2026-08-07)
+
+Five rows, recorded rather than fixed — they are Cop-owned, and the batch that found them was
+a Thief batch. One of them is a correction to reasoning, not to code.
+
+**A nonce argument used in both repositories is wrong** (`X-13`). The Thief's `games/README.md`
+justified excluding game logs from the repository because committing them would publish
+nonces, "and git history has no end". Rule 18 (`inst/:3354`) keeps a nonce secret **until the
+end of the game**, and the book defines Step 4 as the Final Reveal: "Only at the end of the
+game are all values, including the Nonce, revealed for a full mutual audit" (`inst/:1136`).
+The obligation *expires* — revealed nonces are precisely what lets a third party recompute
+every commitment. Worth checking whether the same wrong reason appears here.
+
+**The commit obligations differ per artifact** (`X-14`), and `M9-27` reads as though they do
+not. Config is mandatory (Appendix F obligation 4); the log has no explicit commit duty but is
+needed for the Replay threshold; the result's duty is email. A checker demanding all four
+would fail a submission that satisfies the rules.
+
+**`M9-09c`'s wording overclaims** (`X-15`). "Record proof that each report was sent" invites a
+delivery claim, and the book's decisive layer is receipt at the lecturer's address (p.78/183)
+— which a sender cannot observe. The Thief named its type `SendReceipt` rather than
+`ProofOfDelivery` and writes the limit into every record.
+
+**Two gates are missing here** (`X-16`, `X-17`). A clean-clone runner — the Thief's caught two
+failures on its first run with every gate green in the working tree, because a clone holds
+only what was committed. And a replay of a match read back **off disk**: every replay test in
+both repositories builds records in memory, `json` round-tripping is not identity, and the
+commitment is over canonical bytes, so an in-memory-only verifier can pass forever while every
+stored log fails.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
