@@ -1217,6 +1217,46 @@ real audit payload through the real schema surfaced the difference immediately �
 reaches the wire, but the rehearsal is the only place that distinction is visible, which
 is the argument for having one.
 
+#### What finishing the Thief's M7 found here (`X-07`…`X-12`, 2026-08-07)
+
+The Thief's M7 closed on 2026-08-07 — 42 rows in three waves — and four of the defects it
+found are **in this repository too**. Recorded here rather than silently fixed, because they
+are Cop-owned rows and the batch that found them was a Thief batch; the eight-step method
+wants both ledgers updated, and the one time that was skipped on "this work is Cop-only"
+grounds cost two later batches a rediscovery.
+
+**Rule 53's commit hash is missing entirely** (`X-07`). `github_commit` appears nowhere in
+`src/p2p_cop_agent/`. The declaration names who played, on what hardware and with which
+model, and never *which code* — the single field that makes a later audit reproducible.
+Every row about the declaration passes; the field nothing asked for is the one that was
+absent.
+
+**`build_log` has no `ended_at` guard** (`X-08`), and this is the uncomfortable one: `M7-24`
+already wrote down the reasoning. Rule 18's secrecy is about *when a byte exists*, a finished
+log is byte-identical either way, so the only enforceable point is refusing to build the
+intermediate state. The reasoning was recorded and the guard was not. In the Thief the same
+guard broke thirteen existing fixtures, which is what a guard that bites looks like.
+
+**Nothing requires a settlement before a report is composed** (`X-09`). Neither
+`reporting/send_report.py` nor `reporting/gmail_message.py` mentions an agreed state.
+`require_reportable` exists and is correct — but it is a call a caller can forget, and the
+Thief's fix was to make the settlement record a *required argument* of the composer, on the
+same argument that put the audit first in `agree(audit, ours, theirs)`.
+
+**Configs are still not committed** (`X-10`, and `M7-27` is this repository's own deferred
+row for it). `.gitignore` excludes `/logs/`, `/reports/generated/` and `/results/generated/`,
+so an artifact written under any of them lives on one laptop and nowhere Appendix F
+obligation 4 can see. The Thief's fix is worth copying in design: a `games/` directory that
+is deliberately not ignored, a store that *refuses* an ignored destination, and a test that
+reads the real `.gitignore` — because the way this regresses is somebody tidying the tree.
+
+**One thing was already right** (`X-12`): `gmail_message.py` uses `urlsafe_b64encode` and
+keeps its padding. Recorded so it is not re-derived. The two traps are worth knowing anyway —
+the two base64 alphabets differ in exactly two characters, so most messages encode
+identically under either and a casually chosen fixture cannot tell them apart; and the
+padding-stripping idiom comes from JWT, where padding is forbidden, which is a different
+specification for a different field.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
