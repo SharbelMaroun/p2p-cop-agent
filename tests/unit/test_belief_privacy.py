@@ -123,5 +123,10 @@ def test_the_wire_layer_may_still_build_the_scent_it_is_required_to_publish() ->
     so `strategy.scent` and `strategy.scent_field` are deliberately outside the ban.
     """
     assert not any("scent" in module for module in PRIVATE_INFERENCE)
+    # The live decision moved to `orchestration/live_policy.py` on 2026-08-07 — the
+    # import guard above refused a belief-driven policy inside `adapters/`, which is
+    # this file working as designed. The obligation this test pins moved with it.
+    live = (_SRC / "orchestration" / "live_policy.py").read_text(encoding="utf-8")
+    assert "ScentField" in live, "the live path must still emit a real trail"
     serve = (_SRC / "adapters" / "serve.py").read_text(encoding="utf-8")
-    assert "ScentField" in serve, "the live path must still emit a real trail"
+    assert "live_decide" in serve, "the serve command must route through the live policy"

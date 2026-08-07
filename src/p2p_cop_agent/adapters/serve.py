@@ -3,13 +3,14 @@
 Assembles ``play_match`` from private config and a live socket -- the one part of the
 runtime that needs real hardware and a tunnel, so ``serve_match`` itself is **not**
 exercised in CI (there is no second machine). Its pure helpers -- URL parsing, the
-per-game token split, the deterministic game id, and the M5 placeholder decision --
-are unit-tested; the network assembly is the runbook (see ``M5-07c`` in docs/TODO.md).
+per-game token split, the deterministic game id -- are unit-tested; the network
+assembly is the runbook (see ``M5-07c`` in docs/TODO.md).
 
-The *move* is a documented **M5 placeholder** (a legal ``STAY`` each turn) and
-belief-driven pursuit is the seam that replaces it. The *scent* is no longer a
-placeholder: this peer now emits a real trail every turn (M6-08a), because sending an
-empty ``smell_grid`` after hash-locking an emission model is a rule-23 deviation.
+The decision seam is now ``adapters/live_policy.live_decide`` -- the measured
+belief-pursuit stack with barriers, claims, and the involuntary trail. The M5
+placeholder (a legal ``STAY`` each turn) that previously lived here is deleted, not
+kept as an option: a Cop that never moves can never capture, so every served match
+was a guaranteed survival payout to the opponent (M6-19).
 """
 
 from __future__ import annotations
@@ -24,20 +25,16 @@ from p2p_cop_agent.adapters.fastmcp_server import PeerInboxes, take_turn
 from p2p_cop_agent.adapters.serving import port_answers, serve_in_background
 from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
+from p2p_cop_agent.orchestration.live_policy import live_decide
 from p2p_cop_agent.orchestration.match import MatchResult, play_match
 from p2p_cop_agent.orchestration.turn_loop import Decide
 from p2p_cop_agent.peer import InboundPeer
 from p2p_cop_agent.protocol import attestation_wire
-from p2p_cop_agent.protocol.scent_wire import encode_scent
 from p2p_cop_agent.sdk import CopSDK
 from p2p_cop_agent.services.readiness import timeouts_from_private_config, wait_for_peer
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.private_config import load_private_config, opponent_url
 from p2p_cop_agent.shared.team_config import load_host_spec, load_identity
-from p2p_cop_agent.strategy.hints import hint_max_words
-from p2p_cop_agent.strategy.landmarks import place_for
-from p2p_cop_agent.strategy.scent_field import ScentField
-from p2p_cop_agent.strategy.verbal import generate_hint
 
 _DEFAULT_PORTS = {"https": 443, "http": 80}
 
@@ -72,56 +69,16 @@ def cop_start(game: JsonObject) -> Coordinate:
 
 
 def serve_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
-    """The placeholder policy: a legal STAY each turn, with a real trail and a real hint.
+    """Return the live decision policy for one served match (M6-19).
 
-    The move is still the documented M5 placeholder; belief-driven pursuit replaces it.
-    What is no longer a placeholder is the ``smell_grid``. It used to be a hard-coded
-    ``{}``, which meant this peer emitted **no scent at all** while having
-    cryptographically locked an emission model at negotiation -- a deviation from the
-    agreed model, and exactly what Appendix E rule 23 cancels a game for. It also left
-    the opponent unable to track us, which is an advantage we are not entitled to.
-
-    So the trail is now maintained and sent. Emission is involuntary by construction: a
-    `STAY` deposits precisely as a move does, because :meth:`ScentField.advance` takes
-    the cell and no action (M6-09a, M6-09c).
-
-    **A hint now goes out every turn too (M6-10).** It used to be the fixed string
-    "holding position", which is a hint in name only: constant text carries no
-    information, true or false, and the verbal layer is half the game the book is about.
-    The place descriptor comes from **our own cell** dressed by the agreed `map_area`
-    (M6-10e) -- never from belief, because a hint is a claim about the sender that the
-    opponent tests against the sender's own scent (`:1020`), and a belief-derived place
-    would publish private inference the `M6-18` guard exists to keep off the wire.
-
-    The intent alternates so both a truthful and a bluffed hint are exercised in any
-    real match; it is sealed in the commitment, so the audit reveals which was which
-    and a bluff cannot be denied afterwards (M6-10a).
+    A thin, name-stable seam: the CLI and the runbook call ``serve_decide``, and the
+    behaviour behind it is `adapters/live_policy.live_decide` -- belief-recursive
+    pursuit, one legal move-or-barrier intent per turn, truthful barrier disclosure,
+    capture claims on the believed cell, the involuntary 5×5 trail window, and the
+    alternating truth/bluff hint, all deterministic. The sealed payload carries the
+    real move and position, because the audit is what makes a claim provable.
     """
-    trail = ScentField(board=board)
-    count = 0
-
-    def decide(_incoming: JsonObject | None) -> tuple[JsonObject, JsonObject]:
-        nonlocal count
-        count += 1
-        trail.advance(start)  # a STAY: the placeholder never leaves its start cell
-        bluff = count % 2 == 0
-        hint = generate_hint(
-            place_for(board, start, game),
-            provider=None,          # zero-token template: the always-available floor
-            bluff=bluff,
-            variant=count,
-            max_words=hint_max_words(game),
-        )
-        return (
-            {"move": "MOVE:STAY", "intent": hint.intent},
-            {
-                "hint": hint.text,
-                "smell_grid": encode_scent(trail.window(start)),
-                "timestamp": f"t{count}",
-            },
-        )
-
-    return decide
+    return live_decide(board, start, game)
 
 
 def _drain(box: queue.Queue) -> JsonObject | None:

@@ -1325,6 +1325,38 @@ both repositories builds records in memory, `json` round-tripping is not identit
 commitment is over canonical bytes, so an in-memory-only verifier can pass forever while every
 stored log fails.
 
+#### The served Cop could never win, and the measured one was never tested (`M6-21`…`M6-23`, `M9-30`, 2026-08-08)
+
+Asked to make both agents win, the first finding was that the live one could not: `serve_decide`
+was still the documented M5 placeholder — a legal `STAY` every turn. A Cop that never leaves its
+start cell can never satisfy any capture condition, so every served match was a guaranteed
+survival payout to the opponent while the 96.7%-capture pursuit existed only in the experiment
+arena. The live turn now plays the real stack end to end (`orchestration/live_policy.py`):
+fresh-per-observation belief from the opponent's `smell_grid`, one legal move-or-barrier intent,
+truthful `barrier_placed` disclosure, a `capture_claim` when landing on or walling the believed
+cell, the involuntary 5×5 trail window, and the true move and position in the sealed payload —
+the audit is what makes a claim provable, and a payload that hid the position would leave rule
+`[AE-21]`'s proof empty.
+
+The second finding was that the 96.7% headline had an untested half: every arena number was
+earned against a **random walk**. The new opponent grid (`M9-30`) measures five Cop arms against
+three Thief archetypes and is not flattering: **every pursuit-only arm — the oracle included —
+captures a fleeing archetype 0/40.** Equal speed on an open board means distance is held
+forever; barriers are the entire capture mechanism against real opposition. Three problems hit
+along the way, each of which changed the design: a belief-driven policy in `adapters/` was
+structurally refused by the `M6-18` privacy guard (moved to `orchestration/`, guard obeyed, not
+weakened); a Bayes-recursive belief calcified on trail history and lost a target the fresh
+rebuild tracks (40/40 → 0/40 on that change alone — reverted, and the lesson recorded in both
+live loops); and two containment designs measured their own uselessness before the third —
+pricing walls by Voronoi area can never fire from chase distance (no cop-adjacent cell is ever
+in the Thief's sooner-region), and an untriggered trail ratchet spent all fourteen walls without
+touching the terminal orbit. The shipped endgame rule walls the *just-vacated* cell only in a
+locked, still-cyclic pocket — an equal-speed pursuer never closes on a cycle, so the quota buys
+tree-ness. Result: the reference-shaped `flee_greedy` goes **0/40 → 40/40** with one game
+conceded on the walk (39/40), and `flee_smart` — distance *plus* mobility, the companion's own
+evasion shape — escapes everything including the truth-aimed stack, recorded as an open
+structural boundary, the mirror image of the companion's anticipating-Cop gap.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
@@ -1332,7 +1364,13 @@ a move; it is confined to the text layer, and the shipped configuration uses a
 zero-token template provider. Two agents given the same state always produce the same
 move, which is what makes a match reproducible from its log.
 
-The current Cop policy is a barrier-aware pursuit baseline that ranks candidate
+Since 2026-08-08 the served policy is the full predictive stack
+(`strategy/anticipation.predictive_turn_intent`): capture-move or trapping barrier,
+else a squeeze, else the containment ratchet in a locked endgame, else a chase aimed
+at the believed cell's *flight set* rather than the stale sighting. The paragraphs
+below describe the pursuit baseline the stack is built from, and remain true of it.
+
+The pursuit baseline ranks candidate
 actions **lexicographically** rather than by a weighted score — no calibration data
 exists that would justify weights, and a strict criterion order is auditable in a way
 that tuned coefficients are not. Barrier placement is a separate, exclusive intent:
