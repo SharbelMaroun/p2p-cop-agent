@@ -52,13 +52,14 @@ def _identity(group_id: str) -> dict:
     to carry a leak: repository URLs, an MCP endpoint and a model name."""
     return {
         "group_id": group_id,
+        "group_name": group_id,
         "repos": {"cop": f"https://github.com/{group_id}/cop",
                   "thief": f"https://github.com/{group_id}/thief"},
         "links": {"agent": f"https://example.com/{group_id}/agent",
                   "report": f"https://example.com/{group_id}/report"},
         "mcp_servers": {"peer": f"https://{group_id}.example.com/mcp"},
         "llm_model": "template-free",
-        "spec": {"cpu": "x86_64", "ram_gb": 31.8, "vram_gb": 6.0},
+        "spec": {"os": "Windows 11", "cpu_type": "x86_64", "cpu_freq_mhz": 3600, "cpu_cores": 8, "ram_gb": 31.8, "gpu_model": "RTX 3060", "vram_gb": 6.0},
     }
 
 
@@ -71,11 +72,13 @@ def _artifacts() -> dict[str, object]:
             game_id=IDENT.game_id, game_uid=IDENT.game_uid,
             our_identity=_identity("sharNamr"), opponent_identity=_identity("opponent"),
             config_sha256="c" * 64, num_sub_games=6, max_tokens_per_game=200_000,
+            github_commit="a" * 40,
+            games_played_declaration={"opponent_group_id": "rival", "games_played_including_this": 1},
             started_at="2026-08-07T10:00:00Z"),
         "config": build_config(identity=IDENT, sub_game=1, game=GAME,
                                config_sha256="b" * 64),
         "log": build_log(identity=IDENT, sub_game=1, records=records,
-                         summary={"outcome": "capture", "turns": 1}),
+                         summary={"ended_at": "2026-08-07T12:00:00+03:00", "outcome": "capture", "turns": 1}),
     }
 
 

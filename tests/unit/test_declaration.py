@@ -22,12 +22,13 @@ CONFIG_SHA = "a" * 64
 def _identity(group_id: str, repos: dict[str, str] | None = None) -> dict:
     return {
         "group_id": group_id,
+        "group_name": group_id,
         "members": ["a", "b"],
         "repos": repos or {"agent": f"https://example.com/{group_id}/agent",
                            "report": f"https://example.com/{group_id}/report"},
         "mcp_servers": {"peer": f"https://{group_id}.example.com/mcp"},
         "llm_model": "template-free",
-        "spec": {"cpu": "x86_64", "ram_gb": 31.8, "vram_gb": 6.0},
+        "spec": {"os": "Windows 11", "cpu_type": "x86_64", "cpu_freq_mhz": 3600, "cpu_cores": 8, "ram_gb": 31.8, "gpu_model": "RTX 3060", "vram_gb": 6.0},
     }
 
 
@@ -37,6 +38,10 @@ def _declaration(**overrides: object) -> dict:
         "our_identity": _identity("alpha"), "opponent_identity": _identity("beta"),
         "config_sha256": CONFIG_SHA, "num_sub_games": 6,
         "max_tokens_per_game": 200000, "started_at": "2026-08-03T10:00:00Z",
+        # `M7-02`: both required since 2026-08-07 — rule 53's commit and rule 37's count.
+        "github_commit": "a" * 40,
+        "games_played_declaration": {"opponent_group_id": "beta",
+                                     "games_played_including_this": 1},
     }
     kwargs.update(overrides)
     return build_declaration(**kwargs)
@@ -92,19 +97,17 @@ def test_a_group_without_a_group_id_is_refused() -> None:
 
 
 def test_the_declaration_carries_the_mcp_addresses_hardware_and_model() -> None:
-    """`:2229` requires "addresses of the MCP server… details of the hardware, language
-    model" (`M7-22c`, `M7-22d`); rule 24 is Mandatory —
-    "perform a cryptographic hardware declaration before the start of the game",
-    sanction "denial of eligibility for computational bonuses" (`M7-22d`)."""
+    """`:2229` wants the MCP addresses plus hardware and model, per group since `M7-22f`:
+    the bonus rule 24 sanctions compares two machines, so one root spec cannot express it."""
     decl = _declaration()
+    ours = decl["groups"][0]
     assert all(group["mcp_servers"] for group in decl["groups"])
-    assert decl["hardware"]["ram_gb"] == 31.8
-    assert decl["llm_model"] == "template-free"
+    assert ours["hardware_spec"]["ram_gb"] == 31.8 and ours["llm_model"] == "template-free"
+    assert "hardware" not in decl and "llm_model" not in decl
 
 
 def test_a_group_without_an_mcp_address_is_refused() -> None:
-    identity = _identity("alpha")
-    del identity["mcp_servers"]
+    identity = {k: v for k, v in _identity("alpha").items() if k != "mcp_servers"}
     with pytest.raises(DeclarationError, match="MCP addresses"):
         _declaration(our_identity=identity)
 

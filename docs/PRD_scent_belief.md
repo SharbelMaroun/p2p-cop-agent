@@ -57,8 +57,72 @@ Its digest `416a57e17434ef21b3209052198a27a0d46e7a0e09fdaa5df3b61e4a8f2711ea` is
 reproduced exactly by the independently written companion Thief peer, which is the only
 real evidence that locking a model achieves anything.
 
-Belief normalization, trust math, observation timing, interfaces, and pursuit
-weights are future Cop strategy decisions.
+## The belief update rule and its trust factor (`M6-14a`, added 2026-08-07)
+
+Everything in this section is **PROJECT-PROPOSED**. The book fixes the *shape* — Bayes
+with a reliability factor (`:1480`) — and the *evidence* — expected-versus-measured scent
+where the claim points (`:1007-1022`). It states no starting trust, no step size, no
+decay rate, no bound, and says outright that the translation into a numeric belief map is
+the agent's own (`:1025`). Belief never crosses the wire (`M6-18`), so unlike the
+hash-locked scent model above there is no opponent to disagree with these numbers, and
+none of them is interop-critical.
+
+**The update.** `posterior(c) ∝ prior(c) · likelihood(c)`, renormalised so the
+distribution sums to 1. Three properties are deliberate and each exists because of a way
+the naive version breaks:
+
+| property | value | why |
+| --- | --- | --- |
+| zero total evidence | return the prior unchanged | an observation supporting no cell must not divide by zero and destroy a valid distribution (`M6-02c`) |
+| negative likelihood | clipped to `0` | evidence cannot be less than absent |
+| tie in `most_likely` | row-major order | the argmax must be deterministic, or two replays of one log disagree |
+
+**The inputs.** Only the observed opponent scent field and, second, a decoded hint.
+Never the Thief's true cell — `scent_likelihood` takes the observed mapping and the grid
+size and has no parameter through which a position could enter (`M6-02d`).
+
+**Normalisation, in two places that are easy to confuse.** The *likelihood* is not
+normalised; it is `floor + observed(c)` with `DEFAULT_LIKELIHOOD_FLOOR = 0.01` on every
+cell, so no cell the Thief could still occupy is ever hard-zeroed and no later evidence
+can resurrect it. The *posterior* is normalised, by construction. A likelihood that
+summed to 1 would make the floor meaningless, since scaling a likelihood by a constant
+leaves the posterior identical.
+
+**The trust factor.** `TrustScore` on `[0, 1]`, neutral prior, `TRUST_UPDATE_RATE = 0.25`.
+Trust does **not** arbitrate a scent-versus-hint contradiction — `PRD_strategy.md` covers
+that ordering. It scales how far a claim moves belief *within* what scent leaves open:
+
+```text
+support     = min(1, measured_at_favoured_cells / expected_fresh_scent)   # on [0, 1]
+expected_fresh_scent = CENTER_INTENSITY * (1 - DECAY_RATE) = 0.9 * 0.9 = 0.81
+strength    = |support - 0.5| / 0.5
+trust_next  = reinforced(0.25 * strength)  if support > 0.5  else weakened(0.25 * strength)
+L_eff(c)    = t * L(c) + (1 - t) * mean(L)
+```
+
+Four things in those five lines are chosen rather than derived, and are worth naming:
+
+- `expected_fresh_scent` is **computed from the locked model's own constants**, not typed
+  in as `0.81`. A negotiated change to centre intensity or decay carries it along instead
+  of leaving it silently disagreeing with the field it is compared against.
+- Support uses the **strongest** favoured cell, not the mean. A direction names a
+  half-plane and the Thief is in one cell of it; averaging would dilute a real fresh trail
+  to nothing on a large board, so a truthful hint would read as a lie.
+- The step is **scaled by distance from neutral**, so the case study's absolute
+  contradiction (`0.00` measured against `0.81`) moves trust at the full rate while a
+  marginal disagreement barely moves it. A flat rate would treat those identically.
+- `L_eff` tempers **toward uniform**, never toward the opposite. At `t = 0` the hint
+  flattens to a constant, which Bayes treats as no evidence — the case study's "ignores
+  the verbal claim", by arithmetic rather than a special case. Inverting a liar's claim
+  would be wrong: it may still be true (`M6-11b`).
+
+A consequence we accept rather than hide: `reinforced`/`weakened` are bounded steps that
+approach `1.0` and `0.0` without arriving, so a repeat liar keeps a sliver of trust and
+can still break an exact tie. Bluffing is legal in this game, and a peer condemned beyond
+appeal could never rebuild.
+
+Observation timing, interfaces, and pursuit weights are covered in
+[PRD_strategy.md](PRD_strategy.md).
 
 ## The observation on the wire (`M6-08`, `M6-09`, added 2026-08-06)
 

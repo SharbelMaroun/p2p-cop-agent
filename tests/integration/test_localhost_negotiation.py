@@ -20,7 +20,7 @@ IDENTITY = {
     "group_id": "neutral-group-alpha", "group_name": "Alpha", "members": ["a", "b"],
     "repos": {"cop": "https://example.test/cop", "thief": "https://example.test/thief"},
     "mcp_servers": {"cop": "https://cop.example.test/mcp"}, "llm_model": "cli-default",
-    "spec": {"os": "Example OS", "cpu": "Example CPU"},
+    "spec": {"os": "Example OS", "cpu_type": "Example CPU", "cpu_freq_mhz": 3600, "cpu_cores": 8, "ram_gb": 32, "gpu_model": "none", "vram_gb": 0},
 }
 
 

@@ -12,7 +12,7 @@ scoring, transport-free rules harness, and deterministic move-or-barrier baselin
 It also implements the M4 commit-reveal primitives (per-turn commitment, audit
 reveal, Step-0 attestation) and the inbound FastMCP tool surface. It contains the
 M1.5 Option-B contract repair: a role-neutral `shared_contract/` bundle at
-`0.2.9-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
+`0.2.10-proposed`. The `0.1.0-proposed` bundle was rejected and is superseded.
 
 Since then: the M6 scent field and belief map, the outbound FastMCP client, the M7
 artifact/reporting pipeline (declaration, per-sub-game config and log, final result,
@@ -23,7 +23,7 @@ and the replay *view* that would make the verifier's banner photographable. Gmai
 credentials are deliberately not in the repository (rules 39–40), so the sender is built
 but unexercised. **No live game against a real opponent has been played.**
 
-The shared contract is `0.2.9-proposed` and **UNFROZEN**. It becomes frozen only
+The shared contract is `0.2.10-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
 identical controlled bytes (`shared_contract/verify.py --compare-root`). Option B is
 a documented academic-freedom interoperability choice pinned to simulator commit
@@ -91,7 +91,7 @@ displays the equivalent PEP 440 form `1.0`.
 ## Configuration
 
 - The stable, role-neutral shared contract is the top-level `shared_contract/`
-  bundle at `0.2.9-proposed` (Option B). It holds specifications, schemas,
+  bundle at `0.2.10-proposed` (Option B). It holds specifications, schemas,
   fixtures, vectors, and the read-only verifier only — no active match.
 - A per-match shared game object and local rate-limit enforcement mirror are each
   supplied at runtime by explicit path; neither loader has a repository or example
@@ -146,6 +146,12 @@ coverage only and will not be restored as an executable plan.
 
 The graded report has six sections. Sections that need a completed match are marked
 as blocked rather than filled with claims we cannot yet show.
+
+The full academic report body — the formalism in LaTeX, every architectural decision with
+what it cost, the measured results and the token/cost accounting — is in
+[docs/ACADEMIC_REPORT.md](docs/ACADEMIC_REPORT.md). Quality evidence against ISO/IEC 25010
+and the book’s four success metrics is in [docs/QUALITY_EVIDENCE.md](docs/QUALITY_EVIDENCE.md);
+the scoring is in [docs/SELF_ASSESSMENT.md](docs/SELF_ASSESSMENT.md).
 
 ### 1. The Dec-POMDP model
 

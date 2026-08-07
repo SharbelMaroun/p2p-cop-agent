@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-contract-version": "0.2.10-proposed",
+  "x-role-neutral": true,
+  "title": "Pre-game declaration artifact",
+  "description": "Every `required` entry below is mandated by the BOOK, not inferred from a template. `U-019` records that the example artifacts prove only that keys occur in the inspected bytes -- they establish no requiredness -- and `X-04` is what happens when a schema asserts more than the sources support: it validated a template and refused every real artifact. additionalProperties is TRUE because the book was asked directly and is NOT-SPECIFIED on whether extra non-contradicting fields are forbidden in the reporting artifacts. Refusing an opponent's declaration over a key no source forbids would fail rule 36's mutual audit for no reason.",
+  "type": "object",
+  "required": [
+    "github_commit",
+    "max_tokens_per_game",
+    "game_started_at",
+    "game_ended_at",
+    "games_played_declaration",
+    "links",
+    "groups"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "groups": {
+      "description": "Both groups. Rule 49 wants four repository links across the pair, and p.78/183 wants the MCP addresses.",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "group_id",
+          "group_name",
+          "members",
+          "repos",
+          "mcp_servers",
+          "llm_model",
+          "hardware_spec",
+          "signature"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "group_name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Required since M7-28 (2026-08-07). inst/:1278 says the Step-0 declaration documents the group name, and p.39/104 lists group identity as name, id and members. Our own name is enforced at build time; an opponent who omits one gets their group_id as the name, because refusing to play over a missing display name would assert more over the wire than any source supports."
+          },
+          "members": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "repos": {
+            "description": "Rule 49: both repositories per group.",
+            "type": "object",
+            "required": [
+              "cop",
+              "thief"
+            ],
+            "additionalProperties": true
+          },
+          "mcp_servers": {
+            "description": "Public addresses only. A URL carrying a credential breaches rule 39, which forbids secrets in the repository even when it is private.",
+            "type": "object",
+            "minProperties": 1
+          },
+          "llm_model": {
+            "description": "Rule 24 (Mandatory), p.39/104 — declared PER GROUP since 0.2.10-proposed (M7-22f). It sat at the top level until 2026-08-07, describing only this peer, which made the artifact unable to answer the question it exists for: inst/:1276 asks whether an agent on a phone races one on a workstation fairly, and rule 24's sanction is denial of the COMPUTATIONAL BONUS — a comparison between two machines. Null is permitted only for an opponent that withheld it; see `undeclared`.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "hardware_spec": {
+            "description": "Rule 24, and inst/:1278 which names the members one by one: operating system first, then processor cores AND their frequency, RAM, and the graphics card with its video memory. Not a free-form object: a spec that cannot be compared cannot earn a computational bonus. Null only for an opponent that withheld it.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "os",
+              "cpu_type",
+              "cpu_freq_mhz",
+              "cpu_cores",
+              "ram_gb",
+              "gpu_model",
+              "vram_gb"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "os": {
+                "type": "string",
+                "minLength": 1
+              },
+              "cpu_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "cpu_freq_mhz": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "cpu_cores": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "ram_gb": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "gpu_model": {
+                "type": "string",
+                "minLength": 1
+              },
+              "vram_gb": {
+                "type": "number",
+                "minimum": 0,
+                "description": "0 is valid and means no graphics card. Refusing it would push an honest operator into inventing one."
+              }
+            }
+          },
+          "signature": {
+            "description": "This group's own commitment over its declared block. Ours is a canonical SHA-256 of the entry with this field removed — the same public, reproducible primitive the config lock uses, not an asymmetric signature; this project has no key pairs and the book's own scheme is SHA-256 commit-reveal. An OPPONENT's is null: their negotiation signature covers the terms and the challenge nonce, NOT their identity block, so copying it here would claim an authentication that does not exist.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "undeclared": {
+            "description": "Members an OPPONENT withheld in the pre-game exchange. Present only when something is missing. The reference implementation resolves a missing peer identity as `opp = series.peer_identity or own`, copying its OWN hardware and model into the opponent's slot — visible in its samples as two groups sharing one machine. We record the absence instead: this artifact is signed and emailed, rule 38 makes a false declaration an absolute disqualification, and rule 24's sanction belongs to whoever failed to declare.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "github_commit": {
+      "description": "Rule 53, p.40/106: the exact commit of the code that plays. Hex-only, seven to forty characters. minLength alone was not enough -- the reference hard-codes the string 'unknown', which is exactly seven characters and passed a length check while identifying nothing.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "max_tokens_per_game": {
+      "description": "The agreed token ceiling, p.78/183.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "game_started_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "game_ended_at": {
+      "description": "Null at lock time and filled post-game. The declaration is written and cryptographically locked BEFORE the first move, so the end time is not knowable when the artifact is created — requiring a string here would have made the schema reject the only artifact the builder can honestly produce. The key stays required so its absence is still a defect; only its value may be null until the series ends.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "games_played_declaration": {
+      "description": "Rule 37, p.131/275: an accurate count of games actually played, declared at the start of each game. Rule 38 makes a false declaration absolute disqualification of the project, which is why the count is derived from emitted result artifacts rather than entered by hand.",
+      "type": "object",
+      "required": [
+        "opponent_group_id",
+        "games_played_including_this"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "opponent_group_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "games_played_including_this": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "counted_games_before_this": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warm_ups_excluded": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "links": {
+      "description": "M7-02: **resolved** filenames, never the naming pattern. The book writes the convention as `config_<game_id>_g<NN>.json` (inst/:3600-3602); copying that literal into an artifact points at a file that does not exist, and :2243 is explicit that each name is derived from the game_id so files from different games do not get mixed up. X-04 fixed this pattern in the config schema and left the declaration builder still emitting the placeholder, so the contract became right while the artifact stayed wrong — the declaration's own links would have failed the pattern its own bundle publishes. `config` and `log` accept a string OR an array: a series has one per sub-game, and an opponent emitting a single name is tolerated because U-019 does not pin the type.",
+      "type": "object",
+      "required": [
+        "declaration",
+        "config",
+        "log",
+        "result"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "declaration": {
+          "type": "string",
+          "pattern": "^declaration_.+\\.json$"
+        },
+        "result": {
+          "type": "string",
+          "pattern": "^result_.+\\.json$"
+        },
+        "config": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^config_.+_g\\d{2}\\.json$"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "pattern": "^config_.+_g\\d{2}\\.json$"
+              }
+            }
+          ]
+        },
+        "log": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^log_.+_g\\d{2}\\.json$"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "pattern": "^log_.+_g\\d{2}\\.json$"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

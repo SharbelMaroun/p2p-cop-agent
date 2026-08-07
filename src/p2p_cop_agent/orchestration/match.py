@@ -17,7 +17,7 @@ be a lie, and the first move must never precede the lock.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -33,6 +33,8 @@ from p2p_cop_agent.reporting import (
     build_config,
     config_filename,
     declaration_filename,
+    league,
+    provenance,
     validated_write,
     write_artifact,
 )
@@ -76,6 +78,11 @@ def play_match(
     sleep: Callable[[float], None],
     step_zero: Mapping[str, object] | None = None,
     artifacts_dir: Path | None = None,
+    # Rule 37's history, supplied rather than defaulted. An empty default would declare
+    # "this is the first counted game" on every call, and rule 38 makes a false declaration
+    # absolute disqualification of the project — so the friction of passing it is the point.
+    # `reporting.league.PlayedGame.from_result` builds this from the result artifacts.
+    played_games: Sequence[league.PlayedGame] = (),
     sub_game: int = 1,
     opens: bool = False,
     heartbeat: Heartbeat | None = None,
@@ -97,6 +104,16 @@ def play_match(
         config_sha256=sdk.config_sha256,  # type: ignore[attr-defined]
         num_sub_games=int(game["network_and_league"]["num_games"]),
         max_tokens_per_game=max_tokens_per_game, started_at=started_at,
+        # Rule 53: the commit of the code that is about to play, resolved rather than
+        # assumed. `provenance.describe()` also reports whether the tree was clean, which a
+        # counted game should check — a hash pointing at code that did not run identifies
+        # the wrong thing while looking correct.
+        github_commit=provenance.describe()["github_commit"],
+        # Rule 37: the count declared at the start of each game. Derived from the result
+        # artifacts already on disk, because rule 38 makes a false declaration absolute
+        # disqualification of the project and does not distinguish a lie from a slip.
+        games_played_declaration=league.declaration_block(
+            played_games, agreement.opponent_identity.get("group_id", "")),
     )
     lock = lock_declaration(declaration)
     if artifacts_dir is not None:

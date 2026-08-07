@@ -81,7 +81,7 @@ def _play_sub_game(directory: Path, sub_game: int, *, outcome: str, tamper: bool
         reveals.append({"step": step, "nonce": nonce, "payload": revealed})
 
     log = build_log(identity=IDENT, sub_game=sub_game, records=records,
-                    summary={"outcome": outcome, "turns": 2})
+                    summary={"ended_at": "2026-08-07T12:00:00+03:00", "outcome": outcome, "turns": 2})
     assert not is_revealed(log), "the in-play log must not carry a nonce"
     revealed_log = reveal_log(log, reveals)
     write_artifact(directory, log_filename(IDENT, sub_game), revealed_log)

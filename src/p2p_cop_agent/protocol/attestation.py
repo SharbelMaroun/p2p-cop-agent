@@ -23,7 +23,16 @@ from p2p_cop_agent.shared.config import JsonObject
 
 _GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
 _CONFIG_SHA = re.compile(r"^[0-9a-f]{64}$")
-_HOST_FIELDS = ("os", "cpu", "ram_gb", "gpu", "vram_gb")
+# `inst/:1278` names them one by one: "Operating System (OS), number of processor cores
+# **and their frequency** (CPU), RAM capacity, presence of a graphics card and video memory
+# (GPU/VRAM)". Until 2026-08-07 this collapsed cores and frequency into one `cpu` string and
+# the card into one `gpu` string, which reads as the same information and is not: rule 24's
+# sanction is denial of eligibility for the **computational bonus**, and a bonus that
+# compares two machines cannot be computed from prose. The names are the template's, so the
+# declaration and the Step-0 payload describe one spec in one shape (`M7-22f`).
+HARDWARE_MEMBERS = ("os", "cpu_type", "cpu_freq_mhz", "cpu_cores", "ram_gb", "gpu_model", "vram_gb")
+_HOST_TEXT = ("os", "cpu_type", "gpu_model")
+_HOST_NUMBERS = ("cpu_freq_mhz", "cpu_cores", "ram_gb", "vram_gb")
 
 
 class AttestationError(ValueError):
@@ -35,21 +44,37 @@ class HostSpec:
     """The sealed hardware declaration for one peer."""
 
     os: str
-    cpu: str
+    cpu_type: str
+    cpu_freq_mhz: float
+    cpu_cores: int
     ram_gb: float
-    gpu: str
+    gpu_model: str
     vram_gb: float
 
     def as_dict(self) -> JsonObject:
-        """Return the canonical host object for the Step-0 payload."""
-        for name in ("os", "cpu", "gpu"):
+        """Return the canonical host object, used by Step-0 and the declaration alike.
+
+        One shape for both, because they are one fact. `inst/:1278` describes a single
+        specification collected in Step-0, and the declaration is where it is published;
+        two shapes for it would be two things that can disagree.
+
+        `vram_gb` is the one member allowed to be zero — "presence of a graphics card" is
+        a question with a legitimate *no*, and a machine without one has no video memory.
+        Rejecting `0` would push an honest operator toward inventing a number, and rule 24
+        cares that the declaration is **true**, not that it is impressive.
+        """
+        for name in _HOST_TEXT:
             if not isinstance(getattr(self, name), str) or not getattr(self, name):
                 raise AttestationError(f"host {name} must be a non-empty string")
-        for name in ("ram_gb", "vram_gb"):
+        for name in _HOST_NUMBERS:
             value = getattr(self, name)
-            if isinstance(value, bool) or not isinstance(value, int | float) or value <= 0:
-                raise AttestationError(f"host {name} must be a positive number")
-        return {name: getattr(self, name) for name in _HOST_FIELDS}
+            if isinstance(value, bool) or not isinstance(value, int | float):
+                raise AttestationError(f"host {name} must be a number")
+            if value < 0 or (value == 0 and name != "vram_gb"):
+                raise AttestationError(
+                    f"host {name} must be positive; only vram_gb may be 0, for a machine "
+                    "with no graphics card")
+        return {name: getattr(self, name) for name in HARDWARE_MEMBERS}
 
 
 @dataclass(frozen=True, slots=True)

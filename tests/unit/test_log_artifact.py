@@ -44,7 +44,7 @@ STEPS = [
 ]
 REVEALS = [{"step": n + 1, "nonce": x, "payload": p}
            for n, (p, x) in enumerate(zip(PAYLOADS, NONCES, strict=True))]
-SUMMARY = {"outcome": "capture", "turns": 2, "cop_score": 20, "tokens_total": 0}
+SUMMARY = {"ended_at": "2026-08-07T12:00:00+03:00", "outcome": "capture", "turns": 2, "cop_score": 20, "tokens_total": 0}
 
 
 def _log():

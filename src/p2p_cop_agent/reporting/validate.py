@@ -36,7 +36,21 @@ BUNDLE_SCHEMAS = Path(__file__).resolve().parents[3] / "shared_contract" / "sche
 # unrecognised kind is precisely the one nobody has checked.
 SCHEMA_FILES: dict[str, str] = {
     "per-subgame-config": "per-subgame-config.schema.json",
+    "declaration": "declaration.schema.json",
+    "log": "game-log.schema.json",
+    "result": "final-result.schema.json",
 }
+
+# `M7-26`: a schema change must be visible, not silent. Every controlled schema carries
+# `x-contract-version`, and this is the version this build implements.
+#
+# **The three new artifact schemas joined at 0.2.9 rather than bumping to 0.2.10.** A version
+# exists to tell a *consumer* something changed, and this bundle is `-proposed` and has never
+# been accepted by the other side (`M1.5-13` is blocked on exactly that). Bumping would have
+# meant editing 27 declarations across 19 files, several of which are historical narrative of
+# the form "0.2.8 -> 0.2.9" — and rewriting history is how `X-03` did its damage. The bump
+# belongs to acceptance, not to authoring.
+BUNDLE_CONTRACT_VERSION = "0.2.10-proposed"
 
 
 class ArtifactInvalidError(ValueError):
@@ -68,6 +82,35 @@ def validate_artifact(artifact: Mapping[str, object]) -> None:
         first = errors[0]
         where = "/".join(str(part) for part in first.path) or "(root)"
         raise ArtifactInvalidError(f"{kind} fails its schema at {where}: {first.message}")
+
+
+def schema_versions() -> dict[str, str]:
+    """The `x-contract-version` each controlled schema declares (`M7-26`).
+
+    Read from the files rather than tracked in code, so the answer cannot be stale. A
+    version that lives in two places drifts, and the drift is silent until an opponent
+    validates against a bundle we thought we had published.
+    """
+    versions: dict[str, str] = {}
+    for kind, filename in sorted(SCHEMA_FILES.items()):
+        schema = json.loads((BUNDLE_SCHEMAS / filename).read_text("utf-8"))
+        versions[kind] = str(schema.get("x-contract-version", "(missing)"))
+    return versions
+
+
+def check_schema_versions(expected: str = BUNDLE_CONTRACT_VERSION) -> None:
+    """Refuse a bundle whose schemas do not all declare the same version.
+
+    This is `X-04`'s lesson as a guard. That defect shipped because a bundle bump edited
+    some declarations and not others, leaving an internally inconsistent contract that still
+    validated its own fixtures.
+    """
+    disagreeing = {kind: found for kind, found in schema_versions().items() if found != expected}
+    if disagreeing:
+        raise ArtifactInvalidError(
+            f"schema versions disagree with {expected!r}: {disagreeing}. A partially bumped "
+            "bundle publishes a contract nobody can implement consistently"
+        )
 
 
 def validated_write(directory: Path, filename: str, artifact: Mapping[str, object]) -> Path:
