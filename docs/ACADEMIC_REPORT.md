@@ -53,6 +53,31 @@ negative, which would put a negative prior into the belief update.
 > scent vanishes almost immediately; saturation is what $\rho \to 0$ approaches. The
 > sensitivity sweeps in §3.2 use the correct direction.
 
+> **A third contradiction, in the scoring boundary** (`M3-07c`, `C-024`). Appendix F table
+> 15 sets `[Step Limit]` and `[Survival Threshold]` to the **same value**, 35. Two readings
+> follow and the book never chooses between them: does the Thief win by surviving *exactly*
+> 35 steps, or must it exceed them? One turn separates the two, and a whole sub-game — 20
+> points — hangs on it.
+>
+> **Where it is.** Not in a figure or an aside: in the mandatory parameters table, the one
+> document both peers negotiate from. Two agents built from the same appendix can disagree
+> about who won a game they both played correctly.
+>
+> **What we chose.** The **inclusive** horizon — completing step 35 uncaptured is a Thief
+> win.
+>
+> **Why.** Chapter 3 table 2 (PDF p. 38) defines the survival outcome as the Thief surviving
+> "the limit of valid moves" without capture, and table 15 makes that limit *equal* the
+> threshold. The two tables together settle what either alone leaves open, so no ruling was
+> needed. `run_sub_game` already behaved this way; what was missing was the record and the
+> test. `tests/unit/test_horizon_boundary.py` now asserts threshold−1, threshold and
+> threshold+1 — one assertion at the threshold cannot distinguish the two readings, since
+> both stop somewhere near it. `U-027` is closed and `C-024` marked `RESOLVED`.
+>
+> This is disclosed rather than quietly implemented because an off-by-one here does not
+> crash and does not look wrong. It surfaces only in the score, which is exactly where a
+> silent disagreement with an opponent becomes expensive.
+
 ### 1.3 The belief map
 
 The posterior over the Thief's position (p.48/123):
