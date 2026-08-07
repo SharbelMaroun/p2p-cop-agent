@@ -38,11 +38,20 @@ $$\tau_{ij}(t+1) = \max\left(0,\; (1-\rho)\cdot\tau_{ij}(t) + \Delta\tau_{ij}\ri
 with $\rho = 0.10$. The $\max(0,\cdot)$ prevents floating-point drift carrying a decayed cell
 negative, which would put a negative prior into the belief update.
 
-> **A contradiction in the source, disclosed under chapter 110** (`M9-10c`). The prose at
-> `inst/:930` says $(1-\rho)$ means "the existing scent is reduced by 90%". The formula
-> beside it says the opposite: $(1-\rho) = 0.90$ *retains* 90%, reducing by 10%. We implement
-> the **formula** — rule 23's lock is taken over the formula, and the prose reading would
-> decay ten times too fast, erasing the very history trail the mechanism exists to leave.
+> **Two contradictions in the source, disclosed under chapter 110** (`M9-10c`). Both are
+> recorded in `docs/SPECIFICATION_CONFLICTS.md` as `C-014` and `C-015`; they were identified
+> during M6 and are restated here because §1.2's formula relies on the resolution.
+>
+> **`C-014`** — the prose (ch. 4.3, p.43; `inst/:930`) says $(1-\rho)$ means "the existing
+> scent is **reduced by 90%**". The formula beside it says the opposite: $(1-\rho) = 0.90$
+> *retains* 90%, reducing by 10%. We implement the **formula** — rule 23's lock is taken
+> over the formula, and the prose reading would decay ten times too fast, erasing the very
+> history trail the mechanism exists to leave.
+>
+> **`C-015`** — the book (ch. 4.4, p.46) says raising $\rho$ toward 1.0 would leave the
+> board "**saturated** with scent". Reversed: $\rho \to 1.0$ drives $(1-\rho) \to 0$ and
+> scent vanishes almost immediately; saturation is what $\rho \to 0$ approaches. The
+> sensitivity sweeps in §3.2 use the correct direction.
 
 ### 1.3 The belief map
 
