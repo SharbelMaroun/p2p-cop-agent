@@ -74,6 +74,22 @@ def _git(*args: str) -> str:
     return completed.stdout
 
 
+def is_shallow() -> bool:
+    """Whether this clone was truncated, so there is no history behind the tip.
+
+    **Without this check the scanner is a decoration.** A shallow clone holds one commit;
+    `rev-list --all` then returns the current tree and nothing else, so the scan finds no
+    secrets because there is nowhere left to look — and prints the same "0 findings" a
+    genuinely clean repository does.
+
+    Found on 2026-08-07 from a CI failure rather than by reasoning: `actions/checkout`
+    defaults to `fetch-depth: 1`, and the reviewed-history pin stopped resolving because the
+    blob it names was not in the truncated clone. The pin failing was luck; the scan itself
+    would have passed silently.
+    """
+    return _git("rev-parse", "--is-shallow-repository").strip() == "true"
+
+
 def reachable_blobs() -> list[tuple[str, str]]:
     """Every (sha, path) reachable from any ref, including deleted and rewritten files.
 
@@ -149,6 +165,13 @@ def reviewed_still_present() -> list[str]:
 def main() -> int:
     """Scan history and fail when anything that looks like a secret is present."""
     try:
+        if is_shallow():
+            print("REFUSING TO SCAN: this is a shallow clone, so there is no history behind "
+                  "the tip. A scan here would report '0 findings' after reading one commit, "
+                  "which is indistinguishable from a clean repository.\n"
+                  "  CI: set `fetch-depth: 0` on actions/checkout.\n"
+                  "  Locally: `git fetch --unshallow`.")
+            return 2
         blobs = reachable_blobs()
     except (OSError, subprocess.CalledProcessError) as exc:
         print(f"could not read Git history: {exc}")

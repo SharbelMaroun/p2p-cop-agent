@@ -30,6 +30,7 @@ from scripts.scan_git_history import (
     REVIEWED_HISTORY,
     is_forbidden,
     is_scannable,
+    is_shallow,
     reachable_blobs,
     reviewed_still_present,
 )
@@ -59,9 +60,25 @@ def test_every_pin_states_a_reason_and_a_review_date(key) -> None:
     assert re.search(r"20\d\d-\d\d-\d\d", reason), "no review date"
 
 
+def test_a_shallow_clone_is_refused_rather_than_scanned() -> None:
+    """**The defect CI found on 2026-08-07.**
+
+    `actions/checkout` defaults to `fetch-depth: 1`. On that clone `rev-list --all` returns
+    the tip tree alone, so the scan would print "0 findings" for a repository it had barely
+    read — identical output to a genuinely clean history.
+
+    Here it surfaced only because the reviewed-history pin stopped resolving: the blob it
+    names is not in a truncated clone. That was luck. The scan itself would have passed.
+    """
+    assert is_shallow() is False, (
+        "this checkout is shallow — the scan cannot see history, and neither can the pin "
+        "table below. CI must set `fetch-depth: 0`; locally, `git fetch --unshallow`")
+
+
 def test_no_pin_refers_to_a_blob_history_no_longer_contains() -> None:
     """A pin matching nothing is dead weight, and suggests a review that no longer applies
-    to anything. Checked against the real repository."""
+    to anything. Checked against the real repository — which is why it fails on a shallow
+    clone, and why the test above runs first."""
     assert reviewed_still_present() == []
 
 
