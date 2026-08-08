@@ -105,11 +105,16 @@ def _text(value: object) -> str:
 def _row(index: int, record: Mapping[str, object], check, current: int) -> StepRow:
     if not isinstance(record, Mapping):  # a damaged record still has to render
         record = {}
+    # Step, sender, and move fall back to the sealed payload: our artifact log carries
+    # them flat, but a companion-shaped log keeps them inside `payload`, and a mutual
+    # audit is precisely the moment this viewer holds a foreign log.
+    payload = record.get("payload")
+    sealed: Mapping[str, object] = payload if isinstance(payload, Mapping) else {}
     return StepRow(
         index=index,
-        step=_text(record.get("step", "?")),
-        sender=_text(record.get("sender")),
-        move=_text(record.get("move")),
+        step=_text(record.get("step", sealed.get("step", "?"))),
+        sender=_text(record.get("sender", sealed.get("sender"))),
+        move=_text(record.get("move", sealed.get("move"))),
         verdict=check.verdict.value,
         reason=check.reason,
         commit=_text(record.get("commit")),

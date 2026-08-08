@@ -1422,6 +1422,29 @@ strategy raise into a truthful sealed `STAY` and recovers next turn (`M6-26`) �
 match must outlive any strategy bug, because even a lost game pays 5 and a frozen one
 pays nothing.
 
+#### The replay viewer grows a board (`M8-14`, 2026-08-08)
+
+The viewer used to show the evidence table alone. The book's replay axis exists to answer
+"what really happened?" — the "Retrospective Witness" — and rule 9's objective-board ban
+binds the *live* interface only, so the reference itself draws both true positions on one
+board when the opponent's log sits beside our own. Ours now does too: `replay/board.py`
+reconstructs the chase per cursor step (trails fading with age, disclosed barriers
+appearing as placed, a red ring on the capture cell), a `Play` button walks the whole
+match, and the screenshots in `assets/` are regenerated **from the real two-process
+rehearsal match**, our log and the companion's cross-loaded, rather than from fixtures.
+
+*Problem hit.* The first real log through the screen exposed a latent defect the fixtures
+had hidden: the row table and the sequence checker read `step` only at a record's top
+level, while a companion-shaped log seals it inside `payload` — so a genuine foreign log,
+the exact artifact a mutual audit hands this viewer, rendered `step ? — —` on every row
+and reported twenty-one numbered steps as "unnumbered". Both now fall back to the sealed
+payload. The live view was decluttered in the same pass: sub-1% labels off every cell,
+the number kept wherever it means something, so the belief map reads at a glance.
+Both windows also moved onto a shared dark chrome (`ui/style.py`): glowing pill
+banners, rounded cells and cards, neon trails — pure tkinter, no theme dependency —
+with the verdict colours and the heat ramp deliberately untouched, because those are
+reference-matched, test-pinned meaning rather than styling.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
