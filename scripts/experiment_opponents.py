@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from p2p_cop_agent.domain.movement import Action, apply_move, legal_moves  # noqa: E402
+from p2p_cop_agent.domain.movement import Action  # noqa: E402
 from p2p_cop_agent.domain.scoring import Outcome  # noqa: E402
 from p2p_cop_agent.orchestration.harness import run_sub_game  # noqa: E402
 from p2p_cop_agent.strategy.anticipation import (  # noqa: E402
@@ -42,34 +42,9 @@ from p2p_cop_agent.strategy.anticipation import (  # noqa: E402
 from p2p_cop_agent.strategy.belief import Belief, scent_likelihood  # noqa: E402
 from p2p_cop_agent.strategy.belief_pursuit import pursue_belief  # noqa: E402
 from scripts.experiment_arena import ARMS, CONFIG, SEEDS, Trace  # noqa: E402
+from scripts.experiment_thieves import flee_greedy, flee_smart  # noqa: E402
 
 RESULTS = ROOT / "results"
-
-
-def _distance(a, b) -> int:
-    return abs(a.row - b.row) + abs(a.col - b.col)
-
-
-def _mobility(board, cell, blocked) -> int:
-    return sum(1 for action in legal_moves(board, cell, blocked) if action is not Action.STAY)
-
-
-def flee_greedy(board, thief, cop, blocked) -> Action:
-    """The reference archetype: the legal step that maximises distance from the Cop."""
-    return min(
-        legal_moves(board, thief, blocked),
-        key=lambda action: (-_distance(apply_move(board, thief, action, blocked), cop),
-                            action.name),
-    )
-
-
-def flee_smart(board, thief, cop, blocked) -> Action:
-    """The strong-classmate archetype: distance plus mobility, summed not ranked."""
-    def rank(action: Action):
-        destination = apply_move(board, thief, action, blocked)
-        return (-(_distance(destination, cop) + _mobility(board, destination, blocked)),
-                action.name)
-    return min(legal_moves(board, thief, blocked), key=rank)
 
 
 def _believed(trace: Trace, cop, carried: dict | None = None):
@@ -105,18 +80,37 @@ def _anticipating(trace: Trace, _rng: random.Random):
     return policy
 
 
-def _barrier_stack(trace: Trace, _rng: random.Random):
-    """The live stack: trap, squeeze, ratchet, or predictively chase.
+def _decoded(trace: Trace, memory: dict):
+    """The live loop's belief: model-matched decode of the observed window (`M6-24`)."""
+    from p2p_cop_agent.domain.coordinates import Coordinate  # noqa: PLC0415
+    from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood  # noqa: PLC0415
 
-    This is what `orchestration/live_policy.py` actually serves. Every barrier-free
-    arm captures a fleeing archetype 0/40, so this arm is the one whose number is a
-    league expectation rather than a random-walk artifact. `previous` mirrors the
-    live loop's own memory of the cell it just vacated — the containment ratchet.
+    observed = trace.field.window(trace.thief) if trace.thief is not None else {}
+    if observed:
+        before = memory.get("observed")
+        trusted = set(observed) & set(before) if before else None
+        belief = Belief.uniform(trace.board.grid_size).updated(
+            emitter_likelihood(observed, before, grid_size=trace.board.grid_size,
+                               trusted=trusted))
+        memory["observed"], memory["belief"] = observed, belief
+    elif memory.get("belief") is None:
+        return None
+    return Coordinate.from_pair(memory["belief"].most_likely())
+
+
+def _barrier_stack(trace: Trace, _rng: random.Random):
+    """The live stack: decoded belief, then trap, squeeze, ratchet, or chase.
+
+    This is what `orchestration/live_policy.py` actually serves — including the
+    `M6-24` model-matched decoder. Every barrier-free arm captures a fleeing
+    archetype 0/40, so this arm is the one whose number is a league expectation
+    rather than a random-walk artifact. `previous` mirrors the live loop's own
+    memory of the cell it just vacated — the containment ratchet.
     """
-    memory = {"previous": None, "belief": None}
+    memory = {"previous": None, "belief": None, "observed": None}
 
     def policy(cop):
-        believed = _believed(trace, cop, memory)
+        believed = _decoded(trace, memory)
         if believed is None:
             return Action.STAY
         intent = predictive_turn_intent(cop.board, cop.position, believed,

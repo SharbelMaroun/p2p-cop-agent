@@ -602,3 +602,47 @@ terminal check to immediately after receive (`TerminalClaimReceived`): a decided
 owed nothing — no decide, no seal, no send. Re-rehearsed: both sides SURVIVAL at 35, replay
 `Verified OK`. Three tests had pinned the reply-anyway behaviour; a test that pins a bug is
 how a bug survives, and the rehearsal is what outranked them.
+
+## 2026-08-08 (ii) — evidence from the served path, and the decoder comes home
+
+Two closures. The served path finally writes its graded evidence — declaration, config,
+and the revealed log, all assembled from the sub-game's own audit — and the validation
+crossed implementations: our log replayed `Verified OK` under the companion Thief's
+verifier, 34 commitments recomputed by code we did not write. One payload lesson en
+route: the sealed payload carried no `step` member (the ledger numbered turns
+externally), found the moment an artifact writer needed it — sealed truth should be
+self-describing.
+
+And the model-matched decoder, ported home: the live stack now equals the truth-aimed
+oracle stack on every grid cell — the one random-walk game the containment ratchet used
+to concede came back with the exact aim. Perception is now solved on both sides of the
+board; what separates the two agents from their ceilings is nothing measurable in any
+harness we have.
+
+## 2026-08-08 (iii) — the mirror dance, and a tournament pass
+
+League-stakes hardening under the full eight-step gate (both notebooks asked and read as
+text; the code notebook pinned the reference brains — greedy chase, "occasionally wall",
+greedy-evade "prefer unvisited" — and the book notebook pinned rule 25's recommendation
+status, the §3.4 barrier text verbatim, and the Minimum status of every board parameter).
+
+Three findings worth the log. **First, the 0/40 was the chase, not the walls.** One trace
+showed the truth-fed stack bobbing on its own edge, mirroring an edge-oscillating Thief to
+the horizon: Manhattan ties row-matching against column-closing, the centroid lead cannot
+price a spread, and the fixed tie-break picks the mirror forever. The interception rank —
+sum of step distances over the whole flight set — breaks it, and the tournament grid went
+from 0/40 (oracle included) to 40/40 on every archetype, both boards, belief equal to
+oracle. **Second, the obvious fix was wrong and was measured off before it could ship:**
+pricing walls by a one-ply worst-case pocket cut drained the quota one shaved cell at a
+time and regressed flee_greedy to 0/10 — the ratchet's value appears one orbit after the
+spend, invisible at one ply. The dead design is recorded in the module docstring.
+**Third, the live seams had no fail-safe:** a strategy raise would have reached the
+watchdog as a freeze and scored the technical 0/0. Both repositories' live turns now
+convert any strategy exception into a truthful sealed STAY and recover next turn.
+
+The real-wire rehearsal was re-run start to finish: negotiation, 21 commit-reveal turns,
+capture, both peers recording the same outcome, and the log replaying `Verified OK` under
+the companion verifier — including our log under theirs. Two rehearsal launches failed
+first (a 10-second `connect_timeout_seconds` in the private example versus a ~15-second
+process start; a probe racing a not-yet-bound server) — both were environment, not
+protocol, and the runbook's troubleshooting table already named one of them.

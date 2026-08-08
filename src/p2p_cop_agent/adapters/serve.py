@@ -18,6 +18,7 @@ from __future__ import annotations
 import queue
 import time
 from datetime import UTC, datetime
+from pathlib import Path
 from urllib.parse import urlparse
 
 from p2p_cop_agent.adapters.fastmcp_client import FastMCPClient
@@ -94,6 +95,8 @@ def serve_match(
     match_config_path: str,
     rate_limits_path: str,
     private_config_path: str,
+    artifacts_dir: Path | None = None,
+    sub_game: int = 1,
 ) -> MatchResult:
     """Assemble a peer from config, wait for the opponent, and play one match.
 
@@ -119,7 +122,8 @@ def serve_match(
     sealed = sdk.seal_step_zero_attestation(
         host=host_spec, model=identity["llm_model"], group_id=identity["group_id"], game_id=game_id,
     )
-    return play_match(
+    started_at = datetime.now(UTC).isoformat()
+    result = play_match(
         sdk=sdk, transport=FastMCPClient(opponent_url(config)),
         take_offer=lambda: _drain(inboxes.agreements),
         take_turn=lambda: take_turn(inboxes, peer),
@@ -127,7 +131,21 @@ def serve_match(
         identity=identity,
         step_zero=attestation_wire(sealed),
         game_id=game_id, game_uid=sdk.config_sha256[:32],
-        started_at=datetime.now(UTC).isoformat(),
+        started_at=started_at,
         max_tokens_per_game=per_game_token_budget(dict(sdk.game_config)),
         clock=time.monotonic, sleep=time.sleep,
+        artifacts_dir=artifacts_dir, sub_game=sub_game,
     )
+    if artifacts_dir is not None and result.played and result.outcome.audit:
+        from p2p_cop_agent.adapters.match_artifacts import write_match_log  # noqa: PLC0415
+
+        write_match_log(
+            artifacts_dir, game_id=game_id, game_uid=sdk.config_sha256[:32],
+            sub_game=sub_game, group_id=str(identity.get("group_id", "unknown")),
+            opponent_group_id=str((result.agreement.opponent_identity or {}).get(
+                "group_id", "unknown")),
+            config_sha256=sdk.config_sha256, outcome=result.outcome.outcome,
+            steps=result.outcome.steps, started_at=started_at,
+            audit=result.outcome.audit,
+        )
+    return result
