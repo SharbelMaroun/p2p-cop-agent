@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.10-proposed",
+  "x-contract-version": "0.2.11-proposed",
   "x-source-status": "PROPOSED",
   "x-role-neutral": true,
   "title": "Option-B per-match shared game configuration",
@@ -204,6 +204,12 @@
         },
         "pheromone_grid_size": {
           "const": 5
+        },
+        "pheromone_min_center_intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Simulator-profile extra. Absent from Appendix F table 16, so never required here -- but the reference always writes it, and negotiation compares the union of both peers keys, so a config that cannot HOLD it cannot play a simulator-shaped opponent at all."
         }
       },
       "x-appendix-f-status": "fixed",

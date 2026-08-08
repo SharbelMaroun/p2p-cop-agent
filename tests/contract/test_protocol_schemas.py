@@ -45,7 +45,7 @@ def test_invalid_fixture_fails_schema(schema_name: str, fixture_name: str) -> No
 def test_every_message_schema_is_role_neutral_and_versioned() -> None:
     for schema_name, _ in CASES:
         schema = _schema(schema_name)
-        assert schema["x-contract-version"] == "0.2.10-proposed"
+        assert schema["x-contract-version"] == "0.2.11-proposed"
         assert schema["x-role-neutral"] is True
 
 

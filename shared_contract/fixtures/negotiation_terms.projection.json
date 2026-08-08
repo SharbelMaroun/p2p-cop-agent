@@ -1,5 +1,5 @@
 {
-  "x-contract-version": "0.2.10-proposed",
+  "x-contract-version": "0.2.11-proposed",
   "description": "Maps one complete per-match game object to the exact negotiation-terms projection carried in a negotiate message. The projection is a strict subset; config_sha256 is always computed over the complete game_object, never over the projection.",
   "game_object": {
     "schema_version": "1.2",
