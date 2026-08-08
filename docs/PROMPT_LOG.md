@@ -662,3 +662,53 @@ and called 21 numbered steps unnumbered. Fixtures birth a viewer; only a real lo
 one. Both readers now fall back to the sealed payload.
 
 Style addendum, same day: both windows moved onto a dark-navy chrome with glowing pill banners, rounded cells, and neon trails (`ui/style.py`) — pure tkinter, no theme dependency. The verdict colours and the heat ramp were deliberately left alone: reference-matched, test-pinned meaning is not styling. The styled replay window crossed the 150-line cap and split its evidence panels into `ui/replay_panels.py` rather than widening the gate.
+
+
+## 2026-08-08 (v) — an external audit, and the documents that had rotted
+
+**Prompt.** An independent examiner was asked to evaluate both repositories before submission
+with a hostile brief: trust nothing either repo says about itself, reproduce every claim, hunt
+Appendix E sanctions first, and find at least ten real problems. Then: fix them.
+
+**What the gates said.** Everything declared passed, honestly: `uv sync --frozen`, `ruff` clean,
+1819 tests at 96.50% branch, file lengths, secret scan over the tree *and* all 2722 history
+objects, the shared-contract verifier. The audit found **no disqualification-level violation** —
+rules 2, 8/9, 11, 15, 17/18/19, 20, 23, 39/40 all held up under direct attack, and the
+commit-reveal and scent-lock digests were reproduced byte-identically against the companion.
+
+**What it found instead was worse in a quieter way: the code was ahead of every document
+describing it.** Five documents still printed a headline the code had superseded — blind 0.225
+/ belief 0.975 / "96.8% of the gap", numbers from the pre-interception policy. Re-running the
+experiment produced 0.525 / 1.000 / 100% and matched `results/strategy_arms.json` **exactly**,
+which is the diagnosis: the results were regenerated and committed, and the prose was not. The
+research report had no section at all for the stack actually served since that morning, so its
+"`flee_smart` is a structural open boundary" conclusion described a policy two revisions old —
+`results/tournament_grid.json` had 40/40 against all five archetypes sitting in the repository,
+unmentioned.
+
+**Four more of the same shape.** The README opened with "Still absent: … any GUI (`ui/` is an
+empty package)" beside two committed screenshots of that GUI, and "not yet runnable as a live
+agent" beside a `serve` command that plays whole matches. `SELF_ASSESSMENT.md` claimed ruff `D`
+docstring enforcement that has never been in the select set — scored 2 on evidence that did not
+exist; measuring it (671 of 753 public definitions) put the row at 1 and the total at 25/30. It
+also recorded two weaknesses that measurement had retired, including "the Thief's CLI is a
+scaffold" — a claim about the *other* repository, which is the easiest kind to leave stale,
+because nothing here fails when it rots.
+
+**The screenshot finding, and the notebook answer that decided it.** The committed `Verified OK`
+capture showed a log living in a temporary directory: a real match, but reproducible by one
+person on one machine, and captioned as if it showed a test fixture. Asked directly, the book
+requires these captures to show a game **actually played**, not a fixture — so the fix was not
+to re-point the script at `tests/fixtures/`. The played match is now committed under `games/`
+with its configuration (obligation 4), its declaration, and both peers' revealed logs, and the
+capture reads it from the repository. Re-capturing exposed a second defect immediately: the
+committed script cropped the window, losing the transport controls and the last three steps —
+a picture proving less than the viewer does.
+
+**Lessons.** (1) *Regenerating results is not updating the report* — the JSON and the prose are
+two artifacts and only one of them has a script. (2) *A number in a document is a claim with an
+expiry date*, and nothing was watching these: the chart captioned "the two metrics rank the
+strategies in opposite directions" was drawn from data showing them agreeing. That title is now
+computed from the bars. (3) *A self-assessment that only ever rises is marketing* — this one
+went down. (4) *Screenshots must be of committed inputs*, or the evidence dies with the temp
+directory.

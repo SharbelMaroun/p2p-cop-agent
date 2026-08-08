@@ -195,25 +195,45 @@ to validity in `docs/RESEARCH-REPORT-Performance-Analysis.md`.
 
 | Arm | Capture rate | Mean turns | Mean Cop score | sd |
 | --- | ---: | ---: | ---: | ---: |
-| blind | 0.225 | 32.83 | 8.38 | 6.34 |
-| **belief** | **0.975** | **12.83** | **19.62** | **2.37** |
-| oracle | 1.000 | 12.10 | 20.00 | 0.00 |
+| blind | 0.525 | 27.20 | 12.88 | 7.59 |
+| **belief** | **1.000** | **9.68** | **20.00** | **0.00** |
+| oracle | 1.000 | 8.62 | 20.00 | 0.00 |
 
-The belief policy captures **97.5%** against the blind baseline's 22.5%, and sits within
-**0.73 turns** of perfect information. The gap to `oracle` is the cost of partial
-observability, and it is small — the 5×5 scent window carries most of the signal a perfect
-observer would have.
+The belief policy captures **40 of 40** against the blind baseline's 21, and scores exactly
+what referee-truth perfect information scores: all 40 paired comparisons against `oracle`
+are ties. What partial observability still costs is **speed** — 9.68 turns against 8.62 —
+which is the honest form of the claim. The 5×5 scent window carries enough signal to make
+the *outcome* indistinguishable from perfect observation on this opponent.
 
-The standard deviations matter as much as the means: 2.37 against blind's 6.34. The belief
-policy is not merely better on average, it is **consistent**, which is what a league rewards.
+The standard deviations matter as much as the means: **0.00** against blind's 7.59. The
+belief policy is not merely better on average, it is invariant over the seed set, which is
+what a league rewards. The caveat is in the same breath: a score here is 20 or 5 and nothing
+between, so a standard deviation of zero means "captured every time", not "low variance in a
+continuous quantity".
 
 ### 3.2 Parameter sweeps
 
-**Survival threshold** is the only `Minimum` that moves the outcome, and only at its floor:
-0.975 at 35, 1.000 from 45 upward. Every extra turn past ~45 is a turn the Cop did not need.
+**Every sweep is now flat**, and the flatness moved for a reason worth recording. The
+survival threshold used to be the one `Minimum` that changed the outcome (0.975 at 35,
+1.000 from 45); no seed now survives even the 35-turn floor, so the lever disappeared when
+the policy improved. Barrier quota is flat because the measured arm places no barriers at
+all — 0 barrier intents in 375 decisions.
 
-**Board size is flat**, and the reason is not the obvious one — see the research report. A
-larger board does not dilute the scent signal because the Thief's trail lengthens with it.
+**Board size is flat too**, and the earlier explanation for it no longer holds: the walk now
+reaches the outermost rank at 7×7 and 9×9 rather than leaving the outer ranks unvisited, and
+capture stays at 1.000 anyway. One seed of forty escapes at 11×11 and none at 12×12, which
+at n=40 is noise rather than a threshold. See the research report for the reach measurement
+that settles it.
+
+### 3.2b The measurement that supersedes 3.1
+
+§3.1's opponent is a random walk. The served policy was re-measured against five
+deterministic evader archetypes on 7×7 and 9×9 (`results/tournament_grid*.json`): **40/40 in
+every cell, equal to the referee-truth oracle in every cell.** The previous stack failed two
+of those five, and the fix was in the chase rather than in the walls — ranking candidate
+moves by summed BFS distance over the believed cell's whole flight set breaks a tie-order
+mirror that let an edge-bobbing evader hold distance forever. The archetypes are ours, so
+this is a ceiling against our own imagination, not evidence about a classmate.
 
 ### 3.3 Token and cost accounting — `M9-03`, `M9-03a`
 

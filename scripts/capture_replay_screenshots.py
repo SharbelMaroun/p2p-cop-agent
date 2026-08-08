@@ -5,11 +5,24 @@ submission requirements", and asked directly, the book calls it "absolute mandat
 README report (p.81/189). Only `Verified OK` is mandatory; the `TAMPERED` capture is ours,
 because a screenshot of the happy path alone shows a viewer that might not check anything.
 
-**`M8-05d`: reproducible from a stored fixture.** The condition is "a grader can regenerate
-them". So the images are not artefacts of a session — they are a function of two committed
-JSON files in `tests/fixtures/replay/`, and re-running this script reproduces them.
+**`M8-05d`: reproducible from committed inputs.** The condition is "a grader can regenerate
+them". So the images are not artefacts of a session — they are a function of JSON files
+committed in this repository, and re-running this script reproduces them.
 
     uv run python scripts/capture_replay_screenshots.py
+
+**The mandatory shot must show a real game, not a fixture (corrected 2026-08-08).** Asked
+directly, the book requires the submission captures to show a game that was actually played
+rather than a test fixture — the README report is evidence about *this team's* agent, and a
+picture of a hand-built fixture is evidence about nothing. So `Verified OK` is captured from
+`games/game-593df753457f/`, the revealed log of a real two-process match this peer played,
+committed alongside its negotiated configuration. Until this correction the committed image
+showed a log living only in a temporary directory: reproducible on one machine, on one day,
+by one person.
+
+`TAMPERED` stays on the fixture, deliberately. A forged log is not a game anyone played, so
+there is no "real" version of it to show; the fixture is the honest source for a negative
+case, and this capture is ours rather than a submission requirement in the first place.
 
 **These are real screen captures, not drawings.** The window is constructed, positioned at
 a fixed size so the output is stable, and photographed through the Windows GDI. A rendered
@@ -36,6 +49,7 @@ from p2p_cop_agent.replay import Replay, load_log  # noqa: E402
 from p2p_cop_agent.ui.replay_app import ReplayWindow  # noqa: E402
 
 FIXTURES = ROOT / "tests" / "fixtures" / "replay"
+PLAYED = ROOT / "games" / "game-593df753457f"
 ASSETS = ROOT / "assets"
 WINDOW = (1180, 520)
 
@@ -56,9 +70,14 @@ def _match_screen_pixels() -> None:
 # `assets/` is the submission guidelines' conventional home for images, not a book mandate:
 # asked directly, the book "only mandates that the images be displayed within the README.md
 # academic report" and an `assets/` directory "is not mandated". Recorded as our choice.
+# (log, opponent log or None, image). The opponent's log is loaded for the played match so the
+# board draws **both** trails, which is what the mutual audit actually looks at; a tampered
+# fixture has no counterpart, so it draws one.
 SHOTS = (
-    ("log_verified_ok.json", "replay-verified-ok.png"),
-    ("log_tampered.json", "replay-tampered.png"),
+    (PLAYED / "log_game-593df753457f_g01.json",
+     PLAYED / "log_game-593df753457f_g01.opponent.json",
+     "replay-verified-ok.png"),
+    (FIXTURES / "log_tampered.json", None, "replay-tampered.png"),
 )
 
 _CAPTURE = """
@@ -89,12 +108,21 @@ def capture(window: tk.Misc, destination: Path) -> None:
 def main() -> int:
     _match_screen_pixels()
     ASSETS.mkdir(exist_ok=True)
-    for fixture, image in SHOTS:
-        replay = Replay(load_log(FIXTURES / fixture))
-        window = ReplayWindow(replay)
-        window.root.geometry(f"{WINDOW[0]}x{WINDOW[1]}+80+80")
+    for source, opponent_source, image in SHOTS:
+        replay = Replay(load_log(source))
+        opponent = load_log(opponent_source) if opponent_source else None
+        window = ReplayWindow(replay, opponent=opponent)
+        # Let Tk size the window to its own content. A fixed height cropped the transport
+        # controls and the last rows of a 20-step match, so the picture proved less than the
+        # viewer does — the one failure mode a verification screenshot cannot have.
+        window.root.update_idletasks()
+        window.root.geometry("+80+80")
         if replay.verdict.first_bad is not None:
             replay.go_to_first_divergence()  # a TAMPERED shot should show the bad step
+            window.refresh()
+        else:
+            while replay.position < replay.total - 1:  # end on the completed match
+                replay.step_forward()
             window.refresh()
         window.root.update()
         window.root.after(400, lambda: None)

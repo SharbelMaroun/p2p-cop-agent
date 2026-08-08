@@ -34,25 +34,30 @@ much of the *available* gap belief closes rather than only that it beat random.
 
 | Arm | Capture rate | Mean turns | Mean Cop score | sd |
 |---|---|---|---|---|
-| blind | 0.225 | 32.83 | 8.38 | 6.34 |
-| **belief** | **0.975** | **12.83** | **19.62** | **2.37** |
-| oracle | 1.000 | 12.10 | 20.00 | 0.00 |
+| blind | 0.525 | 27.20 | 12.88 | 7.59 |
+| **belief** | **1.000** | **9.68** | **20.00** | **0.00** |
+| oracle | 1.000 | 8.62 | 20.00 | 0.00 |
 
-Belief-driven pursuit closes **96.8%** of the blind-to-oracle score gap. Paired seed by
-seed it wins **30 of 40** and **loses 0**; the remaining 10 are ties. Against the oracle it
-loses none and ties 39 of 40 — on this opponent, belief is within one seed of perfect play.
+Belief-driven pursuit closes **100%** of the blind-to-oracle score gap: on this opponent it
+captures in **40 of 40** seeds, which is the oracle's own result. Paired seed by seed it wins
+**19 of 40** against blind and **loses 0**; the other 21 are ties — the seeds where a random
+walk happened to blunder into the Cop anyway. Against the oracle the score is tied **40 of
+40**: belief is not *near* perfect play here, it is worth exactly as much, and the only thing
+perfect information still buys is speed (8.62 turns against 9.68).
 
 ![Cop score distribution by arm](../assets/chart-strategy-distribution.svg)
 
-The distribution is where the mean would have misled. The blind arm's median score is
-**5.0** with Q1 = Q3 = 5.0 — it is not a weak pursuer, it is *almost always a non-pursuer*
-that occasionally stumbles into a capture. Its 8.38 mean is that rare success averaged over
-many failures, and quoting the mean alone would describe an agent that does not exist.
+**The distribution is where a mean alone would mislead, and the reason is structural.** A Cop
+score is 20 for a capture and 5 for a survival — there is no value in between, so an arm's
+mean is a *mixture ratio*, never a typical game. Blind shows it plainly: Q1 = 5.0, median
+20.0, Q3 = 20.0, sd 7.59. Its 12.88 mean describes no game blind ever played. Belief's sd of
+**0.00** is the other end of the same fact — every one of its forty games ended 20.
 
 ![Turns to resolution by arm](../assets/chart-turns-distribution.svg)
 
-Same story in the turn count: blind has median 35 (the survival horizon — i.e. no capture),
-belief has median **11**.
+The turn count separates the arms more honestly than the score does, because it is
+continuous: blind's median is **35.0** — the survival horizon, i.e. no capture — with Q1
+19.8; belief's median is **8.5** and its worst seed still closes by turn 26.
 
 ## 1b. The opponent grid (`M9-30`) — every number above has an asterisk
 
@@ -65,45 +70,74 @@ two deterministic fleeing archetypes (`scripts/experiment_opponents.py`,
 |---|---:|---:|---:|
 | belief (pursuit only) | 40/40 | **0/40** | 0/40 |
 | anticipating (pursuit only) | 40/40 | **0/40** | 0/40 |
-| **barrier stack (what we serve)** | 39/40 | **40/40** | 0/40 |
+| barrier stack (served until 2026-08-08) | 39/40 | **40/40** | 0/40 |
 | oracle (pursuit only, sees truth) | 40/40 | **0/40** | 0/40 |
 | oracle + barrier stack | 40/40 | **40/40** | 0/40 |
 
 Three findings, each carrying a design decision:
 
 1. **Pursuit alone never captures a competent evader — the oracle included.** An
-   equal-speed evader on an open board holds distance forever; the 96.7–97.5% headline is
+   equal-speed evader on an open board holds distance forever; §1's 100% headline is
    a property of the random walk, not of the pursuit. Barriers are the entire capture
    mechanism against real opposition, which is why the served policy is now the full
-   trap → squeeze → containment-ratchet → anticipating-chase stack (`M6-21..23`), not
+   trap → squeeze → containment-ratchet → interception-chase stack (`M6-21..26`), not
    `pursue_belief`.
 2. **The stack converts the likeliest league opponent completely.** `flee_greedy` is the
    reference simulator's own `ThiefBrain` shape — maximise distance from the Cop — and the
    probable classmate default. 0/40 → **40/40**, at the cost of one game against the walk
    (39/40): the containment ratchet's wall turns stall pursuit exactly once in forty walks.
-3. **`flee_smart` is an honest open boundary, and it is structural.** Distance *plus
-   mobility* — the companion repository's own evasion shape — escapes every arm, including
-   the barrier stack aimed with referee truth. The failure is not belief error (truth-aimed
-   play changes nothing) and not fixable by more walls under this stack: the probe shows
-   the terminal shape is a locked orbit the quota cannot cut fast enough. Recorded open,
-   exactly as the companion records its anticipating-Cop gap; the two are the same
-   phenomenon seen from opposite sides of the board. *(Cross-reference, 2026-08-08:
+3. **`flee_smart` was an open boundary when this section was written, and it is now
+   closed — see §1c.** Distance *plus mobility* escaped every arm in the table above,
+   including the barrier stack aimed with referee truth, and the probe read the terminal
+   shape as a locked orbit the quota could not cut. That diagnosis was wrong in an
+   instructive way: the orbit was produced by the **chase**, not by the walls, and §1c
+   is the re-measurement that converts it. This table is kept as the state that motivated
+   the fix rather than deleted, because the wrong diagnosis is the finding.
+   *(Cross-reference, 2026-08-08:
    the companion **closed its side of the mirror**. Its sixth attempt localised the gap
    to the estimator — truth-fed, its exact planner escapes every committed pursuer
    24/24 — and its seventh rebuilt the estimator as a model-matched emitter decoder
    that inverts the hash-locked scent physics. Its live evasion now scores **24/24
    against all three pursuit archetypes, 240/240 league points, robustness configs
-   included**. For this repository that cuts both ways: our own `flee_smart` boundary
-   stands on even firmer ground — a decoded-belief evader is strictly stronger than
-   the archetype every arm here already fails to corner — and any classmate Cop that
-   emits per the locked model is now near-exactly localised by the companion's belief.
-   See the companion's `results/pursuer_grid.json`.)*
+   included**. Read together with §1c, the two repositories now each corner the
+   archetypes the other publishes, which is the expected end state of a mirror: each
+   side's measured ceiling is the other side's next opponent model, and neither result
+   is evidence about a classmate. See the companion's `results/pursuer_grid.json`.)*
 
 Measured here and **reverted**: a Bayes-recursive belief (prior carried and multiplied
 every turn) collapsed tracking — `flee_greedy` went 40/40 → 0/40 on that change alone.
 Recursion under a static likelihood has no motion model, so history accumulates and the
 argmax calcifies on old trail. Both live loops now rebuild belief fresh per observation and
 carry the prior only across silent turns.
+
+## 1c. The tournament grid (`M6-25`, `M6-26`) — the policy actually served
+
+§1b measured `barrier_stack`. **It is no longer what this peer serves.** Since 2026-08-08
+the served policy is `strategy/shrink.shrinking_turn_intent`, and the archetype set was
+widened from three to five and re-run on two board sizes
+(`scripts/experiment_tournament.py`; `results/tournament_grid.json`,
+`results/tournament_grid_9x9.json`; 40 paired seeds per cell).
+
+| Cop arm | random | flee-greedy | flee-smart | flee-deadend | flee-territory |
+|---|---:|---:|---:|---:|---:|
+| barrier stack (previous) | 40/40 | 40/40 | **0/40** | **0/40** | 40/40 |
+| **shrink stack (served)** | **40/40** | **40/40** | **40/40** | **40/40** | **40/40** |
+| oracle + shrink (sees truth) | 40/40 | 40/40 | 40/40 | 40/40 | 40/40 |
+
+Identical on 7×7 and on 9×9 — every cell above holds at both sizes.
+
+Two things are worth stating precisely, because both are easy to overclaim:
+
+1. **The fix was in the chase, not in the walls.** §1b concluded that `flee_smart` needed
+   more or better barriers. It did not: the wall trio is unchanged. The Cop was losing an
+   edge-bobbing evader to its own tie-breaking — Manhattan rank plus a fixed
+   north-before-east tie order mirrors the evader's step forever. Ranking instead by the
+   **summed** BFS distance over the believed cell's whole flight set breaks the mirror, and
+   that single change converts both failing archetypes.
+2. **`belief` now equals `oracle` on every cell.** The served stack aimed by private belief
+   scores exactly what the same stack aimed by referee truth scores. That is the strongest
+   statement this repository can make about its estimator, and it is still a statement about
+   *these five archetypes* — none of which is a classmate.
 
 ## 2. Parameter sweeps (`M9-06a`)
 
@@ -113,60 +147,76 @@ from its minimum**. Sweeping below would study a configuration rule 12 forbids.
 
 ![Parameter sensitivity heatmap](../assets/chart-parameter-sensitivity.svg)
 
-### 2.1 Survival threshold — the only Minimum that moves the outcome
+**All three sweeps are now flat, and that is itself the result.** When this section was
+first written the survival threshold was the one Minimum that moved the outcome. It no
+longer is — the policy improved underneath the sweep, and every capture now lands so far
+inside the horizon that the horizon stopped mattering. A sweep that goes flat because the
+agent got better is worth more than one that was never sensitive.
+
+### 2.1 Survival threshold — no longer a lever
 
 | Threshold | Capture rate | Mean turns |
 |---|---|---|
-| 35 (minimum) | 0.975 | 12.82 |
-| 45 | 1.000 | 12.85 |
-| 55–75 | 1.000 | 12.85 |
+| 35 (minimum) | 1.000 | 9.68 |
+| 45 – 75 | 1.000 | 9.68 |
 
-One seed's Thief survives to turn 35 and is caught by turn 45. Raising the horizon past 45
-changes nothing, because every capture that will happen has happened by then. **A longer
-game favours the Cop, and the whole of that advantage is realised in the first ten extra
-turns.**
+Identical to four decimals at every value, turns included. Every capture happens by turn 26
+at the very latest (§1), so nothing the horizon does past 35 can change a single game.
+**Earlier this sweep showed 0.975 → 1.000 between 35 and 45**, because one seed then
+survived the minimum horizon; no seed does now, and the lever disappeared with it.
 
-### 2.2 Board size — flat, and the reason is not what it looks like
+### 2.2 Board size — flat, with one escape
 
 | Grid | Capture rate | Mean turns |
 |---|---|---|
-| 7×7 (minimum) | 0.975 | 12.82 |
-| 8×8 – 12×12 | 0.975 | 13.03 |
+| 7×7 (minimum) | 1.000 | 9.68 |
+| 8×8 | 1.000 | 9.18 |
+| 9×9 | 1.000 | 9.32 |
+| 10×10 | 1.000 | 9.35 |
+| 11×11 | **0.975** | 9.60 |
+| 12×12 | 1.000 | 9.60 |
 
-A larger board should make capture harder. It does not, and the sweep alone cannot say why,
-so `results/board_reach.json` measures it:
+A larger board should make capture harder, and it very nearly does not. The single escape at
+11×11 is one seed out of forty and does not recur at 12×12, so it is noise at this n rather
+than a threshold — stated that way rather than explained.
+
+The sweep alone cannot say why the line is flat, so `results/board_reach.json` measures how
+much of the board is actually used:
 
 | Grid | Highest index the Thief ever reached | Available |
 |---|---|---|
 | 7×7 | 6 | 6 |
-| 9×9 | 7 | 8 |
-| 12×12 | **7** | 11 |
+| 9×9 | 8 | 8 |
+| 12×12 | **9** | 11 |
 
-On a 12×12 board the outer four ranks are **never visited** in 40 matches. The start
-positions (`thief_start (3,3)`, `cop_start (0,0)`) are `Negotiation` parameters held at the
-fixture, and a 35-turn random walk from a fixed centre simply cannot reach the far edge.
-So board size is not a lever *while the start positions are pinned* — the honest conclusion
-is about the interaction, not about the board.
+On 7×7 and 9×9 the walk now reaches the far edge; on 12×12 the outer two ranks stay
+unvisited within the 35-turn horizon. So the flatness is no longer explained by unreachable
+space — up to 9×9 the space *is* reached and capture holds anyway. The honest conclusion has
+moved: board size is not a lever for this policy against this opponent, and the start
+positions (`thief_start (3,3)`, `cop_start (0,0)`, both `Negotiation`) only still matter at
+the largest sizes.
 
 ### 2.3 Barrier quota — flat because the measured arm never places a barrier
 
 | Quota | Capture rate |
 |---|---|
-| 14 (minimum) – 30 | 0.975 (identical to four decimals) |
+| 14 (minimum) – 30 | 1.000 (identical to four decimals) |
 
 A perfectly flat line is a warning, not a result. `results/decision_mix.json` counts what
 the arm actually decides:
 
 ```json
-{"matches": 40, "decisions": 501, "by_type": {"Action": 501}, "barrier_intents": 0}
+{"matches": 40, "decisions": 375, "by_type": {"Action": 375}, "barrier_intents": 0}
 ```
 
-**Zero barrier intents in 501 decisions.** The belief arm is pursuit-only, so the quota
-sweep was measuring an unused parameter. This is a real finding about our own agent:
-`strategy/barrier_policy.py` and `strategy/squeeze.py` exist and are tested (`M6-06`), but
-they are **not wired into the arm this comparison measures**. Reporting "barrier quota has
-no effect" would have been false — the correct statement is that *this agent does not use
-barriers*, and the quota's effect is therefore unmeasured.
+**Zero barrier intents in 375 decisions.** The belief arm is pursuit-only, so the quota
+sweep is measuring an unused parameter. This is a real finding about our own measurement
+rather than about the parameter: `strategy/barrier_policy.py` and `strategy/squeeze.py`
+exist, are tested (`M6-06`), and are wired into the **served** stack whose results are in
+§1c — but they are not in the arm §1 and §2 measure. Reporting "barrier quota has no effect"
+would therefore be false; the correct statement is that *this arm does not use barriers*, so
+the quota's effect is unmeasured here. §1c is where the barrier machinery is actually
+exercised, and there it is the entire capture mechanism.
 
 ## 3. Decision cost (`M6-13`)
 
@@ -174,14 +224,14 @@ barriers*, and the quota's effect is therefore unmeasured.
 
 | Statistic | Milliseconds |
 |---|---|
-| mean | 2.06 |
-| median | 1.96 |
-| p95 | 3.11 |
-| **max** | **4.09** |
+| mean | 1.98 |
+| median | 1.85 |
+| p95 | 3.05 |
+| **max** | **4.43** |
 | Negotiated response timeout | 30 000 |
 
-Worst case is **0.0136%** of the response-timeout budget, over 400 samples. The computational
-fairness claim is therefore not close to contested: the agent could be 7 000× slower and
+Worst case is **0.0148%** of the response-timeout budget, over 400 samples. The computational
+fairness claim is therefore not close to contested: the agent could be 6 700× slower and
 still answer inside the negotiated window.
 
 ## 4. The scent model (`M9-06b`)
@@ -209,12 +259,16 @@ and by how much* — settled by measurement rather than by asserting that it is.
 Stated because the numbers above are strong, and strong numbers deserve their limits printed
 next to them.
 
-1. **One opponent.** Every measurement is against a seeded random walk that does not react
-   to the Cop. A pursuing-aware Thief would evade, and belief's 96.8% gap closure is an
-   upper bound on this opponent class only.
-2. **No live opponent.** No counted league game has been played, so nothing here is
-   evidence about a classmate's agent.
-3. **The arm is not the whole agent.** As §2.3 shows, the measured arm excludes the barrier
-   machinery the repository ships.
-4. **40 seeds.** Enough for the paired result (30–0–10 is decisive), thin for the flat
-   sweeps, where the honest claim is "no effect detected at n=40" rather than "no effect".
+1. **One opponent in §1 and §2.** Those measurements are against a seeded random walk that
+   does not react to the Cop, so belief's 100% gap closure is an upper bound on that
+   opponent class only. §1b and §1c exist precisely because that was the weakest half of
+   the evidence.
+2. **Five archetypes are still not a classmate.** §1c's 40/40 is measured against evaders
+   *we wrote*, and an opponent model written by the same team that beats it is the oldest
+   way to be wrong. No counted league game has been played, so nothing here is evidence
+   about another group's agent.
+3. **The arm is not the whole agent.** As §2.3 shows, the arm measured in §1 and §2 excludes
+   the barrier machinery the repository actually serves; §1c measures the served stack.
+4. **40 seeds.** Enough for the paired result (19–0–21 with zero losses), thin for the flat
+   sweeps, where the honest claim is "no effect detected at n=40" rather than "no effect" —
+   and thin enough that §2.2's single 11×11 escape is not a finding.

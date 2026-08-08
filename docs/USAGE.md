@@ -54,7 +54,7 @@ because a transport dependency is missing.
 
 ```bash
 uv run ruff check .
-uv run python -m pytest -q                          # 1573 tests, 85% branch floor
+uv run python -m pytest -q                          # 1819 tests, 85% branch floor
 uv run python scripts/check_file_lengths.py
 uv run python scripts/check_secrets.py              # working tree
 uv run python scripts/scan_git_history.py           # every blob in history
