@@ -959,3 +959,40 @@ correct in every environment we had ever run, and both were exposed within minut
 tunnelled opponent. Localhost is not a small-scale model of the league — it removes the exact
 component (a CDN between the peers) that both bugs lived in. The friendly series has now paid
 for itself twice without a single game being played.
+
+
+## 2026-08-09 (iv) — the match that got all the way to the declaration
+
+**Prompt.** Second live attempt against `amireman`, minutes after the readiness fix.
+
+**It worked.** The server log shows his traffic -- `POST /mcp 200`, `202 Accepted`, `GET 200`,
+a clean `DELETE` -- from a real classmate address. Negotiation completed, the signed terms
+matched, the scent lock did not refuse. Everything this project was built for happened.
+
+Then it died one step later:
+
+    DeclarationError: group 'amireman' must declare its MCP addresses [`:2229`]
+
+**His peer sent a `group_id` and nothing else.** `_group` raised on a missing `repos` or
+`mcp_servers` for *either* side. The same module already gets this exactly right one function
+down: `_disclosure` gives a withholding opponent `null` plus an `undeclared` list, never an
+invented value, and explains why -- rule 38 makes a false declaration an absolute
+disqualification, and the reference's `opp = series.peer_identity or own` copies *its own*
+hardware into the opponent's slot, which we refused to imitate. `_group` even says it about
+`group_name`: refusing to play over a missing one "would assert more across the wire than any
+source supports."
+
+Two fields never got that treatment, and they were the two that ended a match already agreed.
+
+**The fix is the module's own rule, applied consistently.** Strict for ours -- rule 24 and
+`:2229` bind what *we* declare, and we control ours. Theirs: `null`, with the omission named
+in `undeclared_identity`. Rule 49's four repository links then cannot be met, and
+`build_result` already refuses to report on that basis -- the right place to notice, because
+a report we cannot honestly make is a reporting problem, not a reason to abandon a game both
+peers agreed to play.
+
+**Three live bugs in one day, and the pattern is identical.** The schema forbade a key our own
+negotiation tolerated; the readiness probe trusted a socket a CDN answered; this one refused a
+disclosure no rule lets us compel. Each was internally consistent, each passed every gate, and
+each was found within minutes of a real opponent. What localhost cannot simulate is not load
+or latency -- it is a *second team who implemented the book differently and owes us nothing*.

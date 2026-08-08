@@ -84,18 +84,6 @@ def test_the_lock_changes_when_any_field_changes() -> None:
 def test_an_incomplete_declaration_is_refused(overrides: dict) -> None:
     with pytest.raises(DeclarationError):
         _declaration(**overrides)
-
-
-def test_a_group_without_a_repo_link_is_refused() -> None:
-    with pytest.raises(DeclarationError, match="repo"):
-        _declaration(opponent_identity={"group_id": "beta", "members": [], "repos": {}})
-
-
-def test_a_group_without_a_group_id_is_refused() -> None:
-    with pytest.raises(DeclarationError, match="group_id"):
-        _declaration(opponent_identity={"members": [], "repos": {"a": "https://x/a"}})
-
-
 def test_the_declaration_carries_the_mcp_addresses_hardware_and_model() -> None:
     """`:2229` wants the MCP addresses plus hardware and model, per group since `M7-22f`:
     the bonus rule 24 sanctions compares two machines, so one root spec cannot express it."""

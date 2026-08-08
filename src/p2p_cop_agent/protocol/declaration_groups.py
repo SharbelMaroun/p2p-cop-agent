@@ -47,12 +47,28 @@ def _group(identity: Mapping[str, object], *, ours: bool = True) -> JsonObject:
     if not isinstance(group_id, str) or not group_id:
         raise DeclarationError("each group needs a non-empty group_id")
     repos = identity.get("repos")
-    if not isinstance(repos, Mapping) or not repos:
-        raise DeclarationError(f"group {group_id!r} must carry at least one repo link")
     servers = identity.get("mcp_servers")
-    if not isinstance(servers, Mapping) or not servers:
-        raise DeclarationError(f"group {group_id!r} must declare its MCP addresses [`:2229`]")
-    for role, url in servers.items():
+    has_repos = isinstance(repos, Mapping) and bool(repos)
+    has_servers = isinstance(servers, Mapping) and bool(servers)
+    if ours:
+        # Rule 24 and `:2229` are obligations on **our** declaration, and we control ours.
+        if not has_repos:
+            raise DeclarationError(f"group {group_id!r} must carry at least one repo link")
+        if not has_servers:
+            raise DeclarationError(
+                f"group {group_id!r} must declare its MCP addresses [`:2229`]")
+    elif not has_servers or not has_repos:
+        # **Their omission is theirs (corrected 2026-08-09, found in a live match).** This
+        # module already refuses to invent an opponent's hardware or model, and says of
+        # `group_name` that refusing to play over a missing one "would assert more across
+        # the wire than any source supports". `repos` and `mcp_servers` were never given
+        # that treatment, so a classmate who simply does not send them ended the match --
+        # after terms had been agreed -- with a rule-24 error naming *their* group.
+        # Nothing in the book lets us compel a peer's disclosure, and rule 38 forbids
+        # supplying it for them, so it is recorded as withheld and the match proceeds.
+        servers = servers if has_servers else None
+        repos = repos if has_repos else None
+    for role, url in (servers or {}).items():
         if not isinstance(url, str) or not url:
             raise DeclarationError(f"group {group_id!r} MCP address {role!r} must be a URL")
         if _CREDENTIAL_IN_URL.search(url):
@@ -69,9 +85,14 @@ def _group(identity: Mapping[str, object], *, ours: bool = True) -> JsonObject:
         "group_id": group_id,
         "group_name": name,
         "members": list(identity.get("members") or []),
-        "repos": dict(repos),
-        "mcp_servers": dict(servers),
+        "repos": dict(repos) if repos else None,
+        "mcp_servers": dict(servers) if servers else None,
     }
+    absent = [n for n, got in (("repos", repos), ("mcp_servers", servers)) if not got]
+    if absent:
+        # Same posture as `_disclosure`: name what they withheld so the omission is
+        # legible and lands where it belongs, rather than inventing a value (rule 38).
+        block["undeclared_identity"] = absent
     block.update(_disclosure(identity, ours=ours, group_id=group_id))
     # Ours commits to what we declared; theirs is `None`, because nothing a peer sends
     # covers its own identity -- their negotiation signature is over the terms and the
