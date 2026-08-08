@@ -82,7 +82,11 @@ def build_declaration(
     # `links` points at the four ARTIFACT filenames; rule 49's "four links in the JSON
     # files of the two teams" is about REPOSITORY urls. Both are required and they are not
     # the same thing, so they get separate keys.
-    repositories = [url for group in groups for url in group["repos"].values()]
+    # `or {}`: an opponent may withhold its repos (recorded in `undeclared_identity`
+    # rather than invented, rule 38). Rule 49's four links then cannot be met, and
+    # `build_result` refuses the report for that reason -- which is the right place to
+    # notice it, not here, where it would end a match that both peers had agreed.
+    repositories = [url for group in groups for url in (group["repos"] or {}).values()]
     # Names come from `reporting.naming`, the single source that already derives every
     # filename from one identity. Restating the f-strings here is how the declaration and
     # the files on disk would drift apart without anything noticing.
