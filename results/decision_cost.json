@@ -1,15 +1,15 @@
 {
-  "max": 4.4328,
-  "mean": 1.978,
-  "median": 1.8525,
-  "min": 1.4552,
-  "p95": 3.0498,
-  "q1": 1.7095,
-  "q3": 2.0697,
+  "max": 3.6853,
+  "mean": 1.8819,
+  "median": 1.82,
+  "min": 1.4293,
+  "p95": 2.6404,
+  "q1": 1.6955,
+  "q3": 1.9251,
   "response_timeout_ms": 30000,
   "runs": 400,
   "samples": 400,
-  "stdev": 0.4551,
+  "stdev": 0.3608,
   "unit": "milliseconds",
-  "worst_case_share_of_timeout": 0.000148
+  "worst_case_share_of_timeout": 0.000123
 }

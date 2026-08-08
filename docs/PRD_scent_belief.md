@@ -19,17 +19,33 @@ copied. ADR-005 records the source-backed multiplicative model.
 
 ## The emission profile and its lock (`M6-01a`, `M6-07`, added 2026-08-05)
 
-Book Figure 4 (`inst/police_thief_p2p_Summary.md:947-955`) names five radial classes —
-centre `0.90`, cross `0.62`, diagonal `0.20`, mid-side `0.14`, corner `0.04` — which
-cover **17 of the 25** cells. The remaining eight, at offsets `(±1,±2)`/`(±2,±1)`, are
-named by no source. `DOCUMENTED_EMISSION` holds the 17 and nothing else, so a value the
-peers merely agreed can never be mistaken for one the book states.
+Book Figure 4 names **six** radial classes covering all 25 cells, by squared distance
+from the emitter: centre `0.90`, cross `0.62`, diagonal `0.42`, mid-side `0.20`, the
+eight `(±1,±2)`/`(±2,±1)` cells `0.14`, corner `0.04`.
 
-Those eight are a **negotiated parameter**, not a private constant and not a gap.
-`DEFAULT_OUTER_RING_DELTA` (`0.04`) carries **no book authority**; it is our opening
-offer. Emitting them at all is required for interoperability: the reference emits all
-25 and asserts a snapshot length of 25, so eight absent cells read to an opponent as
-eight zeros.
+**This section was wrong until 2026-08-08 and the correction is worth reading.** It said
+the figure named five classes covering 17 cells, with diagonal `0.20` and mid-side
+`0.14`, and treated the remaining eight as a negotiated gap. Those numbers are the true
+values of the *next two rings out*: the whole table was the correct curve **shifted
+inward by one radial class**. That is why the endpoints (`0.90`, `0.62`, `0.04`) matched
+the source exactly while the middle did not, and why eight cells appeared unnamed — the
+shift had consumed the class that owns `0.14`.
+
+The correction is confirmed three ways: the book PDF states it directly; a zero-parameter
+fit of `τ = 0.9·exp(−k·d²)` through the two agreed values (centre `0.90`, cross `0.62`)
+reproduces `0.427 / 0.203 / 0.140 / 0.046`, matching to two decimals; and a classmate team
+reproduced the same kernel independently. `test_scent.py` now pins the curve as well as
+the table, so a future shift fails without needing a source to argue with.
+
+The source of the error was our own reading rule applied backwards. The old values came
+from `inst/police_thief_p2p_Summary.md:947-955` — a **translation** — and the corrected
+ones were rejected on 2026-08-05 because they arrived via a notebook. The notebook holds
+the PDF. A restatement is not the source, whichever direction it points.
+
+`DEFAULT_OUTER_RING_DELTA` (`0.14`) now carries book authority; the parameter remains
+only so a peer insisting on a different ring can still be met and locked. Emitting all 25
+is also required for interoperability: the reference emits 25 and asserts a snapshot
+length of 25, so absent cells read to an opponent as zeros.
 
 The whole model is canonicalised and SHA-256 locked (`strategy/scent_lock.py`):
 
@@ -39,7 +55,7 @@ update                               = "tau_next = max(0, (1 - decay_per_step) *
 center_intensity                     = 0.9
 decay_per_step                       = 0.10
 field_size                           = 5
-emission_profile_by_squared_distance = {"0":0.90,"1":0.62,"2":0.20,"4":0.14,"5":0.04,"8":0.04}
+emission_profile_by_squared_distance = {"0":0.90,"1":0.62,"2":0.42,"4":0.20,"5":0.14,"8":0.04}
 ```
 
 Comparing the three Appendix F constants alone cannot catch this: two peers can hold
@@ -53,7 +69,7 @@ is refused. The reference publishes none — it folds pheromone terms into `conf
 never send, and rule 23 sanctions a *deviation from the formula*, not a silence. This is
 the same `U-029`/`C-031` rule already settled for `config_sha256`.
 
-Its digest `416a57e17434ef21b3209052198a27a0d46e7a0e09fdaa5df3b61e4a8f2711ea` is
+Its digest `e6aef0978ff91fe8aaf7d0a49d8bb839f03cd259a554e4251c182a20b02c6ea1` is
 reproduced exactly by the independently written companion Thief peer, which is the only
 real evidence that locking a model achieves anything.
 

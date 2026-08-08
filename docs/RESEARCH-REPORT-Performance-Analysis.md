@@ -35,7 +35,7 @@ much of the *available* gap belief closes rather than only that it beat random.
 | Arm | Capture rate | Mean turns | Mean Cop score | sd |
 |---|---|---|---|---|
 | blind | 0.525 | 27.20 | 12.88 | 7.59 |
-| **belief** | **1.000** | **9.68** | **20.00** | **0.00** |
+| **belief** | **1.000** | **9.72** | **20.00** | **0.00** |
 | oracle | 1.000 | 8.62 | 20.00 | 0.00 |
 
 Belief-driven pursuit closes **100%** of the blind-to-oracle score gap: on this opponent it
@@ -43,7 +43,7 @@ captures in **40 of 40** seeds, which is the oracle's own result. Paired seed by
 **19 of 40** against blind and **loses 0**; the other 21 are ties — the seeds where a random
 walk happened to blunder into the Cop anyway. Against the oracle the score is tied **40 of
 40**: belief is not *near* perfect play here, it is worth exactly as much, and the only thing
-perfect information still buys is speed (8.62 turns against 9.68).
+perfect information still buys is speed (8.62 turns against 9.72).
 
 ![Cop score distribution by arm](../assets/chart-strategy-distribution.svg)
 
@@ -157,8 +157,8 @@ agent got better is worth more than one that was never sensitive.
 
 | Threshold | Capture rate | Mean turns |
 |---|---|---|
-| 35 (minimum) | 1.000 | 9.68 |
-| 45 – 75 | 1.000 | 9.68 |
+| 35 (minimum) | 1.000 | 9.72 |
+| 45 – 75 | 1.000 | 9.72 |
 
 Identical to four decimals at every value, turns included. Every capture happens by turn 26
 at the very latest (§1), so nothing the horizon does past 35 can change a single game.
@@ -169,16 +169,17 @@ survived the minimum horizon; no seed does now, and the lever disappeared with i
 
 | Grid | Capture rate | Mean turns |
 |---|---|---|
-| 7×7 (minimum) | 1.000 | 9.68 |
-| 8×8 | 1.000 | 9.18 |
-| 9×9 | 1.000 | 9.32 |
-| 10×10 | 1.000 | 9.35 |
-| 11×11 | **0.975** | 9.60 |
-| 12×12 | 1.000 | 9.60 |
+| 7×7 (minimum) | 1.000 | 9.72 |
+| 8×8 | 1.000 | 9.62 |
+| 9×9 | 1.000 | 9.70 |
+| 10×10 | 1.000 | 9.72 |
+| 11×11 | 1.000 | 9.95 |
+| 12×12 | 1.000 | 9.95 |
 
-A larger board should make capture harder, and it very nearly does not. The single escape at
-11×11 is one seed out of forty and does not recur at 12×12, so it is noise at this n rather
-than a threshold — stated that way rather than explained.
+A larger board should make capture harder, and it does not: capture is 1.000 at every size,
+with the cost showing up as a fifth of a turn rather than as an escape. **The single 11×11
+escape reported here before 2026-08-08 is gone** — it was an artefact of the mis-shifted scent
+kernel, and a sharper emission field closes that seed too.
 
 The sweep alone cannot say why the line is flat, so `results/board_reach.json` measures how
 much of the board is actually used:
@@ -206,10 +207,10 @@ A perfectly flat line is a warning, not a result. `results/decision_mix.json` co
 the arm actually decides:
 
 ```json
-{"matches": 40, "decisions": 375, "by_type": {"Action": 375}, "barrier_intents": 0}
+{"matches": 40, "decisions": 374, "by_type": {"Action": 374}, "barrier_intents": 0}
 ```
 
-**Zero barrier intents in 375 decisions.** The belief arm is pursuit-only, so the quota
+**Zero barrier intents in 374 decisions.** The belief arm is pursuit-only, so the quota
 sweep is measuring an unused parameter. This is a real finding about our own measurement
 rather than about the parameter: `strategy/barrier_policy.py` and `strategy/squeeze.py`
 exist, are tested (`M6-06`), and are wired into the **served** stack whose results are in
@@ -224,14 +225,14 @@ exercised, and there it is the entire capture mechanism.
 
 | Statistic | Milliseconds |
 |---|---|
-| mean | 1.98 |
-| median | 1.85 |
-| p95 | 3.05 |
-| **max** | **4.43** |
+| mean | 1.88 |
+| median | 1.82 |
+| p95 | 2.64 |
+| **max** | **3.69** |
 | Negotiated response timeout | 30 000 |
 
-Worst case is **0.0148%** of the response-timeout budget, over 400 samples. The computational
-fairness claim is therefore not close to contested: the agent could be 6 700× slower and
+Worst case is **0.0123%** of the response-timeout budget, over 400 samples. The computational
+fairness claim is therefore not close to contested: the agent could be 8 100× slower and
 still answer inside the negotiated window.
 
 ## 4. The scent model (`M9-06b`)
@@ -270,8 +271,7 @@ next to them.
 3. **The arm is not the whole agent.** As §2.3 shows, the arm measured in §1 and §2 excludes
    the barrier machinery the repository actually serves; §1c measures the served stack.
 4. **40 seeds.** Enough for the paired result (19–0–21 with zero losses), thin for the flat
-   sweeps, where the honest claim is "no effect detected at n=40" rather than "no effect" —
-   and thin enough that §2.2's single 11×11 escape is not a finding.
+   sweeps, where the honest claim is "no effect detected at n=40" rather than "no effect".
 
 
 ## The results-analysis notebook: checked, and NOT a Jupyter file

@@ -460,7 +460,7 @@ It is not a source, and it ranks below one in `SOURCE_OF_TRUTH.md` for this exac
 
 *The evidence that the lock is worth anything.* The companion Thief peer, written
 independently against the same book sections, produces the identical digest
-`416a57e1…` from its own record. Two implementations agreeing is the only thing that
+`e6aef097…` from its own record. Two implementations agreeing is the only thing that
 distinguishes a real interoperability contract from a number we hash locally and
 believe.
 
@@ -1521,7 +1521,7 @@ much* — by measurement over **40 paired seeds**:
 | Arm | Capture rate | Mean turns | Mean Cop score |
 |---|---|---|---|
 | blind | 0.525 | 27.20 | 12.88 |
-| **belief** | **1.000** | **9.68** | **20.00** |
+| **belief** | **1.000** | **9.72** | **20.00** |
 | oracle (illegal ceiling) | 1.000 | 8.62 | 20.00 |
 
 Belief closes **100%** of the blind-to-oracle gap — 40 captures in 40 seeds, which is the
@@ -1539,7 +1539,7 @@ same fact from the other end: forty games, forty twenties.
 
 **All three parameter sweeps came back flat, and probing them found more than the sweeps
 did.** The barrier quota is identical to four decimals at every value — not because the
-quota is irrelevant, but because this arm places **zero barriers in 375 decisions**; the
+quota is irrelevant, but because this arm places **zero barriers in 374 decisions**; the
 squeeze machinery exists, is tested, and is wired into the *served* stack, but not into the
 arm this comparison measures. The survival threshold used to be the one lever that moved the
 outcome and no longer is: no seed now survives even the minimum horizon. Board size stays

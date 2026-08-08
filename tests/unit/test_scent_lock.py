@@ -25,7 +25,7 @@ from p2p_cop_agent.strategy.scent_lock import (
 )
 
 # The lock over the default model, reproduced independently by the Thief peer.
-AGREED_DEFAULT_LOCK = "416a57e17434ef21b3209052198a27a0d46e7a0e09fdaa5df3b61e4a8f2711ea"
+AGREED_DEFAULT_LOCK = "e6aef0978ff91fe8aaf7d0a49d8bb839f03cd259a554e4251c182a20b02c6ea1"
 
 
 def test_the_record_describes_the_whole_model_not_just_the_constants() -> None:

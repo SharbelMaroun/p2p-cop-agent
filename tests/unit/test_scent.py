@@ -10,6 +10,8 @@ asserted as a gap rather than guessed.
 
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from p2p_cop_agent.strategy.scent import (
@@ -25,12 +27,36 @@ from p2p_cop_agent.strategy.scent import (
 
 
 def test_the_documented_radial_profile_matches_the_book() -> None:
-    """M6-01c: 0.90 / 0.62 / 0.20 / 0.14 / 0.04, to the documented precision."""
+    """M6-01c: 0.90 / 0.62 / 0.42 / 0.20 / 0.04, to the documented precision.
+
+    **Corrected 2026-08-08.** This test pinned 0.20 for the diagonal and 0.14 for the
+    mid-side -- the same curve shifted inward one radial class -- and passed for weeks
+    because it was pinned to the table it was guarding rather than to the source.
+    """
     assert DOCUMENTED_EMISSION[(0, 0)] == pytest.approx(0.90)      # centre
     assert DOCUMENTED_EMISSION[(1, 0)] == pytest.approx(0.62)      # cross
-    assert DOCUMENTED_EMISSION[(1, 1)] == pytest.approx(0.20)      # diagonal
-    assert DOCUMENTED_EMISSION[(2, 0)] == pytest.approx(0.14)      # mid-side
+    assert DOCUMENTED_EMISSION[(1, 1)] == pytest.approx(0.42)      # diagonal
+    assert DOCUMENTED_EMISSION[(2, 0)] == pytest.approx(0.20)      # mid-side
     assert DOCUMENTED_EMISSION[(2, 2)] == pytest.approx(0.04)      # corner
+
+
+def test_the_profile_is_the_radial_gaussian_the_caption_describes() -> None:
+    """**The check that would have caught the shift**, and it needs no source at all.
+
+    Figure 4's caption says the intensity "decays radially from the center". Fit
+    ``0.9*exp(-k*d^2)`` through the two values every reading of the figure agreed on --
+    centre 0.90 and cross 0.62 -- and every other class follows with no free parameter.
+    The old table failed this at the diagonal (0.20 against 0.427) and the mid-side
+    (0.14 against 0.203); nothing in the suite was asking.
+
+    The tolerance is 0.01 because the figure prints two decimals of a continuous curve
+    (0.42 for 0.4271, 0.04 for 0.0456). That is still twenty times tighter than the
+    error it is guarding: the old diagonal missed by 0.227.
+    """
+    k = -math.log(0.62 / 0.90)
+    for (dr, dc), tau in emission_offsets().items():
+        expected = 0.90 * math.exp(-k * (dr * dr + dc * dc))
+        assert tau == pytest.approx(expected, abs=0.01), f"cell {(dr, dc)} leaves the curve"
 
 
 def test_each_radial_class_is_symmetric() -> None:
@@ -40,16 +66,17 @@ def test_each_radial_class_is_symmetric() -> None:
     assert {DOCUMENTED_EMISSION[c] for c in corners} == {0.04}
 
 
-def test_the_book_documents_only_seventeen_of_the_twenty_five_cells() -> None:
-    """U-030: the book record stays 17 cells; the ring is never folded into it.
+def test_the_ring_is_held_separately_from_the_other_seventeen_cells() -> None:
+    """`DOCUMENTED_EMISSION` holds 17 cells and the ring is added by `emission_offsets`.
 
-    Keeping the two apart is the point. `DOCUMENTED_EMISSION` is what the source
-    *states*; the ring is what the peers *agree*. Merging them would let a negotiated
-    number acquire book authority it does not have.
+    **The reason for the split changed on 2026-08-08.** It used to be that the book
+    named 17 cells and left 8 to negotiation. The book names all 25; the split now only
+    keeps the one class a peer may still override addressable on its own.
     """
     assert len(DOCUMENTED_EMISSION) == 17
     for gap in OUTER_RING_OFFSETS:
         assert gap not in DOCUMENTED_EMISSION
+    assert len(emission_offsets()) == 25
 
 
 def test_the_undocumented_ring_is_exactly_the_eight_squared_distance_five_cells() -> None:

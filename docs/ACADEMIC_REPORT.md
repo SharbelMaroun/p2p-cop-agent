@@ -196,12 +196,12 @@ to validity in `docs/RESEARCH-REPORT-Performance-Analysis.md`.
 | Arm | Capture rate | Mean turns | Mean Cop score | sd |
 | --- | ---: | ---: | ---: | ---: |
 | blind | 0.525 | 27.20 | 12.88 | 7.59 |
-| **belief** | **1.000** | **9.68** | **20.00** | **0.00** |
+| **belief** | **1.000** | **9.72** | **20.00** | **0.00** |
 | oracle | 1.000 | 8.62 | 20.00 | 0.00 |
 
 The belief policy captures **40 of 40** against the blind baseline's 21, and scores exactly
 what referee-truth perfect information scores: all 40 paired comparisons against `oracle`
-are ties. What partial observability still costs is **speed** — 9.68 turns against 8.62 —
+are ties. What partial observability still costs is **speed** — 9.72 turns against 8.62 —
 which is the honest form of the claim. The 5×5 scent window carries enough signal to make
 the *outcome* indistinguishable from perfect observation on this opponent.
 
@@ -217,13 +217,12 @@ continuous quantity".
 survival threshold used to be the one `Minimum` that changed the outcome (0.975 at 35,
 1.000 from 45); no seed now survives even the 35-turn floor, so the lever disappeared when
 the policy improved. Barrier quota is flat because the measured arm places no barriers at
-all — 0 barrier intents in 375 decisions.
+all — 0 barrier intents in 374 decisions.
 
 **Board size is flat too**, and the earlier explanation for it no longer holds: the walk now
 reaches the outermost rank at 7×7 and 9×9 rather than leaving the outer ranks unvisited, and
-capture stays at 1.000 anyway. One seed of forty escapes at 11×11 and none at 12×12, which
-at n=40 is noise rather than a threshold. See the research report for the reach measurement
-that settles it.
+capture stays at 1.000 at every size from 7×7 to 12×12 — the cost of a bigger board shows up
+as a fifth of a turn, not as an escape. See the research report for the reach measurement.
 
 ### 3.2b The measurement that supersedes 3.1
 
