@@ -23,7 +23,7 @@ from urllib.parse import urlparse
 
 from p2p_cop_agent.adapters.fastmcp_client import FastMCPClient
 from p2p_cop_agent.adapters.fastmcp_server import PeerInboxes, take_turn
-from p2p_cop_agent.adapters.serving import port_answers, serve_in_background
+from p2p_cop_agent.adapters.serving import peer_answers, serve_in_background
 from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
 from p2p_cop_agent.orchestration.live_policy import live_decide
@@ -113,8 +113,10 @@ def serve_match(
     serve_in_background(inboxes, port=int(config["network"]["my_port"]))  # type: ignore[index]
     host, port = split_host_port(opponent_url(config))
     connect_timeout, retry_interval = timeouts_from_private_config(config)
+    # `peer_answers`, not `port_answers`: a tunnelled peer's host is a CDN edge that
+    # accepts TCP whether or not the opponent exists (found live, 2026-08-09).
     if not wait_for_peer(
-        lambda: port_answers(host, port), clock=time.monotonic, sleep=time.sleep,
+        lambda: peer_answers(opponent_url(config)), clock=time.monotonic, sleep=time.sleep,
         timeout=connect_timeout, interval=retry_interval,
     ):
         return MatchResult(None, None, None, None)
