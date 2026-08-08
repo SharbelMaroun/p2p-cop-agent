@@ -31,7 +31,7 @@ hostile peer, but our own runaway loop. So its lock is deliberately **not** self
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 # Appendix F table 19 `Minimum` values, and the only numbers here with book authority.
 DEFAULT_REQUESTS_PER_MINUTE = 30
@@ -44,7 +44,7 @@ DEFAULT_BURST_WINDOW_SECONDS = 10.0
 DEFAULT_BURST_LIMIT = 12
 
 
-class SendVerdict(str, Enum):
+class SendVerdict(StrEnum):
     """Why a send did or did not go out. Three refusals, because they differ in remedy."""
 
     ALLOWED = "allowed"

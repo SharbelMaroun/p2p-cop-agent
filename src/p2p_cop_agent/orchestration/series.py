@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 from p2p_cop_agent.reporting.naming import MatchIdentity
 
@@ -33,7 +33,7 @@ NATURAL_SUB_GAMES = (1, 3, 5)
 SWAPPED_SUB_GAMES = (2, 4, 6)
 
 
-class Role(str, Enum):
+class Role(StrEnum):
     COP = "cop"
     THIEF = "thief"
 

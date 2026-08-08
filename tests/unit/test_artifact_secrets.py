@@ -17,10 +17,10 @@ from __future__ import annotations
 
 import json
 import re
+import tomllib
 from pathlib import Path
 
 import pytest
-import tomllib
 
 from p2p_cop_agent.protocol.declaration import build_declaration
 from p2p_cop_agent.reporting import MatchIdentity, build_config, build_result

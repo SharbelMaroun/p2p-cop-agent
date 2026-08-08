@@ -15,14 +15,14 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 from p2p_cop_agent.protocol.commit import verify_commit
 from p2p_cop_agent.protocol.messages import ProtocolError, validate_message
 from p2p_cop_agent.shared.config import JsonObject
 
 
-class AuditVerdict(str, Enum):
+class AuditVerdict(StrEnum):
     """The outcome of verifying one peer's end-game reveal."""
 
     VERIFIED = "verified"

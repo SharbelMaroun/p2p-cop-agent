@@ -2,10 +2,17 @@
 
 Covers `M9-11`, `M9-11a`…`M9-11e`.
 
-Unlike the companion Thief repository, **this peer runs from the command line**. `p2p-cop
-serve` launches the inbound FastMCP mailbox plus the outbound connector and plays one match
-against a live opponent. The Thief's CLI is still a scaffold (`M9-025` there), so a counted
-game between the two real agents is not launchable end-to-end yet — this half is.
+**This peer runs from the command line**, and so does the companion. `p2p-cop serve`
+launches the inbound FastMCP mailbox plus the outbound connector and plays one match against
+a live opponent; `p2p-cop replay --log <path>` re-verifies a stored log and prints its
+banner, and `p2p-cop verify --log <path>` is the gate form, with an exit code instead of
+output.
+
+**Corrected 2026-08-08:** this paragraph said the Thief's CLI was "still a scaffold" and
+that a counted game was therefore not launchable end to end. That stopped being true when
+the Thief closed `M9-025`; both peers serve, and several two-process matches have been
+played between them. A claim about the *other* repository is the easiest kind to leave
+stale, because nothing here fails when it rots.
 
 ## System requirements — `M9-11a`
 
@@ -45,6 +52,8 @@ this machine, because rule 2 forbids sharing strategy or memory between parties.
 ```bash
 uv run p2p-cop --help       # no subcommand starts no runtime and imports no transport
 uv run p2p-cop --version
+uv run p2p-cop replay --log games/game-593df753457f/log_game-593df753457f_g01.json
+uv run p2p-cop verify --log <path>   # exit 1 if TAMPERED, 2 if the file cannot be read
 ```
 
 `build_parser` deliberately imports nothing from `adapters/`, so `--version` cannot fail

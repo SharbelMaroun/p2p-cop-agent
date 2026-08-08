@@ -712,3 +712,48 @@ strategies in opposite directions" was drawn from data showing them agreeing. Th
 computed from the bars. (3) *A self-assessment that only ever rises is marketing* — this one
 went down. (4) *Screenshots must be of committed inputs*, or the evidence dies with the temp
 directory.
+
+
+## 2026-08-08 (vi) — the audit's leftovers, and one finding the audit got wrong
+
+**Prompt.** "Fix all the rest" — the smaller findings left open after the first audit pass:
+the missing `replay`/`verify` CLI verbs, the `ast.Import` hole in the rule-8/9 boundary guards, a `target-version` that disagreed with `requires-python`, and a `TEAM_INFO` row naming a contract version one bump behind the file it describes.
+
+**The notebooks were asked first, and one answer retired a finding instead of closing it.**
+The audit had flagged "no results-analysis notebook in either repository" against guidelines
+§9.2. Asked directly, the book **does not require a Jupyter file**: it names the deliverable
+`RESEARCH-REPORT-Performance-Analysis.md` under `/docs`, which is the file both repositories
+already ship, and the pinned reference contains no notebook either — its analysis is markdown
+plus plain Python. The finding was an **invented requirement**: a real rule read through the
+word "notebook" rather than through what the source says the artifact is. It is now written
+into the research report itself so nobody "fixes" it later by adding a file that satisfies
+nothing. A reviewer who manufactures requirements wastes exactly the time the review cost.
+
+**The CLI gap was real and had been invisible for the same reason all week's findings were.**
+Rule 20 makes the replay application a threshold condition for submission, and the verifier
+has satisfied it since M8 — through `scripts/` and a Tk window. A grader with a log and a
+shell had no way in. The reference exposes `python -m police_thief replay --log <path>` and
+the companion settled on the same shape independently, so `--log` was adopted rather than
+invented. The one design decision worth recording: an unreadable or malformed file exits
+**2, not 1**. Rule 19 is an iron rule with no appeal, so scoring a missing file as forgery
+would be a false accusation with a fatal sanction.
+
+**The boundary-guard hole is the most serious thing found today.** The truth-boundary walkers
+enforce rules 8 and 9 — sanction: disqualification of the *project* — and they matched only
+`ast.ImportFrom`. A plain `import p2p_cop_agent.orchestration as o` inside `live/` would have
+passed the one test that exists to stop it. It was verified by feeding the fixed helper the
+exact evasion and watching it report. **A guard that checks one of the two ways to write the
+same statement is not a guard**, and this one had been green since M8 while half-blind.
+
+**Fixing the lint target cost more than it looked.** `target-version = "py310"` against
+`requires-python = ">=3.11"` meant ruff was judging the code against a Python this project
+does not support — and it was suppressing **10 real findings**, eight of them `UP042`
+(`class X(str, Enum)` where 3.11 has `StrEnum`). Adding an ignore was refused because the
+contributing guide forbids silencing a finding, so all eight enums were converted and the
+full suite run as the arbiter. What made that safe rather than reckless: **JSON output is
+identical for both forms** — both serialise to the value — so nothing on the wire or in an
+artifact moves; only `str()` and f-string formatting differ.
+
+**Lesson.** A version pin is a claim like any other, and this one was quietly *reducing* the
+strictness of a gate the project points to as evidence. The gates are only worth what their
+configuration says.

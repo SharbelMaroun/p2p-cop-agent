@@ -17,7 +17,7 @@ not alter the unfrozen shared-contract text.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from p2p_cop_agent.domain.actions import Action
 from p2p_cop_agent.domain.barriers import BarrierField
@@ -28,7 +28,7 @@ from p2p_cop_agent.domain.movement import destination
 _CARDINAL_DIRECTIONS = (Action.NORTH, Action.SOUTH, Action.EAST, Action.WEST)
 
 
-class CaptureReason(str, Enum):
+class CaptureReason(StrEnum):
     """The book-defined reason a Thief is captured, in checking precedence."""
 
     COP_ON_THIEF = "cop_on_thief"

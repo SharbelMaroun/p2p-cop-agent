@@ -1807,12 +1807,18 @@ with it:
 uv run pytest tests/conformance/ -v
 ```
 
-To re-verify a stored log and regenerate the submission screenshots:
+To re-verify a stored log from the command line, and regenerate the submission
+screenshots:
 
 ```text
+uv run p2p-cop replay --log games/game-593df753457f/log_game-593df753457f_g01.json
+uv run p2p-cop verify --log <path>                    # exit 1 if TAMPERED, 2 if unreadable
 uv run python scripts/capture_replay_screenshots.py   # Verified OK and TAMPERED
 uv run python scripts/capture_live_gui_screenshot.py  # live belief map
 ```
+
+`verify` exits **2** rather than 1 on a file it cannot read: rule 19 has no appeal, so a
+missing or malformed log must never be scored as forgery.
 
 What this section still cannot show is a game against a classmate; that needs the tunnel and
 an opponent, and the procedure is in the match runbook rather than promised here.

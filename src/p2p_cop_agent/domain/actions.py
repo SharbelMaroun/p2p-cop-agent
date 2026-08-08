@@ -7,14 +7,14 @@ legal-movement work.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
 class ActionError(ValueError):
     """Raised when a token is not part of the fixed movement vocabulary."""
 
 
-class Action(str, Enum):
+class Action(StrEnum):
     """The five fixed legal move tokens; diagonals are never represented."""
 
     NORTH = "N"

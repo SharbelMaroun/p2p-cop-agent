@@ -272,3 +272,19 @@ next to them.
 4. **40 seeds.** Enough for the paired result (19–0–21 with zero losses), thin for the flat
    sweeps, where the honest claim is "no effect detected at n=40" rather than "no effect" —
    and thin enough that §2.2's single 11×11 escape is not a finding.
+
+
+## The results-analysis notebook: checked, and NOT a Jupyter file
+
+**Recorded 2026-08-08 after an audit finding that turned out to be wrong.** An external review
+flagged 'no analysis notebook in either repo' against guidelines section 9.2, which asks for a
+'results analysis notebook'. Asked directly, the book **does not require a Jupyter `.ipynb`**:
+it defines the deliverable as a Markdown research report and names it -
+`RESEARCH-REPORT-Performance-Analysis.md` under `/docs` - which is exactly the file this
+repository already ships. The pinned reference simulator contains no notebook either; its
+analysis is markdown plus plain Python scripts.
+
+The finding was an **invented requirement**: a real rule (section 9.2) read through the word
+'notebook' rather than through what the source says the artifact is. It is written down here so
+the next reader does not 'fix' it by adding a Jupyter file that satisfies nothing, and because
+a review that manufactures requirements is a review that wasted the time it cost.
