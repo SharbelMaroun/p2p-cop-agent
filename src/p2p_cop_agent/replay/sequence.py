@@ -66,11 +66,19 @@ class SequenceReport:
         return "; ".join(f"{f.kind}: {f.detail} [{f.rule}]" for f in self.findings)
 
 
+def _step_of(record: object) -> object:
+    """Top level first, then the sealed payload — a foreign log keeps its step inside."""
+    if not isinstance(record, Mapping):
+        return None
+    if "step" in record:
+        return record.get("step")
+    payload = record.get("payload")
+    return payload.get("step") if isinstance(payload, Mapping) else None
+
+
 def inspect_sequence(records: Sequence[Mapping[str, object]]) -> SequenceReport:
     """Report gaps, duplicates and out-of-order steps. Never raises, never verdicts."""
-    steps = tuple(
-        record.get("step") if isinstance(record, Mapping) else None for record in records
-    )
+    steps = tuple(_step_of(record) for record in records)
     findings: list[SequenceFinding] = []
 
     numbered = [s for s in steps if isinstance(s, int) and not isinstance(s, bool)]

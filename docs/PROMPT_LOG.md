@@ -646,3 +646,19 @@ the companion verifier — including our log under theirs. Two rehearsal launche
 first (a 10-second `connect_timeout_seconds` in the private example versus a ~15-second
 process start; a probe racing a not-yet-bound server) — both were environment, not
 protocol, and the runbook's troubleshooting table already named one of them.
+
+## 2026-08-08 (iv) — the replay board, and what the first real log taught the viewer
+
+GUI enhancement under the full gate. The book notebook pinned the requirements verbatim
+(Figure 9's banner states and heat ramp; the replay's nonce/move/commit duty; rule 9
+binding the live interface only, with the replay free to reconstruct as "Retrospective
+Witness"); the code notebook pinned the reference's shape (Tkinter; its replay draws both
+true positions from the two logs, "the whole chase at a glance"). Ours now draws the same
+board — trails fading by age, barriers appearing as placed, capture ringed — plus Play
+auto-advance, and the screenshots come from the real rehearsal match with both logs
+cross-loaded. The lesson worth the log line: the first genuine artifact through the
+screen broke it — top-level `step` reads rendered a companion-shaped log as `step ? — —`
+and called 21 numbered steps unnumbered. Fixtures birth a viewer; only a real log tests
+one. Both readers now fall back to the sealed payload.
+
+Style addendum, same day: both windows moved onto a dark-navy chrome with glowing pill banners, rounded cells, and neon trails (`ui/style.py`) — pure tkinter, no theme dependency. The verdict colours and the heat ramp were deliberately left alone: reference-matched, test-pinned meaning is not styling. The styled replay window crossed the 150-line cap and split its evidence panels into `ui/replay_panels.py` rather than widening the gate.
