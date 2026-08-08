@@ -113,3 +113,36 @@ the policy would hold up against a Thief that manages its trail deliberately. Th
 `test_strategy_quality.py` pins the claim — deliberately with loose bounds, so it fails
 on a real regression rather than on any harmless retune. `M6-20`'s condition ("must beat
 the blind baseline **or be reverted**") is only enforceable if something re-checks it.
+
+## The tournament grid (M6-25, 2026-08-08)
+
+The forty-seed arena above measures one opponent — a seeded random walk — and `M6-20b`'s
+caveat said plainly that nothing there speaks to a Thief that manages its trail. The
+opponent grid (`M9-30`) added the fleeing archetypes and found the boundary: every arm,
+**oracle included**, captured the mobility-aware shapes 0/40. The tournament grid is the
+protocol that measured the fix and now guards it:
+
+- **Arms.** `barrier_stack` (the former live stack), `shrink_stack` (the live stack:
+  decoded belief, trap → squeeze → containment → interception chase), `oracle_shrink`
+  (the same stack aimed with referee truth — the structural ceiling, not a legal agent).
+- **Archetypes.** `random` (reference floor), `flee_greedy` (reference shape),
+  `flee_smart` (distance + mobility), `flee_deadend` (dead-end refusal first — the
+  companion repository's shipped shape, i.e. the strong classmate), `flee_territory`
+  (maximise the sooner-reached pocket — the strongest simple evader definable here).
+- **Design.** Forty paired seeds, identical Thief trajectory per seed across arms,
+  deterministic everything; run at the negotiated 7×7 and re-run at 9×9 because every
+  board parameter is an Appendix-F *minimum*, not a constant.
+- **Result** (`results/tournament_grid.json`, `results/tournament_grid_9x9.json`):
+  `shrink_stack` **40/40 on every cell of both boards**, equal to `oracle_shrink`
+  everywhere — the interception chase (sum of barrier-aware distances over the whole
+  flight set, then the worst single one) is the entire difference; the wall layers are
+  unchanged.
+- **Guard.** `test_tournament_quality.py` binds it at ten seeds: ≥9/10 on both
+  mobility-aware archetypes, no archetype the incumbent converts surrendered, decoded
+  belief equal to the truth-fed stack on every cell, captures decisively inside the
+  horizon, and the measurement reproducible.
+
+A guarded territory-shrink wall layer was designed, built, and **measured off** on the
+way (flee_greedy 10/10 → 0/10): fourteen walls that each shave one cell are fourteen
+turns of not chasing. The dead design is recorded in `strategy/shrink.py`'s docstring so
+it is not rediscovered.

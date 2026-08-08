@@ -22,11 +22,14 @@ Each turn, in order:
    intensity. Fresh per observation, never Bayes-recursive (measured: recursion
    calcified, 40/40 → 0/40); the prior survives only silent or malformed turns
    (M6-02c). Nothing here reads a true position `[AE-8]`.
-2. **Choose one legal intent** via `strategy.anticipation.predictive_turn_intent` —
+2. **Choose one legal intent** via `strategy.shrink.shrinking_turn_intent` —
    capture-move or trapping barrier, else squeeze, else the containment ratchet on
-   the just-vacated cell in a locked endgame, else the flight-set chase. One move
-   *or* one barrier, never both (book §3.4). The same function the opponent grid
-   measures, so the served number is the published number.
+   the just-vacated cell in a locked endgame, else the interception chase (M6-25:
+   the flight-centroid chase tied against edge oscillators and mirrored them to the
+   horizon; the summed-distance rank breaks the tie and converts the mobility-aware
+   archetypes 40/40 where every prior arm scored 0/40). One move *or* one barrier,
+   never both (book §3.4). The same function the tournament grid measures, so the
+   served number is the published number.
 3. **Declare and claim.** A placed barrier is disclosed truthfully in
    `barrier_placed` (rule: hiding one is forbidden), and landing on — or walling —
    the believed cell sends `capture_claim` for that cell: a claim is checked by the
@@ -50,13 +53,13 @@ from p2p_cop_agent.domain.movement import apply_move
 from p2p_cop_agent.orchestration.turn_loop import Decide
 from p2p_cop_agent.protocol.scent_wire import ScentWireError, decode_scent, encode_scent
 from p2p_cop_agent.shared.config import JsonObject
-from p2p_cop_agent.strategy.anticipation import predictive_turn_intent
 from p2p_cop_agent.strategy.barrier_policy import BarrierIntent
 from p2p_cop_agent.strategy.belief import Belief
 from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood
 from p2p_cop_agent.strategy.hints import hint_max_words
 from p2p_cop_agent.strategy.landmarks import place_for
 from p2p_cop_agent.strategy.scent_field import ScentField
+from p2p_cop_agent.strategy.shrink import shrinking_turn_intent
 from p2p_cop_agent.strategy.verbal import generate_hint
 
 
@@ -115,23 +118,30 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
         _observe(incoming, count)
         target = Coordinate.from_pair(state["belief"].most_likely())
 
-        claim: list | None = None
-        barrier_placed: list | None = None
-        chosen = predictive_turn_intent(board, state["cell"], target,
-                                        state["barriers"], state["previous"])
-        if isinstance(chosen, BarrierIntent):
-            state["barriers"] = state["barriers"].place_adjacent(board, state["cell"], chosen.cell)
-            state["previous"] = None  # a wall turn vacates nothing
-            barrier_placed = [chosen.cell.row, chosen.cell.col]
-            move_label = f"BARRIER:{barrier_placed}"
-            if chosen.cell == target:
-                claim = barrier_placed  # a barrier on the Thief's cell captures (§3.4)
-        else:
-            state["previous"] = state["cell"]
-            state["cell"] = apply_move(board, state["cell"], chosen.action, state["barriers"].cells)
-            move_label = f"MOVE:{chosen.action.name}"
-            if state["cell"] == target:
-                claim = [target.row, target.col]
+        claim, barrier_placed = None, None
+        # Fail-safe (M6-26): a strategy exception must cost one imperfect turn, never
+        # the match. An uncaught raise here propagates to the watchdog as a freeze and
+        # scores the technical 0/0 — worse than any legal move. STAY is legal from
+        # every on-board cell, keeps the sealed record truthful, and leaves all state
+        # coherent, so the game continues and the audit still verifies.
+        try:
+            chosen = shrinking_turn_intent(board, state["cell"], target,
+                                           state["barriers"], state["previous"])
+            if isinstance(chosen, BarrierIntent):
+                state["barriers"], state["previous"] = (
+                    state["barriers"].place_adjacent(board, state["cell"], chosen.cell), None)
+                barrier_placed = [chosen.cell.row, chosen.cell.col]
+                move_label = f"BARRIER:{barrier_placed}"
+                if chosen.cell == target:
+                    claim = barrier_placed  # a barrier on the Thief's cell captures (§3.4)
+            else:
+                state["previous"], state["cell"] = state["cell"], apply_move(
+                    board, state["cell"], chosen.action, state["barriers"].cells)
+                move_label = f"MOVE:{chosen.action.name}"
+                if state["cell"] == target:
+                    claim = [target.row, target.col]
+        except Exception:  # noqa: BLE001 - the match outlives any strategy bug
+            state["previous"], move_label = None, "MOVE:STAY"
 
         trail.advance(state["cell"])
         hint = generate_hint(

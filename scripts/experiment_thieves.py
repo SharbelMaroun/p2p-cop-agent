@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from p2p_cop_agent.domain.movement import Action, apply_move, legal_moves  # noqa: E402
+from p2p_cop_agent.strategy.pursuit import step_distances  # noqa: E402
 
 
 def _distance(a, b) -> int:
@@ -26,6 +27,13 @@ def _distance(a, b) -> int:
 
 def _mobility(board, cell, blocked) -> int:
     return sum(1 for action in legal_moves(board, cell, blocked) if action is not Action.STAY)
+
+def _territory(board, thief, cop, blocked) -> int:
+    """Count the cells the thief reaches strictly before the cop — its owned ground."""
+    far = board.grid_size * board.grid_size + 1
+    cop_steps = step_distances(board, cop, blocked)
+    return sum(1 for cell, steps in step_distances(board, thief, blocked).items()
+               if steps < cop_steps.get(cell, far))
 
 
 def flee_greedy(board, thief, cop, blocked) -> Action:
@@ -43,4 +51,22 @@ def flee_smart(board, thief, cop, blocked) -> Action:
         destination = apply_move(board, thief, action, blocked)
         return (-(_distance(destination, cop) + _mobility(board, destination, blocked)),
                 action.name)
+    return min(legal_moves(board, thief, blocked), key=rank)
+
+
+def flee_deadend(board, thief, cop, blocked) -> Action:
+    """The companion-shaped archetype: refuse dead ends first, then distance plus mobility."""
+    def rank(action: Action):
+        destination = apply_move(board, thief, action, blocked)
+        gain = _distance(destination, cop) + _mobility(board, destination, blocked)
+        return (_mobility(board, destination, blocked) <= 1, -gain, action.name)
+    return min(legal_moves(board, thief, blocked), key=rank)
+
+
+def flee_territory(board, thief, cop, blocked) -> Action:
+    """The tournament archetype: hold the most sooner-reached ground, then run wide."""
+    def rank(action: Action):
+        destination = apply_move(board, thief, action, blocked)
+        gain = _distance(destination, cop) + _mobility(board, destination, blocked)
+        return (-_territory(board, destination, cop, blocked), -gain, action.name)
     return min(legal_moves(board, thief, blocked), key=rank)

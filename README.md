@@ -1386,6 +1386,42 @@ derived the same game id from the shared file. And the model-matched scent decod
 cell — the one random-walk game the containment ratchet used to concede came back with the
 exact aim. `docs/MATCH_RUNBOOK.md` carries the one-page classmate procedure.
 
+#### The chase that mirrored, and the sum that crossed (`M6-25`, `M6-26`, 2026-08-08)
+
+The standing boundary in every grid was 0/40 against the mobility-aware archetypes —
+**oracle included**, so it was never the belief. Tracing one game showed the mechanism,
+and it is embarrassing in the way real bugs are: the Thief bobbed between two rows on
+the far edge, and the Cop bobbed between two rows on its own edge, for thirty-five
+turns. Under Manhattan distance a row-matching move and a column-closing move tie
+exactly; the flight-centroid lead ties too, because `|dest − centroid|` collapses the
+flight set to its mean and cannot see the spread; and the fixed N-before-E tie-break
+then chose the mirror every turn. An oscillation is a mirror that centroid pursuit
+polishes.
+
+The fix is one rank: score a move by the **sum** of barrier-aware step distances to
+every cell the believed Thief can hold next turn, then the worst single one
+(`strategy/shrink.py`). The sum prices the spread, so closing the pinned axis strictly
+beats mirroring the bobbed one — the dance breaks, the chase crosses the board, and
+the shipped wall layers finish what interception corners. The tournament grid
+(`results/tournament_grid.json`, forty seeds, 7×7 and 9×9) now reads **40/40 against
+every archetype** — the reference shape, the two mobility-aware strong-classmate
+shapes, and a territory maximiser — with the decoded belief equal to the truth-fed
+ceiling on every cell.
+
+*Problems hit building it.* Two, both worth keeping. A guarded territory-shrink wall
+layer was built first — price every candidate wall by the Thief's worst-case
+sooner-reached pocket, spend only on a strict cut. Measured: it **regressed**
+flee_greedy 10/10 → 0/10, because fourteen walls that each shave one cell are fourteen
+turns of not chasing, and it stayed blind to the containment ratchet's actual value,
+which appears one orbit *after* the spend. The wall stack therefore stays exactly the
+shipped trio and only the chase changed — the measured-off design is recorded in the
+module docstring. And the first live rehearsal of the new stack found the seam the
+harness cannot: a strategy exception in the served turn would have propagated to the
+watchdog as a freeze and scored the technical 0/0, so the live seam now converts any
+strategy raise into a truthful sealed `STAY` and recovers next turn (`M6-26`) — a
+match must outlive any strategy bug, because even a lost game pays 5 and a frozen one
+pays nothing.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses
@@ -1393,10 +1429,11 @@ a move; it is confined to the text layer, and the shipped configuration uses a
 zero-token template provider. Two agents given the same state always produce the same
 move, which is what makes a match reproducible from its log.
 
-Since 2026-08-08 the served policy is the full predictive stack
-(`strategy/anticipation.predictive_turn_intent`): capture-move or trapping barrier,
-else a squeeze, else the containment ratchet in a locked endgame, else a chase aimed
-at the believed cell's *flight set* rather than the stale sighting. The paragraphs
+Since 2026-08-08 the served policy is the full interception stack
+(`strategy/shrink.shrinking_turn_intent`): capture-move or trapping barrier, else a
+squeeze, else the containment ratchet in a locked endgame, else the interception
+chase — the summed-distance rank over the believed cell's whole flight set that broke
+the mirror dance (`M6-25` above) and converted every archetype 40/40. The paragraphs
 below describe the pursuit baseline the stack is built from, and remain true of it.
 
 The pursuit baseline ranks candidate
