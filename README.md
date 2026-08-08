@@ -7,6 +7,14 @@ Peer-to-Peer Network” final project.
 
 ## Current milestone
 
+Counted from `docs/TODO.md` on 2026-08-08: **M0 18/18, M1 73/76, M2 27/27, M3 26/26,
+M4 33/33, M5 89/91, M6 77/77, M7 91/91, M8 57/58, M9 57/74.**
+
+M9's open rows are the league itself — counted games, the tunnel, OAuth consent and Moodle —
+every one of which is the operator's action rather than an agent's. Stating where each
+milestone stands is the point of this section; the counts are derived from the ledger on each
+update rather than carried by hand, so the snapshot and the file beneath it cannot drift.
+
 This branch implements M2 core domain rules and M3 Cop-local state, history,
 scoring, transport-free rules harness, and deterministic move-or-barrier baseline.
 It also implements the M4 commit-reveal primitives (per-turn commitment, audit
