@@ -13,13 +13,13 @@
     },
     "turns": {
       "max": 26.0,
-      "mean": 9.675,
+      "mean": 9.725,
       "median": 8.5,
       "min": 3.0,
       "q1": 5.0,
       "q3": 12.0,
       "runs": 40,
-      "stdev": 5.5626
+      "stdev": 5.8
     }
   },
   "belief_share_of_available_gap": 1.0,

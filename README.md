@@ -7,6 +7,14 @@ Peer-to-Peer Network” final project.
 
 ## Current milestone
 
+Counted from `docs/TODO.md` on 2026-08-08: **M0 18/18, M1 73/76, M2 27/27, M3 26/26,
+M4 33/33, M5 89/91, M6 77/77, M7 91/91, M8 57/58, M9 57/74.**
+
+M9's open rows are the league itself — counted games, the tunnel, OAuth consent and Moodle —
+every one of which is the operator's action rather than an agent's. Stating where each
+milestone stands is the point of this section; the counts are derived from the ledger on each
+update rather than carried by hand, so the snapshot and the file beneath it cannot drift.
+
 This branch implements M2 core domain rules and M3 Cop-local state, history,
 scoring, transport-free rules harness, and deterministic move-or-barrier baseline.
 It also implements the M4 commit-reveal primitives (per-turn commitment, audit
@@ -18,10 +26,21 @@ Since then: the M6 scent field and belief map, the outbound FastMCP client, the 
 artifact/reporting pipeline (declaration, per-sub-game config and log, final result,
 settlement, six-sub-game series) with the Gmail sender, and the M8 **replay verifier** —
 which reaches `Verified OK` or `TAMPERED` on a saved log, including one this peer did not
-write. Still absent: a public tunnel, an LLM provider, any GUI (`ui/` is an empty package),
-and the replay *view* that would make the verifier's banner photographable. Gmail
-credentials are deliberately not in the repository (rules 39–40), so the sender is built
-but unexercised. **No live game against a real opponent has been played.**
+write.
+
+**Both GUIs now exist and both mandatory screenshots are real captures** (§5 below): a live
+belief-map window taken during a two-process match, and a replay viewer showing `Verified OK`
+over a log this repository actually played. `p2p-cop serve` plays a whole match over a socket
+against a live opponent, and several two-process rehearsal matches have been played end to
+end, audited, and replayed by both peers' verifiers.
+
+Still absent, and each for a stated reason: a **public tunnel** (needs the operator's machine
+and account), **OAuth consent and a live Gmail send** (credentials are deliberately not in
+the repository under rules 39–40, so the sender is built but unexercised), and an **LLM
+provider** (the shipped verbal layer is the zero-token template provider by choice; movement
+is pure Python either way). **No counted league game against a classmate has been played** —
+every match so far is this team's Cop against this team's Thief or a scripted peer, which is
+an engineering rehearsal and is never described here as a league result.
 
 The shared contract is `0.2.10-proposed` and **UNFROZEN**. It becomes frozen only
 after the coordinator accepts it and Thief independently consumes and verifies
@@ -441,7 +460,7 @@ It is not a source, and it ranks below one in `SOURCE_OF_TRUTH.md` for this exac
 
 *The evidence that the lock is worth anything.* The companion Thief peer, written
 independently against the same book sections, produces the identical digest
-`416a57e1…` from its own record. Two implementations agreeing is the only thing that
+`e6aef097…` from its own record. Two implementations agreeing is the only thing that
 distinguishes a real interoperability contract from a number we hash locally and
 believe.
 
@@ -1501,27 +1520,38 @@ much* — by measurement over **40 paired seeds**:
 
 | Arm | Capture rate | Mean turns | Mean Cop score |
 |---|---|---|---|
-| blind | 0.225 | 32.83 | 8.38 |
-| **belief** | **0.975** | **12.83** | **19.62** |
-| oracle (illegal ceiling) | 1.000 | 12.10 | 20.00 |
+| blind | 0.525 | 27.20 | 12.88 |
+| **belief** | **1.000** | **9.72** | **20.00** |
+| oracle (illegal ceiling) | 1.000 | 8.62 | 20.00 |
 
-Belief closes **96.8%** of the blind-to-oracle gap, wins **30 of 40** paired seeds and
-**loses none**.
+Belief closes **100%** of the blind-to-oracle gap — 40 captures in 40 seeds, which is the
+oracle's own score — wins **19 of 40** paired seeds against blind and **loses none**. All
+40 pairs against the oracle are ties; perfect information buys only speed here, about one
+turn in ten.
 
 ![Cop score distribution by arm](assets/chart-strategy-distribution.svg)
 
-The distribution is where a mean alone would have misled: the blind arm's median score is
-**5.0**, with Q1 = Q3 = 5.0. It is not a weak pursuer — it is almost always a *non*-pursuer
-that occasionally stumbles into a capture, and its 8.38 mean is that rarity averaged over
-many failures.
+The distribution is where a mean alone would mislead, and the reason is structural: a Cop
+score is **20 for a capture or 5 for a survival, never anything between**, so an arm's mean
+is a mixture ratio rather than a typical game. Blind's Q1 is 5.0 and its median 20.0 — its
+12.88 mean describes no game it ever played. Belief's standard deviation of **0.00** is the
+same fact from the other end: forty games, forty twenties.
 
-**Two sweeps came back flat, and probing them found more than the sweeps did.** The barrier
-quota is identical to four decimals at every value — not because the quota is irrelevant,
-but because this arm places **zero barriers in 501 decisions**; the squeeze machinery exists
-and is tested but is not wired into it. Board size is flat because on a 12×12 board the
-Thief never reaches past index 7 of 11 within the horizon, so the extra ranks are space
-nobody visits. Both are recorded as findings about our own agent rather than as parameter
-conclusions.
+**All three parameter sweeps came back flat, and probing them found more than the sweeps
+did.** The barrier quota is identical to four decimals at every value — not because the
+quota is irrelevant, but because this arm places **zero barriers in 374 decisions**; the
+squeeze machinery exists, is tested, and is wired into the *served* stack, but not into the
+arm this comparison measures. The survival threshold used to be the one lever that moved the
+outcome and no longer is: no seed now survives even the minimum horizon. Board size stays
+flat while the walk does reach the far edge at 7×7 and 9×9, so that flatness is a property
+of the policy rather than of unvisited space. All three are recorded as findings about our
+own agent rather than as parameter conclusions.
+
+**The measurement that matters most is not in this section.** The arms above face a random
+walk. Against five deterministic evader archetypes on two board sizes, the policy actually
+served captures **40/40 in every cell — equalling the referee-truth oracle everywhere** —
+after an interception fix that broke a tie-order mirror the previous stack could not escape.
+That grid is §1c of the research report, and it is still measured against evaders we wrote.
 
 Nine charts, all SVG, all regenerable:
 
@@ -1532,11 +1562,11 @@ uv run python scripts/render_charts.py
 
 ### 5. Live belief map and "Verified OK" replay screenshots
 
-**The verifier behind the `Verified OK` stamp now exists; the screen that shows it does
-not yet.** That is a narrower gap than before, and worth stating precisely because rule 20
-is Mandatory with the sanction "threshold condition for confirmation of logs and submission
-of the project" (p. 129/272) — this is the one deliverable whose absence is a rejected
-submission rather than a lost mark.
+**Both screens exist and both captures below are real photographs of them**, taken over a
+match this repository actually played. Rule 20 is Mandatory with the sanction "threshold
+condition for confirmation of logs and submission of the project" (p. 129/272) — the one
+deliverable whose absence is a rejected submission rather than a lost mark — so it is worth
+being precise about what the pictures are evidence *of*.
 
 `src/p2p_cop_agent/replay/` loads a saved log, recomputes every SHA-256 commitment from the
 file's own bytes, and reaches one of exactly two verdicts. `:1753` decides the scope: one
@@ -1583,25 +1613,34 @@ One test also had to be replaced rather than extended: it asserted that its own 
 a gap and never that the verifier noticed, so it would have passed against no
 implementation at all.
 
-What remains for the screenshot is the **view**: a window that paints the banner, plus the
-belief map from a live two-peer run. The `Verified OK` capture belongs "within the README.md
-academic report" (p. 81/189, "absolute mandatory"); the exact filename and directory are
-**not specified** by Appendix E or the submission checklist, so that will be a recorded
-project choice rather than an inferred one.
+The `Verified OK` capture belongs "within the README.md academic report" (p. 81/189,
+"absolute mandatory"); the exact filename and directory are **not specified** by Appendix E
+or the submission checklist, so `assets/` is a recorded project choice rather than an
+inferred requirement.
 
 ### The replay viewer
 
-![Replay viewer showing a green Verified OK stamp over an eight-step log](assets/replay-verified-ok.png)
+![Replay viewer showing a green Verified OK stamp over a twenty-step played match](assets/replay-verified-ok.png)
 
 *`assets/replay-verified-ok.png` — the mandatory submission capture (`:1769`; "absolute
-mandatory" at p.81/189). Every commitment in `log_verified_ok.json` was recomputed from the
-file's own bytes at the moment the picture was taken.*
+mandatory" at p.81/189). The log is `games/game-593df753457f/log_game-593df753457f_g01.json`
+— **a match this peer actually played**, committed next to the configuration it was played
+under, with the opponent's revealed log beside it so both trails draw. Every one of the 20
+commitments was recomputed from the file's own bytes at the moment the picture was taken.*
+
+**The capture was corrected on 2026-08-08, and the reason generalises.** The previous image
+was a real screenshot of a real match — but of a log living in a temporary directory that no
+grader could ever open, and the caption pointed at a test fixture instead. Asked directly,
+the book requires these captures to show a game that was **actually played**, not a fixture;
+so the played match is now committed and the script reads it from the repository. A
+screenshot whose subject is not in the repository is reproducible by exactly one person.
 
 The screen shows what the book asks a replay viewer to show: for each entry the `nonce`,
 the `move` and the original `commit` (p.56/142); a verdict indicator — a green
 `Verified OK` stamp or a red `TAMPERED` banner; and controls to move "back and forth in
-time" (p.56/141). It does **not** draw the board, because the board is not a requirement
-and the belief map belongs to the live GUI, where the book puts it.
+time" (p.56/141). It also draws the board — both trails, barriers as placed, the capture
+ring — which rule 9 permits here and forbids in the live GUI: the replay is the
+*Retrospective Witness*, and after the reveal the true history is exactly what it is for.
 
 ![Replay viewer showing a red TAMPERED banner with step 5 highlighted](assets/replay-tampered.png)
 
@@ -1683,14 +1722,77 @@ uv run python scripts/capture_live_gui_screenshot.py
 
 ### 6. Companion repository
 
-<https://github.com/SharbelMaroun/p2p-thief-agent> — the Thief-side peer, developed
-independently.
+<https://github.com/SharbelMaroun/p2p-thief-agent> — the Thief-side peer.
+
+**Both repositories are written by the same team** (`sharNamr`), as rule 49 intends, and they
+share support code — chart rendering, operator services, the quality-gate scripts and about
+thirty files in all. What is authored separately is everything that decides a game: domain,
+protocol, orchestration and strategy. The itemised list, and the reason a shared library would
+have been the wrong fix, are in
+[docs/SHARED_MATERIAL_AND_AUTHORSHIP.md](docs/SHARED_MATERIAL_AND_AUTHORSHIP.md). The
+separation the rules actually demand is at run time — separate processes, no shared memory or
+variables (rules 1 and 2) — and that one is enforced structurally and tested.
+
+
+### What an external audit changed in this report
+
+**Added 2026-08-08.** An independent examiner was asked to evaluate both repositories with a
+hostile brief: reproduce every claim, hunt Appendix E sanctions first, and treat anything
+unreproducible as unverified. It is recorded here because the result changes how the numbers
+above should be read.
+
+**The gates held and no sanction-level rule was violated.** Every declared check was re-run by
+someone trying to break it: the frozen install, `ruff`, the full suite with branch coverage,
+the file-length and secret gates, and the secret scan over *every blob in history* rather than
+the working tree. Rules 2, 8/9, 11, 15, 17/18/19, 20, 23 and 39/40 were each attacked directly
+and each held; the commit-reveal digest and the scent-model lock were recomputed and matched
+the companion repository byte for byte.
+
+**What did not hold was the documentation.** Five documents still printed a headline the
+code had superseded — blind 0.225, belief 0.975, "96.8% of the gap" — while
+`results/strategy_arms.json`, which re-running the experiment reproduced **exactly**, said
+0.525, 1.000 and 100%. The research report had no section at all for the interception stack
+served since that morning, so it still described `flee_smart` as a structural open boundary
+while `results/tournament_grid.json` sat in the repository showing 40/40 against all five
+archetypes. The README opened by announcing that there was no GUI, directly above two
+screenshots of it. The self-assessment scored a docstring row 2 out of 2 on ruff enforcement
+that has never been enabled; measuring it instead moved that row to 1 and the total from
+26/30 to **25/30**.
+
+Three lessons are recorded rather than quietly fixed, because they are the reusable part:
+
+1. **Regenerating results is not updating the report.** `results/*.json` has a script;
+   the prose quoting it does not, so the two drift silently and only the prose is graded.
+2. **A number written into a document is a claim with an expiry date, and nothing watches it.**
+   The fix applied here where it was possible was to *derive* the wording from the data rather
+   than restate it.
+3. **Screenshots must have committed subjects.** A capture of a file in a temporary directory
+   is real evidence that no third party can ever reproduce, which makes it indistinguishable
+   from a fabricated one at exactly the moment it matters.
+
+What the audit could not fix, because it is not a documentation problem: no counted league
+game has been played, no public tunnel has been opened, and OAuth consent has not been run.
+Those are stated in **Current milestone** above and are the operator's remaining work.
 
 ## Usage
 
-The peer is not yet runnable as a live agent; what exists today is the SDK, the
-protocol layer, both transport adapters, negotiation, and one turn of the loop.
-So the honest usage surface is the CLI version probe and the verification suite:
+The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a
+whole match — negotiation, commit-reveal turns, capture claims, the post-game audit, and the
+artifact set a counted game owes:
+
+```text
+uv run p2p-cop serve --root . --match <shared match config json> \
+                     --rate-limits config/rate_limits.json \
+                     --private config/game.toml \
+                     --artifacts games/<game_id> --sub-game 1
+```
+
+`--match` and `--private` have no repository fallback on purpose: the shared object is the
+byte-identical negotiated file, and the private TOML holds this peer's port, the opponent's
+URL and its commitment nonces, so neither may be silently defaulted. The full match-day
+procedure, including the tunnel step, is [docs/MATCH_RUNBOOK.md](docs/MATCH_RUNBOOK.md).
+
+The version probe and the offline surface:
 
 ```text
 uv run p2p-cop --version          # 1.00
@@ -1713,8 +1815,21 @@ with it:
 uv run pytest tests/conformance/ -v
 ```
 
-This section will gain the live `peer` invocation, its flags, and replay
-screenshots once `M5-10d` (a full sub-game over the wire) lands.
+To re-verify a stored log from the command line, and regenerate the submission
+screenshots:
+
+```text
+uv run p2p-cop replay --log games/game-593df753457f/log_game-593df753457f_g01.json
+uv run p2p-cop verify --log <path>                    # exit 1 if TAMPERED, 2 if unreadable
+uv run python scripts/capture_replay_screenshots.py   # Verified OK and TAMPERED
+uv run python scripts/capture_live_gui_screenshot.py  # live belief map
+```
+
+`verify` exits **2** rather than 1 on a file it cannot read: rule 19 has no appeal, so a
+missing or malformed log must never be scored as forgery.
+
+What this section still cannot show is a game against a classmate; that needs the tunnel and
+an opponent, and the procedure is in the match runbook rather than promised here.
 
 ## Contributing
 

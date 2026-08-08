@@ -662,3 +662,156 @@ and called 21 numbered steps unnumbered. Fixtures birth a viewer; only a real lo
 one. Both readers now fall back to the sealed payload.
 
 Style addendum, same day: both windows moved onto a dark-navy chrome with glowing pill banners, rounded cells, and neon trails (`ui/style.py`) — pure tkinter, no theme dependency. The verdict colours and the heat ramp were deliberately left alone: reference-matched, test-pinned meaning is not styling. The styled replay window crossed the 150-line cap and split its evidence panels into `ui/replay_panels.py` rather than widening the gate.
+
+
+## 2026-08-08 (v) — an external audit, and the documents that had rotted
+
+**Prompt.** An independent examiner was asked to evaluate both repositories before submission
+with a hostile brief: trust nothing either repo says about itself, reproduce every claim, hunt
+Appendix E sanctions first, and find at least ten real problems. Then: fix them.
+
+**What the gates said.** Everything declared passed, honestly: `uv sync --frozen`, `ruff` clean,
+1819 tests at 96.50% branch, file lengths, secret scan over the tree *and* all 2722 history
+objects, the shared-contract verifier. The audit found **no disqualification-level violation** —
+rules 2, 8/9, 11, 15, 17/18/19, 20, 23, 39/40 all held up under direct attack, and the
+commit-reveal and scent-lock digests were reproduced byte-identically against the companion.
+
+**What it found instead was worse in a quieter way: the code was ahead of every document
+describing it.** Five documents still printed a headline the code had superseded — blind 0.225
+/ belief 0.975 / "96.8% of the gap", numbers from the pre-interception policy. Re-running the
+experiment produced 0.525 / 1.000 / 100% and matched `results/strategy_arms.json` **exactly**,
+which is the diagnosis: the results were regenerated and committed, and the prose was not. The
+research report had no section at all for the stack actually served since that morning, so its
+"`flee_smart` is a structural open boundary" conclusion described a policy two revisions old —
+`results/tournament_grid.json` had 40/40 against all five archetypes sitting in the repository,
+unmentioned.
+
+**Four more of the same shape.** The README opened with "Still absent: … any GUI (`ui/` is an
+empty package)" beside two committed screenshots of that GUI, and "not yet runnable as a live
+agent" beside a `serve` command that plays whole matches. `SELF_ASSESSMENT.md` claimed ruff `D`
+docstring enforcement that has never been in the select set — scored 2 on evidence that did not
+exist; measuring it (671 of 753 public definitions) put the row at 1 and the total at 25/30. It
+also recorded two weaknesses that measurement had retired, including "the Thief's CLI is a
+scaffold" — a claim about the *other* repository, which is the easiest kind to leave stale,
+because nothing here fails when it rots.
+
+**The screenshot finding, and the notebook answer that decided it.** The committed `Verified OK`
+capture showed a log living in a temporary directory: a real match, but reproducible by one
+person on one machine, and captioned as if it showed a test fixture. Asked directly, the book
+requires these captures to show a game **actually played**, not a fixture — so the fix was not
+to re-point the script at `tests/fixtures/`. The played match is now committed under `games/`
+with its configuration (obligation 4), its declaration, and both peers' revealed logs, and the
+capture reads it from the repository. Re-capturing exposed a second defect immediately: the
+committed script cropped the window, losing the transport controls and the last three steps —
+a picture proving less than the viewer does.
+
+**Lessons.** (1) *Regenerating results is not updating the report* — the JSON and the prose are
+two artifacts and only one of them has a script. (2) *A number in a document is a claim with an
+expiry date*, and nothing was watching these: the chart captioned "the two metrics rank the
+strategies in opposite directions" was drawn from data showing them agreeing. That title is now
+computed from the bars. (3) *A self-assessment that only ever rises is marketing* — this one
+went down. (4) *Screenshots must be of committed inputs*, or the evidence dies with the temp
+directory.
+
+
+## 2026-08-08 (vi) — the audit's leftovers, and one finding the audit got wrong
+
+**Prompt.** "Fix all the rest" — the smaller findings left open after the first audit pass:
+the missing `replay`/`verify` CLI verbs, the `ast.Import` hole in the rule-8/9 boundary guards, a `target-version` that disagreed with `requires-python`, and a `TEAM_INFO` row naming a contract version one bump behind the file it describes.
+
+**The notebooks were asked first, and one answer retired a finding instead of closing it.**
+The audit had flagged "no results-analysis notebook in either repository" against guidelines
+§9.2. Asked directly, the book **does not require a Jupyter file**: it names the deliverable
+`RESEARCH-REPORT-Performance-Analysis.md` under `/docs`, which is the file both repositories
+already ship, and the pinned reference contains no notebook either — its analysis is markdown
+plus plain Python. The finding was an **invented requirement**: a real rule read through the
+word "notebook" rather than through what the source says the artifact is. It is now written
+into the research report itself so nobody "fixes" it later by adding a file that satisfies
+nothing. A reviewer who manufactures requirements wastes exactly the time the review cost.
+
+**The CLI gap was real and had been invisible for the same reason all week's findings were.**
+Rule 20 makes the replay application a threshold condition for submission, and the verifier
+has satisfied it since M8 — through `scripts/` and a Tk window. A grader with a log and a
+shell had no way in. The reference exposes `python -m police_thief replay --log <path>` and
+the companion settled on the same shape independently, so `--log` was adopted rather than
+invented. The one design decision worth recording: an unreadable or malformed file exits
+**2, not 1**. Rule 19 is an iron rule with no appeal, so scoring a missing file as forgery
+would be a false accusation with a fatal sanction.
+
+**The boundary-guard hole is the most serious thing found today.** The truth-boundary walkers
+enforce rules 8 and 9 — sanction: disqualification of the *project* — and they matched only
+`ast.ImportFrom`. A plain `import p2p_cop_agent.orchestration as o` inside `live/` would have
+passed the one test that exists to stop it. It was verified by feeding the fixed helper the
+exact evasion and watching it report. **A guard that checks one of the two ways to write the
+same statement is not a guard**, and this one had been green since M8 while half-blind.
+
+**Fixing the lint target cost more than it looked.** `target-version = "py310"` against
+`requires-python = ">=3.11"` meant ruff was judging the code against a Python this project
+does not support — and it was suppressing **10 real findings**, eight of them `UP042`
+(`class X(str, Enum)` where 3.11 has `StrEnum`). Adding an ignore was refused because the
+contributing guide forbids silencing a finding, so all eight enums were converted and the
+full suite run as the arbiter. What made that safe rather than reckless: **JSON output is
+identical for both forms** — both serialise to the value — so nothing on the wire or in an
+artifact moves; only `str()` and f-string formatting differ.
+
+**Lesson.** A version pin is a claim like any other, and this one was quietly *reducing* the
+strictness of a gate the project points to as evidence. The gates are only worth what their
+configuration says.
+
+
+## 2026-08-08 (vii) — the scent kernel was wrong, and our own reading rule is why
+
+**Prompt.** A classmate team's analysis of our repositories, forwarded by Amr, claimed our
+5x5 emission kernel disagrees with theirs: diagonal `0.42` not `0.20`, mid-side `0.20` not
+`0.14`, and the eight-cell ring `0.14` rather than a negotiated residual. Asked to check it
+before changing anything.
+
+**Three of their four claims did not survive checking.** Their `game_id`/`game_uid` finding
+was wrong -- we do derive both deterministically in `adapters/serve.py`; they read the
+`MatchIdentity` dataclass and not the call site. Their report-signature proposal (spaced
+separators, a Hebrew consensus key) appears nowhere in the book and its spaced separators
+would contradict the canonical-JSON rule the book *does* state, so it is one team's private
+convention. Their open question -- whether a scent mismatch could surface as an audit hash
+mismatch -- is answered by the code: `smell_grid` rides in the **public** turn fields, never
+inside the sealed payload, so the worst case is a clean pre-game refusal, never a both-zero
+audit.
+
+**The fourth claim was right, and it was ours to have caught.** Fit `tau = 0.9*exp(-k*d^2)`
+through the only two values every reading agrees on -- centre `0.90`, cross `0.62` -- and the
+remaining classes follow with **no free parameter**: `0.427`, `0.203`, `0.140`, `0.046`. That
+is their kernel to two decimals, four for four, and it is exactly what Figure 4's caption
+describes: a hill decaying radially. Our table matched at the centre, the cross and the
+corners and was wrong in the middle -- the same curve **shifted inward by one radial class**.
+The shift also explains the thing we had treated as a gap in the book: the eight "unnamed"
+cells were unnamed only because the shift had consumed the class that owns `0.14`. The book
+PDF, asked directly, confirms all six classes and states that every one of the 25 cells
+carries a value.
+
+**The worst part is that we had already been told.** On 2026-08-05 `U-030`/`U-025` were closed
+against these exact numbers, with the reasoning written into the ledger: *"A NotebookLM answer
+claimed Figure 4 prints all 25 cells with diagonals at 0.42 and the ring at 0.14; the book
+summary contradicts it on every point... a notebook answer is not a source."* But the notebook
+holds the **PDF**, and `inst/police_thief_p2p_Summary.md` is a **translation**. The rule we
+were applying -- *a restatement of a source is not the source* -- was the right rule, pointed
+backwards. It cost a wrong emission kernel in both peers for three days, and it would have
+cost a refused game against any classmate who read the figure correctly.
+
+**What changed.** The kernel in both repositories, the lock digest (`416a57e1...` ->
+`e6aef097...`, still identical across the two peers), the stored scent vectors, the regression
+matrix, both PRDs, both unknown registers, and every measured result -- belief sits directly
+on the emission field, so nothing downstream was still valid. The tournament headline
+survived the change: the served stack still captures 40/40 against all five archetypes on
+both board sizes, equal to the referee-truth oracle.
+
+**And one test that should have existed from the start now does.** `test_scent.py` pins the
+*curve* -- every class within 0.01 of `0.9*exp(-k*d^2)` -- not just the table. It needs no
+source to argue with, and it fails on a one-class shift by twenty times its own tolerance.
+The old suite pinned the table to itself, which is why five scent tests passed for three days
+over the wrong physics.
+
+**Step 3 was completed only half.** The book notebook answered and is the authority that
+settled this. The **code notebook froze** across three attempts -- original tab, reload, and a
+brand-new tab, each rejecting even a four-character probe -- so "what does the reference
+emit?" is unanswered. Recorded rather than skipped silently: the reference uses subtractive
+decay over Chebyshev distance, a different model that cannot arbitrate Figure 4's radial
+values, which is why the correction proceeded on the book's authority alone.

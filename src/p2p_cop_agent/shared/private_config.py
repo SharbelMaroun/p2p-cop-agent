@@ -23,10 +23,9 @@ match object that carries a network address at all `[AE-10]` `[AE-39]` `[ADR-004
 
 from __future__ import annotations
 
+import tomllib
 from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
-
-import tomllib
 
 from p2p_cop_agent.shared.config import JsonObject
 

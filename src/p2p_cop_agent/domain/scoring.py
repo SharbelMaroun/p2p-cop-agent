@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 _FIELDS = (
     "capture_cop",
@@ -29,7 +29,7 @@ class ScoringError(ValueError):
     """Raised when the configured scoring block is missing or malformed."""
 
 
-class Outcome(str, Enum):
+class Outcome(StrEnum):
     """A decided sub-game outcome that maps to a fixed score pair."""
 
     CAPTURE = "capture"

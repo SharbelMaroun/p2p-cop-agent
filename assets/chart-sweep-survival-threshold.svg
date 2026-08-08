@@ -28,12 +28,12 @@
 <circle cx="535.0" cy="54.0" r="3" fill="#2980b9"/>
 <circle cx="690.0" cy="54.0" r="3" fill="#2980b9"/>
 <polyline points="70.0,54.0 225.0,54.0 380.0,54.0 535.0,54.0 690.0,54.0" fill="none" stroke="#2980b9" stroke-width="2"/>
-<circle cx="70.0" cy="258.0" r="3" fill="#e67e22"/>
-<circle cx="225.0" cy="258.0" r="3" fill="#e67e22"/>
-<circle cx="380.0" cy="258.0" r="3" fill="#e67e22"/>
-<circle cx="535.0" cy="258.0" r="3" fill="#e67e22"/>
-<circle cx="690.0" cy="258.0" r="3" fill="#e67e22"/>
-<polyline points="70.0,258.0 225.0,258.0 380.0,258.0 535.0,258.0 690.0,258.0" fill="none" stroke="#e67e22" stroke-width="2"/>
+<circle cx="70.0" cy="257.6" r="3" fill="#e67e22"/>
+<circle cx="225.0" cy="257.6" r="3" fill="#e67e22"/>
+<circle cx="380.0" cy="257.6" r="3" fill="#e67e22"/>
+<circle cx="535.0" cy="257.6" r="3" fill="#e67e22"/>
+<circle cx="690.0" cy="257.6" r="3" fill="#e67e22"/>
+<polyline points="70.0,257.6 225.0,257.6 380.0,257.6 535.0,257.6 690.0,257.6" fill="none" stroke="#e67e22" stroke-width="2"/>
 <rect x="70" y="366" width="11" height="11" fill="#2980b9"/>
 <text x="86.0" y="375.0" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#263238" text-anchor="start" font-weight="normal">capture rate</text>
 <rect x="220" y="366" width="11" height="11" fill="#e67e22"/>

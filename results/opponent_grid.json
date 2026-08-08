@@ -20,7 +20,7 @@
         "captures": 40,
         "games": 40,
         "mean_cop_score": 20.0,
-        "mean_turns": 9.72
+        "mean_turns": 9.78
       }
     },
     "barrier_stack": {
@@ -66,7 +66,7 @@
         "captures": 40,
         "games": 40,
         "mean_cop_score": 20.0,
-        "mean_turns": 9.68
+        "mean_turns": 9.72
       }
     },
     "oracle": {

@@ -5,23 +5,39 @@ intensity at ``0.9``, decay ``ρ = 0.10``, and a 5×5 field. The decay is
 **multiplicative** -- the simulator's subtractive decay is a reference deviation the
 book overrides (`C-009`, `ADR-005`), and a test distinguishes the two.
 
-**The eight undocumented cells are now negotiated, not omitted (`U-030`).** Book
-Figure 4 (`inst/police_thief_p2p_Summary.md:947-955`) names five radial classes --
-centre ``0.90``, cross ``0.62``, diagonal ``0.20``, mid-side ``0.14``, corner
-``0.04`` -- covering **17** of the 25 cells. The 8 cells at offsets ``(±1,±2)`` /
-``(±2,±1)`` are named by no source, so no value for them can be *derived*; the book's
-own boxed section (PDF p. 31) says what to do instead: the parties **agree** the
-emission and decay model, verify they read it identically, and lock it with a SHA-256
-hash. So the class is a parameter with a published default, and the whole model is
-hash-locked at negotiation (:mod:`p2p_cop_agent.strategy.scent_lock`).
+**Figure 4 names all six radial classes, and this table was wrong until 2026-08-08
+(`U-030`, reopened and re-closed).** The corrected profile, by squared distance from
+the emitter: centre ``0.90``, cross ``0.62``, diagonal ``0.42``, mid-side ``0.20``,
+the eight cells at squared distance 5 ``0.14``, corner ``0.04`` -- **25 of 25 cells**,
+none unnamed.
 
-Emitting them is not optional for interoperability: the reference simulator's
-``SmellField.snapshot()`` emits **all 25** cells and its own tests assert a length of
-25, so a 17-cell field reads as 8 missing cells to a simulator-built opponent.
+**How the old table went wrong, because the shape of the error is the lesson.** The
+translation in ``inst/police_thief_p2p_Summary.md:947-955`` lists only five classes and
+assigns diagonal ``0.20`` and mid-side ``0.14`` -- which are the true values of the
+*next two rings out*. The whole table was the right curve **shifted inward by one
+radial class**, which is why the endpoints (``0.90``, ``0.62``, ``0.04``) matched
+perfectly while the middle did not, and why eight cells appeared to have no value: the
+shift had consumed the class that owns ``0.14``.
 
-``DEFAULT_OUTER_RING_DELTA`` carries **no book authority** and is deliberately not
-presented as if it did. It is a starting offer, and the lock is what makes a
-disagreement visible before the first move rather than at the audit.
+**What settles it.** Fit ``τ = 0.9·exp(−k·d²)`` using only the two values every reading
+agrees on -- centre ``0.90`` and cross ``0.62`` -- and the rest follow with no free
+parameter: ``0.427``, ``0.203``, ``0.140``, ``0.046``. That is the corrected table to
+two decimals, four for four, and it is what Figure 4's own caption describes: a hill
+that "decays radially from the center". The book PDF confirms it directly, and a
+classmate team reproduced the same kernel independently.
+
+The old reading was defended on 2026-08-05 against exactly these values on the grounds
+that "a notebook answer is not a source" -- but the notebook holds the **PDF**, and the
+file it was checked against is a *translation*. A restatement is not the source either,
+and that is the rule that was applied backwards.
+
+Emitting all 25 is also required for interoperability: the reference simulator's
+``SmellField.snapshot()`` emits 25 cells and its tests assert that length, so a
+17-cell field reads as 8 missing cells to a simulator-built opponent.
+
+``DEFAULT_OUTER_RING_DELTA`` now carries book authority; the parameter survives only so
+a peer that insists on a different ring can still be met and locked
+(:mod:`p2p_cop_agent.strategy.scent_lock`).
 
 Re-emission on an occupied cell is still unresolved (**U-031**): :func:`decay`
 implements the formula as written and applies no ``0.9`` cap.
@@ -33,32 +49,31 @@ CENTER_INTENSITY = 0.9
 DECAY_RATE = 0.10
 FIELD_SIZE = 5
 
-# Row/col offset from the agent -> emitted Δτ, for the 17 book-documented cells
-# (`inst/police_thief_p2p_Summary.md:947-955`). This stays the record of what the
-# book *states*; the negotiated outer ring is deliberately kept out of it so the two
-# can never be confused for one another.
+# Row/col offset from the agent -> emitted Δτ, for the 17 cells outside the squared
+# distance 5 ring. Corrected 2026-08-08 against the book PDF: the diagonal is 0.42 and
+# the mid-side 0.20; the previous 0.20/0.14 were this curve shifted inward one class.
 DOCUMENTED_EMISSION: dict[tuple[int, int], float] = {
     (0, 0): 0.90,  # centre -- the agent itself
-    # cross: orthogonal neighbours, distance 1
+    # cross: orthogonal neighbours, squared distance 1
     (-1, 0): 0.62, (1, 0): 0.62, (0, -1): 0.62, (0, 1): 0.62,
-    # diagonal neighbours, distance 1 on each axis
-    (-1, -1): 0.20, (-1, 1): 0.20, (1, -1): 0.20, (1, 1): 0.20,
-    # mid-side edges, distance 2 orthogonal
-    (-2, 0): 0.14, (2, 0): 0.14, (0, -2): 0.14, (0, 2): 0.14,
-    # corners, distance 2 diagonal
+    # diagonal neighbours, squared distance 2
+    (-1, -1): 0.42, (-1, 1): 0.42, (1, -1): 0.42, (1, 1): 0.42,
+    # mid-side edges, squared distance 4
+    (-2, 0): 0.20, (2, 0): 0.20, (0, -2): 0.20, (0, 2): 0.20,
+    # corners, squared distance 8
     (-2, -2): 0.04, (-2, 2): 0.04, (2, -2): 0.04, (2, 2): 0.04,
 }
 
-# The 8 cells at squared distance 5 that Figure 4 leaves unnamed (`U-030`).
+# The 8 cells at squared distance 5. Figure 4 names them 0.14 (`U-030`, re-closed).
 OUTER_RING_OFFSETS: tuple[tuple[int, int], ...] = (
     (-2, -1), (-2, 1), (2, -1), (2, 1),
     (-1, -2), (1, -2), (-1, 2), (1, 2),
 )
 
-# The negotiated default for that ring. NO BOOK AUTHORITY -- see the module docstring.
-# It matches the corner class only because a residual is the least surprising opening
-# offer, not because any source says so. Both peers lock whatever they agree.
-DEFAULT_OUTER_RING_DELTA = 0.04
+# Figure 4's value for that ring. This was `0.04` and carried "NO BOOK AUTHORITY" until
+# 2026-08-08, when the PDF showed the book names it -- the ring only looked unnamed
+# because the rest of the table was shifted into it.
+DEFAULT_OUTER_RING_DELTA = 0.14
 
 
 class ScentModelError(ValueError):
