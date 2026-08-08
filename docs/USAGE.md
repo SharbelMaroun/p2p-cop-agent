@@ -130,3 +130,19 @@ Development-only: `pytest`, `pytest-cov`, `ruff`.
 
 No third-party code is vendored into `src/`. Course material in `inst/` belongs to
 Dr. Yoram Segal and is quoted under fair academic use, cited by page throughout.
+
+### Pre-match readout
+
+```text
+uv run p2p-cop preflight --match <shared match json> --private config/game.toml
+```
+
+One screen answering "what is armed right now?" -- version, both endpoints, whether the MCP
+port is free, the match config's Appendix F verdict, the scent-lock digest, and whether
+reporting is `ARMED` or `DISABLED` (with the credential path it checked). Exits non-zero on
+any failure, so it can gate a script. It binds nothing, sends nothing and contacts no peer.
+
+There is deliberately **no on/off switch for reporting**: sending is impossible unless a
+credential exists, and this command shows you that state rather than asking you to trust a
+flag. A `[email] mode = "draft"` key used to sit in the config template and nothing ever read
+it -- removed 2026-08-09.

@@ -815,3 +815,100 @@ brand-new tab, each rejecting even a four-character probe -- so "what does the r
 emit?" is unanswered. Recorded rather than skipped silently: the reference uses subtractive
 decay over Chebyshev distance, a different model that cannot arbitrate Figure 4's radial
 values, which is why the correction proceeded on the book's authority alone.
+
+
+## 2026-08-09 — a readout instead of a switch, and a toggle that was wired to nothing
+
+**Prompt.** Sharbel, before a friendly series: "the email sender should be disabled now". Then,
+after I proved it four different ways: *"why didn't we implement all these things with a toggle
+for the email sender?"*
+
+**The question found a real defect, though not the one it was aiming at.** Both config
+templates carried `[email] mode = "draft"` — and **no code in either repository has ever read
+it**. Neither is `[email].recipient` read: it appears only in the *forbidden-keys* guard that
+keeps private fields off the wire, and as a parameter name in `SendReceipt`. A switch wired to
+nothing is worse than no switch, because it invites someone to believe reporting is off
+because a file says `draft`. Removed from both templates, with a comment explaining the
+removal so nobody helpfully adds it back.
+
+**Why the answer is a readout and not a toggle.** Sending is impossible today for three
+structural reasons: no credential exists, no CLI verb reaches the sender, and the play path
+never calls it. A boolean is *weaker* than any of those — it can be defaulted wrong, typo'd, or
+read from the wrong file. The right fix was never to add a fourth thing to trust; it was to
+make the three existing facts **visible**, because proving them took four greps across two
+packages, and "I think it's off" is not what anyone should run on with an opponent waiting.
+
+`preflight` prints one screen: version, private config, both endpoints, port, match config with
+its Appendix F verdict, the scent-lock digest, and whether reporting is `ARMED` or `DISABLED`
+with the credential path it looked at. Exit 1 on any failure, so it can gate a script.
+
+**The reference contributed the check I had not planned.** Asked directly, it has no preflight
+*command* — its equivalents are fail-fast gates inside `run_peer`: `validate_agreement(cfg)` in
+`peer/sealing.py` for the agreed terms, and **`_ensure_port_free(host, port)`** in
+`infra/mcp_server.py`, which exists because a previous agent still holding the MCP port fails
+as a bare `WinError 10048` mid-startup. Our own rehearsals lost runs to exactly that, and the
+symptom was the *opponent* appearing absent. That check is now the fourth line of the readout,
+and its test holds a real socket to prove it fires.
+
+**Every check is tested in both directions.** A preflight that only prints green is the same
+failure as the dead toggle it replaced, so each case is driven to both verdicts: credential
+present *and* absent, port free *and* held, match config valid *and* below the Appendix F
+floor, private config readable *and* missing.
+
+**One test had to be fixed for the right reason.** The "no dead toggle" test first matched the
+raw file text and failed — on the comment *explaining the removal*. It now parses the TOML and
+checks the document, not the prose. A test that fails on its own rationale is pinned to the
+wrong thing.
+
+**Step 3 was completed, but only after four freezes.** The code notebook rejected input on the
+first attempt and answered after a reload; the book notebook then froze and did **not** recover
+across two reloads, so its question — the book's pre-match checklist — went unanswered. That
+half is covered from `inst/` directly, which is the source the notebook only summarises: rules
+11 and 12 (config symmetry and the Appendix F floors), 23 (the scent lock), 24 (the Step-0
+hardware declaration), 39–40 (no secrets), and 53 (the commit hash). Recorded rather than
+skipped silently.
+
+
+## 2026-08-09 (ii) — the first real match attempt found what no test did
+
+**Prompt.** Sharbel ran the friendly series against group `amireman` for real. The Cop crashed
+before a single move:
+
+    ContractValidationError: match config $.pheromones: Additional properties are not
+    allowed ('pheromone_min_center_intensity' was unexpected)
+
+**The repository disagreed with itself, and the schema won.** `protocol/negotiation.py` marks
+that key `OPTIONAL_TERM` with the comment *"Tolerated simulator-profile extra; absent from
+Appendix F, so never required"*. `shared_contract/schemas/match-config.schema.json` set
+`additionalProperties: false` on the pheromones block and never got the memo. One file
+tolerated the key; the other made holding it impossible.
+
+**The blast radius is the part worth recording.** `offer_review` compares the **union** of both
+peers' term keys — `set(terms) | set(expected_terms)` — and treats present-versus-absent as a
+difference, because `.get()` returns `None`. The reference simulator always writes
+`min_center_intensity`. So the schema did not merely reject one hand-built file: it made **every
+simulator-shaped classmate unplayable**. Drop the key to satisfy the schema and the handshake
+refuses on a differing term; keep it and the config will not load. There was no configuration
+that could both load and negotiate.
+
+**Checked before changing anything.** The opponent's real `terms.json` carries the key, and our
+projected terms equal theirs *only* when our config carries it too. That settled which side was
+wrong: the code's tolerance was right and the schema was the outlier.
+
+**Why no test caught it.** Every fixture in the bundle was built by us, from the lecturer's
+three-key template, so nothing in the suite had ever presented a config shaped like the
+reference's. `M5-04g` had settled the *tolerance* question on 2026-08-01 and correctly left the
+bundle alone — the gap was that tolerance was implemented in the negotiation layer and
+contradicted one directory away. **A rule enforced in two places is only as permissive as its
+strictest copy**, and nothing was comparing them.
+
+**Two self-inflicted snags, both caught by our own gates.** A Python `write_text` on Windows put
+CRLF into a bundle that requires LF, and a stray `.pyc` had crept into the controlled directory.
+`test_all_controlled_bundle_files_use_lf` and the manifest verifier caught both before the
+commit — which is the argument for byte-controlling a bundle in the first place.
+
+**Lesson.** The friendly series has already paid for itself and no game has been played yet.
+Every gate in the repository was green while a defect sat between two files that were each
+internally consistent. The first genuine artifact from outside the project is still the only
+thing that finds this class of bug — the same lesson the replay viewer taught when a real log
+first reached it.

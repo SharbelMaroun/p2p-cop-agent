@@ -1,4 +1,4 @@
-# Shared Contract Bundle — `0.2.10-proposed`
+# Shared Contract Bundle — `0.2.11-proposed`
 
 Status: **PROPOSED / UNFROZEN — role-neutral**
 
@@ -44,7 +44,7 @@ bundle or its manifest.
 
 | Path | Purpose |
 |---|---|
-| `CONTRACT_VERSION` | `0.2.10-proposed` |
+| `CONTRACT_VERSION` | `0.2.11-proposed` |
 | `PROTOCOL_PROFILE.md` | `simulator-v3.0.0` compatibility tools, messages, and commit-reveal |
 | `MATCH_CONFIGURATION.md` | how a per-match config is supplied and the three hash domains |
 | `SHARED_RULES.md` | book-authoritative gameplay rules |
