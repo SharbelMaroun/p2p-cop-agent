@@ -1373,6 +1373,19 @@ closed the loop: **both peers record SURVIVAL after 35**, and the Thief's log re
 `Verified OK — 35 steps re-verified`. The tunnel run with screenshots remains the operator's
 step; what it rehearses is now known to work end to end.
 
+#### The served match writes its evidence, and the belief reaches the oracle (`M5-18a`, `M6-24`, 2026-08-08)
+
+The served path used to produce no artifacts at all — a counted game would have left the
+graded evidence existing only on the opponent's side. `p2p-cop serve --artifacts --sub-game`
+now writes the declaration, the per-sub-game config, and the **revealed** game log, all
+assembled from the sub-game's own audit; the reveal is legitimate there because the game has
+ended. The validation crossed implementations: our log replayed `Verified OK — 34 steps
+re-verified` under the companion Thief's verifier, and both repositories independently
+derived the same game id from the shared file. And the model-matched scent decoder came home
+(`M6-24`): the live stack now equals the truth-aimed oracle stack on **every** opponent-grid
+cell — the one random-walk game the containment ratchet used to concede came back with the
+exact aim. `docs/MATCH_RUNBOOK.md` carries the one-page classmate procedure.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

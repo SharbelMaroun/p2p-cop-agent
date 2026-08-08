@@ -602,3 +602,19 @@ terminal check to immediately after receive (`TerminalClaimReceived`): a decided
 owed nothing — no decide, no seal, no send. Re-rehearsed: both sides SURVIVAL at 35, replay
 `Verified OK`. Three tests had pinned the reply-anyway behaviour; a test that pins a bug is
 how a bug survives, and the rehearsal is what outranked them.
+
+## 2026-08-08 (ii) — evidence from the served path, and the decoder comes home
+
+Two closures. The served path finally writes its graded evidence — declaration, config,
+and the revealed log, all assembled from the sub-game's own audit — and the validation
+crossed implementations: our log replayed `Verified OK` under the companion Thief's
+verifier, 34 commitments recomputed by code we did not write. One payload lesson en
+route: the sealed payload carried no `step` member (the ledger numbered turns
+externally), found the moment an artifact writer needed it — sealed truth should be
+self-describing.
+
+And the model-matched decoder, ported home: the live stack now equals the truth-aimed
+oracle stack on every grid cell — the one random-walk game the containment ratchet used
+to concede came back with the exact aim. Perception is now solved on both sides of the
+board; what separates the two agents from their ceilings is nothing measurable in any
+harness we have.

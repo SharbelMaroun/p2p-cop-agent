@@ -39,11 +39,11 @@
         "mean_turns": 35.0
       },
       "random": {
-        "capture_rate": 0.975,
-        "captures": 39,
+        "capture_rate": 1.0,
+        "captures": 40,
         "games": 40,
-        "mean_cop_score": 19.62,
-        "mean_turns": 10.43
+        "mean_cop_score": 20.0,
+        "mean_turns": 8.8
       }
     },
     "belief": {

@@ -16,11 +16,12 @@ homing the companion peer's live policy reached for the same reason.
 
 Each turn, in order:
 
-1. **Observe.** The opponent's `smell_grid` becomes a likelihood and the belief is
-   rebuilt from it fresh each turn, the prior surviving only silent or malformed
-   turns (M6-02c). Fresh-not-recursive is measured, not stylistic: recursion under a
-   static likelihood has no motion model, calcifies on history, and scored 0/40
-   where the fresh form scores 40/40. Nothing here reads a true position `[AE-8]`.
+1. **Observe.** The opponent's `smell_grid` is decoded model-matched (M6-24): the
+   residual against last turn's observation is exactly the newest stamp under the
+   locked physics, so the belief localises the emitter instead of lagging on raw
+   intensity. Fresh per observation, never Bayes-recursive (measured: recursion
+   calcified, 40/40 → 0/40); the prior survives only silent or malformed turns
+   (M6-02c). Nothing here reads a true position `[AE-8]`.
 2. **Choose one legal intent** via `strategy.anticipation.predictive_turn_intent` —
    capture-move or trapping barrier, else squeeze, else the containment ratchet on
    the just-vacated cell in a locked endgame, else the flight-set chase. One move
@@ -51,7 +52,8 @@ from p2p_cop_agent.protocol.scent_wire import ScentWireError, decode_scent, enco
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.strategy.anticipation import predictive_turn_intent
 from p2p_cop_agent.strategy.barrier_policy import BarrierIntent
-from p2p_cop_agent.strategy.belief import Belief, scent_likelihood
+from p2p_cop_agent.strategy.belief import Belief
+from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood
 from p2p_cop_agent.strategy.hints import hint_max_words
 from p2p_cop_agent.strategy.landmarks import place_for
 from p2p_cop_agent.strategy.scent_field import ScentField
@@ -74,17 +76,20 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
         "barriers": BarrierField(quota),
         "belief": Belief.uniform(board.grid_size, start=board.min_index),
         "count": 0,
+        "seen": None,  # (turn, observed cells) — the decoder's previous observation
     }
 
-    def _observe(incoming: JsonObject | None) -> None:
-        """Rebuild belief from the freshest observation; carry it only across silence.
+    def _observe(incoming: JsonObject | None, turn: int) -> None:
+        """Rebuild belief from a model-matched decode of the freshest observation.
 
-        Not Bayes-recursive, and measurably so: carrying the prior under this static
-        likelihood has no motion model, so history accumulates and the argmax
-        calcifies on old trail — the opponent grid scored the recursive form 0/40
-        against the very archetype the fresh form tracks 40/40. The prior survives
-        only turns with nothing to see, where it beats resetting to a corner-tied
-        uniform (M6-02c).
+        `M6-24`: the residual against last turn's observation is exactly the newest
+        emission stamp under the locked physics, so matching it against the agreed
+        profile localises the emitter — where raw intensity weighting lags on
+        revisited cells. Fresh per observation, never Bayes-recursive (the recursive
+        form calcified and lost a tracked target 40/40 → 0/40); the prior survives
+        only silent or malformed turns (M6-02c). The window is partial, so scoring
+        trusts only cells both observations covered, and a stale observation falls
+        back to single-stamp matching.
         """
         if not isinstance(incoming, Mapping):
             return
@@ -96,13 +101,18 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
         except ScentWireError:
             observed = {}  # a malformed observation is no observation, not a crash
         if observed:
+            seen = state["seen"]
+            before = seen[1] if seen and seen[0] == turn - 1 else None
+            trusted = set(observed) & set(before) if before else None
             state["belief"] = Belief.uniform(board.grid_size, start=board.min_index).updated(
-                scent_likelihood(observed, board.grid_size, start=board.min_index))
+                emitter_likelihood(observed, before, grid_size=board.grid_size,
+                                   start=board.min_index, trusted=trusted))
+            state["seen"] = (turn, observed)
 
     def decide(incoming: JsonObject | None) -> tuple[JsonObject, JsonObject]:
         state["count"] += 1
         count = state["count"]
-        _observe(incoming)
+        _observe(incoming, count)
         target = Coordinate.from_pair(state["belief"].most_likely())
 
         claim: list | None = None
@@ -130,6 +140,7 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
             bluff=count % 2 == 0, variant=count, max_words=hint_max_words(game),
         )
         payload: JsonObject = {
+            "step": count,
             "move": move_label,
             "position": [state["cell"].row, state["cell"].col],
             "barriers": [[c.row, c.col] for c in state["barriers"].placements],

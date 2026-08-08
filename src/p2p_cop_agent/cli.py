@@ -27,6 +27,10 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--match", required=True, help="path to the shared match config JSON")
     serve.add_argument("--rate-limits", required=True, help="path to the rate-limits JSON")
     serve.add_argument("--private", required=True, help="path to this peer's private game.toml")
+    serve.add_argument("--artifacts", help="directory for the declaration, config, and "
+                       "revealed game log — a counted game must produce its evidence")
+    serve.add_argument("--sub-game", type=int, default=1, dest="sub_game",
+                       help="this sub-game's number in the six-game series")
     return parser
 
 
@@ -42,11 +46,15 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 def _serve(args: argparse.Namespace) -> int:
     """Assemble a peer from config and play one match (see adapters.serve)."""
+    from pathlib import Path
+
     from p2p_cop_agent.adapters.serve import serve_match
 
     result = serve_match(
         root=args.root, match_config_path=args.match,
         rate_limits_path=args.rate_limits, private_config_path=args.private,
+        artifacts_dir=Path(args.artifacts) if args.artifacts else None,
+        sub_game=args.sub_game,
     )
     if not result.played:
         print("no match: the opponent did not come up or did not agree in time")

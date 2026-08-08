@@ -1,4 +1,4 @@
-# Documentation Completeness
+﻿# Documentation Completeness
 
 File presence and content readiness are separate. Every document in `docs/` is listed
 below with its current content status.
@@ -10,17 +10,17 @@ or a row claims a file that is not in the tree. It found **26 missing rows** on
 row in it was individually accurate, which is why nobody noticed. That is the argument
 for the check rather than for another careful pass.
 
-Dated one-off records — session handoffs, the blocker-resolution audit, the lecturer
-direction note — are deliberately excluded. They document a moment rather than a current
+Dated one-off records ג€” session handoffs, the blocker-resolution audit, the lecturer
+direction note ג€” are deliberately excluded. They document a moment rather than a current
 state, so a "current content status" for them would have to be re-dated forever.
 
 | Document | Present | Current content status |
 |---|---|---|
 | `README.md` | Yes | The graded entry point: six-section academic report, quick start, quality gates, companion link |
-| `docs/ACADEMIC_REPORT.md` | Yes | The long-form report — formalism, architecture decisions and their cost, measured results, and three disclosed source contradictions |
+| `docs/ACADEMIC_REPORT.md` | Yes | The long-form report ג€” formalism, architecture decisions and their cost, measured results, and three disclosed source contradictions |
 | `docs/PRD.md` | Yes | Behaviour-free milestone goals, non-goals and acceptance |
 | `docs/PLAN.md` | Yes | M0-M9 phases. M0-M4, M6, M7 DONE; M1.5 and M5 have one blocked row each; M8-M9 open. States are now held to `TODO.md` by `check_ledger_consistency.py` |
-| `docs/TODO.md` | Yes | The single task ledger, Cop-owned M0-M9. Task counts are deliberately not pinned here — they went stale three times before the ledger became the one place to read them |
+| `docs/TODO.md` | Yes | The single task ledger, Cop-owned M0-M9. Task counts are deliberately not pinned here ג€” they went stale three times before the ledger became the one place to read them |
 | `docs/PRD_commit_reveal.md` | Yes | SHA-256 commit-reveal, canonical form, and the audit |
 | `docs/PRD_scent_belief.md` | Yes | The locked multiplicative scent model with its digest, the wire observation, and the belief update rule with its trust factor (`M6-14a`) |
 | `docs/PRD_strategy.md` | Yes | Pursuit, the scent-over-hint evidence ordering, and the measured belief-vs-blind-vs-oracle comparison |
@@ -31,14 +31,14 @@ state, so a "current content status" for them would have to be re-dated forever.
 | `docs/ADR-009-peer-launch.md` | Yes | Peer launch decision (sits beside `adr/` for historical reasons) |
 | `docs/adr/ADR-001-mcp-contract.md` | Yes | MCP contract names. ACCEPTED for this project (Option B, simulator-v3 profile) |
 | `docs/adr/ADR-002-message-envelope-idempotency.md` | Yes | Message envelope and idempotency. ACCEPTED for this project (Option B) |
-| `docs/adr/ADR-003-schema-version-discrepancy.md` | Yes | Schema-version discrepancy `1.1` vs `1.2` (`C-008`). **PROPOSED — UNACCEPTED**; the version is deliberately held rather than normalised |
-| `docs/adr/ADR-004-shared-json-private-toml.md` | Yes | Shared JSON / private TOML boundary. ACCEPTED — this is what keeps tunnel tokens out of negotiated files |
-| `docs/adr/ADR-005-scent-model.md` | Yes | The multiplicative scent model, against the reference's subtractive decay. SOURCE-BACKED PROPOSAL — UNACCEPTED |
+| `docs/adr/ADR-003-schema-version-discrepancy.md` | Yes | Schema-version discrepancy `1.1` vs `1.2` (`C-008`). **PROPOSED ג€” UNACCEPTED**; the version is deliberately held rather than normalised |
+| `docs/adr/ADR-004-shared-json-private-toml.md` | Yes | Shared JSON / private TOML boundary. ACCEPTED ג€” this is what keeps tunnel tokens out of negotiated files |
+| `docs/adr/ADR-005-scent-model.md` | Yes | The multiplicative scent model, against the reference's subtractive decay. SOURCE-BACKED PROPOSAL ג€” UNACCEPTED |
 | `docs/adr/ADR-006-commit-reveal-canonicalization.md` | Yes | Commit-reveal canonicalization. Config hash defined; move commit ACCEPTED for this project |
 | `docs/adr/ADR-007-llm-movement-policy.md` | Yes | LLM movement stays disabled. ACCEPTED project baseline, with rule 25's recommendation status preserved rather than promoted |
-| `docs/adr/ADR-008-simulator-reuse-license.md` | Yes | Simulator reuse and licence. PROPOSED — no substantial copy |
-| `docs/adr/ADR-009-gui-truth-model.md` | Yes | GUI truth model. SOURCE-BOUND PLACEHOLDER — runtime deferred |
-| `docs/adr/ADR-010-gmail-reporting.md` | Yes | Gmail reporting. SOURCE-BOUND PLACEHOLDER — runtime deferred |
+| `docs/adr/ADR-008-simulator-reuse-license.md` | Yes | Simulator reuse and licence. PROPOSED ג€” no substantial copy |
+| `docs/adr/ADR-009-gui-truth-model.md` | Yes | GUI truth model. SOURCE-BOUND PLACEHOLDER ג€” runtime deferred |
+| `docs/adr/ADR-010-gmail-reporting.md` | Yes | Gmail reporting. SOURCE-BOUND PLACEHOLDER ג€” runtime deferred |
 | `docs/SOURCE_OF_TRUTH.md` | Yes | The authority order every other document resolves against |
 | `docs/SOURCE_INVENTORY.md` | Yes | What each source is and what it may be used for |
 | `docs/SPECIFICATION_CONFLICTS.md` | Yes | `C-nnn` contradictions in the source and how each was resolved |
@@ -62,6 +62,7 @@ state, so a "current content status" for them would have to be re-dated forever.
 | `docs/SUBMISSION_CHECKLIST.md` | Yes | What must be true before the annotated tag is made |
 | `docs/USAGE.md` | Yes | How to run the peer, the replay verifier and the gates |
 | `docs/RUNBOOK_reporting_setup.md` | Yes | Reporting setup, with credentials kept out of the repository |
+| `docs/MATCH_RUNBOOK.md` | Yes | The one-page procedure for playing a real opponent: shared-file handshake, commands, the six-sub-game role schedule, post-game duties, and the rehearsal-earned troubleshooting list |
 | `docs/TEAM_INFO.md` | Yes | Group identifier, team code and members |
 | `docs/PROMPT_LOG.md` | Yes | Historical provenance and correction entries |
 | `docs/RESEARCH-REPORT-Performance-Analysis.md` | Yes | Measured performance study |
