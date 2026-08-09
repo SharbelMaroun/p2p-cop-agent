@@ -1,18 +1,14 @@
 """The live Cop turn: belief-driven pursuit with barriers, on the wire (M6-21).
 
 **Until 2026-08-07 the served move was a documented M5 placeholder — a legal `STAY`
-every turn.** A Cop that never leaves its start cell can never satisfy the capture
-condition, so every served match was a guaranteed 5-point survival for the opponent
-while the measured pursuit (96.7% capture over the forty-seed arena) existed only in
-`scripts/experiment_arena.py`. This module is the seam `serve.py` said would replace
-it (M6-21), and the placeholder is gone rather than kept as an option — a policy that
-cannot win is not a fallback, it is a forfeit with extra steps.
+every turn**, so every served match was a guaranteed survival for the opponent while
+the measured pursuit lived only in `scripts/`. This module is the seam `serve.py` said
+would replace it (M6-21); the placeholder is gone rather than kept as an option,
+because a policy that cannot win is a forfeit with extra steps.
 
-It lives in `orchestration/`, not `adapters/`, and the M6-18 privacy guard is why:
-the wire layers may never import the inference modules (`test_belief_privacy`), so a
-belief-driven policy in `adapters/` was refused structurally. Wiring perception into
-a decision the wire then carries is exactly what `orchestration/` is for — the same
-homing the companion peer's live policy reached for the same reason.
+It lives in `orchestration/`, not `adapters/`: the M6-18 privacy guard forbids the wire
+layers from importing the inference modules (`test_belief_privacy`), so a belief-driven
+policy in `adapters/` was refused structurally.
 
 Each turn, in order:
 
@@ -22,6 +18,10 @@ Each turn, in order:
    intensity. Fresh per observation, never Bayes-recursive (measured: recursion
    calcified, 40/40 → 0/40); the prior survives only silent or malformed turns
    (M6-02c). Nothing here reads a true position `[AE-8]`.
+1b. **Sweep while blind (M6-27).** A flat belief's row-major argmax is the Cop's own
+   start cell, so aiming there answered `STAY` forever — 26 turns of it in the
+   `amireman` friendly. Never-observed, evidence-free and stale beliefs all take a
+   deterministic waypoint tour instead (`strategy.patrol`).
 2. **Choose one legal intent** via `strategy.shrink.shrinking_turn_intent` —
    capture-move or trapping barrier, else squeeze, else the containment ratchet on
    the just-vacated cell in a locked endgame, else the interception chase (M6-25:
@@ -58,6 +58,7 @@ from p2p_cop_agent.strategy.belief import Belief
 from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood
 from p2p_cop_agent.strategy.hints import hint_max_words
 from p2p_cop_agent.strategy.landmarks import place_for
+from p2p_cop_agent.strategy.patrol import aim
 from p2p_cop_agent.strategy.scent_field import ScentField
 from p2p_cop_agent.strategy.shrink import shrinking_turn_intent
 from p2p_cop_agent.strategy.verbal import generate_hint
@@ -85,14 +86,12 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
     def _observe(incoming: JsonObject | None, turn: int) -> None:
         """Rebuild belief from a model-matched decode of the freshest observation.
 
-        `M6-24`: the residual against last turn's observation is exactly the newest
-        emission stamp under the locked physics, so matching it against the agreed
-        profile localises the emitter — where raw intensity weighting lags on
-        revisited cells. Fresh per observation, never Bayes-recursive (the recursive
-        form calcified and lost a tracked target 40/40 → 0/40); the prior survives
-        only silent or malformed turns (M6-02c). The window is partial, so scoring
-        trusts only cells both observations covered, and a stale observation falls
-        back to single-stamp matching.
+        `M6-24`: the residual against last turn's observation is the newest emission
+        stamp under the locked physics, so matching it against the agreed profile
+        localises the emitter where raw intensity lags on revisited cells. Fresh per
+        observation, never Bayes-recursive (recursion calcified, 40/40 → 0/40); the
+        prior survives only silent or malformed turns (M6-02c). The window is partial,
+        so scoring trusts only cells both observations covered.
         """
         if not isinstance(incoming, Mapping):
             return
@@ -116,7 +115,10 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
         state["count"] += 1
         count = state["count"]
         _observe(incoming, count)
-        target = Coordinate.from_pair(state["belief"].most_likely())
+        # M6-27: a flat or stale belief aims at (0,0) — our own start — and that reads
+        # as "already there", i.e. STAY forever. `aim` sweeps instead.
+        seen_turn = state["seen"][0] if state["seen"] else None
+        target = aim(board, state["belief"], seen_turn, count, state["cell"])
 
         claim, barrier_placed = None, None
         # Fail-safe (M6-26): a strategy exception must cost one imperfect turn, never

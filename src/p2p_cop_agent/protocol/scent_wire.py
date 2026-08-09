@@ -19,10 +19,16 @@ Nothing here is inside the model hash: `scent_model_hash` locks the *model* (for
 constants, profile), never the emitted numbers, so rounding cannot invalidate a lock.
 
 **Parsing is hostile-input handling (M6-08b).** The grid arrives from an opponent, so a
-malformed key, a non-numeric value, a negative intensity, or an off-board cell is
-rejected before it can reach belief. A rejected grid raises rather than silently
-degrading to empty: scent is the one channel that cannot be faked, so quietly treating a
-corrupt one as "no evidence" would discard the strongest signal we have.
+malformed key, a non-numeric value, or a negative intensity is rejected before it can
+reach belief. A rejected grid raises rather than silently degrading to empty: scent is
+the one channel that cannot be faked, so quietly treating a corrupt one as "no evidence"
+would discard the strongest signal we have.
+
+An **off-board cell is the exception**: it is dropped, and the rest of the grid is kept.
+A fixed-size window centred anywhere but the interior names cells that do not exist, so
+refusing the grid for them refuses the sender's position, not their honesty. That
+distinction is not academic -- see `decode_scent`, where treating it as corruption lost a
+real game.
 """
 
 from __future__ import annotations
@@ -38,7 +44,10 @@ Cell = tuple[int, int]
 # Decimal places emitted. Six keeps every value the book names distinct and survives
 # ~35 turns of decay without collapsing; it is a send-side choice only.
 WIRE_PRECISION = 6
-_KEY = re.compile(r"^(\d+),(\d+)$")
+# A negative index is *well-formed* and simply off the board: a fixed-size window
+# centred near the origin names cells like ``"-1,2"``. Matching them here lets
+# `decode_scent` drop them as out-of-range rather than refusing the grid as malformed.
+_KEY = re.compile(r"^(-?\d+),(-?\d+)$")
 
 
 class ScentWireError(ValueError):
@@ -89,6 +98,21 @@ def decode_scent(
 
     Every failure names what was wrong, so a refusal is actionable by the peer that
     caused it rather than an opaque "bad grid".
+
+    **A cell outside the board is dropped, not fatal.** The reference transmits a
+    *fixed-size* window and keeps its zero cells, so a peer standing anywhere but the
+    board's interior necessarily names cells that do not exist -- at the 7×7 floor only
+    the central 3×3, 9 of 49 cells, has a fully on-board 5×5 window. Refusing the whole
+    grid for those cells cost us a played game: the opponent's every reading was
+    discarded from the moment it left the centre, belief never updated again, and the
+    Cop stood still on a uniform prior until the horizon. An out-of-range cell carries
+    no information about *our* board, which is exactly what an omitted cell means, so
+    the two are now treated alike -- the "generous in what we accept" half of this
+    module's own rule, which had been implemented for absent cells but not extra ones.
+
+    Everything that indicates a peer we cannot trust still raises: a non-string key, a
+    key that is not an integer pair, a non-numeric, non-finite, negative, or
+    above-saturation intensity. Dropping is for cells that are merely elsewhere.
     """
     if raw is None:
         return {}
@@ -98,12 +122,9 @@ def decode_scent(
     grid: dict[Cell, float] = {}
     for key, value in raw.items():
         cell = _parse_key(key)
-        intensity = _parse_intensity(key, value, ceiling)
         if not (min_index <= cell[0] <= max_index and min_index <= cell[1] <= max_index):
-            raise ScentWireError(
-                f"smell_grid cell {key!r} is off a board of [{min_index}, {max_index}]"
-            )
-        grid[cell] = intensity
+            continue  # elsewhere, not wrong -- see the docstring
+        grid[cell] = _parse_intensity(key, value, ceiling)
     return grid
 
 

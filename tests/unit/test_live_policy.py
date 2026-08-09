@@ -89,3 +89,20 @@ def test_the_barrier_quota_is_never_exceeded() -> None:
             placed += 1
     assert placed <= GAME["movement_and_barriers"]["max_barriers"]
     assert len(payload["barriers"]) == placed
+
+
+def test_a_blind_cop_sweeps_instead_of_standing_on_its_start_cell() -> None:
+    """M6-27, the defect that lost the amireman friendly: with no observation the
+    uniform prior's row-major argmax is (0,0) — the Cop's own start — so the stack
+    answered STAY every turn. It stood there 26 turns, spent no barrier, and lost."""
+    decide = fresh(Coordinate(0, 0))
+    positions = [decide(None)[0]["position"] for _ in range(8)]
+    assert positions[-1] != [0, 0], "a blind Cop must leave its start cell"
+    assert len({tuple(p) for p in positions}) > 1, "it must cover ground, not stand still"
+
+
+def test_an_unparseable_grid_does_not_freeze_the_cop() -> None:
+    """A grid we cannot read is no evidence, and no evidence must still sweep."""
+    decide = fresh(Coordinate(0, 0))
+    moves = [decide(thief_message(step, {"nope": 1.0}))[0]["move"] for step in range(1, 7)]
+    assert any(move != "MOVE:STAY" for move in moves)

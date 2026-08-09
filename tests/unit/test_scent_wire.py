@@ -71,20 +71,32 @@ def test_an_absent_grid_is_no_evidence_not_an_error() -> None:
         ("a non-object grid", [1, 2, 3]),
         ("a non-string key", {3: 0.5}),
         ("a key that is not row,col", {"3-4": 0.5}),
-        ("a key with a negative index", {"-1,2": 0.5}),
         ("a non-numeric intensity", {"3,3": "0.9"}),
         ("a boolean intensity", {"3,3": True}),
         ("a NaN intensity", {"3,3": float("nan")}),
         ("an infinite intensity", {"3,3": float("inf")}),
         ("a negative intensity", {"3,3": -0.1}),
         ("more scent than the model can saturate to", {"3,3": 12.0}),
-        ("an off-board cell", {"9,9": 0.5}),
     ],
 )
 def test_a_hostile_or_malformed_grid_is_refused(label: str, grid: object) -> None:
     """`M6-08b`: every one of these would otherwise reach the belief update."""
     with pytest.raises(ScentWireError):
         decode_scent(grid, **LIMITS)
+
+
+@pytest.mark.parametrize(
+    ("label", "grid"),
+    [
+        ("a negative index", {"-1,2": 0.5}),
+        ("an index past the far edge", {"9,9": 0.5}),
+    ],
+)
+def test_a_cell_outside_the_board_is_dropped_not_refused(label: str, grid: object) -> None:
+    """Elsewhere is not wrong. These two used to raise, which is the defect that blinded
+    the Cop against a peer transmitting a fixed-size window from anywhere but the
+    interior; the sender's position is not evidence of its dishonesty."""
+    assert decode_scent(grid, **LIMITS) == {}
 
 
 def test_a_legitimately_accumulated_cell_is_accepted() -> None:
@@ -99,10 +111,26 @@ def test_a_legitimately_accumulated_cell_is_accepted() -> None:
 
 def test_a_refusal_names_what_was_wrong() -> None:
     """A peer can only fix what we tell it; an opaque refusal helps nobody."""
-    with pytest.raises(ScentWireError, match="off a board"):
-        decode_scent({"9,9": 0.5}, **LIMITS)
+    with pytest.raises(ScentWireError, match="not \"row,col\""):
+        decode_scent({"nowhere": 0.5}, **LIMITS)
     with pytest.raises(ScentWireError, match="negative"):
         decode_scent({"3,3": -1.0}, **LIMITS)
+
+
+@pytest.mark.parametrize("centre", [(6, 6), (0, 0), (3, 3)])
+def test_a_foreign_fixed_size_window_keeps_its_on_board_cells(centre: tuple) -> None:
+    """The defect that lost the amireman friendly, in one assertion. The reference sends
+    a fixed-size 5×5 window including zeros, so a peer anywhere but the interior names
+    cells that do not exist -- negative at the origin, past-the-edge at (6,6). Refusing
+    the grid for them blinded the Cop across the 82% of a 7×7 with no fully on-board
+    window: belief never updated and it stood still to the horizon."""
+    row, col = centre
+    window = {f"{row + dr},{col + dc}": 0.1 for dr in range(-2, 3) for dc in range(-2, 3)}
+    assert len(window) == 25
+    decoded = decode_scent(window, **LIMITS)
+    assert decoded  # never discarded wholesale
+    assert all(0 <= r <= 6 and 0 <= c <= 6 for r, c in decoded)
+    assert centre in decoded  # the emitter's own cell always survives
 
 
 def test_a_corrupt_grid_raises_rather_than_degrading_to_no_evidence() -> None:
