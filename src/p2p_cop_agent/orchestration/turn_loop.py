@@ -22,8 +22,10 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
 from p2p_cop_agent.adapters.fastmcp_client import PeerRejectionError, TransportError
+from p2p_cop_agent.orchestration.delivery import DeliveryRetry, send_turn
 from p2p_cop_agent.orchestration.phases import Phase, PhaseMachine
 from p2p_cop_agent.protocol.commit_reveal import CommitRevealError, TurnLedger
+from p2p_cop_agent.services.deadlines import DeadlineError
 from p2p_cop_agent.shared.config import JsonObject
 
 # Decide this peer's turn: given the opponent's last message (None on the opening
@@ -79,6 +81,7 @@ def run_turn(
     opens: bool = False,
     on_transition: OnTransition | None = None,
     terminal: Callable[[JsonObject], tuple[object, str] | None] | None = None,
+    retry: DeliveryRetry | None = None,
 ) -> TurnRecord:
     """Run one turn through the phase machine and return what it did.
 
@@ -117,7 +120,7 @@ def run_turn(
 
     enter(Phase.COMMITTING)
     enter(Phase.AWAITING_REVEAL)
-    _deliver(step, message, transport, ledger, machine)
+    _deliver(step, message, transport, ledger, machine, retry)
 
     enter(Phase.VERIFYING)
     enter(Phase.WAITING_FOR_OPPONENT)
@@ -154,19 +157,22 @@ def _deliver(
     transport: object,
     ledger: TurnLedger,
     machine: PhaseMachine,
+    retry: DeliveryRetry | None = None,
 ) -> None:
     """Send the sealed turn, never re-sealing it, and route a failure cleanly.
 
     ``PeerRejectionError`` is a decided game outcome and ``TransportError`` is a
     carrier fault; both end this turn, but keeping them apart is what stops a lost
-    game being retried as a network blip (M5-14a).
+    game being retried as a network blip (M5-14a). With ``retry`` supplied that
+    distinction stops being documentation and starts being behaviour: only the carrier
+    fault is re-sent (`orchestration.delivery`), and only while attempts remain.
     """
     send = getattr(transport, "receive_turn", None)
     if send is None:
         raise TurnLoopError("transport does not expose receive_turn")
     try:
-        ledger.acknowledge(send(message))
-    except (TransportError, PeerRejectionError, CommitRevealError) as exc:
+        ledger.acknowledge(send_turn(send, message, retry))
+    except (TransportError, PeerRejectionError, CommitRevealError, DeadlineError) as exc:
         machine.fail()
         raise TurnLoopError(f"step {step} was sealed but not delivered: {exc}") from exc
 

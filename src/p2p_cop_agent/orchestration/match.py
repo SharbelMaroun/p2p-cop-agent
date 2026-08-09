@@ -21,6 +21,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from p2p_cop_agent.orchestration.delivery import DeliveryRetry
 from p2p_cop_agent.orchestration.negotiation_handshake import Agreement, negotiate_match
 from p2p_cop_agent.orchestration.phases import PhaseMachine
 from p2p_cop_agent.orchestration.polling import DEFAULT_POLL_INTERVAL, Heartbeat, turn_receiver
@@ -145,9 +146,15 @@ def _play(
     game: Mapping[str, object], transport: object, receive: Receive,
     decide: Decide, opens: bool,
 ) -> SubGameOutcome:
-    """Play one sub-game to a decided outcome, bounded by the negotiated horizon."""
+    """Play one sub-game to a decided outcome, bounded by the negotiated horizon.
+
+    The retry policy comes from the same signed match object both peers hold, so a
+    dropped request over the tunnel costs a bounded re-send rather than the sub-game
+    (M5-14b); its limits are Appendix F's, not ours to choose.
+    """
     threshold = game["movement_and_barriers"]["survival_threshold"]  # type: ignore[index]
     return run_sub_game_over_wire(
         machine=PhaseMachine(), ledger=TurnLedger(COP_ROLE), transport=transport,
         receive=receive, decide=decide, survival_threshold=threshold, opens=opens,
+        retry=DeliveryRetry.from_match(game),  # type: ignore[arg-type]
     )

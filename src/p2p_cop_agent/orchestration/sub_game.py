@@ -26,6 +26,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
 from p2p_cop_agent.domain.scoring import Outcome
+from p2p_cop_agent.orchestration.delivery import DeliveryRetry
 from p2p_cop_agent.orchestration.phases import PhaseMachine
 from p2p_cop_agent.orchestration.turn_loop import (
     Decide,
@@ -69,6 +70,7 @@ def run_sub_game_over_wire(
     opens: bool = False,
     on_transition: OnTransition | None = None,
     send_audit: bool = True,
+    retry: DeliveryRetry | None = None,
 ) -> SubGameOutcome:
     """Play turns until the sub-game is decided, then reveal everything.
 
@@ -95,6 +97,7 @@ def run_sub_game_over_wire(
                 opens=opens and step == 1,
                 on_transition=on_transition,
                 terminal=_decided_by,
+                retry=retry,
             )
         except TerminalClaimReceived as claim:
             # The opponent's message decided the game before our turn existed —
