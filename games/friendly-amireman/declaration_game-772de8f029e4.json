@@ -1,0 +1,97 @@
+{
+  "_schema": "declaration",
+  "config_sha256": "772de8f029e42892faf7f4016f77c268010cae948cb718b515f48f1066c11246",
+  "declaration_lock": "2c759260d5e5ed93b1530a68034b971328dbf788d84fff8c7dec873602abf363",
+  "declaration_type": "pre_game",
+  "game_ended_at": null,
+  "game_id": "game-772de8f029e4",
+  "game_started_at": "2026-08-08T22:52:43.140459+00:00",
+  "game_uid": "772de8f029e42892faf7f4016f77c268",
+  "games_played_declaration": {
+    "counted_games_before_this": 0,
+    "first_meeting_between_groups": true,
+    "games_played_including_this": 1,
+    "opponent_group_id": "amireman",
+    "warm_ups_excluded": 0
+  },
+  "github_commit": "961fc8111caa7cbcedfe972242b2815b357fa9e3",
+  "groups": [
+    {
+      "group_id": "sharNamr",
+      "group_name": "sharNamr",
+      "hardware_spec": {
+        "cpu_cores": 4,
+        "cpu_freq_mhz": 1992,
+        "cpu_type": "Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz",
+        "gpu_model": "Intel(R) UHD Graphics 620",
+        "os": "Microsoft Windows 11 Home",
+        "ram_gb": 8,
+        "vram_gb": 1
+      },
+      "llm_model": "template-zero-token",
+      "mcp_servers": {
+        "sharNamr": "https://somewhere-ira-large-thrown.trycloudflare.com/mcp"
+      },
+      "members": [
+        "Sharbel Maroun",
+        "Amr safadi"
+      ],
+      "repos": {
+        "cop": "https://github.com/SharbelMaroun/p2p-cop-agent",
+        "thief": "https://github.com/SharbelMaroun/p2p-thief-agent"
+      },
+      "signature": "b6a77dbdd2c58f7c0c6165f37a1e078a3ed5f9e034626cf5ebb2d246d2f4aaf1"
+    },
+    {
+      "group_id": "amireman",
+      "group_name": "amireman",
+      "hardware_spec": {
+        "cpu_cores": 8,
+        "cpu_type": "x86_64",
+        "os": "Linux-6.18.33.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+        "python": "3.13.14"
+      },
+      "llm_model": "template",
+      "mcp_servers": {
+        "cop": "https://phrase-fisheries-fighters-calculations.trycloudflare.com/mcp",
+        "thief": "https://phrase-fisheries-fighters-calculations.trycloudflare.com/mcp"
+      },
+      "members": [],
+      "repos": {
+        "cop": "https://github.com/AMIR13BD/Game-P2P-Cop-Chase-Police",
+        "thief": "https://github.com/AMIR13BD/Game-P2P-Cop-Chase-Thief"
+      },
+      "signature": null
+    }
+  ],
+  "links": {
+    "config": [
+      "config_game-772de8f029e4_g01.json",
+      "config_game-772de8f029e4_g02.json",
+      "config_game-772de8f029e4_g03.json",
+      "config_game-772de8f029e4_g04.json",
+      "config_game-772de8f029e4_g05.json",
+      "config_game-772de8f029e4_g06.json"
+    ],
+    "declaration": "declaration_game-772de8f029e4.json",
+    "log": [
+      "log_game-772de8f029e4_g01.json",
+      "log_game-772de8f029e4_g02.json",
+      "log_game-772de8f029e4_g03.json",
+      "log_game-772de8f029e4_g04.json",
+      "log_game-772de8f029e4_g05.json",
+      "log_game-772de8f029e4_g06.json"
+    ],
+    "result": "result_game-772de8f029e4.json"
+  },
+  "max_tokens_per_game": 33333,
+  "num_sub_games": 6,
+  "repositories": [
+    "https://github.com/SharbelMaroun/p2p-cop-agent",
+    "https://github.com/SharbelMaroun/p2p-thief-agent",
+    "https://github.com/AMIR13BD/Game-P2P-Cop-Chase-Police",
+    "https://github.com/AMIR13BD/Game-P2P-Cop-Chase-Thief"
+  ],
+  "schema_version": "1.1",
+  "timezone": "UTC"
+}
