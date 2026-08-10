@@ -11,6 +11,7 @@ member such as ``message_id``, ``sequence``, or ``idempotency_key`` is added.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from datetime import UTC, datetime
 from functools import cache
 from pathlib import Path
 
@@ -53,6 +54,28 @@ def validate_message(name: str, message: object) -> None:
         validate_instance(message, _schema(name), name)
     except ContractValidationError as exc:
         raise ProtocolError(str(exc)) from exc
+
+
+def now_iso() -> str:
+    """Return the current UTC time as an ISO-8601 string, for a turn's ``timestamp``.
+
+    **Corrected 2026-08-10.** This peer emitted ``f"t{count}"`` -- ``"t1"``, ``"t2"`` -- which
+    satisfies the schema (``type: string``, ``minLength: 1``) and so passed every gate, but is
+    an opaque counter rather than a time. Both sources were asked before changing it. The
+    **reference** builds this field in ``src/police_thief/peer/sealing.py`` as an ISO-8601
+    string carrying its UTC offset. The **book** pins no regex in the chapter-8 text, but every
+    absolute time field in the mandatory artifact templates (``game_started_at``, ``started_at``,
+    ``ended_at``) is ISO-8601 **with a timezone**, and section 8.4.1 (p. 65/157) requires a real
+    absolute clock precisely because the mechanism exists to stop a peer freezing while waiting
+    -- which a per-turn counter cannot detect.
+
+    One thing the sources corrected: this timestamp is **not** what enforces our deadlines. The
+    reference tracks turn timeouts from its own ``time.monotonic()``, never from the value a
+    peer sends, because two peers share no clock and an opponent's stamp is not evidence. So
+    this field is for the audit record and for interop, and nothing here may start trusting it
+    for timing. The companion Thief has emitted ISO-8601 from the start; only this side drifted.
+    """
+    return datetime.now(UTC).isoformat()
 
 
 def require_wire_role(value: object) -> str:

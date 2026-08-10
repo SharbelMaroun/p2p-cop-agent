@@ -44,6 +44,11 @@ from p2p_cop_agent.services.limits import (
 )
 from p2p_cop_agent.shared.config import JsonObject
 
+# Headroom kept back from the signed response deadline for transport: TLS, the tunnel hop, and
+# the peer's own dispatch. Only binds when a peer negotiates zero retries, where dividing the
+# budget by the attempt count would otherwise hand a single call the entire deadline.
+MARGIN = 0.9
+
 # The limit constants and ``read_limit`` are shared infrastructure and now live in
 # ``services.limits`` so the watchdog and gatekeeper can read their bounds without
 # importing this module (M5-08b). They are re-exported here for callers that already
@@ -114,6 +119,32 @@ class RetryPolicy:
     def deadline(self, now: float) -> Deadline:
         """Open one request's deadline at ``now``."""
         return Deadline.starting_at(now, self.response_timeout_sec)
+
+    @property
+    def call_timeout_sec(self) -> float:
+        """Cap one outbound call so a *retry* still fits inside the signed deadline.
+
+        **Added 2026-08-10.** Every outbound call was previously unbounded: ``FastMCPClient``
+        accepts a ``timeout`` but ``serve`` never passed one, so ``self._timeout is None`` and
+        the request simply waited. The failure that hides behind that is arithmetic, not
+        networking -- the MCP SDK's own per-call default is the same 30s as our signed
+        ``response_timeout_sec``, so one delivered-but-unanswered push, one backoff, and a
+        second push exceed 30s while **every individual call looks healthy**. We breach a
+        deadline we signed, and score the technical loss ourselves.
+
+        Derived, not chosen: ``attempts`` calls at the cap must fit the whole deadline, so the
+        budget over the attempt count is the largest legal cap -- 7.5s of a 30s deadline at
+        Appendix F's three retries.
+
+        The ``MARGIN`` clamp exists because a peer may negotiate **zero** retries, and
+        ``attempts`` is then 1: the division alone returns the deadline itself, so a single
+        call would be allowed to run until the very instant we promised an answer, with
+        nothing left for transport. That is the same breach this property was written to
+        prevent, reached from the opposite direction, and our own parametrised test found it.
+        The cap is therefore strictly below the deadline for **every** retry count a peer can
+        negotiate, not merely for the one Appendix F happens to default to.
+        """
+        return min(self.response_timeout_sec / self.attempts, self.response_timeout_sec * MARGIN)
 
 
 def attempt(

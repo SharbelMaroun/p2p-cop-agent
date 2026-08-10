@@ -1774,6 +1774,39 @@ What the audit could not fix, because it is not a documentation problem: no coun
 game has been played, no public tunnel has been opened, and OAuth consent has not been run.
 Those are stated in **Current milestone** above and are the operator's remaining work.
 
+### What reading another team's interop spec changed
+
+**Added 2026-08-10.** A classmate group sent an unusually detailed list of the interoperability
+points that had cost them or an opponent a playing window. Checking our code against it — rather
+than assuming their word — found two defects here that **every gate had passed**, and the reason
+they survived is worth recording.
+
+**We sent `"t1"` where the wire wants a time.** The turn `timestamp` was `f"t{count}"`, an opaque
+counter. `turn-message.schema.json` declares the field `type: string`, `minLength: 1`, and `"t1"`
+satisfies that perfectly — so 1842 tests, the conformance suite, and the schema itself all agreed
+it was fine. A schema can check that a field is a non-empty string; it cannot check that it is a
+*time*. Both sources were consulted before changing it: the reference builds this field as
+ISO-8601 with a UTC offset, and while the book pins no regex, every absolute time field in the
+mandatory artifact templates carries a timezone, and §8.4.1 requires a real clock so a peer can
+detect a frozen opponent — which a counter cannot express. The sources also **corrected our own
+reasoning**: `inst/DEV-SPEC.md` reads as though the deadline is computed from this stamp, but the
+reference times out from its own `time.monotonic()` and never trusts a peer's value, because two
+peers share no clock. The field is for the audit record and for interop; nothing may time off it.
+
+**Every outbound call was unbounded.** `FastMCPClient` has always accepted a `timeout`; `serve`
+never passed one. That failure is arithmetic rather than networking, which is why no test caught
+it: the SDK's per-call default equals the 30s we sign, so one delivered-but-unanswered push, one
+backoff and a second push exceed the deadline *while every individual call looks healthy* — we
+breach a deadline we signed and hand ourselves the technical loss. The cap is now derived from
+the signed budget rather than picked, and our own parametrised test found the hole in the first
+derivation: at zero negotiated retries it returned the deadline itself.
+
+The pattern is the same one the live game against `amireman` taught, and it is the honest lesson
+of both: **our gates check us against ourselves.** Green means internally consistent, not
+interoperable. Every defect of this class so far has been found by contact with a real peer or a
+real peer's specification, never by the suite — which argues for warm-up games and for reading
+other teams' specs, not for more tests of the kind already passing.
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a

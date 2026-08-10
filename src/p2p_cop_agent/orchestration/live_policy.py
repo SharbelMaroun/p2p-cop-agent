@@ -51,6 +51,7 @@ from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
 from p2p_cop_agent.domain.movement import apply_move
 from p2p_cop_agent.orchestration.turn_loop import Decide
+from p2p_cop_agent.protocol.messages import now_iso
 from p2p_cop_agent.protocol.scent_wire import ScentWireError, decode_scent, encode_scent
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.strategy.barrier_policy import BarrierIntent
@@ -162,7 +163,7 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
         public: JsonObject = {
             "hint": hint.text,
             "smell_grid": encode_scent(trail.window(state["cell"])),
-            "timestamp": f"t{count}",
+            "timestamp": now_iso(),
         }
         if barrier_placed is not None:
             public["barrier_placed"] = barrier_placed

@@ -32,6 +32,7 @@ from p2p_cop_agent.orchestration.turn_loop import Decide
 from p2p_cop_agent.peer import InboundPeer
 from p2p_cop_agent.protocol import attestation_wire
 from p2p_cop_agent.sdk import CopSDK
+from p2p_cop_agent.services.deadlines import RetryPolicy
 from p2p_cop_agent.services.readiness import timeouts_from_private_config, wait_for_peer
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.private_config import load_private_config, opponent_url
@@ -126,7 +127,13 @@ def serve_match(
     )
     started_at = datetime.now(UTC).isoformat()
     result = play_match(
-        sdk=sdk, transport=FastMCPClient(opponent_url(config)),
+        # Bound every outbound call (`M9-27`). Left unset the client waits forever, and two
+        # tries plus a backoff quietly outlive the deadline we signed -- see
+        # `RetryPolicy.call_timeout_sec` for why the cap is the deadline over `attempts`.
+        sdk=sdk, transport=FastMCPClient(
+            opponent_url(config),
+            timeout=RetryPolicy.from_match(dict(sdk.game_config)).call_timeout_sec,
+        ),
         take_offer=lambda: _drain(inboxes.agreements),
         take_turn=lambda: take_turn(inboxes, peer),
         decide=serve_decide(sdk.board(), cop_start(dict(sdk.game_config)), dict(sdk.game_config)),
