@@ -29,14 +29,28 @@ import socket
 from dataclasses import dataclass
 from pathlib import Path
 
-from p2p_cop_agent.protocol.negotiation import NegotiationError, check_appendix_f, terms_from_config
+from p2p_cop_agent.protocol.negotiation import (
+    NegotiationError,
+    check_appendix_f,
+    terms_from_config,
+    validate_participants,
+)
 from p2p_cop_agent.services.credential_location import credential_path
 from p2p_cop_agent.shared import __version__
+from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.private_config import load_private_config, opponent_url, public_url
 from p2p_cop_agent.strategy.scent_lock import scent_model_hash
 
 ARMED = "ARMED"
 DISABLED = "DISABLED"
+
+# Match-config schema versions this build implements. The book's Appendix B example prints
+# `"schema_version": "1.2"` (`inst/police_thief_p2p_Summary.md:2927`), which is why 1.2 is the
+# one accepted value. Recorded because the sources disagree and `ADR-003` leaves it open: the
+# reference simulator ships `"1.3"` in its own `config/game.json` (code notebook, 2026-08-11,
+# `src/police_thief/shared/config.py::_check_version`), and uoh-ay26 sent `"1.00"`, which is
+# the *guidelines* config revision -- a different field. Three sources, three values.
+SUPPORTED_CONFIG_SCHEMA_VERSIONS = frozenset({"1.2"})
 
 
 @dataclass(frozen=True)
@@ -87,7 +101,41 @@ def _port(config: object) -> Check:
     return Check("port", f"{port} free", ok=True)
 
 
-def _match(path: Path) -> list[Check]:
+def _schema_version(game: JsonObject) -> Check:
+    """Report a match config announcing a version this build does not implement.
+
+    Absent is not an error: many shared files carry none, and inventing a requirement the
+    sources do not state would refuse a conforming opponent.
+    """
+    announced = game.get("schema_version")
+    if announced is None:
+        return Check("schema version", "absent (accepted)")
+    if announced not in SUPPORTED_CONFIG_SCHEMA_VERSIONS:
+        return Check("schema version", f"{announced!r} unsupported; this build implements "
+                                       f"{sorted(SUPPORTED_CONFIG_SCHEMA_VERSIONS)} [ADR-003]",
+                     ok=False)
+    return Check("schema version", f"{announced} OK", ok=True)
+
+
+def _participants(game: JsonObject, group_id: object) -> Check:
+    """Rule 11: `agreed_between` must name **us**, by the id our private file spells.
+
+    Added 2026-08-11 after uoh-ay26 sent a shared file whose `agreed_between` was
+    `["cop", "thief"]` -- the two *roles*, not the two group ids. Every other check
+    passed and this command printed `ready`, because `terms_from_config` never reads
+    `agreed_between`; the refusal only landed at `validate_participants`, mid-handshake,
+    with an opponent already waiting. That is the exact failure this readout exists to
+    move earlier, so it is checked here rather than left to the wire.
+    """
+    try:
+        validate_participants(game, group_id)
+    except NegotiationError as exc:
+        return Check("participants", str(exc), ok=False)
+    named = game.get("agreed_between")
+    return Check("participants", f"{' vs '.join(named)} — we are {group_id!r}", ok=True)  # type: ignore[arg-type]
+
+
+def _match(path: Path, group_id: object = None) -> list[Check]:
     """Rule 11/12: the shared object must load and satisfy Appendix F before anyone plays."""
     try:
         game = json.loads(path.read_text(encoding="utf-8"))
@@ -100,6 +148,8 @@ def _match(path: Path) -> list[Check]:
         return [Check("match config", f"{path.name}: {exc}", ok=False)]
     return [
         Check("match config", f"{path.name} — {len(terms)} terms, Appendix F OK", ok=True),
+        _schema_version(game),
+        _participants(game, group_id),
         Check("board", f"{terms['board_size']}x{terms['board_size']}, "
                        f"{terms['max_steps']} steps, {terms['barriers_max']} barriers"),
     ]
@@ -119,7 +169,9 @@ def preflight(match_path: Path, private_path: Path) -> list[Check]:
         except Exception as exc:  # noqa: BLE001
             checks.append(Check(label, f"missing: {exc}", ok=False))
     checks.append(_port(config))
-    checks.extend(_match(match_path))
+    game_section = config.get("game", {}) if isinstance(config, dict) else {}
+    group_id = game_section.get("group_id") if isinstance(game_section, dict) else None
+    checks.extend(_match(match_path, group_id))
     checks.append(Check("scent lock", scent_model_hash()))
     checks.append(_reporting(config))
     return checks

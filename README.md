@@ -1464,6 +1464,32 @@ banners, rounded cells and cards, neon trails — pure tkinter, no theme depende
 with the verdict colours and the heat ramp deliberately untouched, because those are
 reference-matched, test-pinned meaning rather than styling.
 
+#### A preflight that said `ready` to a match it could not play (`C-035`, `C-036`, 2026-08-11)
+
+Group `uoh-ay26` proposed a friendly and sent their `game.json`. Two of its fields refuse a
+match at the handshake — `schema_version: "1.00"` where this build implements `1.2`, and
+`agreed_between: ["cop", "thief"]`, the two *roles* rather than the two group ids, so
+`validate_participants` cannot find `sharNamr` in it. Everything else was correct: 14 signed
+terms, every Appendix F `Fixed` value intact, every `Minimum` at or above its floor.
+
+*Problem hit.* `p2p-cop preflight` printed **`ready`** for that file. The command validates
+the *terms projection*, and the projection reads neither field — so the one tool whose whole
+job is "tell me before an opponent is waiting" was structurally unable to report the two
+failures that stop a match before move one. The companion Thief had the same hole in a
+sharper form: `check_config_schema_version` existed there, with unit tests and an export, and
+**no caller anywhere on the runtime path**. A guard with tests and no caller passes review
+twice, because each half looks finished. Both preflights now run both checks; the fixtures
+had to change to prove it, since `_private()` used `group_id = "t"`, harmless only while
+nothing compared it to anything.
+
+The versions themselves stay unresolved and are disclosed rather than papered over: the book's
+Appendix B prints `"1.2"` (`inst/police_thief_p2p_Summary.md:2927`), the reference simulator
+ships `"1.3"` and enforces it in `_check_version`, and this opponent sent `"1.00"` — the
+guidelines' configuration revision, a different key. Three sources, three values (`C-035`),
+so the value is settled with the opponent in writing before a match rather than discovered at
+the handshake. The corrected file rehearsed end to end over two local processes: negotiated,
+21 turns, `CAPTURE`, both sides agreeing the outcome, `Verified OK — 21 steps re-verified`.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

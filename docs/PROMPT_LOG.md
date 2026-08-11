@@ -1010,3 +1010,47 @@ negotiation tolerated; the readiness probe trusted a socket a CDN answered; this
 disclosure no rule lets us compel. Each was internally consistent, each passed every gate, and
 each was found within minutes of a real opponent. What localhost cannot simulate is not load
 or latency -- it is a *second team who implemented the book differently and owes us nothing*.
+
+## 2026-08-11 — a second opponent's file, and a preflight that said `ready` to a match it could not play
+
+**Prompt.** Group `uoh-ay26` (Aisha Abu Dahesh, Yousef Asadi) proposed a friendly and sent a
+`game.json` plus their Police endpoint, `https://cop.uohay26game.com/mcp`. "We want to play a
+friendly game with this group."
+
+**Their file was refused by two gates and passed every other one.** `schema_version` was
+`"1.00"` where this build implements `1.2`, and `agreed_between` was `["cop", "thief"]` — the
+two *roles*, not the two group ids, so `validate_participants` could not find `sharNamr` in it.
+Everything else was clean: 14 signed terms, every Appendix F `Fixed` value correct, every
+`Minimum` at or above its floor, and a `world` block (`Haifa`, 15 words) that our schema
+requires and the previous opponent's file had omitted.
+
+**The defect worth recording is ours, not theirs.** `p2p-cop preflight` printed **`ready`** for
+that file. It validates the *terms projection*, and the projection reads neither
+`schema_version` nor `agreed_between` — so the one command whose entire purpose is "tell me
+before the opponent is waiting" was structurally incapable of reporting the two failures that
+stop a match at the handshake. The Thief repository had the same hole, plus a sharper version
+of it: `check_config_schema_version` existed there, with unit tests, and **had no caller
+anywhere on the runtime path.** A guard with tests and no caller passes review twice.
+
+Both preflights now run both checks and report `not ready`, and the fixtures had to change to
+prove it — `_private()` used `group_id = "t"`, a placeholder that was harmless only while
+nothing compared it to anything. Three tests per repository drive the new checks to their
+failing verdict, including the exact `["cop", "thief"]` shape that arrived.
+
+**What the notebooks added that the file could not.** The code notebook: the reference ships
+`schema_version: "1.3"` in its own `config/game.json` and validates it in `_check_version`
+(`src/police_thief/shared/config.py`), raising `ConfigVersionError` — so the book says `1.2`,
+the reference says `1.3`, and this opponent said `1.00`. Three sources, three values,
+registered as `C-035`. It also explained why their side would not have caught the
+`agreed_between` error: the reference runs **no** explicit `group_id in agreed_between` test,
+relying entirely on the signed-terms hash to diverge, which it only does once it meets a peer
+that spells the field differently. The book notebook settled the friendly's obligations —
+warm-ups are excluded from the rule 37/38 declaration and the rule 51 report, and count toward
+neither `max_games_per_team` nor `min_games_to_pass` (p. 70/166, 70/169) — confirmed against
+`inst/police_thief_p2p_Summary.md:2028` and rule 52 at `:3442`. Reporting therefore stays off,
+and this game does **not** consume the one counted meeting we are allowed against them.
+
+**Evidence.** A two-process localhost rehearsal on the corrected file negotiated, played 21
+turns to `CAPTURE`, agreed the outcome on both sides, and replayed `Verified OK — 21 steps
+re-verified`. Their endpoint answered `502` when probed: Cloudflare up, their tunnel down, so
+nothing has been played against them yet.

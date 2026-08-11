@@ -32,6 +32,19 @@ user-side — playing counted opponents, arming OAuth reporting, and submitting 
 stays `DEFERRED` here rather than becoming `BLOCKED`, which this ledger reserves for an
 external review dependency.
 
+**2026-08-11 second opponent proposed; no row closes.** Group `uoh-ay26` (Aisha Abu Dahesh,
+Yousef Asadi) offered a friendly and published only a **Police** endpoint — which is the
+peer the companion *Thief* dials, so this repository still lacks their Thief address and
+cannot play sub-games 2/4/6 until they supply it. Their endpoint answered `502` (Cloudflare
+up, their tunnel down), so nothing has been played. Validating their shared file did close a
+real defect: `preflight` reported `ready` for a match the handshake refuses, because it
+validated only the terms projection and so read neither `schema_version` nor
+`agreed_between`. Both checks now run in `services/preflight.py`, driven to both verdicts by
+three new tests. Their file's two errors and the three-way `schema_version` disagreement
+between the book (`1.2`), the reference (`1.3`) and their file (`1.00`) are registered as
+`C-035`/`C-036`. A friendly stays uncounted `[AE-52]` and spends none of the single rule-52
+counted meeting available against this group.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
