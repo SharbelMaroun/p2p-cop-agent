@@ -49,3 +49,9 @@ client_secret*.json
 service_account*.json
 *service-account*.json
 *.pem
+
+# Generated runtime artifacts. The companion repository has ignored `logs/` since M7; this
+# side had no reason to until `services/wire_log.py` arrived on 2026-08-12 and began writing
+# `<artifacts>/logs/wire.jsonl`. Without this line the first served match would have committed
+# its own wire log. Reviewed evidence may still be copied elsewhere deliberately.
+logs/
