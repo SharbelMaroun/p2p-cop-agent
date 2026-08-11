@@ -1085,3 +1085,38 @@ Also worth copying here: the companion's `"confirmed": True` was hardcoded in th
 artifact, asserting a mutual agreement that had not happened, including in the game the
 opponent scored as a technical loss. `write_match_log` in this repository should be checked
 for the same overclaim before the counted league.
+
+## 2026-08-12 (ii) — "fix the cop side too"
+
+The entry above recorded the exit-before-audit defect as present here and unfixed. It is now
+fixed, and that entry's closing paragraph should be read as the diagnosis rather than the
+current state.
+
+`adapters/post_match.py` mirrors the companion's: after the last move, hold the mailbox open
+for `audit_send_timeout_seconds` and drain until an opponent audit is accepted or the window
+closes. Bounded on purpose — an opponent may legitimately never audit, and waiting forever
+converts their fault into our hang, which rule 6 scores as a technical loss.
+
+**One deliberate difference from the companion.** The Thief detects the audit through
+`InboundPeer.audits_verified`; this repository's `InboundPeer` verifies an audit and returns
+`OK` without retaining it. Rather than add state to the peer, the wait reads `drain`'s
+`Delivery` list, which already carries every validated message and its verdict. That turned
+out to be the better shape anyway: it distinguishes an *accepted* audit from a rejected one
+for free, and a tampered audit must not satisfy rule 36 — it is rule 19's scored outcome.
+
+`services/wire_log.py` was copied across so both peers keep the same evidence. Fitting it in
+cost some care: `adapters/fastmcp_server.py` sat at exactly 150 significant lines, on the
+`G-04` limit, so the verdict logging is a `wire_log.delivery(...)` pass-through that records
+its argument and hands it straight back, keeping each call site to one line. A diagnostic is
+not worth pushing a protocol module over a P0 gate.
+
+Verified over two processes: both peers now print `opponent audit received`, `CAPTURE after 21
+step(s)`. 1895 tests, 96.37% branch coverage; ruff, secret, ledger and whitespace gates clean.
+
+**Checked and clean:** `write_match_log` here does not carry the companion's other defect — a
+hardcoded `confirmed: True` claiming a mutual agreement that never happened.
+
+**Still open:** `orchestration/live_policy.py` is 151 significant lines against the 150-line
+`G-04` limit. It predates this work; three attempts to reflow its docstring produced the same
+line count, so it was left alone rather than churned further, and it is the only file-length
+violation left in either repository.

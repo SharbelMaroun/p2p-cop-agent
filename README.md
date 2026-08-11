@@ -1490,10 +1490,7 @@ so the value is settled with the opponent in writing before a match rather than 
 the handshake. The corrected file rehearsed end to end over two local processes: negotiated,
 21 turns, `CAPTURE`, both sides agreeing the outcome, `Verified OK — 21 steps re-verified`.
 
-#### A defect found in the companion's match that lives here too (2026-08-12)
-
-No code changed here; this is recorded so a grader sees the same honesty applied to an open
-defect as to a closed one.
+#### A defect found in the companion's match, and fixed here before it cost anything (`M7-19b`, `M9-31`, 2026-08-12)
 
 The companion Thief played `uoh-ay26`, survived all 35 steps, and still scored 0/0. It wrote
 its log and **exited** the moment the horizon was reached; their Cop's `submit_audit` arrived a
@@ -1501,16 +1498,29 @@ moment later at a live tunnel with no process behind it, so they recorded a tech
 while we recorded a survival, and rule 35 scores conflicting reports 0/0 for both. Rule 36
 makes the mutual audit a condition of agreement, and an agreement needs two peers present.
 
-**This repository has the identical shape.** `adapters/serve.py` calls `write_match_log` and
-then returns, leaving no window in which an opponent Thief's audit could arrive. It has not
-cost us a game only because every Police-role game so far ended with *us* submitting the
-audit — the failure needs an opponent who audits after the horizon, which is exactly what the
-six-sub-game series produces in 2/4/6. The companion's `adapters/post_match.py` is the fix to
-mirror: a bounded wait, so an opponent that never audits cannot turn its silence into our hang.
+*Problem hit here.* `adapters/serve.py` had the identical shape — `write_match_log`, then
+return. It had never cost a game only because every Police-role game so far ended with *us*
+submitting the audit, so the missing window was never exercised. That is exactly the kind of
+defect a rehearsal cannot find and a real series will: this side plays Police in sub-games
+2/4/6, where the opponent Thief is the one auditing. `post_match.py` now holds the mailbox
+open for `audit_send_timeout_seconds` and drains until an audit is accepted or the window
+closes — bounded, because an opponent that never audits must not be able to turn its silence
+into our hang (rule 6). The arrival is read from `drain`'s `Delivery` list rather than from
+peer state, so a *rejected* audit is correctly not counted: a tampered audit is rule 19's
+scored outcome, not rule 36's agreement.
 
-Worth checking here at the same time: the companion's log artifact hardcoded
-`"confirmed": True`, asserting a mutual agreement that had not happened — including in the
-game the opponent scored as a forfeit.
+`services/wire_log.py` closes the second half of the same night. An offer from that opponent
+had reached the companion and vanished, leaving only a column of `200 OK` — an MCP tool error
+is an application-level result, so HTTP reports 200 whether a call succeeded, named a tool
+that does not exist, or used the wrong argument name. One JSONL line per arrival and per
+verdict now records tool, queued, top-level key names, accepted and reason. **No payload is
+written**: a turn carries the sealed commitment and, after reveal, the nonce, and those in an
+unmanaged file are a rule 18/39 hazard for a diagnostic nobody needed.
+
+Verified over two processes: both peers print `opponent audit received`, capture after 21
+steps, and this repository's `write_match_log` was checked for the companion's other defect —
+a hardcoded `confirmed: True` asserting an agreement that had not happened — and does not
+carry it.
 
 ### 3. The implemented strategy
 

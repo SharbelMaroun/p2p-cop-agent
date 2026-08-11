@@ -45,16 +45,21 @@ between the book (`1.2`), the reference (`1.3`) and their file (`1.00`) are regi
 `C-035`/`C-036`. A friendly stays uncounted `[AE-52]` and spends none of the single rule-52
 counted meeting available against this group.
 
-**2026-08-12 an unfixed defect this side will hit in sub-games 2/4/6.** The companion Thief
-survived 35 steps against `uoh-ay26` and still scored 0/0: it exited after writing its log,
-their `submit_audit` met a 502, and they recorded a `technical_loss` (rule 35 — conflicting
-reports score 0/0 for both). Rule 36 makes the mutual audit a condition of agreement, and an
-agreement needs two peers present. **`adapters/serve.py` here has the identical shape** —
-`write_match_log` then `return result`, with no window for an opponent Thief's audit. It has
-not bitten only because every Police-role game so far ended with us submitting. The companion's
-`adapters/post_match.py` is the fix to mirror. Check `write_match_log` for the companion's
-other defect too: a hardcoded `confirmed: True` claiming a mutual agreement that never
-occurred.
+**2026-08-12 exit-before-audit, found in the companion's match and fixed here too.** The
+companion Thief survived 35 steps against `uoh-ay26` and still scored 0/0: it exited after
+writing its log, their `submit_audit` met a 502, and they recorded a `technical_loss` (rule
+35 — conflicting reports score 0/0 for both). Rule 36 makes the mutual audit a condition of
+agreement, and an agreement needs two peers present. **`adapters/serve.py` here had the
+identical shape** — `write_match_log` then `return result` — and had not been punished only
+because every Police-role game so far ended with us submitting; this side plays Police in
+sub-games 2/4/6, where the opponent Thief audits. `adapters/post_match.py` now holds the
+mailbox open for `audit_send_timeout_seconds` after the last move, bounded so an opponent
+that never audits cannot turn its silence into our hang (rule 6). Detected from the `drain`
+`Delivery` list, so a *rejected* audit correctly does not count as received. Verified over
+two processes: both peers print `opponent audit received`. `services/wire_log.py` also
+records every inbound tool call and verdict, which is what the opaque negotiation failure
+of 2026-08-11 had no evidence for. `write_match_log` here was checked for the companion's
+other defect — a hardcoded `confirmed: True` — and does not carry it.
 
 ## Conventions
 

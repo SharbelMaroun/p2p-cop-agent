@@ -23,9 +23,8 @@ the reverse could lose a decided game. Recorded in ADR-002; the client is
 correspondingly liberal about the opponent's acknowledgement shape.
 
 Validation is decoupled: :func:`drain` feeds each queued message through the
-transport-neutral :class:`~p2p_cop_agent.peer.InboundPeer` (M5-01), where a
-schema/transition/audit failure is a recorded game-level outcome, not a transport
-error (ADR-002). This module is the only place ``fastmcp`` enters.
+transport-neutral :class:`~p2p_cop_agent.peer.InboundPeer` (M5-01), where a failure is a
+game-level outcome (ADR-002). Only `services.wire_log` records what arrived.
 """
 
 from __future__ import annotations
@@ -37,6 +36,7 @@ from fastmcp import FastMCP
 
 from p2p_cop_agent.peer import InboundPeer
 from p2p_cop_agent.protocol import ProtocolError
+from p2p_cop_agent.services import wire_log
 from p2p_cop_agent.shared.config import JsonObject
 
 # Appendix F table 19 sets `queue_depth` to 100 with status **Minimum** — "may be raised by
@@ -78,9 +78,9 @@ class PeerInboxes:
 class Delivery:
     """The outcome of validating one drained inbox message.
 
-    ``accepted`` is ``False`` when the peer rejected the message; ``reason`` then
-    carries the deterministic ``ProtocolError`` text. A rejection is a game-level
-    outcome, never a transport error: the tool already acknowledged receipt.
+    ``accepted`` is ``False`` when the peer rejected it and ``reason`` carries the
+    ``ProtocolError`` text -- a game-level outcome, never a transport error, since the tool
+    already acknowledged receipt. `wire_log.delivery` records every one of these.
     """
 
     tool: str
@@ -118,37 +118,40 @@ def build_server(inboxes: PeerInboxes, name: str = "p2p-cop") -> FastMCP:
 
     @mcp.tool
     def negotiate(message: dict) -> dict:
-        if not _enqueue(inboxes.agreements, message):
-            return {"ok": False, "reason": "inbox full"}
-        return {"ok": True}
+        queued = _enqueue(inboxes.agreements, message)
+        wire_log.received("negotiate", message, queued=queued)
+        return {"ok": True} if queued else {"ok": False, "reason": "inbox full"}
 
     @mcp.tool
     def receive_turn(message: dict) -> dict:
-        if not _enqueue(inboxes.turns, message):
-            return {"ok": False, "reason": "inbox full"}
-        return {"ok": True}
+        queued = _enqueue(inboxes.turns, message)
+        wire_log.received("receive_turn", message, queued=queued)
+        return {"ok": True} if queued else {"ok": False, "reason": "inbox full"}
 
     @mcp.tool
     def submit_audit(payload: dict) -> dict:
-        if not _enqueue(inboxes.audits, payload):
-            return {"ok": False, "reason": "inbox full"}
-        return {"ok": True}
+        queued = _enqueue(inboxes.audits, payload)
+        wire_log.received("submit_audit", payload, queued=queued)
+        return {"ok": True} if queued else {"ok": False, "reason": "inbox full"}
 
     @mcp.tool
     def receive_control(message: dict) -> dict:
-        if not _enqueue(inboxes.controls, message):
-            return {"ok": False, "reason": "inbox full"}
-        return {"ok": True}
+        queued = _enqueue(inboxes.controls, message)
+        wire_log.received("receive_control", message, queued=queued)
+        return {"ok": True} if queued else {"ok": False, "reason": "inbox full"}
 
     return mcp
 
 
 def _apply(peer: InboundPeer, tool: str, message: JsonObject) -> Delivery:
+    # `wire_log.delivery` records the verdict and returns its argument. This is the only
+    # place the rejection reason exists -- callers keep the verdict and drop the text, which
+    # is how a refused message became indistinguishable from silence on 2026-08-11.
     try:
         peer.dispatch(tool, message)
-        return Delivery(tool, accepted=True)
     except ProtocolError as exc:
-        return Delivery(tool, accepted=False, reason=str(exc))
+        return wire_log.delivery(Delivery(tool, accepted=False, reason=str(exc)))
+    return wire_log.delivery(Delivery(tool, accepted=True))
 
 
 def _drain_box(box: queue.Queue, peer: InboundPeer, tool: str) -> list[Delivery]:

@@ -145,6 +145,23 @@ def serve_match(
         clock=time.monotonic, sleep=time.sleep,
         artifacts_dir=artifacts_dir, sub_game=sub_game,
     )
+    # Rule 36: the mutual audit is a condition of agreement, and an agreement needs two
+    # peers present. Exiting here is what cost the companion Thief a won game against
+    # `uoh-ay26` on 2026-08-11 -- their `submit_audit` met a 502 and the opponent recorded a
+    # technical loss, scoring the game 0/0 for both under rule 35. This side plays Police in
+    # sub-games 2/4/6, so the same window is needed here. See `post_match`.
+    if result.played:
+        from p2p_cop_agent.adapters.fastmcp_server import drain  # noqa: PLC0415
+        from p2p_cop_agent.adapters.post_match import (  # noqa: PLC0415
+            audit_window_seconds,
+            await_opponent_audit,
+        )
+
+        audited = await_opponent_audit(
+            drain=lambda: drain(inboxes, peer), clock=time.monotonic, sleep=time.sleep,
+            timeout=audit_window_seconds(config),
+        )
+        print(f"opponent audit {'received' if audited else 'did not arrive in the window'}")
     if artifacts_dir is not None and result.played and result.outcome.audit:
         from p2p_cop_agent.adapters.match_artifacts import write_match_log  # noqa: PLC0415
 
