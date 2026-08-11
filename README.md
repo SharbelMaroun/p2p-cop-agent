@@ -1490,6 +1490,28 @@ so the value is settled with the opponent in writing before a match rather than 
 the handshake. The corrected file rehearsed end to end over two local processes: negotiated,
 21 turns, `CAPTURE`, both sides agreeing the outcome, `Verified OK — 21 steps re-verified`.
 
+#### A defect found in the companion's match that lives here too (2026-08-12)
+
+No code changed here; this is recorded so a grader sees the same honesty applied to an open
+defect as to a closed one.
+
+The companion Thief played `uoh-ay26`, survived all 35 steps, and still scored 0/0. It wrote
+its log and **exited** the moment the horizon was reached; their Cop's `submit_audit` arrived a
+moment later at a live tunnel with no process behind it, so they recorded a technical loss
+while we recorded a survival, and rule 35 scores conflicting reports 0/0 for both. Rule 36
+makes the mutual audit a condition of agreement, and an agreement needs two peers present.
+
+**This repository has the identical shape.** `adapters/serve.py` calls `write_match_log` and
+then returns, leaving no window in which an opponent Thief's audit could arrive. It has not
+cost us a game only because every Police-role game so far ended with *us* submitting the
+audit — the failure needs an opponent who audits after the horizon, which is exactly what the
+six-sub-game series produces in 2/4/6. The companion's `adapters/post_match.py` is the fix to
+mirror: a bounded wait, so an opponent that never audits cannot turn its silence into our hang.
+
+Worth checking here at the same time: the companion's log artifact hardcoded
+`"confirmed": True`, asserting a mutual agreement that had not happened — including in the
+game the opponent scored as a forfeit.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

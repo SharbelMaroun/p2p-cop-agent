@@ -1054,3 +1054,34 @@ and this game does **not** consume the one counted meeting we are allowed agains
 turns to `CAPTURE`, agreed the outcome on both sides, and replayed `Verified OK — 21 steps
 re-verified`. Their endpoint answered `502` when probed: Cloudflare up, their tunnel down, so
 nothing has been played against them yet.
+
+## 2026-08-12 — the same exit bug lives here, found in the companion's match
+
+**No code changed in this repository.** This entry exists so the defect is not rediscovered
+from scratch, and because `TODO.md` now carries a task for it.
+
+The companion Thief played group `uoh-ay26` on 2026-08-11 and survived all 35 steps. Its log
+says `survival` and replays `Verified OK`. Their Cop's log says `technical_loss`, because the
+Thief wrote its artifact and **exited** the moment the horizon was reached, and their
+`submit_audit` arrived a moment later at a live tunnel with no process behind it:
+
+    Opponent unreachable mid-match -- resolving as technical loss:
+    submit_audit timed out: ... Server error '502 Bad Gateway'
+
+Rule 35 scores conflicting reports 0/0 for both, so a clean win became nothing. Rule 36 makes
+the mutual audit "a mandatory condition before agreement", and an agreement needs two peers
+present. The companion fixed it with `adapters/post_match.py`: hold the mailbox open for
+`audit_send_timeout_seconds` after the last move, bounded so an opponent that never audits
+cannot turn its own fault into our hang (rule 6).
+
+**This repository has the identical defect, with the roles swapped.** `adapters/serve.py`
+calls `write_match_log` and then `return result` — no window in which an opponent Thief's
+audit could arrive. It has not bitten yet only because every game played so far in the Police
+role ended with *us* submitting the audit. In the six-sub-game series this side plays Police
+in 2/4/6, so the first opponent Thief that audits after the horizon will meet the same 502 and
+record the same technical loss against us.
+
+Also worth copying here: the companion's `"confirmed": True` was hardcoded in the log
+artifact, asserting a mutual agreement that had not happened, including in the game the
+opponent scored as a technical loss. `write_match_log` in this repository should be checked
+for the same overclaim before the counted league.

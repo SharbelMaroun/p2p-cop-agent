@@ -45,6 +45,17 @@ between the book (`1.2`), the reference (`1.3`) and their file (`1.00`) are regi
 `C-035`/`C-036`. A friendly stays uncounted `[AE-52]` and spends none of the single rule-52
 counted meeting available against this group.
 
+**2026-08-12 an unfixed defect this side will hit in sub-games 2/4/6.** The companion Thief
+survived 35 steps against `uoh-ay26` and still scored 0/0: it exited after writing its log,
+their `submit_audit` met a 502, and they recorded a `technical_loss` (rule 35 — conflicting
+reports score 0/0 for both). Rule 36 makes the mutual audit a condition of agreement, and an
+agreement needs two peers present. **`adapters/serve.py` here has the identical shape** —
+`write_match_log` then `return result`, with no window for an opponent Thief's audit. It has
+not bitten only because every Police-role game so far ended with us submitting. The companion's
+`adapters/post_match.py` is the fix to mirror. Check `write_match_log` for the companion's
+other defect too: a hardcoded `confirmed: True` claiming a mutual agreement that never
+occurred.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
