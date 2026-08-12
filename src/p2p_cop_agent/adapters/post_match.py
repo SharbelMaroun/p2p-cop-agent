@@ -43,6 +43,13 @@ from typing import Any
 DEFAULT_AUDIT_WINDOW = 60.0
 POLL_INTERVAL = 0.5
 AUDIT_TOOL = "submit_audit"
+# Keep serving this long AFTER the audit lands, before exiting. Found 2026-08-12 against
+# uoh-ay26 (companion Thief): we received and verified their audit every time, but exited
+# within ~0.5s while their client, over a tunnel, was still closing its session / retrying.
+# That tail hit our dead origin as a 502 and they scored the sub-game a technical loss. The
+# audit is mutual; the exchange is not over the instant we have what WE need. Draining
+# continues through the grace, so a duplicate or a late follow-up is absorbed.
+AUDIT_GRACE_SECONDS = 12.0
 
 
 def audit_window_seconds(private: Mapping[str, object] | None,
@@ -72,20 +79,32 @@ def await_opponent_audit(
     sleep: Callable[[float], None],
     timeout: float,
     poll_interval: float = POLL_INTERVAL,
+    grace: float = AUDIT_GRACE_SECONDS,
 ) -> bool:
-    """Keep draining until an opponent audit is accepted or the window closes.
+    """Wait up to `timeout` for an opponent audit; once it lands, linger `grace` more.
 
     Returns whether one arrived. `drain` is injected rather than the inboxes themselves, so a
     test drives this without a socket -- the same injection `readiness` and the watchdog use.
-    The mailbox is already serving in the background; nothing is re-bound here. All this does
-    is refuse to let the process exit while the opponent may still be talking.
+
+    The grace is the fix for the teardown race: exiting the instant we have the audit leaves
+    the opponent's client hitting a dead origin (502) while it finishes its side over a
+    tunnel. We keep draining through the grace so a duplicate or late follow-up is absorbed,
+    then return. The grace stays well inside the watchdog budget.
     """
     if timeout <= 0:
         return _has_audit(drain())
     deadline = clock() + timeout
+    received_at: float | None = None
     while True:
-        if _has_audit(drain()):
-            return True
-        if clock() >= deadline:
+        if _has_audit(drain()) and received_at is None:
+            received_at = clock()
+        now = clock()
+        if received_at is not None:
+            if now >= received_at + grace:
+                return True
+            until = received_at + grace - now
+        elif now >= deadline:
             return False
-        sleep(min(poll_interval, max(0.0, deadline - clock())))
+        else:
+            until = deadline - now
+        sleep(min(poll_interval, max(0.0, until)))

@@ -52,6 +52,23 @@ def test_an_audit_that_arrives_is_waited_for() -> None:
         drain=drain, clock=clock, sleep=clock.sleep, timeout=30.0) is True
 
 
+def test_it_lingers_after_the_audit_so_the_opponent_can_tear_down() -> None:
+    """The teardown-race fix (2026-08-12): exiting the instant the audit lands leaves the
+    opponent's client hitting a dead origin (502). We keep serving for the grace window."""
+    clock = _Clock()
+    received_at: dict[str, float] = {}
+
+    def drain() -> list[_Delivery]:
+        if clock.now >= 1.0:
+            received_at.setdefault("t", clock.now)
+            return [_Delivery("submit_audit", True)]
+        return []
+
+    assert await_opponent_audit(
+        drain=drain, clock=clock, sleep=clock.sleep, timeout=30.0, grace=12.0) is True
+    assert clock.now >= received_at["t"] + 12.0
+
+
 def test_a_silent_opponent_closes_the_window_rather_than_hanging() -> None:
     """Rule 6: their silence must not become our freeze."""
     clock = _Clock()
