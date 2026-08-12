@@ -23,7 +23,7 @@ Scale: **2** = met with evidence a third party can check · **1** = partial · *
 | 9 | CI runs every gate on every push | 2 | `.github/workflows/ci.yml`. **Was 1 until 2026-08-07** — the history scanner existed and CI never ran it |
 | 10 | No secrets in the repository | 2 | Tree and full history; 2722 objects, 1 reviewed false positive pinned by blob SHA, 0 unreviewed |
 | 11 | Standard project structure | 2 | `src/` layout, `docs/`, `scripts/`, `tests/{unit,integration,conformance}`, `shared_contract/` |
-| 12 | Maintainability | 1 | 150-line cap holds, but some splits satisfy the counter rather than a concept boundary |
+| 12 | Maintainability | 1 | 150-line cap holds, but some splits satisfy the counter rather than a concept boundary. **Corrected 2026-08-12: the cap did not hold.** `check_file_lengths.py` exited 1 on two files for five days while `G-04` read `DONE`. Both are now split at genuine seams — belief update out of `live_policy.py` (where the book and the reference both already draw the line), audit tests out of `test_sub_game.py` (at the banner comment that file already carried). Score held at 1, not raised: the row existed to admit counter-driven splits, and discovering the gate was also unenforced is not evidence the underlying habit improved |
 | 13 | Portability | 1 | Frozen install verified from a clean clone; **Windows only, never run on Linux or macOS** |
 | 14 | Prompt-engineering log | 2 | `docs/PROMPT_LOG.md`, updated per batch |
 | 15 | Performance evidence | 1 | Benchmarks and a research report exist; **no profiling against an adversarial peer** |

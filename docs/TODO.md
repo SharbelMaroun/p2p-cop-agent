@@ -61,6 +61,63 @@ records every inbound tool call and verdict, which is what the opaque negotiatio
 of 2026-08-11 had no evidence for. `write_match_log` here was checked for the companion's
 other defect — a hardcoded `confirmed: True` — and does not carry it.
 
+**2026-08-12b a whole turn rejected over an unknown claim type (`C-037`).** Reviewing group
+`uoh-ay26`'s two repositories before playing them found a defect that fires only in
+sub-games 2/4/6, where this side plays Police. Their Thief sends `win_claim`
+`{"type": "boxed_in"}` when every cardinal neighbour is barriered or off-board
+(`ALLOWED_WIN_CLAIMS`, `services/network_match.py:866`); our `turn-message.schema.json`
+pinned that member to `const: "survival"` under `additionalProperties: false`, so
+`validate_message("turn", ...)` failed and `_apply` dropped the **entire** turn — proven by
+probing our own validator, not inferred. The loop would then wait for a turn that never
+arrives and the match dies into the rule-35 0/0 both sides already paid once. Worse, our
+Police strategy (`squeeze`, `containment`, `shrink`, `barrier_policy`) exists to box the
+Thief in, so we were maximising the frequency of the one message we refused.
+
+Both notebooks were asked before deciding, and they overturned the first design. The
+**book** settles the condition through the Cop's `Capture Claim` and the Thief's duty of
+truth (`inst/police_thief_p2p_Summary.md:810`, `:830`, `:858`) and confirms STAY does not
+rescue a walled-in Thief; the **reference** has no such signal at all — `win_claim` is only
+`{"type": "survival"}` or `None` (`peer/turn_sender.py::take_turn`). So `boxed_in` is a peer
+extension, and the resolution is *tolerate, never adopt*: accept it **only from a Thief
+sender**, because being walled in is observable only by the Thief and declaring it concedes
+against its own interest, while the same words from a Cop would assert our capture unproven
+(rule 22). We still emit only `survival`. Contract bumped `0.2.11-proposed` →
+`0.2.12-proposed` under `G-18`; the bump caught a second problem the bundle walk missed —
+`config/rate_limits.schema.json`, `reporting/validate.py` and four test modules pin the same
+version outside `shared_contract/`, and the contract tests failed until all moved together.
+Reader extracted to `orchestration/terminal_claims.py`, a real seam rather than a line-count
+concession. `tests/unit/test_boxed_in_claim.py` (10). This is the **second** defect of this
+exact shape against this opponent after `C-033` — our validation stricter than the rule it
+enforced, twice, each time costing a fairly played game.
+
+**2026-08-12c the 150-line gate was red, and the ledger said it was green.** Two files
+violated `G-04` at `HEAD` — `orchestration/live_policy.py` (151 significant) and
+`tests/unit/test_sub_game.py` (161 physical) — so `check_file_lengths.py` exited 1 and CI
+failed on that step, while the `G-04` row read `DONE`. `PROMPT_LOG.md` had recorded
+`live_policy` as knowingly open twice; nobody carried it back to the ledger. `G-11` cannot
+catch this: it reconciles `PLAN.md` against task status, not task status against a gate's
+exit code.
+
+Both were split at real seams rather than reflowed to satisfy the counter — the failure
+mode `SELF_ASSESSMENT.md` #12 already admits to. **`live_policy.py`**: the belief update
+moved to `orchestration/live_observation.py`. Both notebooks were asked first and both
+support it — the **book** makes belief update part of the Decision Module rather than a
+subsystem of its own (rule 3's five are the MCP connector, decision module, log manager,
+deadline tracker and watchdog; Appendix E p.126/269, ch.8.4.2 p.68/163) and permits
+internal splitting so long as the orchestrator still calls one entry point (p.62/152),
+which `live_decide` remains; the **reference** splits further still, updating belief in
+`peer/turn_handler.py::TurnHandler.process` while choosing the move in
+`domain/brains.py::BrainBase.decide` — "completely separate", inbound-message layer from
+decision layer. **`test_sub_game.py`**: split at the `# --- the audit is the point ---`
+banner it already carried, into `test_sub_game_audit.py`. Writing
+`tests/unit/test_live_observation.py` (9) caught a real mistake in its own first draft:
+hand-written "decayed" intensities are not a valid residual under the locked physics, so
+the decoder correctly returned no information and the belief fell back to row-major
+`(0,0)`. The fixture now generates both observations from `ScentField`, which is the only
+way a residual test means anything.
+
+`check_file_lengths.py` now passes: 155 source/script and 207 test files, zero violations.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
@@ -118,7 +175,7 @@ These run before every commit and in CI; they are not milestone-scoped.
 | G-01 | Keep `uv sync --frozen` reproducible | DONE | P0 | Clean clone installs from `uv.lock` with no network drift `[G§8.4]` |
 | G-02 | Keep `ruff check .` at zero findings | DONE | P0 | Zero violations under the pinned `select` set `[G§7.1]` |
 | G-03 | Keep branch coverage at or above 85% | DONE | P0 | `pytest` fails under the configured `fail_under` `[G§6.2]` |
-| G-04 | Keep every source file at or under 150 lines | DONE | P0 | `scripts/check_file_lengths.py` passes for source and tests `[G§3.2]` |
+| G-04 | Keep every source file at or under 150 lines | DONE | P0 | `scripts/check_file_lengths.py` passes for source and tests `[G§3.2]`. **This row was false from 2026-08-07 to 2026-08-12** — it read `DONE` while the gate exited 1 on `orchestration/live_policy.py` (151 significant) and `tests/unit/test_sub_game.py` (161 physical), so CI was red on this step and the ledger said otherwise. `PROMPT_LOG.md` had recorded `live_policy` as a known open violation; the row was never updated to match, which is exactly the class of drift `G-11` exists to catch and does not, because it compares `PLAN.md` against task status and not against a gate's exit code. Both files split 2026-08-12 at real seams — `orchestration/live_observation.py` (belief update, which the book places inside the Decision Module and the reference separates outright) and `tests/unit/test_sub_game_audit.py` (the boundary that file already marked with a banner comment) |
 | G-05 | Keep the secret scanner clean | DONE | P0 | `scripts/check_secrets.py` reports zero findings `[AE-39]` `[AE-40]` `[G§7.4]` |
 | G-06 | Keep the shared-contract manifest self-consistent | DONE | P0 | `shared_contract/verify.py` matches every controlled file hash |
 | G-07 | Keep the working tree whitespace-clean | DONE | P1 | `git diff --check` reports nothing |

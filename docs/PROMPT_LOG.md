@@ -1120,3 +1120,109 @@ hardcoded `confirmed: True` claiming a mutual agreement that never happened.
 `G-04` limit. It predates this work; three attempts to reflow its docstring produced the same
 line count, so it was left alone rather than churned further, and it is the only file-length
 violation left in either repository.
+
+
+## 2026-08-12b — `boxed_in`: a whole turn rejected over an unknown claim type (`C-037`)
+
+**Prompt.** Review whether group `uoh-ay26` can play us across the *full* six sub-games, not
+just the first — then fix the defect that review found.
+
+Reading their two repositories against ours settled the wire in our favour almost everywhere:
+identical `negotiate` terms (14 keys, same names and values, byte-identical shared config),
+the same `sha256(canonical_json(terms) + "|" + nonce)` signature construction down to
+`ensure_ascii=False`, matching `receive_turn`/`submit_audit` shapes, and the `ok: true`
+response our tools already return. Their audit nonces are `token_hex(32)` — 64 hex — which
+`C-033` had already made us tolerate; without that fix every one of their six audits would
+have read `TAMPERED`.
+
+One thing did not match. Their Thief sends `win_claim` `{"type": "boxed_in"}`; our
+`turn-message.schema.json` pinned that member to `const: "survival"` with
+`additionalProperties: false`, so `validate_message("turn", ...)` rejected the **whole**
+message and `_apply` dropped the turn. Proven by probing our own validator rather than
+inferred from reading. It fires only when they play Thief — sub-games 2/4/6 — so it is
+invisible until sub-game 2, and our Police strategy exists to box a Thief in, so we were
+maximising the frequency of the one message we refused.
+
+**Both notebooks were asked, and they overturned the first design.** My initial reasoning was
+that `boxed_in` is epistemically necessary and we should adopt it. The book notebook showed
+the book settles the condition through the Cop's `Capture Claim` and the Thief's duty of
+truth (`inst/police_thief_p2p_Summary.md:810`, `:830`, `:858`), and that STAY does not rescue
+a walled-in Thief. The code notebook showed the reference has no such signal at all —
+`win_claim` is only `{"type": "survival"}` or `None`, from `peer/turn_sender.py::take_turn`,
+because HOLD is always legal and an illegal choice is forced to HOLD. So the value is a peer
+extension, not a standard, and the resolution became *tolerate, never adopt*.
+
+The **sender gate** is the part worth keeping: `boxed_in` is honoured only from a Thief,
+because being walled in is observable only by the Thief and conceding runs against its own
+interest, whereas a Cop saying it would assert our capture with no proof — rule 22's
+disqualifying false declaration.
+
+**What the bump caught.** Moving `0.2.11-proposed` → `0.2.12-proposed` across
+`shared_contract/` was not enough: `config/rate_limits.schema.json`,
+`reporting/validate.py::BUNDLE_CONTRACT_VERSION` and four test modules pin the same version
+*outside* the bundle, and `load_match_contract` refuses a version whose sibling schema
+disagrees. The contract tests failed until all of them moved together, which is the gate
+working.
+
+`_decided_by` moved to `orchestration/terminal_claims.py`. That was forced by the 150-line
+gate — `sub_game.py` sat at 148 — but it is a genuine seam rather than a counter concession:
+deciding what a peer's turn asserts is a different job from running the loop, and the
+rationale now lives beside the code that applies it.
+
+1899 tests here, all passing; ruff, bundle-verify, manifest and length gates clean.
+
+**Still open, and pre-existing:** `orchestration/live_policy.py` (151 significant lines) and
+`tests/unit/test_sub_game.py` (161 physical lines) both violate the 150-line gate at `HEAD`,
+before any of this work. `check_file_lengths.py` therefore exits 1 on this branch and CI is
+red on that step independently of this change. Not touched here — splitting them is its own
+decision about seams, and doing it inside an unrelated fix is how a churn diff hides a
+behaviour change.
+
+
+## 2026-08-12c — the length gate was red and the ledger said green (`G-04`)
+
+**Prompt.** Fix the two pre-existing file-length violations reported at the end of the
+`boxed_in` work.
+
+The interesting part was not the split, it was the disagreement. `check_file_lengths.py`
+exited 1 on `orchestration/live_policy.py` (151 significant) and
+`tests/unit/test_sub_game.py` (161 physical) at `HEAD`, verified with `git stash` so the
+attribution was certain — yet the `G-04` row read `DONE`, and `PROMPT_LOG.md` had twice
+recorded `live_policy` as a known open violation without carrying it back. `G-11` compares
+`PLAN.md` to task status and cannot see a gate's exit code, so nothing reconciled the two.
+The row is now corrected in place rather than silently flipped, because a row that was
+wrong for five days is more useful to a grader than one that always claimed to be right.
+
+**Both notebooks were asked before splitting `live_policy`, and both mattered.** The book
+notebook established what rule 3 actually constrains: its five subsystems are the MCP
+connector, decision module, log manager, deadline tracker and watchdog, belief update is
+*inside* the Decision Module rather than a subsystem of its own (fig. 7, p.43/111), and
+internal splitting is permitted provided the orchestrator still addresses one entry point
+(p.62/152) — which `live_decide` remains. The code notebook showed the reference splits the
+same concern much further apart: belief update in
+`peer/turn_handler.py::TurnHandler.process` (computation in
+`domain/belief.py::BeliefGrid.observe_smell`), move choice in
+`domain/brains.py::BrainBase.decide`, described as completely separate layers. So
+`orchestration/live_observation.py` is the aligned home for the wiring half, with the
+arithmetic left in `strategy/` where the M6-18 privacy guard protects it.
+
+`test_sub_game.py` split at the `# --- the audit is the point ---` banner it already
+carried — the seam was pre-drawn, only unenforced.
+
+**The new tests caught me out, which is the point of writing them.**
+`test_live_observation.py`'s first draft asserted that a moved emitter is tracked, using
+hand-written decayed intensities. It failed: those numbers are not a valid residual under
+the locked physics, so `emitter_likelihood` correctly returned no information and
+`Belief.most_likely` fell back row-major to `(0,0)`. Had the assertion been weaker it would
+have passed while testing nothing. The fixture now builds both observations with
+`ScentField`, so the residual is real.
+
+**Note on the notebook step.** The code notebook froze on three consecutive reloads — the
+`type` action reported success while the textarea stayed empty, including on a 4-character
+probe. It was driven with the native `HTMLTextAreaElement` value setter plus an `input`
+event instead, and submitted with the send button rather than Enter. Recorded because the
+documented recovery (reload and retry) did not work this time and the next session should
+skip straight to the setter.
+
+1918 tests, 96.4% branch coverage; ruff, lengths, ledger, secrets, bundle-verify all clean.
+`check_file_lengths.py` now passes across 155 source/script and 207 test files.

@@ -1865,6 +1865,71 @@ interoperable. Every defect of this class so far has been found by contact with 
 real peer's specification, never by the suite — which argues for warm-up games and for reading
 other teams' specs, not for more tests of the kind already passing.
 
+### What reading an opponent's source changed
+
+**Added 2026-08-12.** Before playing group `uoh-ay26` we read their two repositories rather
+than only their published endpoint. Almost everything matched: identical negotiation terms
+over a byte-identical shared config, the same commitment construction down to
+`ensure_ascii=False`, matching turn and audit shapes. One member did not, and it was the
+member that ends games.
+
+**Their Thief sends a terminal claim we refused to parse.** When every cardinal neighbour is
+barriered or off-board it emits `win_claim` `{"type": "boxed_in"}`. Our
+`turn-message.schema.json` pinned that member to `const: "survival"` under
+`additionalProperties: false`, so validation rejected the **entire turn message**, the loop
+waited for a turn that would never arrive, and the match would have died into the 0/0 that
+rule 35 gives both sides. It fires only when they play Thief — sub-games 2/4/6 — so a
+single-game rehearsal cannot surface it, and our Police strategy exists precisely to box a
+Thief in, so we were maximising the frequency of the one message we rejected.
+
+**Consulting both sources overturned our first answer.** The initial reasoning was that a
+walled-in Thief is a fact only the Thief can observe, so the claim is necessary and we should
+adopt it. The book disagrees: it settles the same condition through the Cop's `Capture Claim`
+and the Thief's cryptographic duty of truth, and confirms that STAY does not rescue such a
+Thief. The reference disagrees differently: it has no such signal at all, emitting only
+`{"type": "survival"}` or `None`, because HOLD is always legal and an illegal choice is forced
+to HOLD. So `boxed_in` is one opponent's extension, and the resolution is **tolerate, never
+adopt** — we accept the value so a turn is never lost, keep settling the condition the book's
+way, and still emit only `survival`.
+
+The safety property is the sender gate. `boxed_in` is honoured **only from a Thief**, because
+a Thief declaring it concedes against its own interest, while a Cop declaring it would assert
+our capture with no proof — rule 22's disqualifying false declaration. Accepting it in that
+direction would let any opponent end a game it was losing by asserting a fact it cannot see.
+
+This is the **second** defect of exactly this shape against this opponent. `C-033` was a
+verifying audit scored as forgery over its nonce's *length*; this is a whole turn rejected
+over an unknown *claim type*. Both were our validation being stricter than the rule it
+claimed to enforce, and both would have cost a fairly played game. The lesson recorded above
+— that our gates check us against ourselves — now has a sharper form: **a schema written from
+one implementation encodes that implementation's silences as prohibitions.**
+
+### Where the belief update lives, and why the file split
+
+**Added 2026-08-12.** The 150-line file cap forced a decision about the live Cop turn, and
+the honest answer was that the file had two jobs. `live_policy.py` both *interpreted the
+opponent's scent* and *chose and published a move*. Splitting the first into
+`orchestration/live_observation.py` was checked against both authorities before it was
+done, because rule 3 names the subsystems that must sit behind the orchestrator and a
+careless split could have invented a sixth one.
+
+It does not. Rule 3's subsystems are the MCP connector, decision module, log manager,
+deadline tracker and watchdog; belief update is drawn *inside* the Decision Module, and the
+book permits splitting that module internally so long as the orchestrator still addresses a
+single entry point for the next step — which `live_decide` remains. The reference
+implementation separates the same concern considerably further, updating belief in its
+inbound turn handler and choosing the move in a different package entirely. So the seam is
+the one both sources already draw, and the arithmetic stays in `strategy/`, the layer the
+belief-privacy guard protects.
+
+Worth recording alongside it: the gate that forced this had been **failing for five days
+while the task ledger reported it complete**. The prompt log had twice noted the violation;
+nothing carried it back to the row, and the cross-document consistency script cannot see a
+gate's exit code — only whether the plan and the task list agree with each other. That is a
+narrower guarantee than it looks, and the same lesson as the interop defects above in a
+different costume: **a check that only compares our documents to each other cannot tell us
+when all of them are wrong together.**
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a
