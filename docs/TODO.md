@@ -166,6 +166,18 @@ the commit covers State||Move||Intent) and the Police never did. `live_policy` n
 cop/thief-drift family after the wire-log arming (`C-039`) and the step-0 shape
 (`C-041`).
 
+**2026-08-12h the flawless series, and rule 32 proven live.** The second complete series
+(`games/friendly-uohay26-0812-2201/`) reproduced the first game for game — captures at
+15/17/16 in the Police games, all via `boxed_in` concessions — with **zero wire rejections
+end to end**: `C-042`'s record shape survived their converter in all three Police audits,
+and their `series_consensus` finale was accepted (`C-040`'s first live pass). Separately,
+the reporting pipeline ran for real for the first time: `build_result` (first live
+caller), `build_report_message`, and `ReportSender` delivered the first series' result
+artifact over the Gmail REST API — a self-addressed test using the HW6-era OAuth client,
+`gmail.send` scope only, secrets outside both repositories. What remains of rule 32 is
+wiring the send into the serve path's settlement and flipping the recipient for counted
+play.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.

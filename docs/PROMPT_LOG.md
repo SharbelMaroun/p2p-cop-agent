@@ -1316,3 +1316,21 @@ themselves. Regression drives the real `live_decide`, per the C-041 lesson. No n
 queries: the Thief's builder embodies the book's ch.5 record model and is
 opponent-proven; nothing a notebook says can outrank a shape a live peer has parsed
 successfully four times.
+
+
+## 2026-08-12h — the flawless series, and the first real email
+
+Series `0812-2201`: 6–0, identical to the first sweep game for game, and **zero wire
+rejections across the entire run** — every fix of the day exercised live in one series
+and none of them flinched. Their consensus finale: `validated, accepted=True` at
+19:34:04, where twenty-four hours ago the same envelope was the night's one rejection.
+
+The reporting pipeline also ran for real for the first time. The HW6-era OAuth client
+(`cop-thief-agent` project, found intact in `~/.cop-thief-secrets/`) was consented once
+with `gmail.send` alone; a stdlib driver — the repos import no Google library, so the
+operator transmit matches — built the first series' result artifact through
+`build_result` (its first live caller), composed the mandated MIME via
+`build_report_message`, and `ReportSender` delivered it in one attempt. Recipient:
+ourselves, deliberately. Rule 32's mandate is auto-send at the end of every legal game;
+the components are now all proven, and the remaining work is the serve-path wiring plus
+the settlement-earned agreement inputs, tracked for before counted play.

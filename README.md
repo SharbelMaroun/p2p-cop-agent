@@ -1955,6 +1955,64 @@ needed acknowledging rather than refusing. Both fixed the same night. The patter
 to the end: every defect on either side was validation disagreeing with validation,
 never gameplay disagreeing with gameplay.
 
+### The live interoperability campaign — one day, ten defects, two perfect series
+
+**Added 2026-08-12, end of day.** Everything above in this report describes systems built
+and measured against ourselves. This section records what happened when they finally met
+a real opponent — group `uoh-ay26` — across one continuous day of play, because the
+process is the finding.
+
+**The scoreboard first:** two complete six-game series, both 6–0 to us, 90–30,
+reproduced game for game (survival at the full horizon in every Thief game; capture at
+steps 15/17/16 in every Police game, each through the opponent conceding `boxed_in`).
+The second series ran with **zero rejected wire events end to end** — after a day in
+which almost every message type had been refused by someone at least once.
+
+**The defects, in the order the wire found them.** Every one was invisible to 1900+
+passing tests, and every one was found only by contact with a real peer:
+
+| found by | defect | family |
+| --- | --- | --- |
+| validating their config | `schema_version`/`agreed_between` silently unread by preflight (`C-035`/`C-036`) | checker checked the wrong thing |
+| their thief surviving 35 steps | we exited before their audit arrived — won game scored 0/0 (AE-024) | protocol ends at the audit, not the log |
+| reading their source | their `boxed_in` concession rejected our whole turn (`C-037`) | our schema stricter than any rule |
+| their sign-off formula | `identity.git_commit_hash` absent → mutual win voided (`C-038`) | their check stricter than any source |
+| their question we could not answer | our Police kept no inbound wire record at all (`C-039`) | recorder built, never armed |
+| their `[-1, 0]` rejection | Police step-0 lacked `step`/`type`; Thief's had them (`C-041`) | two repos drifting on one shape |
+| their coordinator crashing | Police records lacked `state`; Thief's carried it (`C-042`) | same drift, third organ |
+| their series finale | `series_consensus` refused by our enum (`C-040`) | their extension, our tolerance |
+| both tunnels, both sides | routes flapping, `localhost`→`::1` mismatches, role-swap races | infrastructure, not protocol |
+| the counted-play rehearsal | reporting armed for the first time — `build_result`'s first caller, one real Gmail send | the mandate nobody had triggered |
+
+**What the day actually taught, compressed:**
+
+1. **Green means internally consistent, not interoperable.** Every defect above survived
+   a suite that now exceeds 1900 tests, because a test written from an implementation
+   inherits that implementation's silences. Two of the worst were tests that *existed*
+   and pinned a hand-built fixture instead of the producer.
+2. **Role repositories drift.** Three defects (`C-039`, `C-041`, `C-042`) were the Cop
+   and Thief implementing "the same" record differently — invisible until a third party
+   parsed both. The fix each time was to adopt the shape a live peer had already parsed
+   successfully, and to pin it with a regression that drives the real producer.
+3. **Tolerate, never adopt.** Four times the opponent's build demanded something no
+   source requires (`C-033` nonce length, `C-037` claim type, `C-038` identity hash,
+   `C-040` consensus envelope). Each time the resolution was the same asymmetry: accept
+   theirs inbound, change nothing about what we emit, and gate anything that could be
+   asserted against our interest on the party able to observe it.
+4. **Validation disagreeing with validation, never gameplay with gameplay.** Across
+   twelve games no move was ever illegal, no commitment failed to reproduce, no scent
+   field disagreed. Every single failure was two verifiers arguing about envelopes —
+   which is exactly what the book's audit-first design predicts, and why rule 35's 0/0
+   for conflicting artifacts is the deadliest rule in the appendix.
+5. **Coordination is a protocol too.** Half the day's failures were operational: quick
+   tunnels rotating, a named tunnel serving one hostname and flapping the other, two
+   coordinators restarting roles into each other's two-minute windows. The durable
+   fixes — a consolidated tunnel, ten-minute dial patience on both sides, agents that
+   outlive their sub-game — were negotiated between teams like any other term.
+
+The full evidence — six logs and a complete inbound wire journal per side, per series —
+is preserved under `games/friendly-uohay26-0812-1934/` and `-0812-2201/`.
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a
