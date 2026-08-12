@@ -230,6 +230,13 @@ every archetype including it** (mean capture turn 24 vs `flee_interior`; the old
 matchups got faster, none regressed). `live_policy` now serves the denial stack. Built
 after the repositories went private, so it meets its first opponent on the board.
 
+**2026-08-13e repositories returned to public.** The private interval lasted from before
+M10 landed until after it was pushed; both repositories are public again by owner
+decision. Consequence, stated plainly: `strategy/denial.py` and the `flee_interior`
+archetype are now readable by the opponent, so the next round of the strategy duel is
+played open-book in both directions -- the same symmetric openness we benefited from
+when reading their planner. Rule 49 is satisfied in either state.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
