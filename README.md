@@ -2014,16 +2014,60 @@ The full evidence — six logs and a complete inbound wire journal per side, per
 is preserved under `games/friendly-uohay26-0812-1934/` and `-0812-2201/`.
 
 
-**The comeback (2026-08-13, after the tie).** Their patch was studied the way they
-studied ours: their public planner became a harness archetype (`flee_interior`), which
-reproduced the tie exactly -- including the decisive measurement that the truth-fed
-oracle also scores 0/40, so the gap was structural, not informational. Their evader's
-clearance arithmetic measures distance to the board edge and ignores barriers, and its
-proximity filter never contests ground near the Cop: so `strategy/denial.py` walks the
-sanctuary and walls it out from under them -- the whole clearance>=2 core, then one cut
-per surviving orbit, then the incumbent chase on the resulting paths. Measured:
-**denial_stack 40/40 against every archetype including `flee_interior`** (mean capture
-turn 24), no regressions, and the live serve path now plays it.
+### The strategy duel: how the tie happened, and how the Cop came back
+
+**Added 2026-08-13, after M10.** The live campaign's final chapter is a genuine
+adversarial strategy duel, and it deserves its own record because both sides played it
+the same way: by reading the other's evidence and engineering a targeted counter.
+
+**Round one — their counter to us.** Our first two complete series were 6-0 sweeps, with
+every Police capture at steps 15-17 through the same mechanism: the squeeze/containment
+stack drives the thief to the board edge, two barriers seal a corner, and their thief
+either concedes `boxed_in` or answers a capture claim truthfully. Between series they
+studied those logs -- their commit's regression tests are literally named after our three
+winning games -- and added boundary avoidance to their evader: a hard exclusion of any
+move with less board-edge clearance than the best safe option, plus a steep edge
+penalty. Our capture geometry simply ceased to exist for them. The next series was six
+survivals: a 47-47 draw, their first games ever taken off us.
+
+**The diagnosis -- measured, not guessed.** Their planner is public, so it was ported
+faithfully into our tournament harness as a sixth archetype, `flee_interior`. The
+baseline reproduced the tie exactly and sharpened it:
+
+| arm | vs `flee_interior` |
+| --- | --- |
+| `shrink_stack` (the live stack that tied) | **0/40** |
+| `oracle_shrink` (fed the true position) | **0/40** |
+| `denial_stack` (M10) | **40/40**, mean capture turn 24 |
+
+The oracle row is the decisive one: perfect information did not help, so the gap was
+structural -- no belief improvement could close it, only a different use of the barrier
+quota.
+
+**Round two -- our counter to them.** Porting their code exposed two exploitable facts.
+Their "clearance" measures distance to the **board edge and ignores barriers**, so a
+barriered sanctuary is simply gone and the next ring outward becomes the new magnet.
+And their proximity filter means they **never contest ground near the Cop**, so the Cop
+can walk their sanctuary and wall it out from under them unopposed. `strategy/denial.py`
+is one recomputed rule in two phases: deny the whole clearance>=2 core (nine cells on
+7x7), then cut each surviving orbit once -- because equal-speed pursuit corners an
+evader on a path where it never can on a cycle -- and let the incumbent
+squeeze/containment/interception layers finish, with a three-barrier reserve kept for
+them and the finishing layers always speaking first. The first iteration denied only
+the current maximum tier and measured 0/40; the instrumented trace showed their thief
+serenely orbiting an open ring around a beautifully walled core, and the orbit-cut
+phase converted it. The published grid now shows `denial_stack` at 40/40 against every
+archetype -- the only arm ever to sweep it -- with no regression and several older
+matchups faster.
+
+**What the duel teaches, for the report.** Strategy in this league is not a fixed
+artifact but a measured response to a specific opponent: both rounds were won by the
+side that most recently turned the other's own evidence -- logs for them, public source
+for us -- into a harness opponent and tuned against it. Rule 53 exists precisely so this
+is legal and auditable: every game seals the commit that played it, so the examiner can
+reconstruct which brain met which. The repositories moved to private (rule 49's
+shared-with-lecturer option) before M10 landed, so the denial stack meets its first
+opponent on the board rather than in their editor.
 
 ## Usage
 
