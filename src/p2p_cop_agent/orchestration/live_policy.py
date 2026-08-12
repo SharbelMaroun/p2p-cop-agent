@@ -53,11 +53,11 @@ from p2p_cop_agent.protocol.scent_wire import encode_scent
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.strategy.barrier_policy import BarrierIntent
 from p2p_cop_agent.strategy.belief import Belief
+from p2p_cop_agent.strategy.denial import denial_turn_intent
 from p2p_cop_agent.strategy.hints import hint_max_words
 from p2p_cop_agent.strategy.landmarks import place_for
 from p2p_cop_agent.strategy.patrol import aim
 from p2p_cop_agent.strategy.scent_field import ScentField
-from p2p_cop_agent.strategy.shrink import shrinking_turn_intent
 from p2p_cop_agent.strategy.verbal import generate_hint
 
 
@@ -98,8 +98,8 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
         # every on-board cell, keeps the sealed record truthful, and leaves all state
         # coherent, so the game continues and the audit still verifies.
         try:
-            chosen = shrinking_turn_intent(board, state["cell"], target,
-                                           state["barriers"], state["previous"])
+            chosen = denial_turn_intent(board, state["cell"], target,
+                                        state["barriers"], state["previous"])
             if isinstance(chosen, BarrierIntent):
                 state["barriers"], state["previous"] = (
                     state["barriers"].place_adjacent(board, state["cell"], chosen.cell), None)

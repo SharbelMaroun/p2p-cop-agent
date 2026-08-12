@@ -70,3 +70,32 @@ def flee_territory(board, thief, cop, blocked) -> Action:
         gain = _distance(destination, cop) + _mobility(board, destination, blocked)
         return (-_territory(board, destination, cop, blocked), -gain, action.name)
     return min(legal_moves(board, thief, blocked), key=rank)
+
+
+def flee_interior(board, thief, cop, blocked) -> Action:
+    """`uoh-ay26`'s live evader, modelled from their public `tactical_planner.py` @6e915bb.
+
+    Their patch after losing G003 g02/g04/g06 (their regression tests name those games):
+    (1) hard safety filters against capture and proximity; (2) refuse dead ends when a
+    safer tier exists; (3) **hard-exclude any move with less boundary clearance than
+    the best available** -- "a currently safe boundary move can still hand the Police
+    an irreversible two-barrier corner trap"; (4) score survivors by escape space and
+    distance. The result in live play: never voluntarily touches an edge, and the
+    corner-trap capture engine loses its geometry (the 45-45 series of 2026-08-13).
+    """
+    def clearance(cell) -> int:
+        return min(cell.row, cell.col,
+                   board.grid_size - 1 - cell.row, board.grid_size - 1 - cell.col)
+
+    options = [(action, apply_move(board, thief, action, blocked))
+               for action in legal_moves(board, thief, blocked)]
+    # (1) their 1000x/250x risk weights, as hard tiers: never step onto or beside the Cop.
+    safe = [(a, d) for a, d in options if _distance(d, cop) >= 2] or options
+    # (2) their trap filter: refuse mobility<=1 when an alternative tier exists.
+    open_tier = [(a, d) for a, d in safe if _mobility(board, d, blocked) > 1] or safe
+    # (3) their boundary hard-exclusion: only the maximum-clearance tier survives.
+    best = max(clearance(d) for _, d in open_tier)
+    interior = [(a, d) for a, d in open_tier if clearance(d) == best]
+    # (4) their scoring, reduced to the surviving tier: escape space then distance.
+    return min(interior, key=lambda ad: (-(_mobility(board, ad[1], blocked)
+                                           + _distance(ad[1], cop)), ad[0].name))[0]

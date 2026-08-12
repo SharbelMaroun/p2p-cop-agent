@@ -26,7 +26,7 @@ def test_a_raising_strategy_yields_a_truthful_stay(monkeypatch) -> None:
     def poisoned(*_args, **_kwargs):
         raise RuntimeError("injected strategy failure")
 
-    monkeypatch.setattr(live_policy, "shrinking_turn_intent", poisoned)
+    monkeypatch.setattr(live_policy, "denial_turn_intent", poisoned)
     decide = live_policy.live_decide(BOARD, Coordinate(2, 2), GAME)
     payload, public = decide(thief_message(1, {"6,6": 0.9}))
     assert payload["move"] == "MOVE:STAY"
@@ -37,7 +37,7 @@ def test_a_raising_strategy_yields_a_truthful_stay(monkeypatch) -> None:
 
 def test_the_game_continues_after_the_failed_turn(monkeypatch) -> None:
     """One poisoned turn, then the stack recovers: the next turn plays normally."""
-    real = live_policy.shrinking_turn_intent
+    real = live_policy.denial_turn_intent
     calls = {"count": 0}
 
     def flaky(*args, **kwargs):
@@ -46,7 +46,7 @@ def test_the_game_continues_after_the_failed_turn(monkeypatch) -> None:
             raise ValueError("first turn only")
         return real(*args, **kwargs)
 
-    monkeypatch.setattr(live_policy, "shrinking_turn_intent", flaky)
+    monkeypatch.setattr(live_policy, "denial_turn_intent", flaky)
     decide = live_policy.live_decide(BOARD, Coordinate(0, 0), GAME)
     first, _ = decide(thief_message(1, {"6,6": 0.9}))
     second, _ = decide(thief_message(2, {"6,6": 0.9, "6,5": 0.62}))

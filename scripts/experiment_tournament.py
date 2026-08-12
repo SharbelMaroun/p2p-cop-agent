@@ -34,12 +34,14 @@ from p2p_cop_agent.domain.movement import Action  # noqa: E402
 from p2p_cop_agent.domain.scoring import Outcome  # noqa: E402
 from p2p_cop_agent.orchestration.harness import run_sub_game  # noqa: E402
 from p2p_cop_agent.strategy.barrier_policy import MoveIntent  # noqa: E402
+from p2p_cop_agent.strategy.denial import denial_turn_intent  # noqa: E402
 from p2p_cop_agent.strategy.shrink import shrinking_turn_intent  # noqa: E402
 from scripts.experiment_arena import CONFIG, SEEDS, Trace, config_with  # noqa: E402
 from scripts.experiment_opponents import COP_ARMS, _decoded  # noqa: E402
 from scripts.experiment_thieves import (  # noqa: E402
     flee_deadend,
     flee_greedy,
+    flee_interior,
     flee_smart,
     flee_territory,
 )
@@ -76,10 +78,26 @@ def _oracle_shrink(trace: Trace, _rng: random.Random):
     return policy
 
 
+def _denial_stack(trace, _rng):
+    """The candidate: sanctuary denial over the incumbent stack, decoded belief."""
+    memory = {"previous": None, "belief": None, "observed": None}
+
+    def policy(cop):
+        believed = _decoded(trace, memory)
+        if believed is None:
+            return Action.STAY
+        intent = denial_turn_intent(cop.board, cop.position, believed,
+                                    cop.barriers, memory["previous"])
+        memory["previous"] = cop.position if isinstance(intent, MoveIntent) else None
+        return intent
+    return policy
+
+
 ARMS = {"barrier_stack": COP_ARMS["barrier_stack"], "shrink_stack": _shrink_stack,
-        "oracle_shrink": _oracle_shrink}
+        "oracle_shrink": _oracle_shrink, "denial_stack": _denial_stack}
 THIEVES = {"random": None, "flee_greedy": flee_greedy, "flee_smart": flee_smart,
-           "flee_deadend": flee_deadend, "flee_territory": flee_territory}
+           "flee_deadend": flee_deadend, "flee_territory": flee_territory,
+           "flee_interior": flee_interior}
 
 
 def play_cell(config: dict, arm: str, thief: str, seeds) -> dict:

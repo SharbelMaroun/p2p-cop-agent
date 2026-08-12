@@ -1334,3 +1334,28 @@ operator transmit matches — built the first series' result artifact through
 ourselves, deliberately. Rule 32's mandate is auto-send at the end of every legal game;
 the components are now all proven, and the remaining work is the serve-path wiring plus
 the settlement-earned agreement inputs, tracked for before counted play.
+
+
+## 2026-08-13d — sanctuary denial (M10): 0/40 -> 40/40 in one design insight
+
+**Prompt.** "Can we make our cop win again?" after the 45-45 tie.
+
+**The insight came from modelling the opponent honestly.** Porting their public
+`tactical_planner.py` thief branch into the harness as `flee_interior` reproduced the
+tie exactly -- shrink_stack 0/40, and decisively, the truth-fed oracle also 0/40, so no
+amount of better belief could help. Reading their code for the port exposed the twin
+weaknesses: their "clearance" measures distance to the board edge and **ignores
+barriers**, and their proximity filter means they never contest ground near the Cop.
+So their sanctuary can be walked and walled out from under them, unopposed.
+
+**One rule, two phases.** Deny the entire clearance>=2 core (9 cells); the sanctuary
+recomputation then promotes the clearance-1 orbit, where a single barrier per orbit
+cuts the cycle into a path -- and equal-speed pursuit corners an evader on a path where
+it never can on a cycle. The first iteration (deny only the current maximum tier)
+measured 0/40 and the instrumented trace showed why: the thief orbiting an open ring
+around a beautifully walled core. The cut phase converted it to 40/40, mean capture at
+turn 24, with every older matchup intact or faster.
+
+Deliberate order of work: the archetype and its baseline came FIRST, so every design
+change was measured against the opponent's actual brain rather than intuition -- the
+same discipline that caught the first iteration's failure in one trace.

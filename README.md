@@ -2013,6 +2013,18 @@ passing tests, and every one was found only by contact with a real peer:
 The full evidence — six logs and a complete inbound wire journal per side, per series —
 is preserved under `games/friendly-uohay26-0812-1934/` and `-0812-2201/`.
 
+
+**The comeback (2026-08-13, after the tie).** Their patch was studied the way they
+studied ours: their public planner became a harness archetype (`flee_interior`), which
+reproduced the tie exactly -- including the decisive measurement that the truth-fed
+oracle also scores 0/40, so the gap was structural, not informational. Their evader's
+clearance arithmetic measures distance to the board edge and ignores barriers, and its
+proximity filter never contests ground near the Cop: so `strategy/denial.py` walks the
+sanctuary and walls it out from under them -- the whole clearance>=2 core, then one cut
+per surviving orbit, then the incumbent chase on the resulting paths. Measured:
+**denial_stack 40/40 against every archetype including `flee_interior`** (mean capture
+turn 24), no regressions, and the live serve path now plays it.
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a

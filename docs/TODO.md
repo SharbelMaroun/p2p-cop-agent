@@ -215,6 +215,21 @@ same way their next counter will not be readable by us if they reciprocate. Ever
 pushed before this moment is assumed already cloned; privacy protects future commits
 only.
 
+**2026-08-13d sanctuary denial: the Cop's answer to the interior evader (M10).** Their
+post-G003 thief (commit `6e915bb`, regression tests named after our three wins) is bound
+to the maximum-board-edge-clearance cells and flees the Cop; both together are the
+exploit, because their clearance arithmetic ignores barriers. `strategy/denial.py`: deny
+the whole clearance>=2 core (nine cells, walked and walled unopposed -- their proximity
+filter cedes the ground), then cut each surviving orbit once so no cycle remains, then
+the incumbent chase corners them on the resulting paths; finishing layers always speak
+first, and a reserve keeps three barriers for them. Modelled their evader faithfully as
+`flee_interior` in the harness (their public planner at `6e915bb` is the reference).
+**Measured: shrink_stack 0/40 and the truth-fed oracle 0/40 against `flee_interior` --
+the structural gap that tied the 2026-08-13 series -- and denial_stack 40/40 against
+every archetype including it** (mean capture turn 24 vs `flee_interior`; the older
+matchups got faster, none regressed). `live_policy` now serves the denial stack. Built
+after the repositories went private, so it meets its first opponent on the board.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
