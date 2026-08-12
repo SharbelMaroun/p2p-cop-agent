@@ -43,7 +43,9 @@ def gather_summaries(directories: list[Path]) -> list[dict]:
             summary = dict(data["summary"])
             summary["game_id"] = data["game_id"]
             summary["game_uid"] = data["game_uid"]
-            summary["config_sha256"] = (data.get("mutual_agreement") or {}).get("sha256", "")
+            agreement = data.get("mutual_agreement") or {}
+            summary["config_sha256"] = agreement.get("sha256", "")
+            summary["confirmed"] = agreement.get("confirmed") is True
             summaries.append(summary)
     if not summaries:
         raise ReportCommandError(f"no log_*.json under {[str(d) for d in directories]}")
@@ -80,6 +82,10 @@ def run_report(
         config_sha256=str(summaries[0].get("config_sha256", "")),
         league=(config.get("league") or None),
     )
+    # Rule 36 puts the mutual audit before agreement, and rule 35 scores a
+    # conflicting report 0/0 -- so agreement is EARNED from the logs, not
+    # asserted: every sub-game must have recorded a received, confirmed audit.
+    agreed = all(s.get("confirmed") for s in summaries)
     out = Path(artifact_dirs[0]) / f"result_{game_id}.json"
     out.write_text(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
                    encoding="utf-8")
@@ -90,6 +96,11 @@ def run_report(
         return out
     if not recipient:
         raise ReportCommandError("[email].recipient is required for dry_run/real modes")
+    if not agreed:
+        unconfirmed = [s["sub_game_number"] for s in summaries if not s.get("confirmed")]
+        raise ReportCommandError(
+            f"sub-games {unconfirmed} never recorded a confirmed opponent audit; "
+            "rule 35 scores a conflicting report 0/0, so nothing is composed")
     message = build_report_message(
         team_code=str(game.get("group_id")), game_id=game_id, result=result,
         settlement={"state": "agreed", "audit_passed": True},
