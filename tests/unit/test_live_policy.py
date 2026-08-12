@@ -106,3 +106,18 @@ def test_an_unparseable_grid_does_not_freeze_the_cop() -> None:
     decide = fresh(Coordinate(0, 0))
     moves = [decide(thief_message(step, {"nope": 1.0}))[0]["move"] for step in range(1, 7)]
     assert any(move != "MOVE:STAY" for move in moves)
+
+
+def test_the_amireman_profile_claims_the_post_move_cell_every_turn() -> None:
+    """Their guide: an ungated claim of the Cop's own cell each turn; gated claims
+    miss captures under their thief-evaluated semantics. Off by default -- an
+    every-turn claim broadcasts our true position, a gift no other profile demands."""
+    from p2p_cop_agent.orchestration.live_policy import live_decide
+
+    decide = live_decide(BOARD, Coordinate(0, 0), GAME, claim_every_turn=True)
+    payload, public = decide(thief_message(1, {"6,6": 0.9}))
+    assert public["capture_claim"] == payload["position"]
+
+    ungated = live_decide(BOARD, Coordinate(0, 0), GAME)
+    _payload2, public2 = ungated(thief_message(1, {"6,6": 0.9}))
+    assert "capture_claim" not in public2 or public2["capture_claim"] != [0, 1]

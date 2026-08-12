@@ -23,6 +23,7 @@ number rather than by sleeping on a socket `[ADR-009]`.
 from __future__ import annotations
 
 from collections.abc import Callable
+from urllib.parse import urlparse
 
 # Return True when the opponent answers. Must not raise: an unreachable peer during
 # startup is the expected case, not an error, so a probe that throws is a bug in the
@@ -87,3 +88,18 @@ def timeouts_from_private_config(config: object) -> tuple[float, float]:
     timeout = section.get("connect_timeout_seconds", DEFAULT_CONNECT_TIMEOUT)
     interval = section.get("retry_interval_seconds", DEFAULT_RETRY_INTERVAL)
     return float(timeout), float(interval)
+
+
+_DEFAULT_PORTS = {"https": 443, "http": 80}
+
+
+def split_host_port(url: str) -> tuple[str, int]:
+    """Return the (host, port) a readiness probe should connect to.
+
+    Moved here from `adapters/serve.py` (G-04): probing an opponent's address is
+    readiness work, and serve re-exports it for its existing callers.
+    """
+    parsed = urlparse(url)
+    if not parsed.hostname:
+        raise ValueError(f"cannot read a host from {url!r}")
+    return parsed.hostname, parsed.port or _DEFAULT_PORTS.get(parsed.scheme, 80)

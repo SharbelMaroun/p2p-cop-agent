@@ -26,7 +26,7 @@ def test_the_sanctuary_starts_as_the_whole_core() -> None:
     """Phase 1 is every clearance>=2 cell, not just the single centre."""
     cells = sanctuary_cells(BOARD, frozenset())
     assert len(cells) == 9
-    assert all(2 <= min(c.row, c.col, 6 - c.row, 6 - c.col) for c in cells)
+    assert all(min(c.row, c.col, 6 - c.row, 6 - c.col) >= 2 for c in cells)
 
 
 def test_a_blocked_core_promotes_the_ring() -> None:

@@ -19,7 +19,6 @@ import queue
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from urllib.parse import urlparse
 
 from p2p_cop_agent.adapters.fastmcp_client import FastMCPClient
 from p2p_cop_agent.adapters.fastmcp_server import PeerInboxes, take_turn
@@ -34,20 +33,14 @@ from p2p_cop_agent.protocol import attestation_wire
 from p2p_cop_agent.sdk import CopSDK
 from p2p_cop_agent.services import wire_log
 from p2p_cop_agent.services.deadlines import RetryPolicy
-from p2p_cop_agent.services.readiness import timeouts_from_private_config, wait_for_peer
+from p2p_cop_agent.services.readiness import (
+    split_host_port,  # noqa: F401 - re-exported; the runbook and tests import it here
+    timeouts_from_private_config,
+    wait_for_peer,
+)
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.private_config import load_private_config, opponent_url
 from p2p_cop_agent.shared.team_config import load_host_spec, load_identity
-
-_DEFAULT_PORTS = {"https": 443, "http": 80}
-
-
-def split_host_port(url: str) -> tuple[str, int]:
-    """Return the (host, port) a readiness probe should connect to."""
-    parsed = urlparse(url)
-    if not parsed.hostname:
-        raise ValueError(f"cannot read a host from {url!r}")
-    return parsed.hostname, parsed.port or _DEFAULT_PORTS.get(parsed.scheme, 80)
 
 
 def per_game_token_budget(game: JsonObject) -> int:
@@ -71,6 +64,9 @@ def cop_start(game: JsonObject) -> Coordinate:
     return Coordinate(int(row), int(col))
 
 
+_STRATEGY: dict = {}
+
+
 def serve_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
     """Return the live decision policy for one served match (M6-19).
 
@@ -81,13 +77,14 @@ def serve_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
     alternating truth/bluff hint, all deterministic. The sealed payload carries the
     real move and position, because the audit is what makes a claim provable.
     """
-    return live_decide(board, start, game)
+    return live_decide(
+        board, start, game, claim_every_turn=bool(_STRATEGY.get("claim_every_turn")))
 
 
 def _drain(box: queue.Queue) -> JsonObject | None:
     try:
         return box.get_nowait()
-    except queue.Empty:
+    except queue.Empty:  # an empty inbox is a normal state, not an error
         return None
 
 
@@ -107,6 +104,7 @@ def serve_match(
     came up within the connect budget.
     """
     config = load_private_config(private_config_path)
+    _STRATEGY.update(config.get("strategy") or {})  # amireman profile flags
     sdk = CopSDK.from_repository(root, match_config_path, rate_limits_path=rate_limits_path)
     identity = load_identity(config)
     host_spec = load_host_spec(config)
@@ -118,10 +116,9 @@ def serve_match(
     if artifacts_dir is not None and wire_log.enable(Path(artifacts_dir) / "logs"):
         print(f"wire log: {wire_log.target()}")
     serve_in_background(inboxes, port=int(config["network"]["my_port"]))  # type: ignore[index]
-    host, port = split_host_port(opponent_url(config))
-    connect_timeout, retry_interval = timeouts_from_private_config(config)
     # `peer_answers`, not `port_answers`: a tunnelled peer's host is a CDN edge that
     # accepts TCP whether or not the opponent exists (found live, 2026-08-09).
+    connect_timeout, retry_interval = timeouts_from_private_config(config)
     if not wait_for_peer(
         lambda: peer_answers(opponent_url(config)), clock=time.monotonic, sleep=time.sleep,
         timeout=connect_timeout, interval=retry_interval,

@@ -61,7 +61,8 @@ from p2p_cop_agent.strategy.scent_field import ScentField
 from p2p_cop_agent.strategy.verbal import generate_hint
 
 
-def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
+def live_decide(board: Board, start: Coordinate, game: JsonObject,
+                *, claim_every_turn: bool = False) -> Decide:
     """Return the turn-loop `decide` playing the measured belief-pursuit stack.
 
     State is closed over per call — position, barriers, belief, trail, and the turn
@@ -113,6 +114,12 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
                 move_label = f"MOVE:{chosen.action.name}"
                 if state["cell"] == target:
                     claim = [target.row, target.col]
+            # amireman profile: the claim is the Cop's own post-move cell EVERY turn,
+            # ungated -- their thief evaluates co-location itself, and a gated claim
+            # misses captures under their semantics. Off by default: an every-turn
+            # claim broadcasts our true position, a gift no other profile demands.
+            if claim_every_turn:
+                claim = [state["cell"].row, state["cell"].col]
         except Exception:  # noqa: BLE001 - the match outlives any strategy bug
             state["previous"], move_label = None, "MOVE:STAY"
 
