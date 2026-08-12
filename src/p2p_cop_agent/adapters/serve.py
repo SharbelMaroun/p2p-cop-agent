@@ -32,6 +32,7 @@ from p2p_cop_agent.orchestration.turn_loop import Decide
 from p2p_cop_agent.peer import InboundPeer
 from p2p_cop_agent.protocol import attestation_wire
 from p2p_cop_agent.sdk import CopSDK
+from p2p_cop_agent.services import wire_log
 from p2p_cop_agent.services.deadlines import RetryPolicy
 from p2p_cop_agent.services.readiness import timeouts_from_private_config, wait_for_peer
 from p2p_cop_agent.shared.config import JsonObject
@@ -111,6 +112,13 @@ def serve_match(
     host_spec = load_host_spec(config)
     inboxes = PeerInboxes()
     peer = InboundPeer(sdk)
+    # Arm the wire recorder BEFORE the mailbox opens (C-039). `fastmcpserver` has fed
+    # `wire_log.received(...)` since M9, but nothing here ever called `enable`, so the
+    # Cop kept no inbound record at all -- during the 2026-08-12 game-2 window the
+    # opponent reported an *accepted* negotiate and this side had no evidence either
+    # way. The Thief has armed it in `play_command.py` all along; this is the mirror.
+    if artifacts_dir is not None and wire_log.enable(Path(artifacts_dir) / "logs"):
+        print(f"wire log: {wire_log.target()}")
     serve_in_background(inboxes, port=int(config["network"]["my_port"]))  # type: ignore[index]
     host, port = split_host_port(opponent_url(config))
     connect_timeout, retry_interval = timeouts_from_private_config(config)

@@ -136,6 +136,14 @@ the `theif.uohay26game.com` route flaps: 530 during the whole window our Police 
 (zero inbound calls, no ToolError), 502 briefly before, 530 after — their named-tunnel
 service evidently does not carry the `theif` hostname.
 
+**2026-08-12e the Cop's wire recorder was never armed (`C-039`).** `uoh-ay26` reported an
+*accepted* negotiate response from our Police in the game-2 window and asked us to confirm
+from our logs; we could not, because `wire_log.enable` has no caller in this repository —
+the Thief armed its mirror in `play_command.py` from the start. `serve_match` now arms it
+into `<artifacts>/logs/` before the mailbox opens. Their underlying game-2 question is
+answered by independent probes: their Thief hostname was 502 at 15:34:06 and 15:35:06 UTC
+(connector healthy, origin not listening), so our reciprocal offer had nowhere to land.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
