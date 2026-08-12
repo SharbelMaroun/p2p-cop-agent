@@ -59,6 +59,8 @@ def build_parser() -> argparse.ArgumentParser:
                         help="artifact directories holding the series' log_*.json (both roles)")
     report.add_argument("--private", required=True, type=Path,
                         help="private game.toml carrying [game], [email], [opponent]")
+    report.add_argument("--match", type=Path,
+                        help="shared match config, for the consensus uid derivation")
     report.add_argument("--to", help="override the recipient (self-test)")
     report.add_argument("--mode", choices=("off", "dry_run", "real"),
                         help="override [email].mode")
@@ -78,6 +80,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "report":
         from p2p_cop_agent.adapters.report_command import run_report  # noqa: PLC0415
         run_report(artifact_dirs=list(args.artifacts), private_config_path=args.private,
+                   match_config_path=args.match,
                    to_override=args.to, mode_override=args.mode)
         return 0
     parser.print_help()

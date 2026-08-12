@@ -188,6 +188,14 @@ per-team commit hash at write time. Dry-run verified against the real `0812-2201
 90-30, template-shaped. Known remaining gap, tracked in the row: the Thief serve path
 writes no declaration/config artifacts.
 
+**2026-08-13a shared consensus identifiers + reciprocal emission (`C-044`).** Their SHA
+`fd362f67…` reproduced bit-for-bit from our own logs under their identifiers -- the games
+agreed perfectly; only the id pair diverged (`C-015` live) and our missing reciprocal
+envelope left their exchange waiting. Adopted their convention: `series_consensus.py`
+(uid derivation + row projection + envelope), agreed `G00N` from `[game].series_game_id`,
+sha embedded in the aggregate, reciprocal envelope emitted to the opponent after game 6.
+Golden test pins their live digest; end-to-end verified against `0812-2201`.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
