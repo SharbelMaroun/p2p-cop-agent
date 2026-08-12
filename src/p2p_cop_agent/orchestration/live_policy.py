@@ -12,12 +12,10 @@ policy in `adapters/` was refused structurally.
 
 Each turn, in order:
 
-1. **Observe.** The opponent's `smell_grid` is decoded model-matched (M6-24): the
-   residual against last turn's observation is exactly the newest stamp under the
-   locked physics, so the belief localises the emitter instead of lagging on raw
-   intensity. Fresh per observation, never Bayes-recursive (measured: recursion
-   calcified, 40/40 → 0/40); the prior survives only silent or malformed turns
-   (M6-02c). Nothing here reads a true position `[AE-8]`.
+1. **Observe.** `live_observation.observe` rebuilds the belief from a model-matched
+   decode of the opponent's `smell_grid` (M6-24), fresh per observation and never
+   Bayes-recursive; the prior survives only silent or malformed turns (M6-02c).
+   Nothing there reads a true position `[AE-8]`.
 1b. **Sweep while blind (M6-27).** A flat belief's row-major argmax is the Cop's own
    start cell, so aiming there answered `STAY` forever — 26 turns of it in the
    `amireman` friendly. Never-observed, evidence-free and stale beliefs all take a
@@ -44,19 +42,17 @@ Each turn, in order:
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-
 from p2p_cop_agent.domain.barriers import BarrierField
 from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
 from p2p_cop_agent.domain.movement import apply_move
+from p2p_cop_agent.orchestration.live_observation import observe
 from p2p_cop_agent.orchestration.turn_loop import Decide
 from p2p_cop_agent.protocol.messages import now_iso
-from p2p_cop_agent.protocol.scent_wire import ScentWireError, decode_scent, encode_scent
+from p2p_cop_agent.protocol.scent_wire import encode_scent
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.strategy.barrier_policy import BarrierIntent
 from p2p_cop_agent.strategy.belief import Belief
-from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood
 from p2p_cop_agent.strategy.hints import hint_max_words
 from p2p_cop_agent.strategy.landmarks import place_for
 from p2p_cop_agent.strategy.patrol import aim
@@ -84,38 +80,12 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
         "seen": None,  # (turn, observed cells) — the decoder's previous observation
     }
 
-    def _observe(incoming: JsonObject | None, turn: int) -> None:
-        """Rebuild belief from a model-matched decode of the freshest observation.
-
-        `M6-24`: the residual against last turn's observation is the newest emission
-        stamp under the locked physics, so matching it against the agreed profile
-        localises the emitter where raw intensity lags on revisited cells. Fresh per
-        observation, never Bayes-recursive (recursion calcified, 40/40 → 0/40); the
-        prior survives only silent or malformed turns (M6-02c). The window is partial,
-        so scoring trusts only cells both observations covered.
-        """
-        if not isinstance(incoming, Mapping):
-            return
-        try:
-            observed = decode_scent(
-                incoming.get("smell_grid"),
-                min_index=board.min_index, max_index=board.max_index,
-            )
-        except ScentWireError:
-            observed = {}  # a malformed observation is no observation, not a crash
-        if observed:
-            seen = state["seen"]
-            before = seen[1] if seen and seen[0] == turn - 1 else None
-            trusted = set(observed) & set(before) if before else None
-            state["belief"] = Belief.uniform(board.grid_size, start=board.min_index).updated(
-                emitter_likelihood(observed, before, grid_size=board.grid_size,
-                                   start=board.min_index, trusted=trusted))
-            state["seen"] = (turn, observed)
-
     def decide(incoming: JsonObject | None) -> tuple[JsonObject, JsonObject]:
         state["count"] += 1
         count = state["count"]
-        _observe(incoming, count)
+        fresh = observe(board, incoming, count, state["seen"])
+        if fresh is not None:
+            state["belief"], state["seen"] = fresh
         # M6-27: a flat or stale belief aims at (0,0) — our own start — and that reads
         # as "already there", i.e. STAY forever. `aim` sweeps instead.
         seen_turn = state["seen"][0] if state["seen"] else None
