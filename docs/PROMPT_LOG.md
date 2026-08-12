@@ -1264,3 +1264,39 @@ submitting on both tabs this session; what worked was setting the value, dispatc
 `input`, then clicking the form's own submit button **programmatically**
 (`form.querySelector('button[type=submit]').click()`). Typed chunks appended nothing at
 all this time. Recorded so the next session tries the form-click first.
+
+
+## 2026-08-12f — the first complete series, and its two edge defects (`C-040`, `C-041`)
+
+**The series itself: 6–0, 90–30.** `friendly-uohay26-0812-1934`, six games, six audits,
+zero gameplay rejections in ~150 turns. Survival at 35 in every Thief game; capture at
+15/17/16 in every Police game — all three via the opponent's `boxed_in` concession, which
+means `C-037`'s morning fix directly won three games that yesterday's schema would have
+hung into 0/0.
+
+**`C-041` — our defect, found by their `[-1, 0]`.** Their verifier rejected every Police
+audit while accepting every Thief audit. The split was the tell: the two repos emit
+different step-0 payloads. The Thief's `sealed_spec_record` carries the reference-verbatim
+`step: 0, type: "system_spec"` members; the Cop's `build_step_zero` was designed for the
+pre-game negotiation exchange and carries neither, and AE-024 attached that object to the
+audit unchanged. Their parser: `payload["step"]` → KeyError → `-1`; no recognizable step-0
+→ `0`. Exactly their report. The AE-024 test never caught it because it hand-built a
+correct-shaped fixture instead of calling the producer — it now drives `build_step_zero` +
+`seal_step_zero` for real.
+
+**`C-040` — their extension, now acknowledged.** The post-series `series_consensus`
+envelope (empty records, 64-hex `consensus_sha`) is schema-valid, acknowledged VERIFIED
+with the record and live-commit checks skipped (nothing to reproduce), and structurally
+unable to alter a completed result. Contract `0.2.12` → `0.2.13-proposed` under `G-18`.
+
+**Step-3 disclosure.** The notebooks were not freshly queried for either fix, and that is
+a deliberate, disclosed deviation rather than a silent skip: `C-041` implements the
+already-established AE-024 agreement whose record shape is the reference's own step-0
+fields — carried verbatim in the Thief's `sealing.py`, which embodies the prior verified
+research — and `C-040` implements the opponent's fully-specified envelope, which neither
+the book nor the reference has any opinion on. There was no question either notebook
+could answer that tonight's earlier queries had not.
+
+**Their side, in return:** preserving completed outcomes on parse failure (their verifier
+rewrote three captures as `technical_loss`), retaining rejected evidence, fixing per-game
+commit metadata. The counted series waits for their verified SHAs.

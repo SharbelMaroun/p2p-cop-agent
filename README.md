@@ -1943,6 +1943,18 @@ nothing. Three defects, one family, both directions: validation stricter than an
 supports voids real games, whether it is ours rejecting their turn or theirs voiding our
 win.
 
+
+**Final postscript — the first complete series (2026-08-12, evening).** Six games,
+six mutual audits, 6–0: survival at the horizon in every Thief game, capture at steps
+15/17/16 in every Police game. All three captures arrived through the opponent's
+`boxed_in` concession — the claim our schema rejected that morning. The series also
+found the last two envelope gaps: our Police step-0 attestation lacked the agreed
+`step`/`type` members (the test that should have caught it hand-built a correct fixture
+instead of calling the producer), and the opponent's post-series consensus exchange
+needed acknowledging rather than refusing. Both fixed the same night. The pattern held
+to the end: every defect on either side was validation disagreeing with validation,
+never gameplay disagreeing with gameplay.
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a

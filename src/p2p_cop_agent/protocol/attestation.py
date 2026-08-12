@@ -124,7 +124,14 @@ def build_step_zero(
         raise AttestationError("git_commit must be 40 lowercase hexadecimal characters")
     if _CONFIG_SHA.fullmatch(config_sha256) is None:
         raise AttestationError("config_sha256 must be 64 lowercase hexadecimal characters")
+    # `step`/`type` are the agreed audit-record members (AE-024; the reference's own
+    # step-0 fields, which the companion Thief shares verbatim). Their absence made a
+    # peer's parser read our attestation as "no recognizable step-0" and reject every
+    # Police audit as [-1, 0] while the Thief's passed -- three completed captures
+    # were nearly lost to it on 2026-08-12 (C-041).
     return {
+        "step": 0,
+        "type": "system_spec",
         "code": {"git_commit": git_commit},
         "game": {"game_id": _require_nonempty(game_id, "game_id"), "config_sha256": config_sha256},
         "group": {"group_id": _require_nonempty(group_id, "group_id")},

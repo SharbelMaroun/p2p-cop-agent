@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.12-proposed",
+  "x-contract-version": "0.2.13-proposed",
   "x-source-status": "PROPOSED",
   "x-role-neutral": true,
   "title": "Option-B per-match shared game configuration",

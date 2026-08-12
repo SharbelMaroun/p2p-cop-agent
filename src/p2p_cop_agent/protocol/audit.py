@@ -76,6 +76,15 @@ def audit_reveal(payload: object, received_commits: Sequence[str] | None = None)
     body: JsonObject = payload  # type: ignore[assignment]
     sender = body["sender"]
     records = body["records"]
+    # `series_consensus` (C-040): uoh-ay26's post-series SHA exchange -- an empty-record
+    # envelope carrying only `consensus_sha`, sent once after the last sub-game. The
+    # schema already pinned its shape (records empty, 64-hex sha); there is nothing to
+    # reproduce and no live commits to match, so it is acknowledged here and goes no
+    # further. It is NEVER a game outcome, and by arriving after every log is written
+    # it cannot alter one -- rejecting it cost nothing on 2026-08-12, but a peer whose
+    # protocol expects an acknowledged SHA exchange deserves an acknowledgement.
+    if body.get("result_claim") == "series_consensus":
+        return AuditReport(AuditVerdict.VERIFIED, sender)
     for index, record in enumerate(records):
         if not verify_commit(record["payload"], record["nonce"], record["commit"]):
             return _tampered(sender, "revealed record does not reproduce its commitment", index)

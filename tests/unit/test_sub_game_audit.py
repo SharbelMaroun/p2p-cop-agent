@@ -31,12 +31,25 @@ def test_the_audit_reveals_every_sealed_turn_and_recomputes() -> None:
 
 def test_the_step_zero_attestation_opens_the_audit() -> None:
     """`AE-024`, agreed with uoh-ay26 2026-08-12: peers reject an audit whose records do not
-    open with a step-0 `system_spec` attestation. It rides the audit only, once, first."""
-    from p2p_cop_agent.protocol.commit import generate_commitment_nonce, move_commit
+    open with a step-0 `system_spec` attestation. It rides the audit only, once, first.
 
-    payload = {"step": 0, "type": "system_spec", "spec": {"os": "test"}, "model": "template"}
-    nonce = generate_commitment_nonce()
-    step_zero = {"payload": payload, "nonce": nonce, "commit": move_commit(payload, nonce)}
+    **Built with the real production builder, not a hand-made fixture (`C-041`).** The
+    first version of this test hand-wrote a correct-shaped payload, so it passed while
+    `build_step_zero` itself emitted no `step`/`type` members -- and the opponent's
+    parser rejected every live Police audit as `[-1, 0]` while this test stayed green.
+    A pin that does not exercise the producer pins nothing.
+    """
+    from p2p_cop_agent.protocol import HostSpec
+    from p2p_cop_agent.protocol.attestation import build_step_zero, seal_step_zero
+
+    payload = build_step_zero(
+        host=HostSpec(os="test-os", cpu_type="x86_64", cpu_freq_mhz=3600, cpu_cores=1,
+                      ram_gb=16, gpu_model="none", vram_gb=0),
+        model="template", group_id="sharnamr", game_id="game-test",
+        git_commit="a" * 40, config_sha256="b" * 64,
+    )
+    sealed = seal_step_zero(payload)
+    step_zero = {"payload": sealed.payload, "nonce": sealed.nonce, "commit": sealed.commit}
 
     result = play(Opponent(*(turn(s) for s in range(1, 4))), threshold=3, step_zero=step_zero)
 

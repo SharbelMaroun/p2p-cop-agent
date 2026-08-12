@@ -144,6 +144,19 @@ into `<artifacts>/logs/` before the mailbox opens. Their underlying game-2 quest
 answered by independent probes: their Thief hostname was 502 at 15:34:06 and 15:35:06 UTC
 (connector healthy, origin not listening), so our reciprocal offer had nowhere to land.
 
+**2026-08-12f the first complete six-game series — 6–0, 90–30 — and the two defects it
+exposed (`C-040`, `C-041`).** Series `friendly-uohay26-0812-1934` ran end-to-end: survival
+as Thief in 1/3/5, capture as Police at steps 15/17/16 in 2/4/6 — every capture via the
+opponent's `boxed_in` concession, so `C-037`'s fix won three games the old schema would
+have hung. All six audits exchanged, zero gameplay rejections across ~150 turns. Two
+defects surfaced at the edges: our Police step-0 attestation lacked the agreed
+`step`/`type` members (`C-041`, their verifier's `[-1, 0]` — fixed, and the AE-024 test now
+drives the real builder), and their post-series `series_consensus` envelope was refused by
+our enum (`C-040` — now acknowledged, never scored). Contract `0.2.12` → `0.2.13-proposed`.
+The opponent is fixing the mirror defects on their side (result-preservation on parse
+failure, retained diagnostics, per-game commit metadata) and the counted series waits for
+their verified SHAs.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
