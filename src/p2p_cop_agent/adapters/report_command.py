@@ -21,15 +21,14 @@ import json
 import time
 from pathlib import Path
 
+from p2p_cop_agent.adapters.report_identity import (
+    agreed_identifiers,
+    attach_consensus,
+)
 from p2p_cop_agent.reporting.gmail_message import build_report_message, encoded_message
 from p2p_cop_agent.reporting.gmail_transport import http_status_of, make_transmit
 from p2p_cop_agent.reporting.result_template import build_final_result, sub_game_row
 from p2p_cop_agent.reporting.send_report import ReportSender
-from p2p_cop_agent.reporting.series_consensus import (
-    consensus_envelope,
-    consensus_sha,
-    derive_game_uid,
-)
 from p2p_cop_agent.shared.private_config import load_private_config
 
 REPOSITORY_LINKS_KEY = "repos"
@@ -81,9 +80,20 @@ def run_report(
     opponent_repos = dict((config.get("opponent") or {}).get(REPOSITORY_LINKS_KEY) or {})
     links = [*repos.values(), *opponent_repos.values()]
 
+    # When the G00N pair is agreed, the aggregate itself speaks that identity --
+    # two teams' result files naming different ids is a rule-35 conflict wearing
+    # a valid schema. The internal derived id remains on the logs on disk.
+    agreed_pair = agreed_identifiers(config, groups, match_config_path)
+    if agreed_pair:
+        game_id, game_uid = agreed_pair
+    rows = [sub_game_row(s, groups) for s in summaries]
+    if agreed_pair:
+        for row in rows:
+            row["log_files"] = {g: f"log_{game_id}_g{int(row['sub_game_number']):02d}.json"
+                                for g in groups}
     result = build_final_result(
         game_id=game_id, game_uid=game_uid, groups=groups,
-        rows=[sub_game_row(s, groups) for s in summaries],
+        rows=rows,
         repositories=links,
         config_sha256=str(summaries[0].get("config_sha256", "")),
         league=(config.get("league") or None),
@@ -92,7 +102,7 @@ def run_report(
     # conflicting report 0/0 -- so agreement is EARNED from the logs, not
     # asserted: every sub-game must have recorded a received, confirmed audit.
     agreed = all(s.get("confirmed") for s in summaries)
-    _attach_consensus(result, config=config, groups=groups,
+    attach_consensus(result, config=config, groups=groups,
                       match_config_path=match_config_path, agreed=agreed)
     out = Path(artifact_dirs[0]) / f"result_{game_id}.json"
     out.write_text(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
@@ -128,46 +138,3 @@ def run_report(
     )
     print(f"SENT to {recipient}: attempts={outcome.attempts} response={outcome.response}")
     return out
-
-
-def _attach_consensus(
-    result: dict,
-    *,
-    config: dict,
-    groups: list[str],
-    match_config_path: Path | None,
-    agreed: bool,
-) -> None:
-    """Compute the agreed-identifier consensus and emit the reciprocal envelope (C-044).
-
-    Skipped, loudly, when the operator has not agreed a `G00N` series id or the shared
-    match file is not supplied -- a consensus over identifiers only one side uses can
-    never match, which is exactly what the verification series proved.
-    """
-    from p2p_cop_agent.protocol.negotiation import terms_from_config  # noqa: PLC0415
-
-    series_id = str((config.get("game") or {}).get("series_game_id") or "")
-    if not series_id or match_config_path is None:
-        print("consensus: skipped (agree [game].series_game_id and pass --match)")
-        return
-    terms = terms_from_config(json.loads(Path(match_config_path).read_text("utf-8")))
-    uid = derive_game_uid(terms, groups)
-    sha = consensus_sha(series_id, uid, result["sub_games"])
-    result["series_consensus"] = {"game_id": series_id, "game_uid": uid,
-                                  "consensus_sha": sha}
-    print(f"consensus: {series_id} {uid} sha={sha}")
-    if not agreed:
-        print("consensus: NOT emitted (unconfirmed sub-games)")
-        return
-    opponent = str((config.get("network") or {}).get("opponent_url") or "")
-    if not opponent:
-        print("consensus: NOT emitted (no [network].opponent_url)")
-        return
-    from p2p_cop_agent.adapters.fastmcp_client import FastMCPClient  # noqa: PLC0415
-
-    try:
-        response = FastMCPClient(opponent, timeout=30).submit_audit(
-            consensus_envelope(sha))
-        print(f"consensus: emitted to opponent -> {response}")
-    except Exception as exc:  # noqa: BLE001 - the report already succeeded locally
-        print(f"consensus: opponent unreachable ({exc}); sha stands in the artifact")

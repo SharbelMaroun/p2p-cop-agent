@@ -196,6 +196,16 @@ envelope left their exchange waiting. Adopted their convention: `series_consensu
 sha embedded in the aggregate, reciprocal envelope emitted to the opponent after game 6.
 Golden test pins their live digest; end-to-end verified against `0812-2201`.
 
+**2026-08-13b the tie scores 2, and the aggregates finally agree (`C-045`).** The G004
+series ended 45-45 raw; Table 17 row 5 (Fixed) awards 2 per side on a cumulative draw, so
+the true total is 47-47 -- which is exactly what the opponent's aggregate says, under
+`mutual_agreement.confirmed: true` with OUR reciprocal consensus sha: the first
+fully-mutual series end to end. Adopted: the tie bonus, null winner on a tie, and the
+agreed `G00N` identity as the aggregate's own identity (`result_G004.json`). Their thief's
+improvement is analysed under the strategy work: their commit patched boundary-avoidance
+specifically against our corner-trap captures (their regression tests name our winning
+games), so the Cop needs the wall-planner counter -- tracked as the next strategy task.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.

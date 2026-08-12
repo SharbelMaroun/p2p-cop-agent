@@ -99,7 +99,13 @@ def build_final_result(
     won = {g: sum(1 for r in ordered if r["winner_group"] == g) for g in groups}
     ties = sum(1 for r in ordered if r.get("tie") is True)
     series_tie = total[groups[0]] == total[groups[1]]
-    winner = "none" if series_tie else max(groups, key=lambda g: total[g])
+    if series_tie:
+        # Table 17 row 5 (Fixed): '[Draw Score] -- score for each side when the
+        # cumulative score of all games against an opponent ends in a draw -- 2'.
+        # Added to the cumulative, matching the opponent's live aggregate (47-47
+        # for G004); a draw is a result, not a gap (C-045).
+        total = {g: v + 2 for g, v in total.items()}
+    winner = None if series_tie else max(groups, key=lambda g: total[g])
     league = dict(league or {})
     return {
         "_schema": "result-report",

@@ -101,3 +101,16 @@ def test_missing_commits_degrade_to_unknown_not_a_crash() -> None:
     del s["github_commit"]
     row = sub_game_row(s, GROUPS)
     assert row["github_commit"] == {"sharNamr": "unknown", "uoh-ay26": "unknown"}
+
+def test_a_series_tie_adds_the_fixed_draw_score() -> None:
+    """Table 17 row 5 (Fixed): 2 to each side on a cumulative draw -- 47-47 for a
+    six-survival series, matching the opponent's live G004 aggregate exactly."""
+    plan = [(n, role, "survival") for n, role in
+            [(1, "thief"), (2, "police"), (3, "thief"), (4, "police"),
+             (5, "thief"), (6, "police")]]
+    rows = [sub_game_row(summary(n, role, res), GROUPS) for n, role, res in plan]
+    final = build(rows=rows)["final_result"]
+    assert final["total_score"] == {"sharNamr": 47, "uoh-ay26": 47}
+    assert final["series_tie"] is True
+    assert final["winner_group"] is None
+    assert final["sub_games_won"] == {"sharNamr": 3, "uoh-ay26": 3}
