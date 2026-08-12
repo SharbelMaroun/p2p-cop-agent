@@ -206,6 +206,15 @@ improvement is analysed under the strategy work: their commit patched boundary-a
 specifically against our corner-trap captures (their regression tests name our winning
 games), so the Cop needs the wall-planner counter -- tracked as the next strategy task.
 
+**2026-08-13c both repositories switched to private.** Rule 49 explicitly permits
+"private shared with the lecturer", and `rmisegal` was already a collaborator on both
+repositories before the switch, so lecturer access was continuous. Rationale: the
+opponent's tactical patch was derived from game logs (their right), but future strategy
+work — the wall-planner counter — should not be readable before the counted series, the
+same way their next counter will not be readable by us if they reciprocate. Everything
+pushed before this moment is assumed already cloned; privacy protects future commits
+only.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
