@@ -138,13 +138,13 @@ def play_match(
         take_turn, clock=clock, sleep=sleep, timeout=timeout,
         poll_interval=poll_interval, heartbeat=heartbeat,
     )
-    outcome = _play(game, transport, receive, decide, opens)
+    outcome = _play(game, transport, receive, decide, opens, step_zero)
     return MatchResult(agreement, declaration, lock, outcome)
 
 
 def _play(
     game: Mapping[str, object], transport: object, receive: Receive,
-    decide: Decide, opens: bool,
+    decide: Decide, opens: bool, step_zero: Mapping[str, object] | None = None,
 ) -> SubGameOutcome:
     """Play one sub-game to a decided outcome, bounded by the negotiated horizon.
 
@@ -157,4 +157,5 @@ def _play(
         machine=PhaseMachine(), ledger=TurnLedger(COP_ROLE), transport=transport,
         receive=receive, decide=decide, survival_threshold=threshold, opens=opens,
         retry=DeliveryRetry.from_match(game),  # type: ignore[arg-type]
+        step_zero=step_zero,
     )

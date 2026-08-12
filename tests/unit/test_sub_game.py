@@ -96,6 +96,24 @@ def test_the_audit_reveals_every_sealed_turn_and_recomputes() -> None:
     assert verify_audit(result.audit) is True
 
 
+def test_the_step_zero_attestation_opens_the_audit() -> None:
+    """`AE-024`, agreed with uoh-ay26 2026-08-12: peers reject an audit whose records do not
+    open with a step-0 `system_spec` attestation. It rides the audit only, once, first."""
+    from p2p_cop_agent.protocol.commit import generate_commitment_nonce, move_commit
+
+    payload = {"step": 0, "type": "system_spec", "spec": {"os": "test"}, "model": "template"}
+    nonce = generate_commitment_nonce()
+    step_zero = {"payload": payload, "nonce": nonce, "commit": move_commit(payload, nonce)}
+
+    result = play(Opponent(*(turn(s) for s in range(1, 4))), threshold=3, step_zero=step_zero)
+
+    records = result.audit["records"]
+    assert records[0]["payload"]["step"] == 0
+    assert records[0]["payload"]["type"] == "system_spec"
+    assert len(records) == 4                      # step 0 + three moves, no duplicate
+    assert verify_audit(result.audit) is True     # every record, step 0 included
+
+
 def test_the_audit_claim_matches_the_outcome() -> None:
     captured = play(Opponent(turn(1, claim_response={"claim": [3, 3], "caught": True})))
     assert captured.audit["result_claim"] == RESULT_CLAIMS[Outcome.CAPTURE] == "capture"

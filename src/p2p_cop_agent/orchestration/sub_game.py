@@ -71,6 +71,7 @@ def run_sub_game_over_wire(
     on_transition: OnTransition | None = None,
     send_audit: bool = True,
     retry: DeliveryRetry | None = None,
+    step_zero: Mapping[str, object] | None = None,
 ) -> SubGameOutcome:
     """Play turns until the sub-game is decided, then reveal everything.
 
@@ -105,17 +106,17 @@ def run_sub_game_over_wire(
             # first rehearsal turned one survival into two disagreeing artifacts.
             settled = claim.step if isinstance(claim.step, int) else step - 1
             return _finish(claim.outcome, settled, claim.reason, turns,
-                           ledger, transport, send_audit)
+                           ledger, transport, send_audit, step_zero)
         except TurnLoopError as exc:
             return _finish(Outcome.TECHNICAL_LOSS, step - 1, str(exc), turns,
-                           ledger, transport, send_audit)
+                           ledger, transport, send_audit, step_zero)
         turns.append(record)
 
     return _finish(
         Outcome.SURVIVAL,
         survival_threshold,
         f"the Thief was not captured within {survival_threshold} steps",
-        turns, ledger, transport, send_audit,
+        turns, ledger, transport, send_audit, step_zero,
     )
 
 
@@ -144,6 +145,7 @@ def _finish(
     ledger: TurnLedger,
     transport: object,
     send_audit: bool,
+    step_zero: Mapping[str, object] | None = None,
 ) -> SubGameOutcome:
     """Reveal every sealed record to the opponent, then report the outcome.
 
@@ -151,15 +153,21 @@ def _finish(
     is withheld cannot be checked, and the point of the reveal is that the *other*
     side can recompute it `[AE-19]`.
     """
+    # `step_zero` is the sealed `system_spec` attestation (rule 24): peers reject an audit
+    # whose records do not open with it ("at steps [0]", agreed with uoh-ay26 2026-08-12).
+    # It rides the audit only; the ledger the log is written from is untouched.
     audit = None
     if send_audit:
-        audit = _reveal(outcome, ledger, transport)
+        audit = _reveal(outcome, ledger, transport, step_zero)
     return SubGameOutcome(outcome, steps, reason, tuple(turns), audit)
 
 
-def _reveal(outcome: Outcome, ledger: TurnLedger, transport: object) -> JsonObject | None:
+def _reveal(outcome: Outcome, ledger: TurnLedger, transport: object,
+            step_zero: Mapping[str, object] | None = None) -> JsonObject | None:
     """Build and deliver the audit payload, tolerating an opponent already gone."""
     payload = ledger.audit_payload(RESULT_CLAIMS[outcome])
+    if step_zero is not None:
+        payload["records"] = [dict(step_zero), *payload["records"]]
     submit: Callable[[JsonObject], object] | None = getattr(transport, "submit_audit", None)
     if submit is None:
         return payload
