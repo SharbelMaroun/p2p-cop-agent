@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.11-proposed",
+  "x-contract-version": "0.2.12-proposed",
   "x-role-neutral": true,
   "title": "Per-sub-game log artifact",
   "description": "The artifact the Replay app reads, and the one rule 20 makes a threshold condition. Every `required` entry is book-mandated: the per-step commit data (State, Move, Intent, Nonce) and its SHA-256 signature at p.34/94 and p.58/146, the sub-game number at p.131/276, the verbal hint at p.35/96, and the mutual agreement at p.131/276 under rule 36. additionalProperties is TRUE -- the book is NOT-SPECIFIED on extra fields in reporting artifacts, and refusing an opponent's log over a key no source forbids would fail the very audit rule 36 requires.",

@@ -8,8 +8,8 @@ see the other. So termination here is **claimed, answered, and only later proven
    ``capture_claim``.
 2. The Thief answers in ``claim_response`` — ``{"claim": [r, c], "caught": bool}``.
    Only the Thief knows whether it was there.
-3. The Thief declares ``win_claim`` ``{"type": "survival"}`` on outlasting the
-   threshold.
+3. The Thief declares ``win_claim`` on outlasting the threshold, or concedes being
+   walled in. Reading either is ``terminal_claims.decided_by`` `[C-037]`.
 4. At the end every commitment is revealed and recomputed. A peer that lied about a
    claim is exposed by its own sealed position records: the book's duty of truth on a
    capture claim, enforced by arithmetic rather than by a referee `[AE-21]` `[AE-22]`.
@@ -28,6 +28,7 @@ from dataclasses import dataclass
 from p2p_cop_agent.domain.scoring import Outcome
 from p2p_cop_agent.orchestration.delivery import DeliveryRetry
 from p2p_cop_agent.orchestration.phases import PhaseMachine
+from p2p_cop_agent.orchestration.terminal_claims import decided_by
 from p2p_cop_agent.orchestration.turn_loop import (
     Decide,
     OnTransition,
@@ -97,7 +98,7 @@ def run_sub_game_over_wire(
                 decide=decide,
                 opens=opens and step == 1,
                 on_transition=on_transition,
-                terminal=_decided_by,
+                terminal=decided_by,
                 retry=retry,
             )
         except TerminalClaimReceived as claim:
@@ -118,23 +119,6 @@ def run_sub_game_over_wire(
         f"the Thief was not captured within {survival_threshold} steps",
         turns, ledger, transport, send_audit, step_zero,
     )
-
-
-def _decided_by(message: Mapping[str, object] | None) -> tuple[Outcome, str] | None:
-    """Read a terminal claim out of the opponent's turn, if it made one.
-
-    Only the opponent's *answer* ends the game, never our own claim: naming a cell in
-    ``capture_claim`` asserts nothing until the peer that knows the truth replies.
-    """
-    if message is None:
-        return None
-    answer = message.get("claim_response")
-    if isinstance(answer, Mapping) and answer.get("caught") is True:
-        return Outcome.CAPTURE, f"the opponent confirmed capture at {answer.get('claim')!r}"
-    win = message.get("win_claim")
-    if isinstance(win, Mapping) and win.get("type") == "survival":
-        return Outcome.SURVIVAL, "the opponent claimed survival"
-    return None
 
 
 def _finish(

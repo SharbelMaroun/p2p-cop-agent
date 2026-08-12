@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.11-proposed",
+  "x-contract-version": "0.2.12-proposed",
   "x-role-neutral": true,
   "title": "Pre-game declaration artifact",
   "description": "Every `required` entry below is mandated by the BOOK, not inferred from a template. `U-019` records that the example artifacts prove only that keys occur in the inspected bytes -- they establish no requiredness -- and `X-04` is what happens when a schema asserts more than the sources support: it validated a template and refused every real artifact. additionalProperties is TRUE because the book was asked directly and is NOT-SPECIFIED on whether extra non-contradicting fields are forbidden in the reporting artifacts. Refusing an opponent's declaration over a key no source forbids would fail rule 36's mutual audit for no reason.",
@@ -66,7 +66,7 @@
             "minProperties": 1
           },
           "llm_model": {
-            "description": "Rule 24 (Mandatory), p.39/104 — declared PER GROUP since 0.2.11-proposed (M7-22f). It sat at the top level until 2026-08-07, describing only this peer, which made the artifact unable to answer the question it exists for: inst/:1276 asks whether an agent on a phone races one on a workstation fairly, and rule 24's sanction is denial of the COMPUTATIONAL BONUS — a comparison between two machines. Null is permitted only for an opponent that withheld it; see `undeclared`.",
+            "description": "Rule 24 (Mandatory), p.39/104 — declared PER GROUP since 0.2.12-proposed (M7-22f). It sat at the top level until 2026-08-07, describing only this peer, which made the artifact unable to answer the question it exists for: inst/:1276 asks whether an agent on a phone races one on a workstation fairly, and rule 24's sanction is denial of the COMPUTATIONAL BONUS — a comparison between two machines. Null is permitted only for an opponent that withheld it; see `undeclared`.",
             "type": [
               "string",
               "null"

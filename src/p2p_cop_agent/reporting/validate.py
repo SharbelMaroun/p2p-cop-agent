@@ -50,7 +50,7 @@ SCHEMA_FILES: dict[str, str] = {
 # meant editing 27 declarations across 19 files, several of which are historical narrative of
 # the form "0.2.8 -> 0.2.9" — and rewriting history is how `X-03` did its damage. The bump
 # belongs to acceptance, not to authoring.
-BUNDLE_CONTRACT_VERSION = "0.2.11-proposed"
+BUNDLE_CONTRACT_VERSION = "0.2.12-proposed"
 
 
 class ArtifactInvalidError(ValueError):

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.11-proposed",
+  "x-contract-version": "0.2.12-proposed",
   "x-role-neutral": true,
   "x-compatibility-profile": "simulator-v3.0.0",
   "title": "simulator-v3.0.0 TurnMessage",
@@ -77,6 +77,7 @@
       ]
     },
     "win_claim": {
+      "description": "A terminal claim made by the sender. `survival` is the only value this repository ever emits, and the only one the reference simulator knows (`peer/turn_sender.py::take_turn` builds `{\"type\": \"survival\"}` or `None`, and nothing else). `boxed_in` is accepted but never sent: it is a peer extension for the book's third capture condition -- a Thief whose every cardinal neighbour is barriered or off-board (`police_thief_p2p_Summary.md:810`, Appendix E rule 47). The book settles that condition through the Cop's `capture_claim` and the Thief's truthful `claim_response`, not through a claim of this shape, so we do not adopt it; but a peer that sends it is conceding, and refusing the value rejected the entire turn message and hung the match into a 0/0 (`C-037`).",
       "anyOf": [
         {
           "type": "object",
@@ -84,7 +85,7 @@
           "additionalProperties": false,
           "properties": {
             "type": {
-              "const": "survival"
+              "enum": ["survival", "boxed_in"]
             }
           }
         },
