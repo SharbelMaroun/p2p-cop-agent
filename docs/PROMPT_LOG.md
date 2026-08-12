@@ -1300,3 +1300,19 @@ could answer that tonight's earlier queries had not.
 **Their side, in return:** preserving completed outcomes on parse failure (their verifier
 rewrote three captures as `technical_loss`), retaining rejected evidence, fixing per-game
 commit metadata. The counted series waits for their verified SHAs.
+
+
+## 2026-08-12g — `state`: the record shape the Police never sealed (`C-042`)
+
+The verification series proved G1/G2 again (survival, capture @ 15 -- audits clean, the
+C-041 fix passing live) and then stopped: their coordinator crashed converting our
+Police records to their replay format, `KeyError: 'state'`, and never started G3 --
+which also explains our G3 window failing. Comparing tonight's actual logs: the Thief
+seals 13 keys including `state='grid=7x7;self=[5, 5];barriers=[]'`; the Police sealed 6,
+no `state`. Their converter had accepted the Thief's shape across two full series, so
+the fix copies that shape verbatim rather than their suggested variant -- proven beats
+proposed. Post-move convention (`state.self == position`) read off the accepted records
+themselves. Regression drives the real `live_decide`, per the C-041 lesson. No notebook
+queries: the Thief's builder embodies the book's ch.5 record model and is
+opponent-proven; nothing a notebook says can outrank a shape a live peer has parsed
+successfully four times.

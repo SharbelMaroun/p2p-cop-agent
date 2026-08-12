@@ -122,12 +122,21 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
             provider=None,  # zero-token template: the always-available floor
             bluff=count % 2 == 0, variant=count, max_words=hint_max_words(game),
         )
+        # `state`/`verdict` mirror the Thief's sealed shape exactly (C-042): the book's
+        # commit covers State||Move||Intent, and a peer's replay converter read
+        # `payload["state"]` directly -- its absence here crashed their coordinator
+        # after a completed, verified game. The Thief's format is field-proven across
+        # every game it played, so it is copied verbatim, post-move, barriers sorted.
+        barriers = sorted([c.row, c.col] for c in state["barriers"].placements)
+        cell = [state["cell"].row, state["cell"].col]
         payload: JsonObject = {
             "step": count,
+            "state": f"grid={board.grid_size}x{board.grid_size};self={cell};barriers={barriers}",
             "move": move_label,
-            "position": [state["cell"].row, state["cell"].col],
-            "barriers": [[c.row, c.col] for c in state["barriers"].placements],
+            "position": cell,
+            "barriers": barriers,
             "intent": hint.intent,
+            "verdict": hint.intent,
             "hint": hint.text,
         }
         public: JsonObject = {

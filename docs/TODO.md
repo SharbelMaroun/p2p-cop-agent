@@ -157,6 +157,15 @@ The opponent is fixing the mirror defects on their side (result-preservation on 
 failure, retained diagnostics, per-game commit metadata) and the counted series waits for
 their verified SHAs.
 
+**2026-08-12g the sealed-record drift (`C-042`).** The verification series stopped at G2:
+after their verifier *accepted* our Police records cryptographically, their replay
+converter crashed on `payload["state"]` -- a key the Thief has always sealed (book ch.5:
+the commit covers State||Move||Intent) and the Police never did. `live_policy` now seals
+`state` in the Thief's exact field-proven format plus a `verdict` mirror;
+`test_sealed_record_shape.py` drives the real producer. Third member of the
+cop/thief-drift family after the wire-log arming (`C-039`) and the step-0 shape
+(`C-041`).
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
