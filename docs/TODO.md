@@ -118,6 +118,24 @@ way a residual test means anything.
 
 `check_file_lengths.py` now passes: 155 source/script and 207 test files, zero violations.
 
+**2026-08-12d a cleanly audited win voided over a missing identity field (`C-038`).** The
+evening friendly's game 1 vs `uoh-ay26` ended survival at 35 steps, our log replays
+`Verified OK`, their wire validated our audit with zero rejections — and their side saved
+`mutual_sign_off=false`. Their sign-off requires `identity.git_commit_hash` (40-hex) in the
+**negotiation identity**; ours carried the seven reference-shaped members and no such key,
+so the check failed before any evidence was read. Both notebooks were asked what only each
+knows: the book homes the commit hash in the sealed Step-0 declaration and the emailed
+`github_commit` (rules 24/53, `inst/:1295`, `:3456`) and **excludes it from the
+series-static declaration**; the reference's wire identity carries no code version at all,
+so their requirement would fail the reference simulator itself. Resolution mirrors `C-031`:
+populate ours, adopt nothing — `shared/team_config.py::load_identity` attaches the hash
+from the existing fail-closed `running_git_commit()`, best-effort (`contextlib.suppress`),
+because an optional duplicate must never refuse a match Step-0 would attest correctly.
+`tests/unit/test_identity_commit_hash.py` (3). Game 2 of that series separately confirmed
+the `theif.uohay26game.com` route flaps: 530 during the whole window our Police was live
+(zero inbound calls, no ToolError), 502 briefly before, 530 after — their named-tunnel
+service evidently does not carry the `theif` hostname.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.

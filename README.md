@@ -1930,6 +1930,19 @@ narrower guarantee than it looks, and the same lesson as the interop defects abo
 different costume: **a check that only compares our documents to each other cannot tell us
 when all of them are wrong together.**
 
+
+**Postscript, the same evening (`C-038`).** The first live series with them proved the
+pattern a third time, in the opposite direction. Game 1 ended survival, our log replayed
+`Verified OK`, their wire validated every audit record — and their side still saved
+`mutual_sign_off=false`, because their sign-off requires `identity.git_commit_hash`
+(40-hex) in the negotiation identity. The book homes that hash in the sealed Step-0
+declaration and the emailed `github_commit`, and the reference's wire identity carries no
+code version at all — their check would fail the reference itself. We now attach the field
+anyway, best-effort, from the same fail-closed resolver Step-0 uses: populate ours, adopt
+nothing. Three defects, one family, both directions: validation stricter than any source
+supports voids real games, whether it is ours rejecting their turn or theirs voiding our
+win.
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a

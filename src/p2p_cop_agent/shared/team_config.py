@@ -17,21 +17,34 @@ bonus, so a fabricated value would be worse than an honest declared one.
 
 from __future__ import annotations
 
+import contextlib
 import platform
 from collections.abc import Mapping
 
 from p2p_cop_agent.protocol import HostSpec, build_identity
+from p2p_cop_agent.protocol.attestation import AttestationError, running_git_commit
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.private_config import PrivateConfigError, public_url
 
 
 def load_identity(config: Mapping[str, object]) -> JsonObject:
-    """Build the book-mandated pre-game identity from the private ``game.toml``."""
+    """Build the book-mandated pre-game identity from the private ``game.toml``.
+
+    ``git_commit_hash`` is attached when resolvable, as a **peer accommodation**, not
+    a book member (`C-038`). The book homes the commit hash in the sealed Step-0
+    declaration and the emailed `github_commit` (rules 24/53, `inst/:1295`), and the
+    reference's wire identity carries no code version at all -- but group `uoh-ay26`'s
+    `mutual_sign_off` reads `identity.git_commit_hash` and quietly voids the mutual
+    result when it is absent, which would fail the reference itself. Identity is
+    unsigned and role-free, so the extra member costs nothing. Best-effort on purpose:
+    the mandated home for this value keeps its fail-closed resolver, while an optional
+    duplicate must not refuse a match that Step-0 would attest correctly.
+    """
     game = _section(config, "game")
     llm = _section(config, "llm")
     group_id = _require_str(game, "group_id", "game")
     group_name = game.get("group_name")
-    return build_identity(
+    identity = build_identity(
         group_id=group_id,
         members=_require_names(game, "members"),
         repos=_require_table(game, "repos"),
@@ -40,6 +53,10 @@ def load_identity(config: Mapping[str, object]) -> JsonObject:
         spec=load_host_spec(config).as_dict(),
         group_name=group_name if isinstance(group_name, str) and group_name else None,
     )
+    # Optional duplicate; Step-0 remains the mandated, fail-closed home.
+    with contextlib.suppress(AttestationError):
+        identity["git_commit_hash"] = running_git_commit()
+    return identity
 
 
 def load_host_spec(config: Mapping[str, object]) -> HostSpec:

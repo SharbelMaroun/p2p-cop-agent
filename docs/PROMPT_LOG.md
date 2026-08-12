@@ -1226,3 +1226,41 @@ skip straight to the setter.
 
 1918 tests, 96.4% branch coverage; ruff, lengths, ledger, secrets, bundle-verify all clean.
 `check_file_lengths.py` now passes across 155 source/script and 207 test files.
+
+
+## 2026-08-12d — `git_commit_hash`: a win voided over an absent field (`C-038`)
+
+**Prompt.** Their message: game 1 saved with `mutual_sign_off=false`, "identify which
+identity/result/trajectory/capture evidence did not match"; game 2 "no offer reached our
+inbox"; replay the series once confirmed.
+
+**Nothing mismatched.** Their sign-off is a four-way AND (`network_match.py:1195`) and its
+first clause regexes `identity.git_commit_hash` against 40-hex. Our identity has no such
+member, so `.get` returned `""` and the sign-off was false with the audit content never in
+question — our log replays `Verified OK`, their wire validated every record, both sides
+claim survival.
+
+**Both notebooks, distinct questions.** Book: the hash's mandated homes are the sealed
+Step-0 declaration, the log's `step_zero.github_commit`, and the final result — quoted
+rules 24/53 — and it is *excluded* from the series-static pre-game declaration. Reference:
+its handshake identity carries exactly our seven members and "does not include a code
+version or git commit hash" (its own builder, quoted). So their check would fail the
+reference itself — a peer extension, the third of the family (`C-033` nonce length,
+`C-037` claim type).
+
+**Fix: populate ours, adopt nothing.** `load_identity` attaches the hash from the existing
+fail-closed resolver under `contextlib.suppress(AttestationError)` — the mandated home
+keeps fail-closed semantics; an optional duplicate must never refuse a match. Verified in
+`inst/` before implementing (`:1295`, `:3456`).
+
+**Game 2 was their route again.** Our Police was live 14:47:54–14:49:25 UTC and received
+zero calls; `theif.uohay26game.com` answered 530 throughout (probed 14:52). Their "the
+connector is a permanent Windows service" is contradicted by a hostname that has now been
+530 → 502 → 530 in one day; the likely cause is an ingress config missing the `theif`
+hostname, and that diagnosis was sent to them.
+
+**Notebook mechanics note.** The value-setter workaround from `2026-08-12c` stopped
+submitting on both tabs this session; what worked was setting the value, dispatching
+`input`, then clicking the form's own submit button **programmatically**
+(`form.querySelector('button[type=submit]').click()`). Typed chunks appended nothing at
+all this time. Recorded so the next session tries the form-click first.
