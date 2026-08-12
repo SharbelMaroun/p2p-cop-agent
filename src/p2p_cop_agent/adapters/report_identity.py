@@ -42,6 +42,12 @@ def attach_consensus(
     sha = consensus_sha(series_id, uid, result["sub_games"])
     result["series_consensus"] = {"game_id": series_id, "game_uid": uid,
                                   "consensus_sha": sha}
+    # Their convention (2026-08-13 review): the aggregate's mutual_agreement.sha256
+    # IS the shared consensus digest -- the one value both teams provably computed
+    # from the same six rows -- not the pre-game config lock, which lives in the
+    # per-game artifacts. :2220's "mutual agreement confirmations using SHA-256"
+    # is better satisfied by the digest the agreement is actually about.
+    result["mutual_agreement"] = {"sha256": sha, "confirmed": bool(agreed)}
     print(f"consensus: {series_id} {uid} sha={sha}")
     if not agreed:
         print("consensus: NOT emitted (unconfirmed sub-games)")
