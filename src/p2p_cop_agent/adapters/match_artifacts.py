@@ -40,6 +40,7 @@ def write_match_log(
     steps: int,
     started_at: str,
     audit: Mapping[str, object],
+    github_commit: Mapping[str, str] | None = None,
 ) -> Path:
     """Assemble in-play records from the audit, reveal them, and write the log."""
     identity = MatchIdentity(game_id, game_uid)
@@ -66,6 +67,9 @@ def write_match_log(
         "timezone": "UTC", "started_at": started_at,
         "ended_at": datetime.now(UTC).isoformat(),
         "duration_seconds": 0, "tokens_total": 0,
+        # Rule 53's per-game commit hash, per team, recorded at write time so the
+        # series report can carry it without reconstruction (C-043).
+        "github_commit": dict(github_commit or {}),
         # The template requires the key (source 3); reconciliation fills it after the
         # cross-audit, and an empty object is honest before that has run.
         "audit": {},

@@ -178,6 +178,16 @@ artifact over the Gmail REST API — a self-addressed test using the HW6-era OAu
 wiring the send into the serve path's settlement and flipping the recipient for counted
 play.
 
+**2026-08-12i the report matches the book's template at last (`C-043`).** The emailed
+artifact was rebuilt to the official `[Result File]` template (quoted verbatim by the book
+notebook) and wired to send automatically: `run_series.py` triggers `p2p-cop report` after
+game 6, which aggregates both repositories' artifact directories -- a team-level act, since
+each role plays only three of the six games -- builds `result_<game_id>.json`, and
+dispatches per private `[email]` (off/dry_run/real). Logs in both repos now seal rule 53's
+per-team commit hash at write time. Dry-run verified against the real `0812-2201` series:
+90-30, template-shaped. Known remaining gap, tracked in the row: the Thief serve path
+writes no declaration/config artifacts.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.

@@ -53,6 +53,15 @@ def build_parser() -> argparse.ArgumentParser:
     pre = sub.add_parser("preflight", help="report what is configured and armed before a match")
     pre.add_argument("--match", required=True, type=Path, help="path to the shared match config")
     pre.add_argument("--private", required=True, type=Path, help="path to this peer's game.toml")
+    report = sub.add_parser(
+        "report", help="build the template result from a series' logs and send per [email]")
+    report.add_argument("--artifacts", required=True, nargs="+", type=Path,
+                        help="artifact directories holding the series' log_*.json (both roles)")
+    report.add_argument("--private", required=True, type=Path,
+                        help="private game.toml carrying [game], [email], [opponent]")
+    report.add_argument("--to", help="override the recipient (self-test)")
+    report.add_argument("--mode", choices=("off", "dry_run", "real"),
+                        help="override [email].mode")
     return parser
 
 
@@ -66,6 +75,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _replay(args.log, quiet=args.command == "verify")
     if args.command == "preflight":
         return _preflight(args.match, args.private)
+    if args.command == "report":
+        from p2p_cop_agent.adapters.report_command import run_report  # noqa: PLC0415
+        run_report(artifact_dirs=list(args.artifacts), private_config_path=args.private,
+                   to_override=args.to, mode_override=args.mode)
+        return 0
     parser.print_help()
     return 0
 

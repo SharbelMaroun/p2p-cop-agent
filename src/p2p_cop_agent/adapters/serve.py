@@ -112,11 +112,9 @@ def serve_match(
     host_spec = load_host_spec(config)
     inboxes = PeerInboxes()
     peer = InboundPeer(sdk)
-    # Arm the wire recorder BEFORE the mailbox opens (C-039). `fastmcpserver` has fed
-    # `wire_log.received(...)` since M9, but nothing here ever called `enable`, so the
-    # Cop kept no inbound record at all -- during the 2026-08-12 game-2 window the
-    # opponent reported an *accepted* negotiate and this side had no evidence either
-    # way. The Thief has armed it in `play_command.py` all along; this is the mirror.
+    # Arm the wire recorder BEFORE the mailbox opens (C-039): `fastmcp_server` has fed
+    # `wire_log.received(...)` since M9, but nothing ever called `enable`, so the Cop
+    # kept no inbound record at all. The Thief armed its mirror in `play_command.py`.
     if artifacts_dir is not None and wire_log.enable(Path(artifacts_dir) / "logs"):
         print(f"wire log: {wire_log.target()}")
     serve_in_background(inboxes, port=int(config["network"]["my_port"]))  # type: ignore[index]
@@ -173,13 +171,19 @@ def serve_match(
     if artifacts_dir is not None and result.played and result.outcome.audit:
         from p2p_cop_agent.adapters.match_artifacts import write_match_log  # noqa: PLC0415
 
+        opponent = result.agreement.opponent_identity or {}
         write_match_log(
             artifacts_dir, game_id=game_id, game_uid=sdk.config_sha256[:32],
             sub_game=sub_game, group_id=str(identity.get("group_id", "unknown")),
-            opponent_group_id=str((result.agreement.opponent_identity or {}).get(
-                "group_id", "unknown")),
+            opponent_group_id=str(opponent.get("group_id", "unknown")),
             config_sha256=sdk.config_sha256, outcome=result.outcome.outcome,
             steps=result.outcome.steps, started_at=started_at,
             audit=result.outcome.audit,
+            # Rule 53 per game, per team (inst/:1295): ours from the running tree,
+            # theirs from the negotiation identity (C-038's member, when sent).
+            github_commit={
+                str(side.get("group_id", "unknown")): str(side.get("git_commit_hash", "unknown"))
+                for side in (identity, opponent)
+            },
         )
     return result
