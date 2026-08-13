@@ -1359,3 +1359,48 @@ turn 24, with every older matchup intact or faster.
 Deliberate order of work: the archetype and its baseline came FIRST, so every design
 change was measured against the opponent's actual brain rather than intuition -- the
 same discipline that caught the first iteration's failure in one trace.
+
+
+## 2026-08-13e — finishing an interrupted session: the `parts` test and the docs it owed
+
+**Prompt.** "I was improving the strategy, can you check if it's done? Because the laptop
+turned off and this interrupted claude." Then: "finish the test and docs."
+
+**Nothing was damaged.** `git fsck` clean in both repositories, no tracked file truncated
+to zero, no interrupted merge or rebase. The in-flight change was whole: `cycle_rank`
+gained an optional `parts`, and its single caller in `evaluate` passed `parts=1`. Both
+suites were green before anything was touched — 2104 here, 1791 in the companion.
+
+**The gap was coverage, not correctness.** `grep parts tests/` returned nothing: the new
+parameter had no test, so the default path was covered and the supplied-count path was not.
+Two tests now close it. The first asserts agreement in both directions — a correct `parts`
+matches counting, and a deliberately wrong one *disagrees* — because a parameter that were
+silently ignored would have passed the agreement assertion by itself. The second proves the
+invariant the optimization actually rests on, over 3,000 seeded positions: every region the
+search evaluates has exactly one component.
+
+**Writing it produced the one real finding.** The first version of that test asserted the
+sample would contain an empty region, on the assumption a barriered-in Thief makes one. It
+failed, and it was right to: the Thief stands on a free cell and removing the Cop's cell
+cannot take it away, so `region == 0` only for inputs the search cannot construct. The
+assertion was a plausible-sounding claim about our own evaluator that happened to be false,
+and only running it said so.
+
+**The second finding came from a gate, not from review.** The additions took
+`test_bitboard.py` to 162 physical lines against a 150 limit. Answered the way `M9-21` was —
+by responsibility, not by trimming docstrings: both random sweeps are assertions about the
+*evaluator's* shortcuts rather than about the primitives, so they moved together into
+`test_engine_eval_shortcuts.py` (2 tests) and took their duplicated position generator with
+them. `test_bitboard.py` keeps the 9 primitive tests and is back to 105 lines.
+
+**Method: step 3 was skipped, and this is that disclosure.** Neither NotebookLM notebook
+was asked. The remaining work was a unit test for an internal parameter and a documentation
+catch-up; the reference notebook answers what the simulator *does* and the book notebook
+what the rules *require*, and neither governs either. Steps 1, 2, 5, 6, 7 and 8 were run in
+full, across both repositories. Recorded here rather than left to be noticed, per the
+standing order that a weakened step is reported in the message that weakened it.
+
+**Also brought current:** `docs/TODO.md` and `README.md` in both repositories were two
+commits behind — the one-spread separation test and the rule-25 move-decider list (five
+modules covered out of sixteen; `denial`, which played the counted series, was not among
+them) had shipped undocumented.

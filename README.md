@@ -2260,6 +2260,44 @@ true position is exactly the mistake this section opened with.
 to be decorative: the key sat in `config/game.toml`, nothing under `src/` ever read it, and
 it named `shrink-stack` while the denial stack was the one playing.
 
+**What a leaf costs came down twice, and neither change moves a number on that table.**
+`evaluate` used to run a full breadth-first search at every leaf for the Cop-to-Thief
+distance and then — since the weight search had set that coefficient to zero — spend the
+result on nothing but a reachability test. That test is now one spread. `thief_region` is
+the Thief's component of the board with *our* cell removed, so a path from the Thief to us
+exists exactly when some cell of that component is adjacent to us: the step before the last
+one on any such path is in the component by construction. Proven equivalent on 200,000
+random positions, 11,630 of them genuinely sealed off, with zero disagreements, and a
+3,000-position seeded version is a unit test — the whole evaluation rests on it and a wrong
+answer is worth -500 to the search. The distance is still computed whenever its coefficient
+is non-zero, so the term stays tunable rather than deleted.
+
+The same argument then removed a second fill. `cycle_rank` was counting the region's
+connected components, and its only caller already knows that count is one, because it is
+evaluating a `flood`'s own output. `cycle_rank(region, size, parts=1)` now takes the count
+instead of recomputing it, which was the most expensive thing left in the evaluation.
+
+**The problem hit while covering that** is worth recording, because the test caught it and
+review would not have. The first version asserted that a random sample would contain an
+empty region, on the assumption that a barriered-in Thief produces one. It never does: the
+Thief stands on a free cell and removing the Cop's cell cannot take it away, so `region` is
+empty only for inputs the search cannot build. The test now asserts the invariant that is
+actually true — every region the search evaluates has exactly one component — plus a
+mutation check that a deliberately wrong `parts` disagrees, since a parameter that were
+quietly ignored would have passed the agreement assertion on its own. The empty region is
+covered separately, where `cycle_rank` answers before `parts` is ever read. Adding all this
+took `test_bitboard.py` past the 150-line gate, so the two random sweeps establishing what
+`evaluate` may *assume* now sit in `test_engine_eval_shortcuts.py` and the primitives stay
+where they were — split by responsibility, not by deleting the reasoning.
+
+**A structural guarantee also turned out to be guarding less than it claimed.** The rule-25
+boundary test asserts that no module deciding a move can reach the language layer, and its
+list of move-deciders had fallen behind twice: neither the `denial` stack that actually
+played the counted series (with `containment` and `patrol`) nor the `M11-02` search was in
+it. A list that covers the modules someone remembered in 2026-08 guarantees nothing about
+the module chosen tonight. Every module that can return a `TurnIntent`, and the perception
+that aims one, is enumerated now — sixteen instead of five, all passing.
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a

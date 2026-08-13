@@ -307,6 +307,34 @@ same sweep reproduced through the **live** path against foreign emitters — a s
 is excellent only when handed the true position is precisely the failure this entry opens
 with, and it must not be re-shipped in a new form.
 
+**Two fills per leaf removed, with no change to any measured result.** `evaluate` ran a
+full BFS at every leaf for the Cop-to-Thief distance and, with that coefficient searched to
+zero, used the number for nothing but a reachability test; the test is now a single spread,
+exact by the argument that `thief_region` is the Thief's component with our own cell
+removed. Then `cycle_rank` gained `parts`, so the caller can supply a component count it
+already has — the search always does, since it evaluates a `flood`'s own connected output —
+instead of paying a second fill to recount it. Equivalence was proven on 200,000 random
+positions (11,630 sealed off, zero disagreements) and a seeded 3,000-position version is a
+unit test, because a wrong answer here is worth -500 to the search and would not raise.
+
+Writing that test found the interesting part: its first version asserted the sample would
+contain an empty region, which cannot happen — the Thief stands on a free cell and removing
+the Cop's cell cannot take it away, so `region == 0` only for inputs the search cannot
+build. It now asserts the true invariant (exactly one component, always) and adds a
+mutation check that a wrong `parts` disagrees, since a silently ignored parameter would
+have passed the agreement assertion by itself. Adding it pushed `test_bitboard.py` past the
+150-line gate, so the two random sweeps that prove what `evaluate` may *assume* — the
+one-spread separation test and the one-component invariant — moved to
+`test_engine_eval_shortcuts.py` (2), leaving the primitives in `test_bitboard.py` (9). Split
+by responsibility rather than by trimming the reasoning, as `M9-21` was.
+
+Separately, the **rule-25 boundary guard was covering five move-deciding modules out of
+sixteen**. Neither the `denial` stack that played the counted series (with `containment`
+and `patrol`) nor the `M11-02` search was listed, so the structural guarantee whose sanction
+is disqualification was guaranteeing nothing about the module actually chosen. Every module
+that can return a `TurnIntent`, plus the observation that aims one, is enumerated now; all
+23 pass. Same failure mode as `M9-21`: a guard is only worth its completeness.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
