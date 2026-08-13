@@ -40,6 +40,7 @@ from p2p_cop_agent.services.readiness import (
 )
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.private_config import load_private_config, opponent_url
+from p2p_cop_agent.shared.series_identity import series_game_id
 from p2p_cop_agent.shared.team_config import load_host_spec, load_identity
 
 
@@ -50,11 +51,6 @@ def per_game_token_budget(game: JsonObject) -> int:
     if num_games <= 0:
         raise ValueError("num_games must be positive")
     return int(league["token_budget_per_series"]) // num_games  # type: ignore[index,call-overload]
-
-
-def derive_game_id(config_sha256: str) -> str:
-    """A game id both peers derive identically from the shared config lock."""
-    return f"game-{config_sha256[:12]}"
 
 
 def cop_start(game: JsonObject) -> Coordinate:
@@ -128,7 +124,7 @@ def serve_match(
         timeout=connect_timeout, interval=retry_interval,
     ):
         return MatchResult(None, None, None, None)
-    game_id = derive_game_id(sdk.config_sha256)
+    game_id = series_game_id(config)
     sealed = sdk.seal_step_zero_attestation(
         host=host_spec, model=identity["llm_model"], group_id=identity["group_id"], game_id=game_id,
     )
@@ -146,7 +142,7 @@ def serve_match(
         decide=serve_decide(sdk.board(), cop_start(dict(sdk.game_config)), dict(sdk.game_config)),
         identity=identity,
         step_zero=attestation_wire(sealed),
-        game_id=game_id, game_uid=sdk.config_sha256[:32],
+        game_id=game_id,
         started_at=started_at,
         max_tokens_per_game=per_game_token_budget(dict(sdk.game_config)),
         clock=time.monotonic, sleep=time.sleep,

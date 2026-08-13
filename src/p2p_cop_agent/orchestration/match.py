@@ -29,6 +29,7 @@ from p2p_cop_agent.orchestration.sub_game import SubGameOutcome, run_sub_game_ov
 from p2p_cop_agent.orchestration.turn_loop import Decide, Receive
 from p2p_cop_agent.protocol.commit_reveal import TurnLedger
 from p2p_cop_agent.protocol.declaration import build_declaration, lock_declaration
+from p2p_cop_agent.protocol.negotiation import terms_from_config
 from p2p_cop_agent.reporting import (
     MatchIdentity,
     build_config,
@@ -39,6 +40,7 @@ from p2p_cop_agent.reporting import (
     validated_write,
     write_artifact,
 )
+from p2p_cop_agent.reporting.series_consensus import derive_game_uid
 from p2p_cop_agent.shared.config import JsonObject
 
 COP_ROLE = "police"
@@ -72,7 +74,6 @@ def play_match(
     decide: Decide,
     identity: Mapping[str, object],
     game_id: str,
-    game_uid: str,
     started_at: str,
     max_tokens_per_game: int,
     clock: Callable[[], float],
@@ -104,6 +105,22 @@ def play_match(
     )
     if agreement is None:
         return MatchResult(None, None, None, None)
+    # Derived here, not passed in, because it cannot be known any earlier: the book says
+    # the four artifacts "share a common identifier (game_uid)", and the shared derivation
+    # takes the agreed terms **and both group ids** -- so the opponent's id must already be
+    # on the table. Computing it after the handshake is what makes both peers arrive at the
+    # same UUID without an extra round trip.
+    #
+    # It used to be `config_sha256[:32]`, a value only this side computed. That produced an
+    # artifact set carrying two different uids: the logs said `5a7b4a6e58be4479...` while
+    # the result report -- which already used this derivation -- said
+    # `7b1d942e-5a9c-...`, the same UUID `uoh-ay26` independently computed for G005. The
+    # report was right and the logs were the outlier, so the logs move.
+    game_uid = derive_game_uid(
+        terms_from_config(game),
+        [str(identity.get("group_id") or ""),
+         str(agreement.opponent_identity.get("group_id") or "")],
+    )
     declaration = build_declaration(
         game_id=game_id, game_uid=game_uid, our_identity=identity,
         opponent_identity=agreement.opponent_identity,

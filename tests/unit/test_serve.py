@@ -11,13 +11,13 @@ from __future__ import annotations
 import pytest
 
 from p2p_cop_agent.adapters.serve import (
-    derive_game_id,
     per_game_token_budget,
     serve_decide,
     split_host_port,
 )
 from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
+from p2p_cop_agent.shared.series_identity import series_game_id
 
 
 @pytest.mark.parametrize("url, expected", [
@@ -44,11 +44,28 @@ def test_per_game_token_budget_refuses_zero_games() -> None:
         per_game_token_budget({"network_and_league": {"num_games": 0, "token_budget_per_series": 1}})
 
 
-def test_derive_game_id_is_deterministic_from_the_config_lock() -> None:
-    """Both peers derive the same id from the shared config sha, so ids agree."""
-    sha = "abcdef0123456789" * 4
-    assert derive_game_id(sha) == "game-abcdef012345"
-    assert derive_game_id(sha) == derive_game_id(sha)
+def test_series_game_id_is_the_agreed_label_that_names_every_artifact() -> None:
+    """Appendix F table 20 names all four artifacts from this one value."""
+    assert series_game_id({"game": {"series_game_id": "G005"}}) == "G005"
+    assert series_game_id({"game": {"series_game_id": "  G005  "}}) == "G005"
+
+
+@pytest.mark.parametrize("config", [
+    {},
+    {"game": {}},
+    {"game": {"series_game_id": ""}},
+    {"game": {"series_game_id": "   "}},
+])
+def test_series_game_id_refuses_rather_than_defaulting(config: dict) -> None:
+    """The regression this replaced: a hash-derived id names a set nobody can follow.
+
+    `derive_game_id(config_sha256)` produced `game-<12 hex>` -- the exact form the book
+    rules out -- and the result report, built from the agreed label, then linked files
+    that did not exist. Refusing at launch is recoverable; a mis-named artifact set is
+    not, because it is only noticed at grading.
+    """
+    with pytest.raises(ValueError, match="series_game_id"):
+        series_game_id(config)
 
 
 def test_serve_decide_is_the_live_policy_not_the_placeholder() -> None:

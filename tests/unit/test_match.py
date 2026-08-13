@@ -79,7 +79,7 @@ def _run(*replies: dict, agree: bool = True, artifacts_dir=None):
         take_offer=lambda: _drain(inboxes.agreements),
         take_turn=lambda: take_turn(inboxes, ipeer),
         decide=decide, identity=_identity("neutral-group-alpha"),
-        game_id="g1", game_uid="u1", started_at="2026-08-03T10:00:00Z",
+        game_id="g1", started_at="2026-08-03T10:00:00Z",
         max_tokens_per_game=200000, clock=clock.time, sleep=clock.sleep,
         artifacts_dir=artifacts_dir,
     )

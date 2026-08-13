@@ -31,7 +31,7 @@ def _negotiate_timeout(monkeypatch, **play_kwargs) -> float:
     result = match_module.play_match(
         sdk=_Sdk(), transport=object(), take_offer=lambda: None, take_turn=lambda: None,
         decide=lambda *_a, **_k: None, identity={"group_id": "sharNamr"},
-        game_id="g", game_uid="u", started_at="t", max_tokens_per_game=1,
+        game_id="g", started_at="t", max_tokens_per_game=1,
         clock=lambda: 0.0, sleep=lambda _s: None, **play_kwargs,
     )
     assert not result.played
