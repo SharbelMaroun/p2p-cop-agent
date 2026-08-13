@@ -291,7 +291,21 @@ Also here: `[strategy] name` is now the real switch (it named `shrink-stack` whi
 denial stack played, and nothing in `src/` read it), and `strategy/engine.py` adds an
 alpha-beta search over move-or-barrier turns on a bitboard — the barrier quota spent on
 *cycle rank*, since one pursuer catches an evader on a forest and provably cannot on a
-7×7 grid. Its measured standing against the archetype grid is recorded in the README.
+7×7 grid.
+
+Coordinate ascent over its six evaluation coefficients (144 games per evaluation) returned
+one decisive result: **setting the distance-to-Thief term to zero takes the engine from
+118/144 to 144/144** — the first arm ever to sweep the archetype grid, and the only one to
+beat the companion Thief from every opening (`denial` 124/144, `shrink` 120/144). Chasing
+was not merely unnecessary, it was outbidding the containment that actually finishes.
+Two pathologies were found and recorded on the way: an aborted deepening iteration was
+being kept rather than discarded (58/144 when kept), and searching *deeper* made the Cop
+worse against the simplest evader while a distance term was still in play.
+
+`[strategy] name` still defaults to the denial stack. Promoting the engine waits on the
+same sweep reproduced through the **live** path against foreign emitters — a strategy that
+is excellent only when handed the true position is precisely the failure this entry opens
+with, and it must not be re-shipped in a new form.
 
 ## Conventions
 

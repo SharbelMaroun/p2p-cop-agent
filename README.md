@@ -1603,9 +1603,23 @@ floor it was, and it is no longer credulous either.
 
 ### 4. Learning curves
 
-The book requires learning curves **"if RL was used"** (p.81/189). This policy is
+The book requires learning curves **"if RL was used"** (p.81/189). The **served** policy is
 deterministic and weight-free — a fixed lexicographic ranking, nothing fitted from data —
 so there is no convergence to plot, and asked directly, the book is silent on a substitute.
+
+**One component is fitted, and it is named here rather than left to be discovered.** The
+`M11-02` search engine scores positions with six coefficients, and those were **searched,
+not chosen**: coordinate ascent over the archetype grid, 144 games per evaluation, each
+step keeping the better of one coefficient raised and lowered. No reinforcement learning is
+involved — there is no policy gradient, no value function learned from returns, and nothing
+carries over between games — so the book's RL clause is not triggered.
+
+The honest reading of *why* the book asks for learning curves is "show that the fitted
+thing converged", and here the search's most useful step is a **negative** result rather
+than a curve: setting the distance-to-Thief coefficient to **zero** moved the engine from
+118/144 to 144/144, and weighting it at -8 scored 118 again. That is not a coefficient
+being polished; it is the graph theory of §M11-02 arriving in the measurements, and it is
+reported as a single decisive comparison because that is what it was.
 
 In its place, [`docs/RESEARCH-REPORT-Performance-Analysis.md`](docs/RESEARCH-REPORT-Performance-Analysis.md)
 answers the question a learning curve answers — *is this policy actually better, and by how
@@ -2227,6 +2241,20 @@ through a cross-repository bridge and fed the Cop's true cell, which makes it th
 evader available to us. (The bridge is deliberately *not* committed to either repository —
 each must stay independently clonable, and a script under `scripts/` that imported its
 sibling would break `verify_clean_clone.py`.)
+
+**Where the three arms stand**, 24 perimeter openings per cell:
+
+| arm | greedy | smart | deadend | territory | interior | our own Thief | total |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `shrink` (the stack that tied `uoh-ay26`) | 24 | 24 | 24 | 24 | **0** | 24 | 120/144 |
+| `denial` (M10, the current default) | 24 | **17** | **17** | 24 | 24 | **18** | 124/144 |
+| **`engine`** (M11-02, searched weights) | **24** | **24** | **24** | **24** | **24** | **24** | **144/144** |
+
+The engine is the first arm to sweep the grid, and the only one that beats our own Thief
+from every opening — the same brain that has survived all nine live hunts it has ever
+played. `denial` remains the shipped default until the same result is reproduced through
+the live path against foreign emitters; a strategy that is only excellent when handed the
+true position is exactly the mistake this section opened with.
 
 `[strategy] name` in the private config is now the switch that selects the chooser. It used
 to be decorative: the key sat in `config/game.toml`, nothing under `src/` ever read it, and
