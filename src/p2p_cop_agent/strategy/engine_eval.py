@@ -120,17 +120,25 @@ def evaluate(
     runs at every leaf of the search.
     """
     thief_bit = bit_of(thief, size)
+    cop_bit = bit_of(cop, size)
     region = thief_region(cop, thief, free, size)
     value = (weights.region * popcount(region)
              + weights.cycles * cycle_rank(region, size)
              + weights.barriers_left * barriers_left)
 
-    reach = distance_between(bit_of(cop, size), thief_bit, free, size)
-    if reach < 0:
-        # Sealed away from the Thief: the barriers meant to trap it trapped us instead,
-        # and no amount of shrinking matters from the wrong side of the wall.
+    # Sealed away from the Thief: the barriers meant to trap it trapped us instead, and no
+    # amount of shrinking matters from the wrong side of the wall.
+    #
+    # The test is one spread rather than a search, and it is exact. `region` is the Thief's
+    # component of the board with *our* cell removed, so a path from the Thief to us exists
+    # precisely when some cell of that component is adjacent to us: the step before the last
+    # one on any such path is in the component by construction. This replaced a full BFS per
+    # leaf, which was the most expensive thing the evaluation did and -- since the weight
+    # search set `distance` to zero -- was computing a number nothing then used.
+    if not spread(region, size) & cop_bit:
         return value + weights.separated
-    value += weights.distance * reach
+    if weights.distance:
+        value += weights.distance * distance_between(cop_bit, thief_bit, free, size)
 
     exits = popcount(region & spread_one(thief_bit, size))
     return value + weights.thief_mobility * exits
