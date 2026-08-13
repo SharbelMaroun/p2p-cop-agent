@@ -1522,6 +1522,43 @@ steps, and this repository's `write_match_log` was checked for the companion's o
 a hardcoded `confirmed: True` asserting an agreement that had not happened — and does not
 carry it.
 
+#### The amireman series: two timeout defects, one proxy, and the first counted game (2026-08-13)
+
+Group `amireman` (AMIR13BD) proposed a full interop exchange: their guide specifies a Cop
+that **claims its own post-move cell every turn** and a Thief that judges the three capture
+conditions itself. Two things had to change here, and neither is policy: a private
+`[strategy].claim_every_turn` flag (default **off** — an every-turn claim broadcasts our
+true position, so it is per-opponent), and `serve.py` plumbing it from the private TOML.
+
+Their match runner dials **one** `--peer` URL for a whole series while our Cop and Thief
+are two processes on two ports. `peer_proxy.py` (repository root's workspace, not shipped
+code) answers with a connection-time TCP router: forward raw bytes to whichever agent port
+accepts — Cop first, then Thief. `run_series.py` runs the agents strictly sequentially, so
+the correct agent is always the only listener; byte-level piping keeps MCP framing and SSE
+untouched.
+
+Two smoke attempts then died at the role swap, and both defects were waiting here too.
+Their runner fires its next-game negotiate while the previous agent still holds the
+endpoint for the mutual audit — the finishing agent answers `{"ok": true}` and exits, and
+the offer is gone. Our side then waited only `response_timeout_sec` (30) for a fresh offer:
+an **in-game request timer misused as pre-game patience**. `play_match` now takes
+`offer_timeout` and `serve_match` passes its connect budget (`connect_timeout_seconds`,
+600), so the offer wait floors at the same patience the readiness wait already had. The
+companion Thief had the sharper form of the same bug — `serve_match`'s hardcoded
+30-second `ready_timeout` silently overriding the TOML — fixed the same night.
+
+Three series then ran clean end to end: the non-counted G006 demo, a G007 rehearsal, and
+**G008 — the first counted game (rule 52)**. All three finished 3–3, 47–47 with the tie
+bonus (Table 17 row 5), consensus SHA agreed bit-for-bit in both directions each time, all
+audits `log_verified`, zero rejected wire messages across 488 events, and the G008 report
+was emailed automatically to the lecturer's reporting address with the team in copy —
+rule 51 exercised for real. The draw is structural, not accidental: under a
+broadcast-position protocol a pure chase can never close on an equal-speed evader, so
+both Thieves survive and every game scores 10–5. Making the Cop win under that protocol
+is a corralling problem — shrink the reachable region with barriers — and is deliberately
+left un-built until the counted series against the other opponent, whose profile M10
+already answers, is behind us.
+
 ### 3. The implemented strategy
 
 Movement is **pure Python and fully deterministic**. The language model never chooses

@@ -237,6 +237,26 @@ archetype are now readable by the opponent, so the next round of the strategy du
 played open-book in both directions -- the same symmetric openness we benefited from
 when reading their planner. Rule 49 is satisfied in either state.
 
+**2026-08-13f the amireman series: the first counted game is played and reported.**
+Full campaign against group `amireman` (AMIR13BD), second live opponent. Interop per
+their guide: `[strategy].claim_every_turn` (private flag, default off) has the Cop claim
+its own post-move cell every turn; their single-`--peer` runner is served through a
+connection-time TCP proxy (`peer_proxy.py` at the workspace root, one public tunnel,
+routes to whichever agent port answers — `run_series.py` is strictly sequential, so the
+playing agent is always the only listener). Two role-swap defects found live and fixed
+with tests: their runner spends its next-game negotiate on the previous agent's audit
+window, and the offer wait here was capped by `response_timeout_sec` (30) — an in-game
+timer misused as pre-game patience; `play_match` now takes `offer_timeout` from the
+serve path's connect budget (600 s). Series G006 (demo), G007 (rehearsal), and **G008 —
+the counted rule-52 meeting — all completed 3–3, 47–47** (tie bonus, Table 17 row 5),
+consensus SHA bit-equal in both directions each series, all audits verified, zero wire
+rejections, and the G008 report emailed automatically to
+`rmisegal+uoh26finalgame@gmail.com` with the team in copy — rules 32/51 exercised on a
+counted game. The tie is structural: under their broadcast-claim protocol an equal-speed
+evader cannot be caught by pursuit, so the Cop-side answer is a corralling planner,
+deferred until after the uoh-ay26 counted series. `M9-01a` progress: **one of two
+counted games is now played**; the second opponent (uoh-ay26) remains.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.
@@ -935,7 +955,7 @@ These run before every commit and in CI; they are not milestone-scoped.
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
 | M9-01 | Run counted league series against required opponents | DEFERRED | P0 | Current official minimums and declarations are satisfied |
-| M9-01a | Play at least two counted games against at least two groups | DEFERRED | P0 | `[AE-31]` `[AF-t18]`; below the minimum scores zero |
+| M9-01a | Play at least two counted games against at least two groups | DEFERRED | P0 | `[AE-31]` `[AF-t18]`; below the minimum scores zero. **Half met 2026-08-13: G008 vs `amireman` played counted, consensus SHA agreed both ways, report emailed to the lecturer (see `2026-08-13f`).** Remains open until a second group's counted game exists — `uoh-ay26` is scheduled |
 | M9-01b | Count only one scoring game per opponent | DEFERRED | P0 | `[AE-52]`; repeats add nothing |
 | M9-01c | Secure opponent scheduling early | DEFERRED | P0 | External dependency on other teams; longest lead time in the project |
 | M9-02 | Complete six-section academic README report | DONE | P0 | Verified present by `scripts/check_submission_contents.py` against book 9.4.2 (`inst/:2283`) -- README sections 1-6 all matched on their own headings. Presence only; quality stays a human judgement |
