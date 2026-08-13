@@ -1,0 +1,103 @@
+{
+  "_schema": "declaration",
+  "config_sha256": "5a7b4a6e58be447982bcc5ca1b3b9ad160190e9127edb13b7c7d4e9e171e9f01",
+  "declaration_lock": "a5d0bae780333477488f2ad10eee18410f45bbed6798761b93e16b4aa8f6941a",
+  "declaration_type": "pre_game",
+  "game_ended_at": null,
+  "game_id": "game-5a7b4a6e58be",
+  "game_started_at": "2026-08-12T22:05:42.539182+00:00",
+  "game_uid": "5a7b4a6e58be447982bcc5ca1b3b9ad1",
+  "games_played_declaration": {
+    "counted_games_before_this": 0,
+    "first_meeting_between_groups": true,
+    "games_played_including_this": 1,
+    "opponent_group_id": "uoh-ay26",
+    "warm_ups_excluded": 0
+  },
+  "github_commit": "4c62ce08c0bcf5b1d4d642661aaafd553a3d18f4",
+  "groups": [
+    {
+      "group_id": "sharNamr",
+      "group_name": "sharNamr",
+      "hardware_spec": {
+        "cpu_cores": 4,
+        "cpu_freq_mhz": 1992,
+        "cpu_type": "Intel(R) Core(TM) i7-8565U CPU @ 1.80GHz",
+        "gpu_model": "Intel(R) UHD Graphics 620",
+        "os": "Microsoft Windows 11 Home",
+        "ram_gb": 8,
+        "vram_gb": 1
+      },
+      "llm_model": "template-zero-token",
+      "mcp_servers": {
+        "sharNamr": "https://blue-mortality-airplane-composition.trycloudflare.com/mcp"
+      },
+      "members": [
+        "Sharbel Maroun",
+        "Amr safadi"
+      ],
+      "repos": {
+        "cop": "https://github.com/SharbelMaroun/p2p-cop-agent",
+        "thief": "https://github.com/SharbelMaroun/p2p-thief-agent"
+      },
+      "signature": "d0ac00af25bb4f38f8e42d4f86874a1926570668ef47931683861c46576ad1cb"
+    },
+    {
+      "group_id": "uoh-ay26",
+      "group_name": "uoh-ay26",
+      "hardware_spec": {
+        "cpu_cores": 16,
+        "cpu_freq_mhz": "unknown",
+        "cpu_type": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+        "gpu_cores_or_cuda": "unknown",
+        "gpu_type": "unknown",
+        "os": "Windows",
+        "ram_gb": 15.71,
+        "vram_gb": "unknown"
+      },
+      "llm_model": "gemini-3.1-flash-lite",
+      "mcp_servers": {
+        "thief": "https://theif.uohay26game.com/mcp"
+      },
+      "members": [
+        "Aisha Abu Dahesh",
+        "Yousef Asadi"
+      ],
+      "repos": {
+        "cop": "https://github.com/aishadahesh/uoh-ay26-final-project-cop",
+        "thief": "https://github.com/aishadahesh/uoh-ay26-final-project-thief"
+      },
+      "signature": null
+    }
+  ],
+  "links": {
+    "config": [
+      "config_game-5a7b4a6e58be_g01.json",
+      "config_game-5a7b4a6e58be_g02.json",
+      "config_game-5a7b4a6e58be_g03.json",
+      "config_game-5a7b4a6e58be_g04.json",
+      "config_game-5a7b4a6e58be_g05.json",
+      "config_game-5a7b4a6e58be_g06.json"
+    ],
+    "declaration": "declaration_game-5a7b4a6e58be.json",
+    "log": [
+      "log_game-5a7b4a6e58be_g01.json",
+      "log_game-5a7b4a6e58be_g02.json",
+      "log_game-5a7b4a6e58be_g03.json",
+      "log_game-5a7b4a6e58be_g04.json",
+      "log_game-5a7b4a6e58be_g05.json",
+      "log_game-5a7b4a6e58be_g06.json"
+    ],
+    "result": "result_game-5a7b4a6e58be.json"
+  },
+  "max_tokens_per_game": 33333,
+  "num_sub_games": 6,
+  "repositories": [
+    "https://github.com/SharbelMaroun/p2p-cop-agent",
+    "https://github.com/SharbelMaroun/p2p-thief-agent",
+    "https://github.com/aishadahesh/uoh-ay26-final-project-cop",
+    "https://github.com/aishadahesh/uoh-ay26-final-project-thief"
+  ],
+  "schema_version": "1.1",
+  "timezone": "UTC"
+}

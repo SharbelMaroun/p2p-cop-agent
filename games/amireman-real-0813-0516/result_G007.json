@@ -1,0 +1,254 @@
+{
+  "_schema": "result-report",
+  "final_result": {
+    "diversity_reward_applied": {
+      "amireman": false,
+      "sharNamr": false
+    },
+    "first_meeting_between_groups": true,
+    "games_played_including_this": {
+      "amireman": 1,
+      "sharNamr": 1
+    },
+    "series_tie": true,
+    "sub_games_won": {
+      "amireman": 3,
+      "sharNamr": 3
+    },
+    "ties": 0,
+    "tokens_total_series": {
+      "amireman": 0,
+      "sharNamr": 0
+    },
+    "total_score": {
+      "amireman": 47,
+      "sharNamr": 47
+    },
+    "winner_group": null
+  },
+  "game_id": "G007",
+  "game_uid": "6aba9341-d92a-6e4b-a6a4-bb44ccadac1a",
+  "groups": [
+    "sharNamr",
+    "amireman"
+  ],
+  "links": {
+    "config": "config_G007_g<NN>.json",
+    "declaration": "declaration_G007.json",
+    "log": "log_G007_g<NN>.json",
+    "result": "result_G007.json"
+  },
+  "mutual_agreement": {
+    "confirmed": true,
+    "sha256": "633b46d731a18791a74a6371ccdca1e69a7a9bbed83d3c37d4bd0ebaf8b266e0"
+  },
+  "num_sub_games": 6,
+  "report_type": "final_game_result",
+  "repositories": [
+    "https://github.com/SharbelMaroun/p2p-cop-agent",
+    "https://github.com/SharbelMaroun/p2p-thief-agent",
+    "https://github.com/AMIR13BD/Game-P2P-Cop-Chase-Police",
+    "https://github.com/AMIR13BD/Game-P2P-Cop-Chase-Thief"
+  ],
+  "schema_version": "1.1",
+  "series_consensus": {
+    "consensus_sha": "633b46d731a18791a74a6371ccdca1e69a7a9bbed83d3c37d4bd0ebaf8b266e0",
+    "game_id": "G007",
+    "game_uid": "6aba9341-d92a-6e4b-a6a4-bb44ccadac1a"
+  },
+  "sub_games": [
+    {
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      },
+      "ended_at": "2026-08-13T02:17:19.988648+00:00",
+      "github_commit": {
+        "amireman": "a6e3ce98f581b612796c79d5eb6fa0164031bb52",
+        "sharNamr": "c490d0c1ba0939a3f03d26a82430b3bdab1a36b4"
+      },
+      "log_files": {
+        "amireman": "log_G007_g01.json",
+        "sharNamr": "log_G007_g01.json"
+      },
+      "result": "survival",
+      "roles": {
+        "amireman": "thief",
+        "sharNamr": "cop"
+      },
+      "score": {
+        "amireman": 10,
+        "sharNamr": 5
+      },
+      "started_at": "2026-08-13T02:16:24.187949+00:00",
+      "sub_game_number": 1,
+      "tie": false,
+      "tokens": {
+        "amireman": 0,
+        "sharNamr": 0
+      },
+      "winner_group": "amireman"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      },
+      "ended_at": "2026-08-13T02:18:22.963818+00:00",
+      "github_commit": {
+        "amireman": "a6e3ce98f581b612796c79d5eb6fa0164031bb52",
+        "sharNamr": "7dfe9fd11df0aca2dc88554a301938bf0a8385ae"
+      },
+      "log_files": {
+        "amireman": "log_G007_g02.json",
+        "sharNamr": "log_G007_g02.json"
+      },
+      "result": "survival",
+      "roles": {
+        "amireman": "cop",
+        "sharNamr": "thief"
+      },
+      "score": {
+        "amireman": 5,
+        "sharNamr": 10
+      },
+      "started_at": "2026-08-13T02:17:26.051049+00:00",
+      "sub_game_number": 2,
+      "tie": false,
+      "tokens": {
+        "amireman": 0,
+        "sharNamr": 0
+      },
+      "winner_group": "sharNamr"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      },
+      "ended_at": "2026-08-13T02:19:21.998364+00:00",
+      "github_commit": {
+        "amireman": "a6e3ce98f581b612796c79d5eb6fa0164031bb52",
+        "sharNamr": "c490d0c1ba0939a3f03d26a82430b3bdab1a36b4"
+      },
+      "log_files": {
+        "amireman": "log_G007_g03.json",
+        "sharNamr": "log_G007_g03.json"
+      },
+      "result": "survival",
+      "roles": {
+        "amireman": "thief",
+        "sharNamr": "cop"
+      },
+      "score": {
+        "amireman": 10,
+        "sharNamr": 5
+      },
+      "started_at": "2026-08-13T02:18:26.440875+00:00",
+      "sub_game_number": 3,
+      "tie": false,
+      "tokens": {
+        "amireman": 0,
+        "sharNamr": 0
+      },
+      "winner_group": "amireman"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      },
+      "ended_at": "2026-08-13T02:20:24.818422+00:00",
+      "github_commit": {
+        "amireman": "a6e3ce98f581b612796c79d5eb6fa0164031bb52",
+        "sharNamr": "7dfe9fd11df0aca2dc88554a301938bf0a8385ae"
+      },
+      "log_files": {
+        "amireman": "log_G007_g04.json",
+        "sharNamr": "log_G007_g04.json"
+      },
+      "result": "survival",
+      "roles": {
+        "amireman": "cop",
+        "sharNamr": "thief"
+      },
+      "score": {
+        "amireman": 5,
+        "sharNamr": 10
+      },
+      "started_at": "2026-08-13T02:19:28.050360+00:00",
+      "sub_game_number": 4,
+      "tie": false,
+      "tokens": {
+        "amireman": 0,
+        "sharNamr": 0
+      },
+      "winner_group": "sharNamr"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      },
+      "ended_at": "2026-08-13T02:21:30.335192+00:00",
+      "github_commit": {
+        "amireman": "a6e3ce98f581b612796c79d5eb6fa0164031bb52",
+        "sharNamr": "c490d0c1ba0939a3f03d26a82430b3bdab1a36b4"
+      },
+      "log_files": {
+        "amireman": "log_G007_g05.json",
+        "sharNamr": "log_G007_g05.json"
+      },
+      "result": "survival",
+      "roles": {
+        "amireman": "thief",
+        "sharNamr": "cop"
+      },
+      "score": {
+        "amireman": 10,
+        "sharNamr": 5
+      },
+      "started_at": "2026-08-13T02:20:28.375882+00:00",
+      "sub_game_number": 5,
+      "tie": false,
+      "tokens": {
+        "amireman": 0,
+        "sharNamr": 0
+      },
+      "winner_group": "amireman"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      },
+      "ended_at": "2026-08-13T02:22:34.035777+00:00",
+      "github_commit": {
+        "amireman": "a6e3ce98f581b612796c79d5eb6fa0164031bb52",
+        "sharNamr": "7dfe9fd11df0aca2dc88554a301938bf0a8385ae"
+      },
+      "log_files": {
+        "amireman": "log_G007_g06.json",
+        "sharNamr": "log_G007_g06.json"
+      },
+      "result": "survival",
+      "roles": {
+        "amireman": "cop",
+        "sharNamr": "thief"
+      },
+      "score": {
+        "amireman": 5,
+        "sharNamr": 10
+      },
+      "started_at": "2026-08-13T02:21:36.352275+00:00",
+      "sub_game_number": 6,
+      "tie": false,
+      "tokens": {
+        "amireman": 0,
+        "sharNamr": 0
+      },
+      "winner_group": "sharNamr"
+    }
+  ],
+  "timezone": "UTC"
+}
