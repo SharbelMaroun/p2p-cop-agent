@@ -38,9 +38,21 @@ SRC = Path(__file__).resolve().parents[2] / "src" / "p2p_cop_agent"
 
 # Everything that turns state into a move or a barrier. If a module here could reach the
 # language layer, rule 25's recommendation would be one import away from being violated.
+#
+# This list is only as good as its completeness, and it had fallen behind twice over: the
+# stack that actually played the counted series (`denial` over `shrink`, with `containment`
+# and `patrol`) was never added, and neither was the `M11-02` search. A structural guarantee
+# that covers the modules someone remembered in 2026-08 guarantees nothing about the module
+# chosen tonight, so every module that can return a `TurnIntent` -- and the perception that
+# aims one -- is listed here now.
 MOVE_DECIDERS = ("strategy/pursuit.py", "strategy/belief_pursuit.py",
                  "strategy/squeeze.py", "strategy/barrier_policy.py",
-                 "strategy/belief.py")
+                 "strategy/belief.py", "strategy/denial.py", "strategy/shrink.py",
+                 "strategy/containment.py", "strategy/anticipation.py",
+                 "strategy/patrol.py", "strategy/engine.py",
+                 "strategy/engine_search.py", "strategy/engine_eval.py",
+                 "strategy/bitboard.py", "strategy/window_geometry.py",
+                 "orchestration/live_observation.py")
 
 # The language layer and everything that carries free text into it.
 LANGUAGE_LAYER = ("strategy.verbal", "strategy.hints", "strategy.hint_decode",
