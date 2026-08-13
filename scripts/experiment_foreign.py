@@ -89,26 +89,32 @@ class ForeignTrace:
         return {"smell_grid": encode_scent(self.emitter.window(self.thief))}
 
 
-def live_stack(trace: ForeignTrace, board: Board, observation=observe):
-    """The arm the wire actually serves: observe, aim, then the denial stack."""
+def live_stack(trace: ForeignTrace, board: Board, observation=observe, chooser=None):
+    """The arm the wire actually serves: observe, aim, then the configured chooser.
+
+    `chooser` defaults to the shipped `denial_turn_intent`; passing
+    `strategy.engine.engine_turn_intent` measures the search through the same live path
+    rather than through an arena that skips `patrol.aim`.
+    """
+    choose = chooser or denial_turn_intent
     state = {"belief": Belief.uniform(board.grid_size, start=board.min_index),
              "seen": None, "count": 0, "previous": None}
 
     def policy(cop):
         state["count"] += 1
-        fresh = observation(board, trace.incoming(), state["count"], state["seen"])
+        fresh = observation(board, trace.incoming(), state["count"], state["seen"],
+                            cop.position)
         if fresh is not None:
             state["belief"], state["seen"] = fresh
         seen_turn = state["seen"][0] if state["seen"] else None
         target = aim(board, state["belief"], seen_turn, state["count"], cop.position)
-        intent = denial_turn_intent(board, cop.position, target, cop.barriers,
-                                    state["previous"])
+        intent = choose(board, cop.position, target, cop.barriers, state["previous"])
         state["previous"] = cop.position if isinstance(intent, MoveIntent) else None
         return intent
     return policy
 
 
-def play_cell(emitter_name: str, thief_name: str, observation=observe) -> dict:
+def play_cell(emitter_name: str, thief_name: str, observation=observe, chooser=None) -> dict:
     """One trial: every perimeter opening, one emitter, one Thief archetype."""
     board = Board(CONFIG["board_and_agents"]["grid_size"],
                   CONFIG["board_and_agents"]["axis_start_index"],
@@ -120,7 +126,7 @@ def play_cell(emitter_name: str, thief_name: str, observation=observe) -> dict:
             continue
         config = config_with("board_and_agents", "cop_start", list(start))
         trace = ForeignTrace(config, THIEVES[thief_name], EMITTERS[emitter_name])
-        result = run_sub_game(config, live_stack(trace, board, observation),
+        result = run_sub_game(config, live_stack(trace, board, observation, chooser),
                               trace.thief_policy)
         captures += result.outcome is Outcome.CAPTURE
         turns += result.turns
