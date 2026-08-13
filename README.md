@@ -2290,6 +2290,28 @@ took `test_bitboard.py` past the 150-line gate, so the two random sweeps establi
 `evaluate` may *assume* now sit in `test_engine_eval_shortcuts.py` and the primitives stay
 where they were — split by responsibility, not by deleting the reasoning.
 
+**The artifact set was named from a hash, and the report linked files that were not
+there.** `game_id` was derived as `game-<12 hex of the config sha>`, so the logs on disk
+read `log_game-5a7b4a6e58be_g01.json` while the result report — built from the agreed
+`G00N` label — pointed at `log_G005_g01.json`. Nothing cross-checks an artifact's name
+against the report that references it, so every gate passed and every file was valid; the
+only broken thing was the one an examiner would use. It surfaced by diffing our G005
+report against `uoh-ay26`'s after a live series, not by any test.
+
+Both notebooks were asked and neither supports the old form. Appendix F table 20 names all
+four artifacts from `<game_id>` and says the identifier is the label the teams agree —
+explicitly **not** a value derived from a hash, since the hash's whole job is locking the
+config under `config_sha256`. The reference derives a *human* id from the agreed terms plus
+both group ids instead, so both peers land on it without an extra round trip. `game_id` now
+comes from `[game].series_game_id` and **refuses rather than defaulting**: a missing label
+costs one restart, a guessed one costs a grade.
+
+`game_uid` had the same split — logs carried `config_sha256[:32]`, a value only we compute,
+while the report carried the derived UUID that `uoh-ay26` independently arrived at. It is
+now derived once, after the handshake, because the shared derivation needs both group ids.
+The practical effect is that our logs finally carry the identifiers the opponent's audit
+expects to find in them.
+
 **A structural guarantee also turned out to be guarding less than it claimed.** The rule-25
 boundary test asserts that no module deciding a move can reach the language layer, and its
 list of move-deciders had fallen behind twice: neither the `denial` stack that actually

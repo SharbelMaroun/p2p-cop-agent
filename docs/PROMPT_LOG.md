@@ -1404,3 +1404,59 @@ standing order that a weakened step is reported in the message that weakened it.
 commits behind — the one-spread separation test and the rule-25 move-decider list (five
 modules covered out of sixteen; `denial`, which played the counted series, was not among
 them) had shipped undocumented.
+
+
+## 2026-08-13f — the artifact set was named from a hash, and nothing noticed for the whole project
+
+**Prompt.** "Fix the code to generate correct values and fields... we will play a full
+counted game from the beginning and add the lecturer in the recipients list."
+
+**The defect.** `serve.py` derived `game_id` as `f"game-{config_sha256[:12]}"`. Artifacts
+were therefore written as `log_game-5a7b4a6e58be_g01.json` while the result report, built
+from the agreed `G00N` label, linked `log_G005_g01.json`. Every file was individually
+valid, every gate passed, and the only broken thing was the one an examiner uses. It was
+invisible to CI because **nothing cross-checks an artifact's name against the report that
+points at it** — and it surfaced only from diffing our G005 result against `uoh-ay26`'s
+after a live series.
+
+**Both notebooks were asked, and this is what each contributed.** The book notebook
+(templates/authority): Appendix F table 20 (p. 141/289) names all four artifacts from
+`<game_id>`, and the identifier is the label the teams agree or the league assigns — *"not
+a value derived from a Hash of the configuration; the Hash serves only to lock the Config
+file under `config_sha256`"*. The reference notebook (what the simulator does):
+`build_result` in `report/artifacts.py`, `log_filename` in `report/artifact_helpers.py`,
+`emit_series` in `report/emit.py`, and `game_id` from `derive_game_ids` in
+`domain/game_ids.py` — a pure function of the agreed terms plus both group ids, so both
+peers compute the same *human* id with no extra round trip. Not a conflict: both say the
+id is agreed, neither says it is a digest. Asking only one would have left the other's
+answer unavailable — the book gave the prohibition, the reference gave the mechanism.
+
+**The book also corrected one of my own findings.** I had flagged our missing per-sub-game
+`steps` as a gap because `uoh-ay26` emit it. The book says the opposite: `steps` belongs to
+the log's `summary`, and *"is not carried into the final result report"*. Ours was right
+and theirs is the deviation. Recorded because it is exactly the class of error the gate
+exists to catch — a plausible inference from an opponent's artifact, wrong on the source.
+
+**Changes.** `shared/series_identity.py: series_game_id` reads `[game].series_game_id` and
+**refuses rather than defaulting** (a missing label costs one restart; a guessed one costs
+a grade). Own module because `serve.py` and `private_config.py` were both within five lines
+of the 150-line gate — `M9-21` again. `derive_game_id` deleted, not left dangling.
+`game_uid` moved to `derive_game_uid(terms, both group ids)` inside `match.py` **after the
+handshake**, since the shared derivation needs the opponent's id; the parameter is gone
+from `play_match` rather than left wired to nothing (`M9-24`). Net effect: our logs now
+carry the identifiers the opponent's audit expects, and `agreed_identifiers`' override
+becomes a no-op that agrees rather than papers over.
+
+**Deliberately left open, and why.** The result report's league block is still an unwired
+default asserted as fact: the declaration derives it correctly, but the result schema wants
+a per-group dict where `declaration_block` computes a scalar per-opponent count, and those
+are different quantities. The opponent's `tokens` are still `0` against their reported
+92,500; the book gives the mechanism (both teams exchange final figures under rule 54 and
+verify in the audit) but not the plumbing. Neither is answerable from `inst/` alone and
+both were left rather than guessed.
+
+**Method.** All eight steps ran. Step 3 was attempted, failed with the Chrome extension
+disconnected, and the work **stopped there** until it was reconnected — no implementation
+happened on the blocked step, which is the whole point of the gate. Both notebooks were
+then asked, each what only it could answer, and read as text via `document.body.innerText`
+sliced around a marker (the form-click submit path from `2026-08-12f` worked first try).

@@ -328,6 +328,47 @@ one-spread separation test and the one-component invariant — moved to
 `test_engine_eval_shortcuts.py` (2), leaving the primitives in `test_bitboard.py` (9). Split
 by responsibility rather than by trimming the reasoning, as `M9-21` was.
 
+**The artifact set was named from a hash, and the report pointed at files that did not
+exist.** `serve.py` derived `game_id` as `f"game-{config_sha256[:12]}"`, so the logs were
+written as `log_game-5a7b4a6e58be_g01.json` while the result report — built from the
+agreed `G00N` label — linked `log_G005_g01.json`. Every local gate passed and every file
+was individually valid; only the links were unfollowable, which is a defect that surfaces
+at grading and nowhere earlier. Found 2026-08-13 by diffing our G005 report against
+`uoh-ay26`'s, whose set is self-consistent because they used the agreed label throughout.
+
+**Both notebooks were asked and both rule against the old form.** Appendix F table 20
+(p. 141/289) names all four artifacts from `<game_id>` and the book states the identifier
+is the label the teams agree or the league assigns, *"not a value derived from a Hash of
+the configuration — the Hash serves only to lock the Config file under `config_sha256`"*.
+The reference reaches the same place differently, deriving a **human** id from the agreed
+terms plus both group ids (`domain/game_ids.py: derive_game_ids`) so neither peer needs an
+extra round trip. Not a conflict: both say the id is agreed, and neither says it is a
+digest.
+
+`shared/series_identity.py: series_game_id` now reads `[game].series_game_id` and
+**refuses rather than defaulting** — a missing label costs one restart, a guessed one
+costs a grade. Its own module because `serve.py` and `private_config.py` were both within
+five lines of the 150-line gate (`M9-21` again). `derive_game_id` is deleted, not left
+dangling.
+
+`game_uid` had the same disease: the logs carried `config_sha256[:32]`, a value only this
+side computes, while the report carried `derive_game_uid(terms, groups)` — the UUID
+`uoh-ay26` independently computed for G005. It is now derived once in `match.py`, **after
+the handshake**, because the shared derivation needs both group ids; the parameter is gone
+from `play_match` rather than left as a control wired to nothing (`M9-24`). Consequence:
+`agreed_identifiers`' override in `report_command.py` and its `log_files` rewrite are now
+no-ops that agree with the logs instead of papering over them.
+
+**Still open, deliberately, because neither is answerable from `inst/` alone.** The result
+report's league block (`games_played_including_this`, `first_meeting_between_groups`,
+`diversity_reward_applied`) is still an unwired default asserted as fact — the *declaration*
+derives it correctly via `league.declaration_block`, but the result schema wants a
+**per-group dict** where `declaration_block` computes a **scalar per-opponent** count, and
+those are different quantities. And the opponent's `tokens` are published as `0`: the book
+specifies the mechanism (both teams exchange final figures from their local logs under rule
+54 and verify them in the audit) but not the plumbing. `uoh-ay26` reported 92,500 for G005
+against our 0. Both need one more notebook round before a counted game.
+
 Separately, the **rule-25 boundary guard was covering five move-deciding modules out of
 sixteen**. Neither the `denial` stack that played the counted series (with `containment`
 and `patrol`) nor the `M11-02` search was listed, so the structural guarantee whose sanction
