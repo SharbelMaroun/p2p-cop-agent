@@ -20,14 +20,16 @@ Each turn, in order:
    start cell, so aiming there answered `STAY` forever — 26 turns of it in the
    `amireman` friendly. Never-observed, evidence-free and stale beliefs all take a
    deterministic waypoint tour instead (`strategy.patrol`).
-2. **Choose one legal intent** via `strategy.shrink.shrinking_turn_intent` —
-   capture-move or trapping barrier, else squeeze, else the containment ratchet on
-   the just-vacated cell in a locked endgame, else the interception chase (M6-25:
-   the flight-centroid chase tied against edge oscillators and mirrored them to the
-   horizon; the summed-distance rank breaks the tie and converts the mobility-aware
-   archetypes 40/40 where every prior arm scored 0/40). One move *or* one barrier,
-   never both (book §3.4). The same function the tournament grid measures, so the
-   served number is the published number.
+2. **Choose one legal intent** via the chooser `[strategy] name` selects — by default
+   `strategy.denial.denial_turn_intent`, which denies the clearance core and then cuts
+   each surviving orbit before handing over to the incumbent shrink stack: capture-move
+   or trapping barrier, else squeeze, else the containment ratchet on the just-vacated
+   cell in a locked endgame, else the interception chase (M6-25: the flight-centroid
+   chase tied against edge oscillators and mirrored them to the horizon; the
+   summed-distance rank breaks the tie). `name = "engine"` selects the `M11-02`
+   alpha-beta search instead. One move *or* one barrier, never both (book §3.4).
+   (This step said `shrink.shrinking_turn_intent` until 2026-08-13, one release after
+   `denial` took over the call — the kind of drift `[strategy] name` also suffered.)
 3. **Declare and claim.** A placed barrier is disclosed truthfully in
    `barrier_placed` (rule: hiding one is forbidden), and landing on — or walling —
    the believed cell sends `capture_claim` for that cell: a claim is checked by the
