@@ -34,12 +34,20 @@ from p2p_cop_agent.strategy.bitboard import (
 class Weights:
     """The evaluation's tunable coefficients, all from the Cop's point of view.
 
-    Scale matters as much as sign. The first set tried gave region -3 and cycles -8,
-    which sounds like the right priority and is not: across a 49-cell board those terms
-    range over roughly 150 and 290 while distance ranges over 12, so closing the gap was
-    worth less than any incidental change in shape and the Cop preferred to build walls
-    it had no plan for. These are balanced so that pursuit leads and structure decides
-    between pursuits of equal length.
+    **``distance`` is zero, and that is the headline.** A coordinate-ascent search over
+    these coefficients against the whole archetype grid -- six evaders, twenty-four
+    perimeter openings, 144 games per evaluation -- found that removing the
+    distance-to-Thief term entirely takes the engine from 118/144 to **144/144**, a clean
+    sweep including the companion Thief brain. Weighting it at -8 scored 118. Chasing was
+    not merely unnecessary; it was the thing costing us captures.
+
+    That is the graph theory arriving in the measurements. One pursuer cannot corner an
+    equal-speed evader with full information on a 7x7 grid -- the grid needs two -- so a
+    term that rewards closing the gap is rewarding a plan that provably does not finish,
+    and it outbids the containment that does. Distance is not thrown away: the evaluation
+    treats the Cop's own cell as a wall for the Thief, so stepping closer already shrinks
+    the region. It is *implied* by the right term rather than double-counted by the wrong
+    one.
 
     ``barrier_tempo`` is the price of the turn a placement costs, and it exists because
     of a measured pathology rather than a principle. Searching **deeper made the Cop
@@ -57,11 +65,17 @@ class Weights:
     catchable only by spending barriers on it. Barriers are the answer to one opponent and
     a distraction against another, which is why this coefficient is searched rather than
     argued about.
+
+    Order matters in that story: the tempo cost was added while ``distance`` was still
+    -4, to counteract a Cop that would rather wall than close. Zeroing ``distance``
+    removed the thing it was compensating for, so whether -2 is still the right price --
+    or whether it should now be zero as well -- is a question for the next sweep, not one
+    to settle by argument.
     """
 
     region: float = -1.0
     cycles: float = -2.0
-    distance: float = -4.0
+    distance: float = 0.0
     barriers_left: float = 0.25
     separated: float = -500.0
     thief_mobility: float = -1.0

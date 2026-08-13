@@ -46,13 +46,23 @@ def cop_actions(
     barrier that merely threatens one: it ends the sub-game a turn sooner, and the search
     prefers the shallower win.
 
-    Within the moves the order is by Manhattan distance to the Thief, closing first. That
-    is worth doing twice over. It prunes -- alpha-beta is only as good as its first
-    guess -- and it fixes ties, which is not cosmetic: **`STAY` is a legal Cop move, and
-    a search too shallow to separate its options keeps whichever it generated first.**
-    Generate `STAY` first and a blind Cop stands on its opening square for the whole
-    sub-game, which is exactly the failure `patrol` was written to undo. Closing moves
-    first means the fallback under uncertainty is pursuit.
+    Within the moves the order is by Manhattan distance to the Thief, closing first, and
+    it earns its keep three times over.
+
+    It prunes -- alpha-beta is only as good as its first guess. It fixes ties, which is
+    not cosmetic: **`STAY` is a legal Cop move, and a search too shallow to separate its
+    options keeps whichever it generated first.** Generate `STAY` first and a blind Cop
+    stands on its opening square for the whole sub-game, which is exactly the failure
+    `patrol` was written to undo.
+
+    And since the weight search set the evaluation's ``distance`` coefficient to **zero**,
+    this ordering is the *only* thing that closes the gap. The Cop's cell enters the
+    evaluation just twice -- as a wall bounding the Thief's region, and in the
+    cut-off-from-the-Thief check -- so from far away every move scores identically and the
+    order decides. That is deliberate: the evaluation should say what a position is worth,
+    and "walk toward the Thief" is a tie-break, not a goal. But it means this function is
+    load-bearing rather than an optimisation, and reordering it would quietly turn the
+    pursuit off.
     """
     origin = cell_of(cop, size)
     step = neighbours(origin, size)

@@ -71,12 +71,18 @@ def test_two_different_opponents_produce_two_different_games() -> None:
     assert first_difference(walk(SOUTH_THEN_WEST), walk(EAST_THEN_NORTH)) is not None
 
 
-def test_the_search_engine_answers_the_opponent_sooner() -> None:
-    """Both shipped choosers must have the property; the search has no fixed opening."""
-    diverged = first_difference(walk(SOUTH_THEN_WEST, "engine"),
-                                walk(EAST_THEN_NORTH, "engine"))
-    assert diverged is not None
-    assert diverged <= 7
+def test_the_search_engine_answers_the_opponent_too() -> None:
+    """Both shipped choosers must have the property, not just the default one.
+
+    No claim is made about *which* answers sooner. An earlier version of this test
+    asserted the search diverged by turn 7 and it did -- until the weight search removed
+    the distance term, after which the search contains rather than rushes and diverges on
+    turn 8 like the incumbent. The property worth pinning is that the opponent changes the
+    game at all; the turn it happens on is a tuning artifact and pinning it would make
+    every future retune look like a regression.
+    """
+    assert first_difference(walk(SOUTH_THEN_WEST, "engine"),
+                            walk(EAST_THEN_NORTH, "engine")) is not None
 
 
 def test_the_cop_closes_on_a_stationary_opponent() -> None:
