@@ -23,6 +23,7 @@ from collections.abc import Mapping
 from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
 from p2p_cop_agent.protocol.scent_wire import ScentWireError, decode_scent
+from p2p_cop_agent.services import wire_log
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.strategy.belief import Belief
 from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood
@@ -97,4 +98,12 @@ def observe(
                                         start=board.min_index, trusted=trusted)
     if self_cell is not None:
         likelihood = {**likelihood, self_cell.as_pair(): 0.0}
-    return prior.updated(likelihood), (turn, observed)
+    belief = prior.updated(likelihood)
+    # What we concluded, not what they sent: our own inference carries none of the
+    # rule-18/39 hazard that keeps message bodies out of the wire log. Recording it is
+    # what would have made `G008` obvious while it was still being played, instead of
+    # weeks later from the move sequences.
+    wire_log.record("belief", turn=turn, cells=len(observed),
+                    located=list(located) if located else None,
+                    aim=list(belief.most_likely()))
+    return belief, (turn, observed)
