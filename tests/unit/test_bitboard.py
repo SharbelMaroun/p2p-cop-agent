@@ -1,8 +1,10 @@
-"""The bitboard primitives the search evaluates with."""
+"""The bitboard primitives the search evaluates with.
+
+The two random sweeps proving what `evaluate` may assume about these primitives live in
+`test_engine_eval_shortcuts.py`; those are claims about the evaluator, not about these.
+"""
 
 from __future__ import annotations
-
-import random
 
 from p2p_cop_agent.strategy.bitboard import (
     bit,
@@ -68,6 +70,25 @@ def test_cycle_rank_is_zero_for_a_path_and_positive_for_a_grid() -> None:
 
 def test_cycle_rank_of_the_empty_region_is_zero() -> None:
     assert cycle_rank(0, SIZE) == 0
+    assert cycle_rank(0, SIZE, parts=1) == 0, "the empty region answers before reading parts"
+
+
+def test_cycle_rank_takes_a_component_count_the_caller_already_has() -> None:
+    """`parts` must be the count `components` would have returned, and must be used.
+
+    The search passes `parts=1` to skip a fill it does not need. That is only sound if the
+    supplied count reaches the arithmetic unchanged, so this checks both directions: the
+    right count agrees with counting, and a wrong count visibly disagrees. A `parts` that
+    were quietly ignored would pass the first assertion and fail the second.
+    """
+    square = mask_of((0, 0), (0, 1), (1, 0), (1, 1))
+    assert cycle_rank(square, SIZE, parts=1) == cycle_rank(square, SIZE) == 1
+
+    wall = mask_of(*[(row, 3) for row in range(SIZE)])
+    split = FULL & ~wall
+    assert components(split, SIZE) == 2
+    assert cycle_rank(split, SIZE, parts=2) == cycle_rank(split, SIZE)
+    assert cycle_rank(split, SIZE, parts=1) == cycle_rank(split, SIZE) - 1
 
 
 def test_distance_between_counts_steps_around_a_wall() -> None:
@@ -82,34 +103,3 @@ def test_distance_between_reports_an_unreachable_cell() -> None:
     wall = mask_of(*[(row, 3) for row in range(SIZE)])
     free = FULL & ~wall
     assert distance_between(bit((0, 0), SIZE), bit((0, 4), SIZE), free, SIZE) == -1
-
-
-def test_the_cheap_separation_test_agrees_with_a_real_search() -> None:
-    """`evaluate` decides "am I sealed off?" with one spread instead of a BFS.
-
-    The argument is that `thief_region` is the Thief's component of the board with the
-    Cop's own cell removed, so a path from the Thief to the Cop exists exactly when some
-    cell of that component is adjacent to the Cop -- the step before the last one on any
-    such path is in the component by construction. The argument is sound; this checks it
-    anyway, because the whole evaluation rests on it and a wrong answer here is worth
-    -500 points to the search.
-    """
-    from p2p_cop_agent.strategy.bitboard import spread
-    from p2p_cop_agent.strategy.engine_eval import bit_of, free_mask, thief_region
-
-    rng = random.Random(20260813)
-    separated = 0
-    for _ in range(3_000):
-        walls = frozenset((rng.randrange(SIZE), rng.randrange(SIZE))
-                          for _ in range(rng.randrange(0, 20)))
-        free = free_mask(SIZE, walls)
-        cells = [index for index in range(SIZE * SIZE) if free & (1 << index)]
-        if len(cells) < 2:
-            continue
-        cop, thief = rng.sample(cells, 2)
-        region = thief_region(cop, thief, free, SIZE)
-        cheap = bool(spread(region, SIZE) & bit_of(cop, SIZE))
-        searched = distance_between(bit_of(cop, SIZE), bit_of(thief, SIZE), free, SIZE) >= 0
-        assert cheap is searched
-        separated += not searched
-    assert separated > 100, "the sample must actually contain sealed-off positions"

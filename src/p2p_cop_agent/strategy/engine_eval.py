@@ -122,8 +122,10 @@ def evaluate(
     thief_bit = bit_of(thief, size)
     cop_bit = bit_of(cop, size)
     region = thief_region(cop, thief, free, size)
+    # `parts=1`: `region` is a flood fill's own output, so it is one component by
+    # construction and counting them again would cost another full fill per leaf.
     value = (weights.region * popcount(region)
-             + weights.cycles * cycle_rank(region, size)
+             + weights.cycles * cycle_rank(region, size, parts=1)
              + weights.barriers_left * barriers_left)
 
     # Sealed away from the Thief: the barriers meant to trap it trapped us instead, and no

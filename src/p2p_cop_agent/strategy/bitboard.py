@@ -136,7 +136,7 @@ def edge_count(region: int, size: int) -> int:
     return horizontal + vertical
 
 
-def cycle_rank(region: int, size: int) -> int:
+def cycle_rank(region: int, size: int, parts: int | None = None) -> int:
     """Return the region's independent-cycle count, ``E - V + 1`` per component.
 
     Zero means the region is a forest, and a forest is the shape that decides this
@@ -144,11 +144,17 @@ def cycle_rank(region: int, size: int) -> int:
     a 7x7 grid needs two cops, which is precisely why every chase-only series ended in
     survival. Barriers are how a Cop turns the second into the first, so this is the
     quantity worth spending them on.
+
+    ``parts`` supplies the component count when the caller already knows it. The search
+    always does -- it evaluates a region it just built with :func:`flood`, which is
+    connected by construction -- and counting components costs a whole extra fill per
+    leaf, which was the most expensive thing left in the evaluation.
     """
     cells = popcount(region)
     if cells == 0:
         return 0
-    return edge_count(region, size) - cells + components(region, size)
+    return edge_count(region, size) - cells + (
+        components(region, size) if parts is None else parts)
 
 
 def components(region: int, size: int) -> int:
