@@ -1460,3 +1460,48 @@ disconnected, and the work **stopped there** until it was reconnected — no imp
 happened on the blocked step, which is the whole point of the gate. Both notebooks were
 then asked, each what only it could answer, and read as text via `document.body.innerText`
 sliced around a marker (the form-click submit path from `2026-08-12f` worked first try).
+
+
+## 2026-08-13h — G009 counted: won 60–40, and both of my predictions about it were wrong
+
+**Prompt.** "Run it", then a long run of "update?" while the six sub-games played.
+
+**The result.** `G009` vs `uoh-ay26`, counted: **60–40, four sub-games to two.** Survival
+at the full 35 in all three Thief games; in the Police games two survivals and a capture at
+step 25. Both teams' reports agree on every outcome-bearing field and produced the identical
+consensus digest `a5b2e323…`, which they accepted on the wire. All six logs replay
+`Verified OK`. Report delivered to the lecturer at 20:31:41Z (Gmail `19ffcd2cd80b7e03`,
+verified from the API rather than from the driver's own log line). `M9-01a` closes: two
+counted games, two groups, `[AE-31]` met.
+
+**The naming fix earned its keep in the game that counts.** Fifteen artifacts, every one
+named `G009`, zero hash-named, one declaration per repository. The opponent's report links
+`log_G009_gNN.json` for both teams and all six of ours exist under exactly those names —
+which is the whole defect closed end to end, on a counted set, hours after it split the
+aborted first attempt.
+
+**I was wrong twice, and the second one I had already flagged and then ignored.**
+
+*The harness measurement.* Their new evader was ported as `flee_enclosure` and measured at
+**40/40 captures, 24.0 turns** — identical to the build we had beaten — and I told Sharbel
+the 90–30 result should hold. Live it was **one capture in three**. The port reproduced
+their four main decision tiers and passed the exact board position from their own
+regression test, which is precisely what made it look faithful. Their planner also carries
+trap-risk, proximity-risk, escape-space and boundary terms, and the interaction is what a
+four-tier reduction loses. **Passing an opponent's own test case is necessary and not
+sufficient**, and I presented a reduced model's output as a prediction about a real one.
+
+*The determinism projection.* After four sub-games I projected 45–45 from the fact that
+`G005` repeated exactly across all three instances of each pairing. Sub-game 6 then captured
+where 2 and 4 had not, same config, same roles. I had written the caveat myself — "their
+planner takes a `strategy_seed`, and if it varies per sub-game the Police games could
+differ" — and then projected as though it did not. A caveat stated and not carried into the
+conclusion is decoration.
+
+**What actually held.** The Thief is genuinely uncatchable by their improved Cop: three
+full horizons, no close calls, and their pursuit-hardening commit did not change it. That
+half of the G005 reading was right.
+
+**Method.** Steps 1–8 ran. Step 3 was not re-queried: both notebooks were asked earlier in
+the session about artifact naming and the answers govern this entry too; nothing here turns
+on a question only they can answer.

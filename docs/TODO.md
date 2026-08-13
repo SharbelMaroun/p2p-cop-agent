@@ -257,6 +257,32 @@ evader cannot be caught by pursuit, so the Cop-side answer is a corralling plann
 deferred until after the uoh-ay26 counted series. `M9-01a` progress: **one of two
 counted games is now played**; the second opponent (uoh-ay26) remains.
 
+**2026-08-13h `G009` vs `uoh-ay26`: won 60–40, and `M9-01a` closes.** Four sub-games to
+two — survival at the full 35 in all three Thief games, and in the Police games two
+survivals and one capture at step 25. Both teams' reports agree on every outcome-bearing
+field and produced the identical consensus digest `a5b2e323…`, which the opponent accepted
+on the wire. All six logs replay `Verified OK`. Reported to the lecturer at 20:31:41Z.
+With `G008` that is two counted games against two groups, so `[AE-31]`'s minimum is met.
+
+**Two things this series corrected, both of them ours.**
+
+*The measurement was wrong.* `uoh-ay26` committed `68a69dbe`/`5ca6c515` twelve minutes
+after losing the `G005` test 0–6, and their commit messages name our sub-games: "G005
+g01/g03 exposed this exact failure" and "G005 g04 had a last open corridor at (3,2)". We
+ported their new evader as `flee_enclosure` and measured **40/40 captures at 24.0 turns**,
+concluding the 90–30 result would hold. Live it was **one capture in three**. The port
+reproduced their four main decision tiers and their own cited test position, which made it
+look faithful; their real planner carries trap-risk, proximity-risk, escape-space and
+boundary terms whose interaction a four-tier reduction does not reproduce. Passing the
+opponent's own regression case is necessary and not sufficient.
+
+*The determinism assumption was wrong too.* `G005` repeated exactly across all three
+instances of each pairing, so a 45–45 draw was projected from the first four sub-games of
+`G009`. Sub-game 6 then captured where 2 and 4 had not — identical roles, identical config,
+different outcome. Their planner takes a `strategy_seed`, which was flagged as a caveat and
+under-weighted. **Their side is not deterministic across sub-games, and any future
+projection from a repeated pairing has to carry that.**
+
 **2026-08-13g the Cop was not losing the chase — it was blind (`M11-01`).** The
 2026-08-13f entry above called the 47–47 tie *structural*. Half of that is true and the
 half that mattered was wrong. The counted `G008` logs settle it: the Cop played
@@ -1074,7 +1100,7 @@ These run before every commit and in CI; they are not milestone-scoped.
 | ID | Cop-owned task | Status | Priority | Definition of done |
 |---|---|---|---|---|
 | M9-01 | Run counted league series against required opponents | DEFERRED | P0 | Current official minimums and declarations are satisfied |
-| M9-01a | Play at least two counted games against at least two groups | DEFERRED | P0 | `[AE-31]` `[AF-t18]`; below the minimum scores zero. **Half met 2026-08-13: G008 vs `amireman` played counted, consensus SHA agreed both ways, report emailed to the lecturer (see `2026-08-13f`).** Remains open until a second group's counted game exists — `uoh-ay26` is scheduled |
+| M9-01a | Play at least two counted games against at least two groups | DONE | P0 | `[AE-31]` `[AF-t18]`; below the minimum scores zero. **MET 2026-08-13.** Two counted games against two different groups: **G008 vs `amireman`, 47–47 draw** (see `2026-08-13f`), and **G009 vs `uoh-ay26`, 60–40 win**, four sub-games to two. G009's evidence: all six logs replay `Verified OK` with `tampered: false` on both sides, both teams independently derived the same consensus digest `a5b2e323c53aa0d17f570024c549fb7c4c20a237a5557c26371004f0325c49c3` and the opponent accepted ours on the wire (`accepted: true, errors: []`), and the rule-32 report reached the lecturer at 20:31:41Z (Gmail `19ffcd2cd80b7e03`, `SENT`, recipients `rmisegal+uoh26finalgame@gmail.com` and ourselves). Artifacts in `games/counted-uohay26-0813-G009/`. A game without a sent report scores nothing, so the send is the closing evidence, not the play |
 | M9-01b | Count only one scoring game per opponent | DEFERRED | P0 | `[AE-52]`; repeats add nothing |
 | M9-01c | Secure opponent scheduling early | DEFERRED | P0 | External dependency on other teams; longest lead time in the project |
 | M9-02 | Complete six-section academic README report | DONE | P0 | Verified present by `scripts/check_submission_contents.py` against book 9.4.2 (`inst/:2283`) -- README sections 1-6 all matched on their own headings. Presence only; quality stays a human judgement |

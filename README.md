@@ -2320,6 +2320,43 @@ it. A list that covers the modules someone remembered in 2026-08 guarantees noth
 the module chosen tonight. Every module that can return a `TurnIntent`, and the perception
 that aims one, is enumerated now — sixteen instead of five, all passing.
 
+### The counted league: two games, two groups, minimum met
+
+| game | opponent | our roles | result | reported |
+| --- | --- | --- | --- | --- |
+| `G008` | `amireman` | 1/3/5 Police | **47–47 draw** | yes |
+| `G009` | `uoh-ay26` | 2/4/6 Police | **60–40 win**, 4 sub-games to 2 | yes |
+
+`[AE-31]` requires two counted games against two different groups, and below the minimum
+the league scores zero. Both are played, both reconciled, both reported.
+
+`G009`'s evidence is complete rather than asserted: all six logs replay `Verified OK` with
+`tampered: false` **on both sides**, the two teams independently derived the identical
+consensus digest `a5b2e323c53aa0d17f570024c549fb7c4c20a237a5557c26371004f0325c49c3` — the
+opponent accepted ours on the wire with `errors: []` — and the rule-32 report reached the
+lecturer at 20:31:41Z. A game without a sent report scores nothing, so the send is the
+closing evidence rather than the play.
+
+The shape of it: survival at the full 35 steps in all three Thief sub-games, and in the
+three Police sub-games two survivals and one capture at step 25.
+
+**What the series cost us in accuracy, recorded because it is the more useful half.**
+`uoh-ay26` pushed new agents twelve minutes after losing the uncounted `G005` 0–6, and
+their commit messages name our sub-games ("G005 g01/g03 exposed this exact failure"). We
+ported their new evader into the archetype harness and measured **40/40 captures at 24.0
+turns**, and concluded the 90–30 scoreline would repeat. Live it was **one capture in
+three**. The port reproduced their four main decision tiers and passed the exact board
+position from their own regression test — which is what made it look faithful — but their
+planner carries trap-risk, proximity-risk, escape-space and boundary terms whose
+interaction a four-tier reduction does not reproduce. Passing an opponent's own test case
+is necessary and not sufficient.
+
+The second error was assuming their agent is deterministic. `G005` repeated exactly across
+all three instances of each pairing, so a 45–45 draw was projected from `G009`'s first four
+sub-games. Sub-game 6 then captured where 2 and 4 had not, from the same config and the
+same roles. Their planner takes a `strategy_seed`; that was noted as a caveat and
+under-weighted.
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a
