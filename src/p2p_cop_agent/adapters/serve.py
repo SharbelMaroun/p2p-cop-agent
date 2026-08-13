@@ -77,8 +77,12 @@ def serve_decide(board: Board, start: Coordinate, game: JsonObject) -> Decide:
     alternating truth/bluff hint, all deterministic. The sealed payload carries the
     real move and position, because the audit is what makes a claim provable.
     """
-    return live_decide(
-        board, start, game, claim_every_turn=bool(_STRATEGY.get("claim_every_turn")))
+    # `[strategy] name` selects which chooser runs. It used to be decorative -- the key
+    # was in `config/game.toml`, nothing in `src/` ever read it, and it named the shrink
+    # stack while the denial stack was the one playing. A label that cannot be wrong is a
+    # label nobody checks, so it is now the actual switch.
+    return live_decide(board, start, game, strategy=str(_STRATEGY.get("name") or ""),
+                       claim_every_turn=bool(_STRATEGY.get("claim_every_turn")))
 
 
 def _drain(box: queue.Queue) -> JsonObject | None:

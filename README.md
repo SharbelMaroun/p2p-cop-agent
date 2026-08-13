@@ -2106,6 +2106,132 @@ reconstruct which brain met which. The repositories moved to private (rule 49's
 shared-with-lecturer option) before M10 landed, so the denial stack meets its first
 opponent on the board rather than in their editor.
 
+### The Cop was not losing the chase. It was blind. (`M11-01`, 2026-08-13)
+
+The section above concluded that the 47-47 tie was **structural**. Half of that holds and
+the half that mattered was wrong, and the counted `G008` logs say so plainly. Across its
+three Police sub-games the Cop played the *same moves*:
+
+```text
+g01  MOVE:EAST MOVE:EAST MOVE:SOUTH BARRIER:[2,2] MOVE:EAST BARRIER:[2,3] MOVE:EAST …
+g03  MOVE:EAST MOVE:EAST MOVE:SOUTH BARRIER:[2,2] MOVE:EAST BARRIER:[2,3] MOVE:EAST …
+g05  MOVE:EAST MOVE:EAST MOVE:SOUTH BARRIER:[2,2] MOVE:EAST BARRIER:[2,3] MOVE:EAST …
+```
+
+Three sub-games, an opponent doing different things in each, and one move sequence. A
+belief-steered policy cannot produce that. The belief never localised, so
+`patrol.needs_sweep` was true on every turn, the Cop toured its fixed waypoints, and
+`denial` spent ten of fourteen barriers on geometry that never intersected anybody. The
+`uoh-ay26` friendlies show the same signature. **We were never playing the strategy we had
+measured** — and the two live opponents drew against a Cop that could not see them.
+
+**Why no test caught it.** `emitter_decoder` localises by inverting the scent physics, and
+the physics it inverts are *ours*: our decay-then-deposit order, our profile, our answer to
+the still-open `U-031` re-emission clamp. Every arena in this repository built the Thief's
+window with our own `ScentField`, so the decoder was inverting exactly the model that
+generated its input. It scored 40/40 by construction. A classmate who answers any of those
+questions differently is neither cheating nor malformed — they are simply not us, and the
+residual their window produces explains nothing, so the likelihood comes back flat.
+
+**The fix reads the shape, not the values.** A published `smell_grid` is a fixed-size
+square window **centred on its emitter**, clipped to the board, zero cells included. So the
+*key set alone* determines the centre, exactly, while assuming nothing whatsoever about the
+sender's constants. The satisfying case is the degenerate one: a window of honest zeros
+carries no evidence at all to a likelihood, and pins the Thief to a single cell
+geometrically.
+
+`strategy/window_geometry.py` never guesses. It reconstructs the window its inferred centre
+would produce and refuses unless that set matches the observation exactly, so a peer that
+omits zero cells, sends a ragged grid, or uses a size the board cannot disambiguate gets
+`None` and the `M6-24` decoder keeps the turn untouched. A wrong fix would be worse than no
+fix, because this one is trusted absolutely. One further cell is removed from every
+reading: the Thief cannot be standing on us — that is the capture condition, so the
+sub-game would be over — and a peer that publishes what it *observes* rather than what it
+emits would otherwise put both readings on that one impossible cell.
+
+**Measured on a harness that can finally express the failure.**
+`scripts/experiment_emitters.py` supplies seven emitters, each a defensible reading of the
+same book; `scripts/experiment_foreign.py` runs the *live* path — `observe`, `patrol.aim`,
+the served chooser — over 24 perimeter openings against five archetypes. (Perimeter
+openings, not seeds: against a deterministic archetype all forty of this repo's seeds
+replay one identical game, so the opening is the only real degree of freedom.)
+
+| Thief's emitter | old decoder | with geometry |
+| --- | --- | --- |
+| `ours` (the control the old harness always used) | 106/120 | 106/120 |
+| `reference_order` (deposit, then decay the field) | 106/120 | 106/120 |
+| `coarse` (two decimals on the wire) | 106/120 | 106/120 |
+| `sparse` (zero cells omitted — geometry correctly refuses) | 106/120 | 106/120 |
+| `clamped` (re-emission capped at 0.9, the open `U-031`) | 48/120 | **106/120** |
+| `saturating` (strongest deposit kept, not accumulated) | 47/120 | **106/120** |
+| `flat` (a window with no gradient at all) | 47/120 | **106/120** |
+| **total** | **566/840** | **742/840** |
+
+Three plausible opponents took the shipped decoder to **0/24 on three archetypes each**.
+All recover. Nothing regresses, and `sparse` is the case that proves the refusal works.
+
+The defect is symmetric, so the companion Thief — whose evasion runs *away from the
+believed Cop*, and therefore aims at the pursuer when the belief is wrong — got the same
+fix the same night.
+
+### Spending the barrier quota on cycles, not on distance (`M11-02`)
+
+The second change is a real search. `strategy/engine.py` runs alpha-beta over the Cop's
+actual action set — four moves, `STAY`, and every legal barrier placement — on a bitboard
+(`strategy/bitboard.py`), where the whole 7x7 free space is one integer and a flood fill is
+four shifts and a mask.
+
+The evaluation leads with the quantity that actually decides this game. A single pursuer
+**cannot** catch an equal-speed evader with full information on a clean grid — a 7x7 grid
+needs two cops — which is the real structural fact behind every chase-only draw. What one
+Cop can do is change the graph, because a pursuer *does* catch an evader on a forest. So
+the fourteen barriers are not fourteen inconveniences; they are fourteen chances to remove
+a cycle, and `cycle_rank` is a first-class term in the evaluation.
+
+Two things that cost real accuracy, both found by measurement rather than reasoning:
+
+- **The first weights were the wrong scale.** `region -3, cycles -8` sounds like the right
+  priority. Across a 49-cell board those terms range over roughly 150 and 290 while
+  distance ranges over 12, so closing the gap was worth less than any incidental change in
+  shape and the Cop preferred to build walls it had no plan for.
+- **An aborted deepening iteration was being kept.** When the node budget ran out mid-sweep
+  every remaining node returned its static evaluation, so the later actions of that sweep
+  were scored shallower than the earlier ones and the comparison between them was
+  meaningless. Keeping that truncated sweep scored **58/120** against the archetype grid;
+  discarding it and playing the last *complete* depth was the entire gap between the
+  small-budget and large-budget arms.
+
+- **Searching deeper made it worse against the *simplest* evader.** With the tempo cost
+  absent, the 20k-node arm took **1 capture in 24** against `flee_greedy` where the
+  4k-node arm took 15. This is not a bug in the search; it is the search being right
+  about the wrong opponent. Minimax assumes a perfect evader, and against a perfect
+  evader no chase on an open grid is ever forcing — so every closing move scores alike,
+  the positional terms decide, and the Cop wall-builds patiently while a greedy runner it
+  could have caught walks away. Deeper search sees the futility more clearly. The
+  correction is to charge a placement the turn it actually costs (`barrier_tempo`), which
+  is true against any opponent and decisive against an imperfect one.
+
+The budget is a **node count, not a wall clock**, and the action order is fixed: rule 53's
+audit and `M6-03d` both require that the same match replays identically, and a timer would
+make the search depend on what else the machine was doing. Closing moves are generated
+before `STAY` for the same reason they are in `patrol` — a search too shallow to separate
+its options keeps whichever it saw first, and generating `STAY` first is how a Cop stands
+on its opening square for a whole sub-game.
+
+**The comparison harness had to be rebuilt too.** The published tournament grid varies a
+*seed* that a deterministic archetype ignores, so its forty runs are one game counted forty
+times; and its arms call the choosers directly, skipping `patrol.aim`, which the live loop
+inserts. The scratch arena used here varies the 24 perimeter openings instead and adds a
+sixth opponent that none of the archetypes match: **our own companion Thief**, driven
+through a cross-repository bridge and fed the Cop's true cell, which makes it the hardest
+evader available to us. (The bridge is deliberately *not* committed to either repository —
+each must stay independently clonable, and a script under `scripts/` that imported its
+sibling would break `verify_clean_clone.py`.)
+
+`[strategy] name` in the private config is now the switch that selects the chooser. It used
+to be decorative: the key sat in `config/game.toml`, nothing under `src/` ever read it, and
+it named `shrink-stack` while the denial stack was the one playing.
+
 ## Usage
 
 The peer is runnable. `serve` hosts this peer's mailbox, waits for the opponent, and plays a

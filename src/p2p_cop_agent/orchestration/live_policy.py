@@ -42,6 +42,9 @@ Each turn, in order:
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from functools import partial
+
 from p2p_cop_agent.domain.barriers import BarrierField
 from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
@@ -54,15 +57,39 @@ from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.strategy.barrier_policy import BarrierIntent
 from p2p_cop_agent.strategy.belief import Belief
 from p2p_cop_agent.strategy.denial import denial_turn_intent
+from p2p_cop_agent.strategy.engine import engine_turn_intent
 from p2p_cop_agent.strategy.hints import hint_max_words
 from p2p_cop_agent.strategy.landmarks import place_for
 from p2p_cop_agent.strategy.patrol import aim
 from p2p_cop_agent.strategy.scent_field import ScentField
 from p2p_cop_agent.strategy.verbal import generate_hint
 
+ENGINE_STRATEGY = "engine"
+DEFAULT_HORIZON = 35
+
+
+def chooser_for(name: str, game: JsonObject):
+    """Return the turn chooser a `[strategy] name` selects, defaulting to the incumbent."""
+    # An unknown name falls back rather than raising: a typo in a private config must
+    # cost a worse strategy, never a technical loss at the top of a counted series.
+    # The default is returned as a module global on purpose, so the M6-26 fail-safe stays
+    # injectable -- `test_live_failsafe` poisons `denial_turn_intent` to prove a strategy
+    # exception becomes a truthful STAY, and a chooser captured at import time would make
+    # that test silently patch nothing.
+    if name == ENGINE_STRATEGY:
+        return partial(engine_turn_intent, horizon=_horizon(game))
+    return denial_turn_intent
+
+
+def _horizon(game: JsonObject) -> int:
+    """Return the sub-game length, so the search never plans past the final turn."""
+    section = game.get("movement_and_barriers")
+    threshold = section.get("survival_threshold") if isinstance(section, Mapping) else None
+    return threshold if isinstance(threshold, int) and threshold > 0 else DEFAULT_HORIZON
+
 
 def live_decide(board: Board, start: Coordinate, game: JsonObject,
-                *, claim_every_turn: bool = False) -> Decide:
+                *, claim_every_turn: bool = False, strategy: str = "") -> Decide:
     """Return the turn-loop `decide` playing the measured belief-pursuit stack.
 
     State is closed over per call — position, barriers, belief, trail, and the turn
@@ -71,6 +98,7 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject,
     deterministic and the belief tie-break is row-major.
     """
     quota = int(game["movement_and_barriers"]["max_barriers"])  # type: ignore[index,call-overload]
+    choose = chooser_for(strategy, game)
     trail = ScentField(board=board)
     state = {
         "cell": start,
@@ -84,7 +112,7 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject,
     def decide(incoming: JsonObject | None) -> tuple[JsonObject, JsonObject]:
         state["count"] += 1
         count = state["count"]
-        fresh = observe(board, incoming, count, state["seen"])
+        fresh = observe(board, incoming, count, state["seen"], state["cell"])
         if fresh is not None:
             state["belief"], state["seen"] = fresh
         # M6-27: a flat or stale belief aims at (0,0) — our own start — and that reads
@@ -99,8 +127,8 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject,
         # every on-board cell, keeps the sealed record truthful, and leaves all state
         # coherent, so the game continues and the audit still verifies.
         try:
-            chosen = denial_turn_intent(board, state["cell"], target,
-                                        state["barriers"], state["previous"])
+            chosen = choose(board, state["cell"], target,
+                            state["barriers"], state["previous"])
             if isinstance(chosen, BarrierIntent):
                 state["barriers"], state["previous"] = (
                     state["barriers"].place_adjacent(board, state["cell"], chosen.cell), None)

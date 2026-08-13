@@ -257,6 +257,42 @@ evader cannot be caught by pursuit, so the Cop-side answer is a corralling plann
 deferred until after the uoh-ay26 counted series. `M9-01a` progress: **one of two
 counted games is now played**; the second opponent (uoh-ay26) remains.
 
+**2026-08-13g the Cop was not losing the chase — it was blind (`M11-01`).** The
+2026-08-13f entry above called the 47–47 tie *structural*. Half of that is true and the
+half that mattered was wrong. The counted `G008` logs settle it: the Cop played
+**near-identical move sequences in all three of its sub-games** — `EAST EAST SOUTH
+BARRIER:[2,2] EAST BARRIER:[2,3] …` — against a Thief doing different things each time,
+and the `uoh-ay26` friendlies before it show the same signature. A belief-steered policy
+cannot produce that. The belief never localised, so `patrol.needs_sweep` was true on
+every turn and the Cop toured fixed waypoints while `denial` spent ten of fourteen
+barriers on geometry that never intersected anybody.
+
+The cause is that `emitter_decoder` inverts **our** scent physics — our decay order, our
+profile, our answer to the open `U-031` re-emission clamp. A classmate reading the same
+book differently produces a window our decoder cannot explain, the likelihood comes back
+flat, and belief stays uniform. Every arena in this repo fed the Cop a window from our
+own `ScentField`, so the decoder was grading its own homework and scored 40/40.
+
+`strategy/window_geometry.py` fixes it from the other end: a published `smell_grid` is a
+board-clipped square window **centred on its emitter**, so the *key set alone* determines
+the emitter exactly, assuming nothing about that peer's constants. Every fix is verified
+against the window it implies and refused when the shape is ambiguous — a wrong fix would
+be worse than none, because this one is trusted absolutely. A window of honest zeros is
+*no evidence* to a likelihood and a *complete position fix* to geometry.
+
+Measured on the new `scripts/experiment_foreign.py` (the live path — `observe`,
+`patrol.aim`, the served chooser — against seven emitter models over 24 perimeter
+openings and 5 archetypes): **566/840 → 742/840**. Three plausible foreign emitters
+(re-emission clamped, deposit-kept-not-accumulated, and a gradient-free window) took the
+old decoder to **0/24 on three archetypes each**; all recover fully. The same defect is
+symmetric and was fixed in the Thief repository the same night.
+
+Also here: `[strategy] name` is now the real switch (it named `shrink-stack` while the
+denial stack played, and nothing in `src/` read it), and `strategy/engine.py` adds an
+alpha-beta search over move-or-barrier turns on a bitboard — the barrier quota spent on
+*cycle rank*, since one pursuer catches an evader on a forest and provably cannot on a
+7×7 grid. Its measured standing against the archetype grid is recorded in the README.
+
 ## Conventions
 
 - **Priority.** `P0` blocks the milestone · `P1` core deliverable · `P2` polish.

@@ -87,6 +87,44 @@ def test_a_stale_previous_observation_is_not_differenced_against() -> None:
     assert gapped[1][0] == 5
 
 
+def test_geometry_localises_a_window_whose_values_carry_no_evidence() -> None:
+    """`M11-01`: the shape is the fix, and the shape survives physics we do not share.
+
+    Every value here is identical, so the residual explains nothing and the likelihood
+    decoder can only return the flat prior — the exact state that had the Cop touring
+    waypoints through a counted series. The key set still names the emitter.
+    """
+    flat = {f"{row},{col}": 0.5
+            for row in range(1, 6) for col in range(2, 7)}
+    fresh = observe(BOARD, {"smell_grid": flat}, 1, None)
+    assert fresh is not None
+    assert fresh[0].most_likely() == (3, 4)
+
+
+def test_a_window_centred_on_our_own_cell_never_aims_at_it() -> None:
+    """The Thief cannot stand where we stand — standing there is capture.
+
+    A peer that publishes what it *observes* rather than what it emits sends a window
+    centred on us, and both readings would otherwise agree on the one impossible cell.
+    Aiming there is the "already on my target, so STAY" freeze by another route.
+    """
+    ours = Coordinate(3, 3)
+    centred_on_us = {f"{row},{col}": 0.5
+                     for row in range(1, 6) for col in range(1, 6)}
+    fresh = observe(BOARD, {"smell_grid": centred_on_us}, 1, None, ours)
+    assert fresh is not None
+    assert fresh[0].most_likely() != (3, 3)
+    assert fresh[0].probability((3, 3)) == 0.0
+
+
+def test_the_self_cell_is_the_only_cell_removed() -> None:
+    """The rest of the evidence survives the guard; one turn is not thrown away."""
+    grid = {"smell_grid": wire_after(Coordinate(2, 5))}
+    fresh = observe(BOARD, grid, 1, None, Coordinate(0, 0))
+    assert fresh is not None
+    assert fresh[0].most_likely() == (2, 5)
+
+
 def test_the_belief_is_rebuilt_fresh_rather_than_compounded() -> None:
     """Recursion calcified the belief (measured 40/40 -> 0/40), so each call restarts.
 
