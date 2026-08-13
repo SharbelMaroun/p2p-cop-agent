@@ -99,3 +99,53 @@ def flee_interior(board, thief, cop, blocked) -> Action:
     # (4) their scoring, reduced to the surviving tier: escape space then distance.
     return min(interior, key=lambda ad: (-(_mobility(board, ad[1], blocked)
                                            + _distance(ad[1], cop)), ad[0].name))[0]
+
+
+def flee_enclosure(board, thief, cop, blocked) -> Action:
+    """`uoh-ay26`'s evader at `5ca6c515` -- `flee_interior` plus their G005 patch.
+
+    Committed 2026-08-13T10:53Z, twelve minutes after losing G005 0-6, and their comment
+    names the game: *"G005 g04 had a last open corridor at (3,2), but the planner
+    re-entered (3,3), whose other three exits were already blocked, then STAYed until
+    Police sealed the corridor."* Their fix, verbatim in shape:
+
+        current_mobility = sum(move is not STAY for move in legal_moves(own))
+        if current_mobility <= 2 and safety_pool:
+            best = max(item.mobility for item in safety_pool)
+            if best > current_mobility:
+                keep only the moves whose mobility == best
+
+    The placement is the whole point and is reproduced exactly: it sits **after** the
+    trap filter and **before** the boundary hard-exclusion, so in an active enclosure it
+    *overrides* their own boundary aversion. That is what makes it dangerous to us --
+    `flee_interior` would refuse an edge cell and get sealed; this one takes the edge
+    when the edge has the most exits. Our three captures all landed at step 25 with ten
+    steps of slack to the horizon, so a rule that buys eleven steps converts a 20-point
+    capture into a 5-point non-capture.
+
+    Kept beside `flee_interior` rather than replacing it: the comparison between the two
+    is the measurement, and overwriting the archetype we actually beat would destroy the
+    baseline.
+    """
+    def clearance(cell) -> int:
+        return min(cell.row, cell.col,
+                   board.grid_size - 1 - cell.row, board.grid_size - 1 - cell.col)
+
+    options = [(action, apply_move(board, thief, action, blocked))
+               for action in legal_moves(board, thief, blocked)]
+    safe = [(a, d) for a, d in options if _distance(d, cop) >= 2] or options
+    open_tier = [(a, d) for a, d in safe if _mobility(board, d, blocked) > 1] or safe
+    # NEW at 5ca6c515: in an active enclosure, maximise immediate open exits and let that
+    # beat the boundary rule. `current_mobility` is the cell we stand on, not a destination.
+    current_mobility = _mobility(board, thief, blocked)
+    if current_mobility <= 2 and open_tier:
+        best_mobility = max(_mobility(board, d, blocked) for _, d in open_tier)
+        if best_mobility > current_mobility:
+            open_tier = [(a, d) for a, d in open_tier
+                         if _mobility(board, d, blocked) == best_mobility]
+            return min(open_tier, key=lambda ad: (-(_mobility(board, ad[1], blocked)
+                                                    + _distance(ad[1], cop)), ad[0].name))[0]
+    best = max(clearance(d) for _, d in open_tier)
+    interior = [(a, d) for a, d in open_tier if clearance(d) == best]
+    return min(interior, key=lambda ad: (-(_mobility(board, ad[1], blocked)
+                                           + _distance(ad[1], cop)), ad[0].name))[0]
