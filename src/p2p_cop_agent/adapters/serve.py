@@ -147,6 +147,7 @@ def serve_match(
         max_tokens_per_game=per_game_token_budget(dict(sdk.game_config)),
         clock=time.monotonic, sleep=time.sleep,
         artifacts_dir=artifacts_dir, sub_game=sub_game,
+        offer_timeout=connect_timeout,
     )
     # Rule 36: the mutual audit is a condition of agreement, and an agreement needs two
     # peers present. Exiting here is what cost the companion Thief a won game against

@@ -88,14 +88,19 @@ def play_match(
     opens: bool = False,
     heartbeat: Heartbeat | None = None,
     poll_interval: float = DEFAULT_POLL_INTERVAL,
+    offer_timeout: float | None = None,
 ) -> MatchResult:
     """Negotiate, lock the declaration, then play -- or stop cleanly if never agreed."""
     game = dict(sdk.game_config)  # type: ignore[attr-defined]
     timeout = float(game["network_and_league"]["response_timeout_sec"])
+    # The offer wait is PRE-game patience: at a role swap the opponent's runner may have
+    # spent its negotiate on the previous sub-game's audit window and need minutes to come
+    # back, so the caller passes its connect budget here. `response_timeout_sec` starts
+    # governing once play does — capping the wait at 30s ended the amireman smoke twice.
     agreement = negotiate_match(
         game=game, identity=identity, transport=transport, take_offer=take_offer,
-        clock=clock, sleep=sleep, timeout=timeout, poll_interval=poll_interval,
-        heartbeat=heartbeat, step_zero=step_zero,
+        clock=clock, sleep=sleep, timeout=max(timeout, offer_timeout or 0.0),
+        poll_interval=poll_interval, heartbeat=heartbeat, step_zero=step_zero,
     )
     if agreement is None:
         return MatchResult(None, None, None, None)
