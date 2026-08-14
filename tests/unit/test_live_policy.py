@@ -4,9 +4,11 @@ Until 2026-08-07 the served move was a documented placeholder — a legal STAY e
 turn, incapable of ever capturing. Each test pins one property of the replacement.
 """
 
+import functools
+
 from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
-from p2p_cop_agent.orchestration.live_policy import live_decide
+from p2p_cop_agent.orchestration.live_policy import chooser_for, live_decide
 from p2p_cop_agent.protocol.commit_reveal import TurnLedger
 
 BOARD = Board(grid_size=7, axis_start_index=0, axis_origin_corner="top-left")
@@ -106,6 +108,28 @@ def test_an_unparseable_grid_does_not_freeze_the_cop() -> None:
     decide = fresh(Coordinate(0, 0))
     moves = [decide(thief_message(step, {"nope": 1.0}))[0]["move"] for step in range(1, 7)]
     assert any(move != "MOVE:STAY" for move in moves)
+
+
+def test_chooser_for_selects_the_robust_aggregation() -> None:
+    """The private `robust[_x]` flag wraps the default in the plausible-set re-ranking."""
+    for name, aggregation in (("robust", "worst"), ("robust_expected", "expected"),
+                              ("robust_lcb", "lcb")):
+        chooser = chooser_for(name, GAME)
+        assert isinstance(chooser, functools.partial)
+        assert chooser.keywords["aggregation"] == aggregation
+
+
+def test_the_robust_flag_plays_a_legal_deterministic_developing_turn() -> None:
+    """The robust arm runs end to end over the live belief path and is reproducible; it
+    degrades to the incumbent under the delta belief the decode produces, so it must still
+    develop toward the trail rather than freeze."""
+    def run():
+        decide = live_decide(BOARD, Coordinate(0, 0), GAME, strategy="robust_worst")
+        return [decide(thief_message(step, {"6,6": 0.9}))[0]["position"]
+                for step in (1, 2, 3)]
+    first, second = run(), run()
+    assert first == second, "the robust arm is deterministic for replay and audit"
+    assert first[-1] != [0, 0], "it develops toward the trail, never stuck on the start"
 
 
 def test_the_amireman_profile_claims_the_post_move_cell_every_turn() -> None:

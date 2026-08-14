@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import sys
+from functools import partial
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -89,16 +90,19 @@ class ForeignTrace:
         return {"smell_grid": encode_scent(self.emitter.window(self.thief))}
 
 
-def live_stack(trace: ForeignTrace, board: Board, observation=observe, chooser=None):
+def live_stack(trace: ForeignTrace, board: Board, observation=observe, chooser=None,
+               *, wants_belief: bool = False):
     """The arm the wire actually serves: observe, aim, then the configured chooser.
 
     `chooser` defaults to the shipped `denial_turn_intent`; passing
-    `strategy.engine.engine_turn_intent` measures the search through the same live path
-    rather than through an arena that skips `patrol.aim`.
+    `strategy.engine.engine_turn_intent` measures the search through the same live path.
+    A `wants_belief` chooser (the Phase-B robust arm) is additionally handed the full
+    belief and its own carried reachable set -- the one arm that plans against the whole
+    plausible set rather than the argmax `target` that every other chooser receives.
     """
     choose = chooser or denial_turn_intent
     state = {"belief": Belief.uniform(board.grid_size, start=board.min_index),
-             "seen": None, "count": 0, "previous": None}
+             "seen": None, "count": 0, "previous": None, "reachable": None}
 
     def policy(cop):
         state["count"] += 1
@@ -108,13 +112,19 @@ def live_stack(trace: ForeignTrace, board: Board, observation=observe, chooser=N
             state["belief"], state["seen"] = fresh
         seen_turn = state["seen"][0] if state["seen"] else None
         target = aim(board, state["belief"], seen_turn, state["count"], cop.position)
-        intent = choose(board, cop.position, target, cop.barriers, state["previous"])
+        if wants_belief:
+            intent, state["reachable"] = choose(
+                board, cop.position, target, cop.barriers, state["previous"],
+                belief=state["belief"], reachable=state["reachable"])
+        else:
+            intent = choose(board, cop.position, target, cop.barriers, state["previous"])
         state["previous"] = cop.position if isinstance(intent, MoveIntent) else None
         return intent
     return policy
 
 
-def play_cell(emitter_name: str, thief_name: str, observation=observe, chooser=None) -> dict:
+def play_cell(emitter_name: str, thief_name: str, observation=observe, chooser=None,
+              *, wants_belief: bool = False) -> dict:
     """One trial: every perimeter opening, one emitter, one Thief archetype."""
     board = Board(CONFIG["board_and_agents"]["grid_size"],
                   CONFIG["board_and_agents"]["axis_start_index"],
@@ -126,8 +136,9 @@ def play_cell(emitter_name: str, thief_name: str, observation=observe, chooser=N
             continue
         config = config_with("board_and_agents", "cop_start", list(start))
         trace = ForeignTrace(config, THIEVES[thief_name], EMITTERS[emitter_name])
-        result = run_sub_game(config, live_stack(trace, board, observation, chooser),
-                              trace.thief_policy)
+        result = run_sub_game(
+            config, live_stack(trace, board, observation, chooser, wants_belief=wants_belief),
+            trace.thief_policy)
         captures += result.outcome is Outcome.CAPTURE
         turns += result.turns
     games = sum(1 for s in starts if list(s) != CONFIG["board_and_agents"]["thief_start"])
@@ -136,14 +147,26 @@ def play_cell(emitter_name: str, thief_name: str, observation=observe, chooser=N
             "mean_turns": round(turns / games, 2)}
 
 
+def _chooser(name: str):
+    """Resolve a CLI chooser name to `(callable, wants_belief)`; robust arms plan on a set."""
+    if name == "denial":
+        return denial_turn_intent, False
+    from p2p_cop_agent.strategy.robust_pursuit import robust_turn_intent  # noqa: PLC0415
+    return partial(robust_turn_intent, aggregation=name.removeprefix("robust_")), True
+
+
 def main() -> int:
     RESULTS.mkdir(exist_ok=True)
-    grid = {emitter: {thief: play_cell(emitter, thief) for thief in THIEVES}
+    name = sys.argv[1] if len(sys.argv) > 1 else "denial"
+    chooser, wants_belief = _chooser(name)
+    grid = {emitter: {thief: play_cell(emitter, thief, chooser=chooser,
+                                       wants_belief=wants_belief) for thief in THIEVES}
             for emitter in EMITTERS}
-    (RESULTS / "foreign_grid.json").write_text(
-        json.dumps({"emitters": grid}, indent=2, sort_keys=True) + "\n", "utf-8")
-    header = "  ".join(f"{name:>14s}" for name in THIEVES)
-    print(f"{'emitter':16s}{header}")
+    tag = "" if name == "denial" else f"_{name}"
+    (RESULTS / f"foreign_grid{tag}.json").write_text(
+        json.dumps({"chooser": name, "emitters": grid}, indent=2, sort_keys=True) + "\n",
+        "utf-8")
+    print(f"{'emitter':16s}" + "  ".join(f"{n:>14s}" for n in THIEVES) + f"   [{name}]")
     for emitter, row in grid.items():
         cells = "  ".join(f"{cell['captures']:>7d}/{cell['games']:<6d}"
                           for cell in row.values())

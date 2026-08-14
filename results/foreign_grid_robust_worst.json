@@ -1,0 +1,229 @@
+{
+  "chooser": "robust_worst",
+  "emitters": {
+    "clamped": {
+      "flee_deadend": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_greedy": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    },
+    "coarse": {
+      "flee_deadend": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_greedy": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    },
+    "flat": {
+      "flee_deadend": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_greedy": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    },
+    "ours": {
+      "flee_deadend": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_greedy": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    },
+    "reference_order": {
+      "flee_deadend": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_greedy": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    },
+    "saturating": {
+      "flee_deadend": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_greedy": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    },
+    "sparse": {
+      "flee_deadend": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_greedy": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "capture_rate": 0.7083,
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "capture_rate": 1.0,
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    }
+  }
+}
