@@ -1,0 +1,71 @@
+{
+  "arms": {
+    "contain_add": {
+      "flee_deadend": {
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_enclosure": {
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_greedy": {
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    },
+    "denial": {
+      "flee_deadend": {
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_enclosure": {
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_greedy": {
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 16.83
+      },
+      "flee_interior": {
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 22.83
+      },
+      "flee_smart": {
+        "captures": 17,
+        "games": 24,
+        "mean_turns": 28.38
+      },
+      "flee_territory": {
+        "captures": 24,
+        "games": 24,
+        "mean_turns": 2.5
+      }
+    }
+  },
+  "localization": "perfect",
+  "mode": "perfect",
+  "starts": 24
+}
