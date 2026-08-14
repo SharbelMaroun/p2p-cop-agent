@@ -1,0 +1,72 @@
+{
+  "arms": {
+    "denial": {
+      "flee_deadend": {
+        "capture_rate": 0.775,
+        "captures": 31,
+        "games": 40,
+        "mean_cop_score": 16.62,
+        "mean_turns": 28.32
+      },
+      "flee_enclosure": {
+        "capture_rate": 0.85,
+        "captures": 34,
+        "games": 40,
+        "mean_cop_score": 17.75,
+        "mean_turns": 24.32
+      },
+      "flee_greedy": {
+        "capture_rate": 1.0,
+        "captures": 40,
+        "games": 40,
+        "mean_cop_score": 20.0,
+        "mean_turns": 15.95
+      },
+      "flee_interior": {
+        "capture_rate": 0.85,
+        "captures": 34,
+        "games": 40,
+        "mean_cop_score": 17.75,
+        "mean_turns": 24.32
+      },
+      "flee_smart": {
+        "capture_rate": 0.775,
+        "captures": 31,
+        "games": 40,
+        "mean_cop_score": 16.62,
+        "mean_turns": 28.32
+      },
+      "flee_territory": {
+        "capture_rate": 1.0,
+        "captures": 40,
+        "games": 40,
+        "mean_cop_score": 20.0,
+        "mean_turns": 5.83
+      },
+      "random": {
+        "capture_rate": 1.0,
+        "captures": 40,
+        "games": 40,
+        "mean_cop_score": 20.0,
+        "mean_turns": 14.32
+      },
+      "stochastic_smart": {
+        "capture_rate": 0.85,
+        "captures": 34,
+        "games": 40,
+        "mean_cop_score": 17.75,
+        "mean_turns": 26.8
+      },
+      "stochastic_territory": {
+        "capture_rate": 1.0,
+        "captures": 40,
+        "games": 40,
+        "mean_cop_score": 20.0,
+        "mean_turns": 6.45
+      }
+    }
+  },
+  "grid_size": 7,
+  "seeds": 40,
+  "sweep_starts": true
+}

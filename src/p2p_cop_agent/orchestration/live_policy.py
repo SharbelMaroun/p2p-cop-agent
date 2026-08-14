@@ -1,14 +1,10 @@
 """The live Cop turn: belief-driven pursuit with barriers, on the wire (M6-21).
 
-**Until 2026-08-07 the served move was a documented M5 placeholder — a legal `STAY`
-every turn**, so every served match was a guaranteed survival for the opponent while
-the measured pursuit lived only in `scripts/`. This module is the seam `serve.py` said
-would replace it (M6-21); the placeholder is gone rather than kept as an option,
-because a policy that cannot win is a forfeit with extra steps.
+This module replaced the M5 placeholder that served a legal `STAY` every turn (a
+guaranteed opponent survival): a policy that cannot win is a forfeit with extra steps.
 
 It lives in `orchestration/`, not `adapters/`: the M6-18 privacy guard forbids the wire
-layers from importing the inference modules (`test_belief_privacy`), so a belief-driven
-policy in `adapters/` was refused structurally.
+layers from importing the inference modules (`test_belief_privacy`).
 
 Each turn, in order:
 
@@ -16,20 +12,15 @@ Each turn, in order:
    decode of the opponent's `smell_grid` (M6-24), fresh per observation and never
    Bayes-recursive; the prior survives only silent or malformed turns (M6-02c).
    Nothing there reads a true position `[AE-8]`.
-1b. **Sweep while blind (M6-27).** A flat belief's row-major argmax is the Cop's own
-   start cell, so aiming there answered `STAY` forever — 26 turns of it in the
-   `amireman` friendly. Never-observed, evidence-free and stale beliefs all take a
-   deterministic waypoint tour instead (`strategy.patrol`).
+1b. **Sweep while blind (M6-27).** A flat belief's argmax is the Cop's own start cell,
+   answering `STAY` forever; blind and stale beliefs sweep a waypoint tour (`patrol`).
 2. **Choose one legal intent** via the chooser `[strategy] name` selects — by default
    `strategy.denial.denial_turn_intent`, which denies the clearance core and then cuts
    each surviving orbit before handing over to the incumbent shrink stack: capture-move
    or trapping barrier, else squeeze, else the containment ratchet on the just-vacated
-   cell in a locked endgame, else the interception chase (M6-25: the flight-centroid
-   chase tied against edge oscillators and mirrored them to the horizon; the
-   summed-distance rank breaks the tie). `name = "engine"` selects the `M11-02`
-   alpha-beta search instead. One move *or* one barrier, never both (book §3.4).
-   (This step said `shrink.shrinking_turn_intent` until 2026-08-13, one release after
-   `denial` took over the call — the kind of drift `[strategy] name` also suffered.)
+   cell in a locked endgame, else the M6-25 interception chase. `name = "engine"` selects
+   the `M11-02` alpha-beta search; `name = "robust[_worst|_expected|_lcb]"` wraps the
+   default in the plausible-set re-ranking (Phase B). One move *or* barrier (book §3.4).
 3. **Declare and claim.** A placed barrier is disclosed truthfully in
    `barrier_placed` (rule: hiding one is forbidden), and landing on — or walling —
    the believed cell sends `capture_claim` for that cell: a claim is checked by the
@@ -63,10 +54,12 @@ from p2p_cop_agent.strategy.engine import engine_turn_intent
 from p2p_cop_agent.strategy.hints import hint_max_words
 from p2p_cop_agent.strategy.landmarks import place_for
 from p2p_cop_agent.strategy.patrol import aim
+from p2p_cop_agent.strategy.robust_pursuit import robust_turn_intent
 from p2p_cop_agent.strategy.scent_field import ScentField
 from p2p_cop_agent.strategy.verbal import generate_hint
 
 ENGINE_STRATEGY = "engine"
+ROBUST_PREFIX = "robust"
 DEFAULT_HORIZON = 35
 
 
@@ -80,6 +73,12 @@ def chooser_for(name: str, game: JsonObject):
     # that test silently patch nothing.
     if name == ENGINE_STRATEGY:
         return partial(engine_turn_intent, horizon=_horizon(game))
+    # `robust[_worst|_expected|_lcb]` wraps the default in the Phase-B plausible-set
+    # re-ranking; it consumes the belief (`wants_belief` in `live_decide`) and degrades to
+    # the incumbent when localization is exact, so the flag is safe to leave selectable.
+    if name.startswith(ROBUST_PREFIX):
+        return partial(robust_turn_intent, aggregation=name[len(ROBUST_PREFIX):].lstrip("_")
+                       or "worst")
     return denial_turn_intent
 
 
@@ -94,13 +93,13 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject,
                 *, claim_every_turn: bool = False, strategy: str = "") -> Decide:
     """Return the turn-loop `decide` playing the measured belief-pursuit stack.
 
-    State is closed over per call — position, barriers, belief, trail, and the turn
-    counter — so two matches in one process share nothing (rule 2), and identical
-    message sequences reproduce identical games (M6-03d): every component below is
+    State is closed over per call, so two matches in one process share nothing (rule 2)
+    and identical message sequences reproduce identical games (M6-03d): every component is
     deterministic and the belief tie-break is row-major.
     """
     quota = int(game["movement_and_barriers"]["max_barriers"])  # type: ignore[index,call-overload]
     choose = chooser_for(strategy, game)
+    wants_belief = strategy.startswith(ROBUST_PREFIX)
     trail = ScentField(board=board)
     state = {
         "cell": start,
@@ -109,6 +108,7 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject,
         "belief": Belief.uniform(board.grid_size, start=board.min_index),
         "count": 0,
         "seen": None,  # (turn, observed cells) — the decoder's previous observation
+        "reachable": None,  # the robust arm's motion-constrained plausible set, carried
     }
 
     def decide(incoming: JsonObject | None) -> tuple[JsonObject, JsonObject]:
@@ -129,8 +129,15 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject,
         # every on-board cell, keeps the sealed record truthful, and leaves all state
         # coherent, so the game continues and the audit still verifies.
         try:
-            chosen = choose(board, state["cell"], target,
-                            state["barriers"], state["previous"])
+            # The robust arm alone is handed the belief and carries its own
+            # motion-constrained plausible set turn to turn; every other chooser sees only
+            # the argmax `target` and returns a bare intent.
+            extra = ({"belief": state["belief"], "reachable": state["reachable"]}
+                     if wants_belief else {})
+            chosen = choose(board, state["cell"], target, state["barriers"],
+                            state["previous"], **extra)
+            if wants_belief:
+                chosen, state["reachable"] = chosen
             if isinstance(chosen, BarrierIntent):
                 state["barriers"], state["previous"] = (
                     state["barriers"].place_adjacent(board, state["cell"], chosen.cell), None)
