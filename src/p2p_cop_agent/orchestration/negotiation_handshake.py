@@ -115,13 +115,36 @@ def negotiate_match(
     if their_offer is None:
         return None
     agreed = _verify_incoming(their_offer, game)
-    opponent = their_offer.get("identity")
     return Agreement(
         agreed,
-        dict(opponent) if isinstance(opponent, Mapping) else {},
+        _opponent_identity(their_offer),
         our_offer,
         _review_attestation(their_offer.get("step_zero")),
     )
+
+
+def _opponent_identity(their_offer: Mapping[str, object]) -> JsonObject:
+    """Their identity block, backfilled from a top-level ``group_id`` (`C-047`).
+
+    Third site of the same defect, and the one that survived the first two fixes. The
+    schema stopped requiring ``identity`` and ``InboundPeer.negotiate`` learned to read the
+    group id from either home -- but this is a *different path*: `InboundPeer` serves the
+    inbound mailbox, while this runs on the outbound handshake and is what actually feeds
+    ``build_declaration``. A peer sending ``group_id`` top-level therefore got all the way
+    to `DeclarationError: each group needs a non-empty group_id`, one stage later and with
+    the negotiation already agreed.
+
+    The declaration genuinely needs a non-empty id per group, so the fix is to find the one
+    they sent rather than to relax that -- an anonymous group in a signed artifact would be
+    a real gap, unlike a missing wire member we had already agreed to tolerate.
+    """
+    block = their_offer.get("identity")
+    identity: JsonObject = dict(block) if isinstance(block, Mapping) else {}
+    if not identity.get("group_id"):
+        top_level = their_offer.get("group_id")
+        if isinstance(top_level, str) and top_level.strip():
+            identity["group_id"] = top_level
+    return identity
 
 
 def _send_offer(transport: object, offer: JsonObject) -> None:

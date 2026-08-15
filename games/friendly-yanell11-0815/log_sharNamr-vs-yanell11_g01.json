@@ -1,0 +1,81 @@
+{
+  "_schema": "game-log",
+  "game_id": "sharNamr-vs-yanell11",
+  "game_uid": "41cd0d7dc0f6bbcc0f305f051b9fbbfa",
+  "links": {
+    "config": "config_sharNamr-vs-yanell11_g01.json",
+    "log": "log_sharNamr-vs-yanell11_g01.json"
+  },
+  "mutual_agreement": {
+    "confirmed": true,
+    "opponent_group_id": "yanell11",
+    "sha256": "41cd0d7dc0f6bbcc0f305f051b9fbbfa69d463122053dc8062486a24dd1c5373"
+  },
+  "records": [
+    {
+      "commit": "18acf991017e3839e19137a62acd4ec357aa8f3bab3074a1c63317bb55e6aef7",
+      "hint": "heading toward the the north edge",
+      "intent": "truth",
+      "move": "MOVE:EAST",
+      "nonce": "e8cee921e22b7ef24e1da5725d00436f",
+      "payload": {
+        "barriers": [],
+        "hint": "heading toward the the north edge",
+        "intent": "truth",
+        "move": "MOVE:EAST",
+        "position": [
+          0,
+          1
+        ],
+        "state": "grid=7x7;self=[0, 1];barriers=[]",
+        "step": 1,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 1
+    },
+    {
+      "commit": "56a3b77c95e89e0ef4a875466eac80105a8bf96d89c76ef749ea5176cd070eca",
+      "hint": "way past the the north edge",
+      "intent": "bluff",
+      "move": "MOVE:EAST",
+      "nonce": "df994601ea64d044737381160e9079a2",
+      "payload": {
+        "barriers": [],
+        "hint": "way past the the north edge",
+        "intent": "bluff",
+        "move": "MOVE:EAST",
+        "position": [
+          0,
+          2
+        ],
+        "state": "grid=7x7;self=[0, 2];barriers=[]",
+        "step": 2,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 2
+    }
+  ],
+  "schema_version": "1.2",
+  "sub_game_number": 1,
+  "summary": {
+    "audit": {},
+    "duration_seconds": 0,
+    "ended_at": "2026-08-15T18:34:13.945462+00:00",
+    "github_commit": {
+      "sharNamr": "43bacfe580f5ef915db5a918f8bdb8fea4f810a6",
+      "yanell11": "unknown"
+    },
+    "group_id": "sharNamr",
+    "opponent_group_id": "yanell11",
+    "result": "technical_loss",
+    "role": "police",
+    "started_at": "2026-08-15T18:32:35.972084+00:00",
+    "steps": 2,
+    "sub_game_number": 1,
+    "timezone": "UTC",
+    "tokens_total": 0,
+    "winner_role": "none"
+  }
+}

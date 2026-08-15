@@ -15,6 +15,7 @@ import math
 import pytest
 
 from p2p_cop_agent.strategy.scent import (
+    CENTER_INTENSITY,
     DEFAULT_OUTER_RING_DELTA,
     DOCUMENTED_EMISSION,
     OUTER_RING_OFFSETS,
@@ -115,9 +116,18 @@ def test_decay_is_multiplicative_not_subtractive() -> None:
     assert decay(0.9) != pytest.approx(0.80)  # subtractive would give 0.80
 
 
-def test_decay_adds_new_emission_without_a_cap() -> None:
-    """U-031: the formula accumulates; no 0.9 cap is applied here."""
-    assert decay(0.9, 0.9) == pytest.approx(0.81 + 0.9)
+def test_decay_is_capped_at_the_centre_intensity() -> None:
+    """`U-031` CLOSED by `C-048`: the sum is clamped to the centre intensity.
+
+    This test asserted the opposite until 2026-08-15 -- `decay(0.9, 0.9) == 1.71`, with a
+    docstring noting U-031 was open. It passed continuously while the behaviour it pinned
+    put values above `0.9` on the wire, and group `yanell11`'s verifier read one and
+    declared the rule-23 model deviation that scores a game 0/0. The book declares tau
+    continuous in [0, 0.9]; a formula that exceeds its own stated range is the reading to
+    give up.
+    """
+    assert decay(0.9, 0.9) == pytest.approx(CENTER_INTENSITY)
+    assert decay(0.5, 0.2) == pytest.approx(0.45 + 0.2)  # below the cap, unchanged
 
 
 def test_a_never_visited_cell_stays_zero_and_is_clipped() -> None:

@@ -72,7 +72,15 @@ def scent_model_record(outer_ring: float = DEFAULT_OUTER_RING_DELTA) -> dict:
     """
     return {
         "model": "multiplicative-decay",
-        "update": "tau_next = max(0, (1 - decay_per_step) * tau + emission)",
+        # `C-048`: the clamp is IN the locked string, because rule 23 locks the formula and
+        # a peer that agrees this hash is agreeing to the ceiling too. Was
+        # `max(0, (1 - decay_per_step) * tau + emission)` until 2026-08-15, which let a
+        # re-emitted cell exceed the centre intensity -- `yanell11`'s verifier read 1.43 off
+        # our wire and declared the deviation rule 23 cancels a game for. Changing this
+        # string changes the published lock, which is correct: the physics really did change,
+        # and a lock that stayed still through a physics change would be the worse failure.
+        "update": "tau_next = min(max(0, (1 - decay_per_step) * tau + emission), "
+                  "center_intensity)",
         "center_intensity": CENTER_INTENSITY,
         "decay_per_step": DECAY_RATE,
         "field_size": FIELD_SIZE,

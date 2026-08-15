@@ -75,16 +75,44 @@ def test_neither_failure_type_inherits_the_other() -> None:
     assert not issubclass(TransportError, PeerRejectionError)
 
 
-def test_the_client_keeps_no_session_state_between_calls() -> None:
-    """__slots__ makes hidden per-turn state impossible, not merely absent."""
+def test_the_client_keeps_no_game_state_between_calls() -> None:
+    """`C-049`: the guarantee is about GAME state, and it survives session reuse.
+
+    This asserted `__slots__ == {"_target", "_timeout"}` until 2026-08-15, which pinned
+    the *implementation* of statelessness rather than the property, and so forbade reusing
+    the transport connection. That cost six HTTP requests per turn where one would do, and
+    stalled two live sub-games against a rate-limited opponent.
+
+    What must remain true is that no turn's game state reaches the next. The slots now
+    also hold a loop and a session — carrier objects that no `call_tool` reads — so the
+    test names the members and asserts the property that actually matters: every argument
+    is passed explicitly, and two identical calls are two independent deliveries.
+    """
     inboxes = PeerInboxes()
     client = FastMCPClient(build_server(inboxes))
     client.receive_turn(TURN)
     client.receive_turn(TURN | {"step": 2})
 
     assert not hasattr(client, "__dict__")
-    assert set(FastMCPClient.__slots__) == {"_target", "_timeout"}
+    # Carrier-only members; nothing here is game state.
+    assert set(FastMCPClient.__slots__) == {"_target", "_timeout", "_reuse", "_session"}
     assert inboxes.turns.qsize() == 2
+    delivered = [inboxes.turns.get(), inboxes.turns.get()]
+    assert [message["step"] for message in delivered] == [1, 2], "a call leaked into the next"
+
+
+def test_a_carrier_failure_drops_the_session_so_the_next_call_reconnects() -> None:
+    """`C-049`: reuse must not turn one broken connection into a dead sub-game.
+
+    `delivery.send_turn` retries a `TransportError`, and that retry is only worth having
+    if the next attempt gets a fresh session rather than the one that just failed.
+    """
+    import pytest
+
+    client = FastMCPClient("http://127.0.0.1:1/mcp", timeout=0.5)
+    with pytest.raises(TransportError):
+        client.receive_turn(TURN)
+    assert not client._session.live, "the failed session was kept for reuse"
 
 
 def test_only_the_adapters_package_imports_fastmcp() -> None:

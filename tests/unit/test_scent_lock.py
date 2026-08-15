@@ -25,7 +25,14 @@ from p2p_cop_agent.strategy.scent_lock import (
 )
 
 # The lock over the default model, reproduced independently by the Thief peer.
-AGREED_DEFAULT_LOCK = "e6aef0978ff91fe8aaf7d0a49d8bb839f03cd259a554e4251c182a20b02c6ea1"
+#
+# Changed 2026-08-15 by `C-048`, from `e6aef097...`. That is the point of the lock working:
+# the `update` string in the record now carries the upper clamp, so the physics really did
+# change and the published hash had to move with it. A lock that survived a change to the
+# formula it locks would be the more serious failure -- rule 23's sanction is for deviating
+# from the AGREED formula, so the hash has to be what tells a peer the formula moved.
+# Any peer we previously exchanged locks with must be re-agreed before play.
+AGREED_DEFAULT_LOCK = "c77a12609b9f1c3df90067ce166b6b0455c8343dba9d463b0e8e402f8469b34f"
 
 
 def test_the_record_describes_the_whole_model_not_just_the_constants() -> None:

@@ -39,7 +39,11 @@ def attach_consensus(
         return
     terms = terms_from_config(json.loads(Path(match_config_path).read_text("utf-8")))
     uid = derive_game_uid(terms, groups)
-    sha = consensus_sha(series_id, uid, result["sub_games"])
+    # `final_result` supplies the aggregate half of the reference preimage; `uid` is no
+    # longer hashed (the reference scope has no `game_uid`) but stays in the published
+    # `series_consensus` block, where the opponent's exchange reads it as the series
+    # identity. Hashing it was our own addition and is what `legacy_consensus_sha` keeps.
+    sha = consensus_sha(series_id, result["final_result"], result["sub_games"])
     result["series_consensus"] = {"game_id": series_id, "game_uid": uid,
                                   "consensus_sha": sha}
     # Their convention (2026-08-13 review): the aggregate's mutual_agreement.sha256

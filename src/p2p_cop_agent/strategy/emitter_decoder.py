@@ -33,7 +33,12 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 
-from p2p_cop_agent.strategy.scent import DECAY_RATE, DEFAULT_OUTER_RING_DELTA, emission_offsets
+from p2p_cop_agent.strategy.scent import (
+    CENTER_INTENSITY,
+    DECAY_RATE,
+    DEFAULT_OUTER_RING_DELTA,
+    emission_offsets,
+)
 
 Cell = tuple[int, int]
 
@@ -55,6 +60,34 @@ def residual(
     cells = set(now) | set(before or ())
     return {cell: now.get(cell, 0.0) - keep * (before or {}).get(cell, 0.0)
             for cell in cells}
+
+
+def informative(
+    now: Mapping[Cell, float],
+    before: Mapping[Cell, float] | None,
+    *,
+    cap: float = CENTER_INTENSITY,
+    tolerance: float = 1e-9,
+) -> set[Cell]:
+    """Cells whose residual still inverts the physics under the `C-048` clamp.
+
+    This decoder's premise was that the update never clips, so ``now − (1−ρ)·before``
+    recovers the stamp exactly. The upper clamp breaks that for **saturated** cells: the
+    discarded amount is unrecoverable, and the resulting gap punishes the true emitter
+    hardest, because its own cell is the one most likely to sit at the ceiling.
+
+    ``before == 0`` is kept: nothing could have been clipped, so a fresh centre stamp
+    reading the cap is legitimate and is the most informative cell in the window. With
+    ``before > 0`` the unclipped sum exceeded the stamp, so a reading of exactly the cap
+    is clipping or is indistinguishable from it, and the cell must not vote -- the same
+    "unobserved is not zero" rule the partial-window case already uses.
+    """
+    previous = before or {}
+    return {
+        cell for cell in (set(now) | set(previous))
+        if not (now.get(cell, 0.0) >= cap - tolerance
+                and previous.get(cell, 0.0) > tolerance)
+    }
 
 
 def match_error(
@@ -109,7 +142,11 @@ def emitter_likelihood(
     if not now:
         return dict.fromkeys(cells, 1.0)
     delta = residual(now, before)
-    trusted_cells = None if trusted is None else set(trusted)
+    # `C-048`: a saturated cell cannot be inverted, so it is excluded rather than scored as
+    # a mismatch. Intersected with any window restriction the caller supplied — both say
+    # the same thing, that the cell's residual is not computable.
+    usable = informative(now, before)
+    trusted_cells = usable if trusted is None else usable & set(trusted)
     stamp = emission_offsets(DEFAULT_OUTER_RING_DELTA)
     likelihood = {
         cell: exp(-match_error(delta, cell, grid_size=grid_size, start=start,

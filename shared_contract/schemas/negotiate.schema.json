@@ -1,12 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.13-proposed",
+  "x-contract-version": "0.2.15-proposed",
   "x-role-neutral": true,
   "x-compatibility-profile": "simulator-v3.0.0",
   "title": "simulator-v3.0.0 negotiate message",
   "description": "Public agreement message accepted by the simulator-v3.0.0 compatibility profile.",
   "type": "object",
-  "required": ["terms", "nonce", "signature", "identity"],
+  "required": ["terms", "nonce", "signature"],
+  "x-identity-policy": "`identity` is OPTIONAL on receive and always populated on send (`C-031`, `U-029`: populate ours, tolerate theirs). It was `required` here until 0.2.14-proposed, which contradicted that decision and made the tolerance unreachable: `InboundPeer.negotiate` validates before `verify_offer` runs, so a peer that carries its group id at the TOP LEVEL rather than inside `identity` -- which group `yanell11` does, and which the reference tolerates -- had its whole negotiate refused with `'identity' is a required property`. Cost a live friendly on 2026-08-15 (`C-047`). Third defect of this family after `C-033` (nonce length) and `C-037` (claim type): our validation stricter than the rule it enforced.",
   "additionalProperties": true,
   "properties": {
     "terms": {

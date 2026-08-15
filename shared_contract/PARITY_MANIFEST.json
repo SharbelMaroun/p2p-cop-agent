@@ -1,25 +1,25 @@
 {
-  "contract_version": "0.2.13-proposed",
+  "contract_version": "0.2.15-proposed",
   "files": [
     {
       "path": "CONTRACT_VERSION",
-      "sha256": "932a52f09ebf59ee2d8ba9c6f342224f2a82b31875a944e9951e82613c903ed3"
+      "sha256": "1852ae6a86799c0f1bfa104eafd9d1bcb403cb4ebe8ece049e8853aa5dd333d6"
     },
     {
       "path": "MATCH_CONFIGURATION.md",
-      "sha256": "32ebd3341752f8d0e1eb56252f91aa072d5f1a2e36c309b3005378e0dd2276f2"
+      "sha256": "93da5ae1d71f5c0909bad8562fd0e37e3d684f53bdd34fb5120a931227924685"
     },
     {
       "path": "PROTOCOL_PROFILE.md",
-      "sha256": "c8276a02a0d5ad9a57e1263f9469ffc0510f04ce3d38e675b0d8d7246ee56af6"
+      "sha256": "838ad5666ff6f38684042963b56fe2668d78b7425d6b402aed921a6cedc00384"
     },
     {
       "path": "README.md",
-      "sha256": "c14a8296918346b4530a563c10861794072f227ebcc79a17f2574d124ec05c1f"
+      "sha256": "d8c3d0d7272b177ebfe5ce394fa301ff6b0c79a8b0ba395b551053a3e00b5e4f"
     },
     {
       "path": "SHARED_RULES.md",
-      "sha256": "296921c15be9a0c6167da150f10a3fcf85549a2212e48c668e9e2962c294df32"
+      "sha256": "1d91b1031c0bf7f5ed89d83645be5bd0c93cf2b633184c43ab266df08aa76891"
     },
     {
       "path": "fixtures/audit_payload.invalid.json",
@@ -63,7 +63,7 @@
     },
     {
       "path": "fixtures/negotiation_terms.projection.json",
-      "sha256": "4aafd170eb09b2c76606e4983bf28d6fc46a2144e41394c2e93d36f8b9d7dd53"
+      "sha256": "a4b83ce59fdf026bf50865d9e1bcfbce16b09d674e238e507622a0f5dcf8b153"
     },
     {
       "path": "fixtures/per_subgame_config.invalid.json",
@@ -95,55 +95,55 @@
     },
     {
       "path": "schemas/audit-payload.schema.json",
-      "sha256": "c108671043f139ce16a061f66703acf3e2745bbcdc4b691a612d5762b6814da1"
+      "sha256": "9d135c0858ee85e90040f4847c2fef3340680d370ca740325349b147336494ba"
     },
     {
       "path": "schemas/audit-record.schema.json",
-      "sha256": "f853805064188fc0995a3ea22c79dc5f32ccbbd8a4a100472234d9856a8e914d"
+      "sha256": "016eaa9ce00c62613baf189c5804b6b3068b839f53f09870a68199a2398716be"
     },
     {
       "path": "schemas/control-message.schema.json",
-      "sha256": "0cd93bdde1ef8b4e19f232283f3d3de373529254c073c0abb9190d69a4584596"
+      "sha256": "07ee5000a27038a05cdb4efcac802496d4b9c3d3388e6eaf57593a5912f656e6"
     },
     {
       "path": "schemas/declaration.schema.json",
-      "sha256": "2490253b7d6b11f46d7fa7b0349ceabdaaed0f5eeceefeb384dac61a1cfaf4a5"
+      "sha256": "ed8e137e180ec5c0ead75a4f70d184cf1ce2ae102d769e3aa367119780518c44"
     },
     {
       "path": "schemas/final-result.schema.json",
-      "sha256": "42e98a057fdd5fd5b79f8d7218d874c01a7ace0e6005f385dd40179e78757f3e"
+      "sha256": "1d61de89a05344cc5651548c68a883955be7d725b6a2410eb9302719e4e848f3"
     },
     {
       "path": "schemas/game-log.schema.json",
-      "sha256": "45d1a0cf080fafdc3d470adc3313189f9dbfb46c52ce40dcc5a868952c513cab"
+      "sha256": "221d52e43ff76e43a7df964cf1334513ad4a1f6220eb7e581696ae8d71e95e1b"
     },
     {
       "path": "schemas/match-config.schema.json",
-      "sha256": "e53acf6e82aca2121a30381f341ccb5c03a739a76fb11a83086b8b1e481ea6bc"
+      "sha256": "656e250f84ca20efbeacb4799e5e33aed476de4ad8432ce0ec45fb699b628442"
     },
     {
       "path": "schemas/negotiate.schema.json",
-      "sha256": "3a9e91f1fa83454025d4519850d4b58d0c323f34b9484d8d23a9bcd322e3ec79"
+      "sha256": "3c6ac1ad84ee336dad1dfa8dd9298695bcf43516687843044e08886e121c7d23"
     },
     {
       "path": "schemas/per-subgame-config.schema.json",
-      "sha256": "d1e4b582c1a4a050358feae37f7bc701df521e63aaa2ea0a43da37d838a7771d"
+      "sha256": "b46a33b891f47e199aa5d9f33268e1b4a11bd7c2eb00e337432d6c80d2294f94"
     },
     {
       "path": "schemas/tool-response.schema.json",
-      "sha256": "16fa18a6886bc89a3a9ba747ce0bfc7cde3bdfeea2881244ab4ea280c1668044"
+      "sha256": "62a99fca43fb2b55383d5f387f7b142fd2134810840df3f696f10d9f38b0c994"
     },
     {
       "path": "schemas/turn-message.schema.json",
-      "sha256": "b0c6434d5b46b2ce97bb24f4f401e526059a9ea852e931d7a937e7355ef0913c"
+      "sha256": "5a2677d62e1df4a1b309da5af48bdd3960bfc7615bdcaf5fc6351ec01b09bd17"
     },
     {
       "path": "vectors/config-sha256.vectors.json",
-      "sha256": "5effe76999032c6666ce8f5c581e843ad6afd288ecb891dad51e964fa134b3ab"
+      "sha256": "540a229b7273f442ee6fbaaa813f3d7778c59720316b2399bcc903acda3cbf7a"
     },
     {
       "path": "vectors/move-commit.vectors.json",
-      "sha256": "1cf30482d1c73e831a7b35f99e79f7e2a03ab0835f227673bb13a190dca0f07e"
+      "sha256": "d534e81f145a74becbab8168657dda832594291c7bf86285e6f9a42929311baf"
     },
     {
       "path": "vectors/simulator-v3.0.0-commit.golden.json",

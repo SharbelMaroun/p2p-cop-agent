@@ -110,15 +110,31 @@ def emission_offsets(
 
 
 def decay(tau: float, delta_tau: float = 0.0, rho: float = DECAY_RATE) -> float:
-    """One update: ``τ(t+1) = max(0, (1-ρ)·τ + Δτ)`` (M6-01b, M6-01d).
+    """One update: ``τ(t+1) = clamp((1-ρ)·τ + Δτ, 0, CENTER_INTENSITY)`` (M6-01b, M6-01d).
 
     Multiplicative, never subtractive (`C-009`): at ``ρ=0.10`` the retained fraction
     is ``0.90·τ``, not ``τ − 0.10``. A never-visited, never-emitting cell stays ``0``
     -- absence of information, clipped non-negative. The book mandates this runs once
-    per full turn, after both sides act, never per half-turn. No re-emission cap is
-    applied (U-031).
+    per full turn, after both sides act, never per half-turn.
+
+    **The UPPER clamp closes `U-031`, and it was added after the open question cost a
+    live sub-game (`C-048`).** The book's printed formula shows only ``max(0, ...)``, so
+    this repository applied no cap and a cell that was already scented and then emitted
+    on again exceeded the centre intensity. Playing group `yanell11` on 2026-08-15, our
+    Police moved EAST twice and cell ``(0,1)`` reached ``0.9·0.62 + 0.9 ≈ 1.46``; their
+    verifier read the published ``smell_grid``, judged it a deviation from the locked
+    model, and declared a technical loss -- which Appendix E rule 23 supports, since its
+    sanction for deviating from the agreed emission formula is that the game is cancelled.
+    Sub-games 1 and 2 both scored 0/0.
+
+    The clamp is the book's own, not an adoption from a peer: chapter 4 declares τ a
+    continuous value in ``[0, 0.9]``, and a value above ``CENTER_INTENSITY`` contradicts
+    that declaration while the printed ``max(0, ...)`` merely fails to mention it. Where a
+    formula and a stated range disagree, the range is the tighter claim and the safer one
+    -- an emission that never exceeds the centre cannot be refused by a peer that permits
+    it, while the converse is exactly what happened. The reference does the same.
     """
-    return max(0.0, (1.0 - rho) * tau + delta_tau)
+    return min(max(0.0, (1.0 - rho) * tau + delta_tau), CENTER_INTENSITY)
 
 
 def emission_field(

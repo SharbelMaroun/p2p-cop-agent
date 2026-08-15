@@ -167,21 +167,14 @@ def serve_match(
         )
         print(f"opponent audit {'received' if audited else 'did not arrive in the window'}")
     if artifacts_dir is not None and result.played and result.outcome.audit:
-        from p2p_cop_agent.adapters.match_artifacts import write_match_log  # noqa: PLC0415
+        from p2p_cop_agent.adapters.match_artifacts import persist_match  # noqa: PLC0415
 
-        opponent = result.agreement.opponent_identity or {}
-        write_match_log(
-            artifacts_dir, game_id=game_id, game_uid=sdk.config_sha256[:32],
-            sub_game=sub_game, group_id=str(identity.get("group_id", "unknown")),
-            opponent_group_id=str(opponent.get("group_id", "unknown")),
+        persist_match(
+            artifacts_dir, game_id=game_id, sub_game=sub_game, identity=identity,
+            opponent=result.agreement.opponent_identity or {},
             config_sha256=sdk.config_sha256, outcome=result.outcome.outcome,
             steps=result.outcome.steps, started_at=started_at,
-            audit=result.outcome.audit,
-            # Rule 53 per game, per team (inst/:1295): ours from the running tree,
-            # theirs from the negotiation identity (C-038's member, when sent).
-            github_commit={
-                str(side.get("group_id", "unknown")): str(side.get("git_commit_hash", "unknown"))
-                for side in (identity, opponent)
-            },
+            audit=result.outcome.audit, reason=result.outcome.reason,
+            opponent_audits=getattr(peer, "opponent_audits", []),
         )
     return result

@@ -17,7 +17,7 @@ import json
 
 import pytest
 
-from p2p_cop_agent.strategy.scent import DECAY_RATE, DOCUMENTED_EMISSION
+from p2p_cop_agent.strategy.scent import CENTER_INTENSITY, DECAY_RATE, DOCUMENTED_EMISSION
 from p2p_cop_agent.strategy.scent_lock import scent_model_hash, scent_model_record
 from scripts.export_scent_parity import PLACES, WALK, bundle, main, trace
 
@@ -52,16 +52,31 @@ def test_the_trace_separates_decay_then_add_from_add_then_decay() -> None:
     not obvious even to someone holding the formula, the constants and the walk.
     """
     tau = 0.0
-    for row, col in WALK:  # decay first, then add: the book's order
+    for row, col in WALK:  # decay first, then add, then clamp: the book's order (`C-048`)
         delta = DOCUMENTED_EMISSION.get((WALK[0][0] - row, WALK[0][1] - col), 0.0)
-        tau = max(0.0, (1.0 - DECAY_RATE) * tau + delta)
+        tau = min(max(0.0, (1.0 - DECAY_RATE) * tau + delta), CENTER_INTENSITY)
 
     steps = trace()
     revisited = f"{WALK[0][0]},{WALK[0][1]}"
     fresh, after = steps[0]["field"][revisited], steps[-1]["field"][revisited]
     assert fresh == 0.9, "a cell just stepped on reads the full centre intensity"
     assert after == pytest.approx(tau, abs=10 ** -PLACES)
-    assert after > fresh, "re-emission adds to what decayed; it does not replace it"
+    # The revisited centre used to end ABOVE `fresh`, and asserting that was how this test
+    # showed re-emission adds rather than replaces. Under the `C-048` clamp it saturates at
+    # the centre intensity instead, so that cell no longer discriminates and the assertion
+    # would now pass for the wrong reason under either evaluation order.
+    assert after == pytest.approx(CENTER_INTENSITY), "the revisited cell saturates"
+    # The orderings still separate, just not at the ceiling: a cell that only ever receives
+    # off-centre deposits stays below the cap, where decay-then-add and add-then-decay give
+    # different numbers. Asserted on the first cell of the trace that is still below it, so
+    # the test keeps the discriminating power the clamp took away from the centre.
+    below = {cell: value for cell, value in steps[-1]["field"].items()
+             if value < CENTER_INTENSITY - 10 ** -PLACES}
+    assert below, "every published cell saturated; this trace can no longer separate orders"
+    cell, decayed_then_added = next(iter(sorted(below.items())))
+    added_then_decayed = decayed_then_added * (1.0 - DECAY_RATE)
+    assert decayed_then_added != pytest.approx(added_then_decayed, abs=10 ** -PLACES), (
+        f"cell {cell} reads the same under both orders; the trace proves nothing there")
 
 
 def test_the_whole_board_is_published_not_just_a_window() -> None:

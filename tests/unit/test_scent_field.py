@@ -36,8 +36,12 @@ def test_standing_still_deposits_exactly_as_moving_does() -> None:
     stayed.advance(Coordinate(3, 3))  # a STAY: the same cell twice
     moved.advance(Coordinate(3, 2))   # arrives from the west
     moved.advance(Coordinate(3, 3))
-    assert stayed.intensity((3, 3)) > CENTER_INTENSITY  # a second deposit accumulates
-    assert moved.intensity((3, 3)) > CENTER_INTENSITY   # and so does arriving
+    # `C-048`: both reach the ceiling rather than climbing past it. The point of the test is
+    # unchanged -- a STAY deposits exactly as an arrival does -- and it is now asserted as an
+    # equality, which is strictly the stronger claim the docstring was always making.
+    assert stayed.intensity((3, 3)) == pytest.approx(CENTER_INTENSITY)
+    assert moved.intensity((3, 3)) == pytest.approx(CENTER_INTENSITY)
+    assert stayed.intensity((3, 3)) == pytest.approx(moved.intensity((3, 3)))
 
 
 def test_a_thief_cannot_hide_by_standing_still() -> None:
@@ -115,16 +119,19 @@ def test_the_window_reports_silent_cells_rather_than_omitting_them() -> None:
     assert set(window.values()) == {0.0}
 
 
-def test_accumulation_is_bounded_by_the_models_saturation_point() -> None:
-    """`U-031` stays open, but the additive formula cannot climb without limit.
+def test_accumulation_is_bounded_by_the_centre_intensity() -> None:
+    """`U-031` CLOSED by `C-048`: the ceiling is `0.9`, not the fixed point.
 
-    An agent that never moves approaches the fixed point of `t = (1-p)t + 0.9`, which
-    is `0.9/0.10 = 9.0`. This is what the wire parser must tolerate.
+    This asserted `CENTER_INTENSITY < intensity <= 9.0` until 2026-08-15 -- the fixed point
+    of the uncapped recurrence `t = (1-p)t + 0.9`. Nine times the intensity the book
+    declares tau can hold, published on the wire every turn, and the docstring called it
+    "what the wire parser must tolerate" rather than treating it as the contradiction it
+    was. Group `yanell11` did not tolerate it, and rule 23 backs them.
     """
     trail = _field()
     for _ in range(400):
         trail.advance(Coordinate(3, 3))
-    assert CENTER_INTENSITY < trail.intensity((3, 3)) <= 9.0
+    assert trail.intensity((3, 3)) == pytest.approx(CENTER_INTENSITY)
 
 
 def test_an_off_board_position_is_refused() -> None:

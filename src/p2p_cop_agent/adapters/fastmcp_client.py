@@ -13,9 +13,26 @@ message; that is a game-level outcome under ADR-002 and retrying it is wrong.
 Collapsing the two would make a peer that legitimately refuses look like a flaky
 network, which is exactly the confusion Appendix E rules 6/7 warn about.
 
-**Stateless by construction (M5-03i).** Every call opens and closes its own
-session, and ``__slots__`` leaves nowhere for per-turn state to hide, so a turn
-cannot leak context into the next one.
+**One session per sub-game, not per call (`C-049`).** Until 2026-08-15 every call
+opened and closed its own MCP session, on the stated rationale that "a turn cannot leak
+context into the next one" (M5-03i). Group `yanell11` measured what that costs from the
+only side that can see it -- their server log -- and it is **six HTTP requests per turn**
+(POST initialize, POST 202, GET stream, POST call, POST, DELETE) where one would do.
+Against an opponent behind a rate-limited tunnel that is fatal *deep* in a game, once the
+per-minute cap is reached: two of our sub-games stalled at steps 20 and 30 with our calls
+simply ceasing to arrive, which is exactly what a 502 above the cap looks like from here.
+
+**The old rationale conflated two things.** The guarantee worth having is that no *game*
+state crosses a turn boundary, and that comes from ``__slots__`` holding only the target
+and timeout plus every ``call_tool`` taking explicit arguments -- none of which a reused
+*transport* connection touches. We were paying six times the request rate for a property
+we already had by construction.
+
+**A dropped session is not a lost turn.** Any carrier failure closes the session and
+clears it, so the next call reconnects; combined with `orchestration/delivery.py`'s
+bounded re-send, a reconnect costs one retry rather than the sub-game. ``close()`` ends
+the session deliberately at settlement, and ``reuse_session=False`` restores the old
+behaviour for tests that need a cold connection each time.
 """
 
 from __future__ import annotations
@@ -25,6 +42,7 @@ from collections.abc import Mapping
 
 from fastmcp import Client
 
+from p2p_cop_agent.adapters.mcp_session import ReusableSession
 from p2p_cop_agent.peer import TOOL_ARGUMENTS
 from p2p_cop_agent.protocol import signals_refusal
 from p2p_cop_agent.shared.config import JsonObject
@@ -51,11 +69,20 @@ class FastMCPClient:
     caller found it.
     """
 
-    __slots__ = ("_target", "_timeout")
+    __slots__ = ("_target", "_timeout", "_reuse", "_session")
 
-    def __init__(self, target: object, *, timeout: float | None = None) -> None:
+    def __init__(self, target: object, *, timeout: float | None = None,
+                 reuse_session: bool = True) -> None:
         self._target = target
         self._timeout = timeout
+        self._reuse = reuse_session
+        # Lifetime lives in `mcp_session.ReusableSession`; this class keeps the tool
+        # surface. Constructing one opens nothing.
+        self._session = ReusableSession(target)
+
+    def close(self) -> None:
+        """End the session deliberately (settlement). Safe to call repeatedly."""
+        self._session.close()
 
     # --- the four Option-B tools --------------------------------------------
 
@@ -91,8 +118,13 @@ class FastMCPClient:
 
     def _exchange(self, tool: str, arguments: JsonObject) -> object:
         """Run one request/response, mapping every carrier failure to a fault."""
+        if not self._reuse:
+            try:
+                return asyncio.run(self._invoke(tool, arguments))
+            except Exception as exc:  # noqa: BLE001 - any carrier failure is one fault
+                raise TransportError(f"{tool} failed in transport: {exc}") from exc
         try:
-            return asyncio.run(self._invoke(tool, arguments))
+            return self._session.call(tool, arguments, self._timeout)
         except Exception as exc:  # noqa: BLE001 - any carrier failure is one fault
             raise TransportError(f"{tool} failed in transport: {exc}") from exc
 

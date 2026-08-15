@@ -141,4 +141,9 @@ def _serve(args: argparse.Namespace) -> int:
         print("no match: the opponent did not come up or did not agree in time")
         return 1
     print(f"match outcome: {result.outcome.outcome.name} after {result.outcome.steps} step(s)")
+    # `C-050`: print the cause too. `run_series.py` captures stdout and shows only this
+    # tail, so a sub-game that ENDS but ends badly was previously unexplainable after the
+    # fact -- which is exactly what happened twice against `yanell11` on 2026-08-15.
+    if result.outcome.reason:
+        print(f"  reason: {result.outcome.reason}")
     return 0

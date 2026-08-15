@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "x-contract-version": "0.2.13-proposed",
+  "x-contract-version": "0.2.15-proposed",
   "x-role-neutral": true,
   "x-compatibility-profile": "simulator-v3.0.0",
   "title": "simulator-v3.0.0 AuditPayload",
@@ -49,11 +49,27 @@
       }
     },
     "result_claim": {
-      "enum": [
-        "capture",
-        "survival",
-        "timeout",
-        "series_consensus"
+      "description": "The sender's asserted outcome. Either one of our own enum strings, or a STRUCTURED claim carrying a non-empty `type` — group yanell11 send {type, violator, how}. Tolerated on receive since 0.2.15-proposed (C-048), never emitted: refusing the object form meant rejecting the very message that explained why a peer was refusing us, so our report and theirs then disagreed and rule 35 scored the conflict 0/0 on top of the original dispute. A claim of any shape is an assertion judged on evidence, never believed.",
+      "oneOf": [
+        {
+          "enum": [
+            "capture",
+            "survival",
+            "timeout",
+            "series_consensus"
+          ]
+        },
+        {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": true,
+          "properties": {
+            "type": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
       ]
     },
     "consensus_sha": {

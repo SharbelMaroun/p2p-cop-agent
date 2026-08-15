@@ -15,7 +15,7 @@ valid schema, and the audit exists to catch false records, including ours.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -25,6 +25,53 @@ from p2p_cop_agent.reporting.naming import log_filename
 
 # Outcome name -> the role the scoring table pays for it; a technical loss pays no one.
 WINNER_BY_OUTCOME = {"CAPTURE": "police", "SURVIVAL": "thief"}
+
+
+def persist_match(
+    directory: Path,
+    *,
+    game_id: str,
+    sub_game: int,
+    identity: Mapping[str, object],
+    opponent: Mapping[str, object],
+    config_sha256: str,
+    outcome: object,
+    steps: int,
+    started_at: str,
+    audit: Mapping[str, object],
+    reason: str,
+    opponent_audits: Sequence[dict],
+) -> None:
+    """Write everything one finished sub-game leaves behind (`C-051`).
+
+    Extracted from `serve.py` at a real seam: playing a match and recording what it
+    produced are different jobs, and the recording half grew a second artifact when the
+    opponent's verified audit stopped being thrown away. Keeping both writes together
+    also makes the pairing obvious — our sealed log, and the evidence they staked their
+    commitments on — which is the pairing a dispute is settled from.
+    """
+    from p2p_cop_agent.adapters.opponent_audit import write_opponent_audit  # noqa: PLC0415
+
+    write_match_log(
+        directory, game_id=game_id, game_uid=config_sha256[:32], sub_game=sub_game,
+        group_id=str(identity.get("group_id", "unknown")),
+        opponent_group_id=str(opponent.get("group_id", "unknown")),
+        config_sha256=config_sha256, outcome=outcome, steps=steps,
+        started_at=started_at, audit=audit,
+        # Rule 53 per game, per team (inst/:1295): ours from the running tree, theirs
+        # from the negotiation identity (C-038's member, when sent).
+        github_commit={
+            str(side.get("group_id", "unknown")): str(side.get("git_commit_hash", "unknown"))
+            for side in (identity, opponent)
+        },
+        reason=reason,
+    )
+    written = write_opponent_audit(
+        directory, game_id=game_id, sub_game=sub_game, audits=opponent_audits,
+        opponent_group_id=str(opponent.get("group_id", "")),
+    )
+    if written is not None:
+        print(f"opponent audit retained: {written.name}")
 
 
 def write_match_log(
@@ -41,8 +88,19 @@ def write_match_log(
     started_at: str,
     audit: Mapping[str, object],
     github_commit: Mapping[str, str] | None = None,
+    reason: str = "",
 ) -> Path:
-    """Assemble in-play records from the audit, reveal them, and write the log."""
+    """Assemble in-play records from the audit, reveal them, and write the log.
+
+    ``reason`` is ``SubGameOutcome.reason`` -- the text of whatever ended the sub-game
+    (`C-050`). It was computed all along and thrown away here, so a log said
+    ``technical_loss`` and never why. Two sub-games against `yanell11` on 2026-08-15
+    ended that way, and diagnosing them cost a whole series and produced a wrong
+    attribution: our wire recorder logs inbound only, so "their turn arrived, then
+    silence" was read as *them* stopping when it was equally consistent with *us*
+    stopping -- which is what had happened. The opponent's server log settled it, and
+    ours could not. A recorded outcome without its cause is an outcome nobody can act on.
+    """
     identity = MatchIdentity(game_id, game_uid)
     # Turn records only: the step-0 attestation seals in the same ledger but is its
     # own artifact, not a move. Older payloads carry no `step` member (the ledger
@@ -73,6 +131,10 @@ def write_match_log(
         # The template requires the key (source 3); reconciliation fills it after the
         # cross-audit, and an empty object is honest before that has run.
         "audit": {},
+        # `C-050`: why the sub-game ended. Always present so its ABSENCE never has to be
+        # interpreted; empty on a clean capture or survival, where the result is the
+        # whole story, and populated on anything else.
+        "result_reason": reason,
     }
     log = build_log(identity=identity, sub_game=sub_game, records=in_play, summary=summary)
     revealed = reveal_log(
