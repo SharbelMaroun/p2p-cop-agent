@@ -185,7 +185,10 @@ def live_decide(board: Board, start: Coordinate, game: JsonObject,
         }
         public: JsonObject = {
             "hint": hint.text,
-            "smell_grid": encode_scent(trail.window(state["cell"])),
+            # `C-052`: the whole accumulated trail, as the reference transmits, not a 5x5
+            # window. The window was a deviation that also made our field harder for an
+            # opponent to invert than the reference shape it was imitating.
+            "smell_grid": encode_scent(trail.snapshot()),
             "timestamp": now_iso(),
         }
         if barrier_placed is not None:

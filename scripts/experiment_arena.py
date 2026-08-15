@@ -81,7 +81,7 @@ def _belief(trace: Trace, _rng: random.Random):
     size = trace.board.grid_size
 
     def policy(cop):
-        observed = trace.field.window(trace.thief) if trace.thief is not None else {}
+        observed = trace.field.snapshot() if trace.thief is not None else {}
         if not observed:
             return Action.STAY
         belief = Belief.uniform(size).updated(scent_likelihood(observed, size))

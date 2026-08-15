@@ -9,7 +9,8 @@ deferred.
   and cannot be replaced by a verbal claim.
 - The emission/decay model is agreed and cryptographically locked before play.
 - Book Ch. 4 defines the multiplicative update
-  `τᵢⱼ(t+1) = max(0, (1-ρ)·τᵢⱼ(t) + Δτᵢⱼ)`.
+  `τᵢⱼ(t+1) = clamp(0, (1-ρ)·τᵢⱼ(t) + Δτᵢⱼ, 0.9)` — the printed `max(0, …)` plus the upper
+  bound chapter 4 states separately when it declares τ continuous in `[0, 0.9]` (`C-048`).
 - Fixed values are center intensity `0.9`, decay `ρ=0.10`, and a 5×5 field.
 - The Cop maintains only its local belief about the Thief; it never reads Thief
   private state.
@@ -51,7 +52,7 @@ The whole model is canonicalised and SHA-256 locked (`strategy/scent_lock.py`):
 
 ```text
 model                                = "multiplicative-decay"
-update                               = "tau_next = max(0, (1 - decay_per_step) * tau + emission)"
+update                               = "tau_next = min(max(0, (1 - decay_per_step) * tau + emission), center_intensity)"
 center_intensity                     = 0.9
 decay_per_step                       = 0.10
 field_size                           = 5
@@ -69,7 +70,7 @@ is refused. The reference publishes none — it folds pheromone terms into `conf
 never send, and rule 23 sanctions a *deviation from the formula*, not a silence. This is
 the same `U-029`/`C-031` rule already settled for `config_sha256`.
 
-Its digest `e6aef0978ff91fe8aaf7d0a49d8bb839f03cd259a554e4251c182a20b02c6ea1` is
+Its digest `c77a12609b9f1c3df90067ce166b6b0455c8343dba9d463b0e8e402f8469b34f` is
 reproduced exactly by the independently written companion Thief peer, which is the only
 real evidence that locking a model achieves anything.
 
@@ -182,16 +183,27 @@ limit. A corrupt grid **raises** rather than degrading to empty — scent is the
 channel that cannot be faked, so silently reading a corrupt one as "no evidence" would
 discard the strongest signal available.
 
-**The saturation bound is derived, not chosen.** An earlier parser capped intensity at
-the centre intensity `0.9`. That is wrong and would have rejected *our own* emissions:
-the update is additive, so an agent standing still accumulates, and a two-turn trail
-already reaches `1.458`. The real ceiling is the fixed point of `τ = (1−ρ)τ + Δτ`, i.e.
-`Δτ/ρ = 9.0`. `U-031` — whether re-emission should instead clamp at `0.9` — remains
-open, and the parser deliberately does **not** assume the clamp, because assuming it
-would refuse a peer following the formula as written.
+**The saturation bound, and how this paragraph was wrong (`C-048`).** It used to argue that
+capping intensity at `0.9` "is wrong and would have rejected *our own* emissions", citing a
+two-turn trail reaching `1.458` and deriving a real ceiling of `Δτ/ρ = 9.0`. Every number in
+that argument was correct and the conclusion was backwards: a peer refused us on 2026-08-15
+for publishing `1.43` at exactly such a cell, and Appendix E rule 23 backs them — chapter 4
+declares τ continuous in `[0, 0.9]`, so a value above the centre intensity contradicts the
+model's own stated range. `U-031` is **CLOSED**: the update clamps.
 
-**Cross-peer note.** The Cop sends the full window including silent cells (matching the
-reference); the companion Thief sends a sparse map with zeros omitted. Both peers parse
+What the old paragraph got right is worth keeping. An agent standing still *does* accumulate
+under the printed formula, and unclamped it converges to `9.0`. That is the reason the clamp
+is needed, not a reason to refuse it — the argument inverted itself by treating our own
+emissions as the thing to protect rather than the thing to check. The **parser** stays
+tolerant on receive: a peer that publishes above the ceiling is refused by its own declared
+model, not by our reading of it.
+
+**Cross-peer note (corrected `C-052`).** The Cop sends the whole accumulated trail, which is
+what the reference transmits — `Trail.full_turn` decays the persistent field in place and
+`snapshot()` returns every cell still carrying something. It sent a 5×5 *window* until
+2026-08-16, described here as "matching the reference", which it did not: `smell_grid_size`
+sizes the emission kernel, not the transmitted dict. The companion Thief sends a sparse map
+with zeros omitted. Both peers parse
 both forms — verified by round-tripping each encoder through the other's parser on
 2026-08-06 — because an absent cell and a zero cell mean the same thing. The divergence
 is stylistic and is recorded rather than churned.

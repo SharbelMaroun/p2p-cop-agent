@@ -91,12 +91,34 @@ class ScentField:
                 advanced[cell] = value
         self.intensities = advanced
 
+    def snapshot(self) -> dict[Cell, float]:
+        """The whole accumulated trail -- **what actually goes on the wire** (`C-052`).
+
+        The reference transmits its persistent field, not a slice of it: `Trail.full_turn`
+        merges this turn's stamp into `self.field` and decays it in place, and `snapshot`
+        returns "only cells that still carry something", up to the whole board. Verified in
+        `sparring/rules/scent.py` and `sparring/turnloop.py`, which sends
+        ``smell_grid=self.engine.trail.full_turn(self.engine.position)``. `smell_grid_size`
+        parameterises the **emission kernel** (`Trail(..., field_size=cfg.smell_grid_size)`),
+        not the size of the transmitted dict.
+
+        **We transmitted a 5x5 window until 2026-08-15, and that was the deviation.** Group
+        `yanell11` pointed at the reference source rather than arguing it. Two costs, both
+        ours: it departs from the Option-B profile we adopted, and it is *harder for an
+        opponent to invert than what the reference sends*, so we were handicapping their
+        belief as well as failing to conform. Measured on our own decoder against a
+        reference-generated trail: **16/16 turns localised from the trail, 12/16 from the
+        window** -- a window is 25 cells, the `C-048` clamp saturates half of them, and ~12
+        surviving constraints is too few. A trail carries 46.
+        """
+        return dict(self.intensities)
+
     def window(self, centre: Coordinate, size: int = FIELD_SIZE) -> dict[Cell, float]:
         """Return the ``size``×``size`` view of the trail around ``centre``.
 
-        This is what goes on the wire: the reference transmits a local window of its own
-        accumulated field, not the whole board and not the bare one-turn emission. Cells
-        inside the window but off the board are omitted -- there is no such place.
+        A local view for the GUI and for callers that want one; **not** the wire shape --
+        see :meth:`snapshot`, which is. Cells inside the window but off the board are
+        omitted; there is no such place.
         """
         half = size // 2
         return {

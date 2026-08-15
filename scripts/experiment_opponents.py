@@ -57,7 +57,7 @@ def _believed(trace: Trace, cop, carried: dict | None = None):
     """
     from p2p_cop_agent.domain.coordinates import Coordinate  # noqa: PLC0415
 
-    observed = trace.field.window(trace.thief) if trace.thief is not None else {}
+    observed = trace.field.snapshot() if trace.thief is not None else {}
     if observed:
         belief = Belief.uniform(trace.board.grid_size).updated(
             scent_likelihood(observed, trace.board.grid_size))
@@ -85,7 +85,7 @@ def _decoded(trace: Trace, memory: dict):
     from p2p_cop_agent.domain.coordinates import Coordinate  # noqa: PLC0415
     from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood  # noqa: PLC0415
 
-    observed = trace.field.window(trace.thief) if trace.thief is not None else {}
+    observed = trace.field.snapshot() if trace.thief is not None else {}
     if observed:
         before = memory.get("observed")
         trusted = set(observed) & set(before) if before else None

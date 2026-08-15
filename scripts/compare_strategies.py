@@ -33,8 +33,9 @@ from p2p_cop_agent.domain.board import Board  # noqa: E402
 from p2p_cop_agent.domain.movement import apply_move, legal_moves  # noqa: E402
 from p2p_cop_agent.domain.scoring import Outcome  # noqa: E402
 from p2p_cop_agent.orchestration.harness import run_sub_game  # noqa: E402
-from p2p_cop_agent.strategy.belief import Belief, scent_likelihood  # noqa: E402
+from p2p_cop_agent.strategy.belief import Belief  # noqa: E402
 from p2p_cop_agent.strategy.belief_pursuit import pursue_belief  # noqa: E402
+from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood  # noqa: E402
 from p2p_cop_agent.strategy.pursuit import choose_action  # noqa: E402
 from p2p_cop_agent.strategy.scent_field import ScentField  # noqa: E402
 
@@ -58,12 +59,16 @@ class Trace:
         self.field = ScentField(BOARD)
         self.thief = None
         self.rng = rng
+        # `C-052`: the decoder inverts a RESIDUAL, so it needs the prior frame.
+        # `None` on turn one is the documented degraded mode, not a gap.
+        self.previous = None
 
     def thief_policy(self, board, thief, _cop, barriers):
         """A seeded random legal walk that also emits, exactly as a real Thief would."""
         blocked = barriers.cells
         action = self.rng.choice(sorted(legal_moves(board, thief, blocked), key=lambda a: a.name))
         self.thief = apply_move(board, thief, action, blocked)
+        self.previous = self.field.snapshot()
         self.field.advance(self.thief)  # `:917`: moving or staying creates scent
         return action
 
@@ -76,11 +81,29 @@ def _blind(rng: random.Random):
 
 
 def _belief(trace: Trace):
+    """The belief arm, now measuring the inference this repository actually ships (`C-052`).
+
+    It used `scent_likelihood` — raw observed intensity — until 2026-08-16, which is the
+    weighting `M6-031` replaced two milestones ago precisely because it "discards everything
+    the agreed model says about how a trail decays and stacks, so a twice-visited old cell
+    outshines a fresh stamp". The live path has run `window_centre` then `emitter_likelihood`
+    since `M11-01`. So this arm, and the headline belief-versus-blind numbers taken from it,
+    measured an inference we had already stopped using.
+
+    That went unnoticed while raw intensity happened to score well. The `C-048` clamp exposed
+    it: once tau saturates at the ceiling, every plateau cell ties, and a weighting that reads
+    intensity alone has nothing left to rank — so two tests failed and looked like a
+    regression in the shipped agent, which they were not measuring.
+
+    Kept as one arm rather than split into two, because the question these tests ask is "does
+    belief close the gap to a cheating cop", and only the belief we run can answer it.
+    """
     def policy(cop):
-        observed = trace.field.window(trace.thief) if trace.thief is not None else {}
+        observed = trace.field.snapshot() if trace.thief is not None else {}
         if not observed:
             return Action.STAY
-        belief = Belief.uniform(GRID).updated(scent_likelihood(observed, GRID))
+        likelihood = emitter_likelihood(observed, trace.previous, grid_size=GRID, start=0)
+        belief = Belief.uniform(GRID).updated(likelihood)
         return pursue_belief(cop.board, cop.position, belief)
     return policy
 

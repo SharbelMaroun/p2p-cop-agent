@@ -7,7 +7,12 @@ tests pin the properties that equality rests on.
 
 from p2p_cop_agent.domain.board import Board
 from p2p_cop_agent.domain.coordinates import Coordinate
-from p2p_cop_agent.strategy.emitter_decoder import emitter_likelihood, match_error, residual
+from p2p_cop_agent.strategy.emitter_decoder import (
+    emitter_likelihood,
+    informative,
+    match_error,
+    residual,
+)
 from p2p_cop_agent.strategy.scent import emission_offsets
 from p2p_cop_agent.strategy.scent_field import ScentField
 
@@ -30,22 +35,34 @@ def argmax(likelihood: dict) -> tuple[int, int]:
     return max(sorted(likelihood), key=likelihood.__getitem__)
 
 
-def test_the_residual_is_exactly_the_newest_stamp() -> None:
+def test_the_residual_is_exactly_the_newest_stamp_where_it_is_invertible() -> None:
+    """`C-048`: exact on the cells the clamp did not cut, which is the honest claim.
+
+    This asserted the property over EVERY cell, on the premise that the clip never bites.
+    The upper clamp makes that false for saturated cells -- their residual under-reports by
+    whatever was discarded -- so the fix is to score where the inversion still applies
+    rather than to widen the tolerance, which would hide the loss instead of describing it.
+    """
     first = snapshot(field_after([Coordinate(3, 3)]))
     second = snapshot(field_after([Coordinate(3, 3), Coordinate(3, 4)]))
     stamp = emission_offsets()
     delta = residual(second, first)
-    for (row, col), value in delta.items():
-        assert abs(value - stamp.get((row - 3, col - 4), 0.0)) < 1e-9
+    usable = informative(second, first)
+    assert usable, "every cell saturated; the decoder would have nothing to score"
+    for cell in usable:
+        row, col = cell
+        assert abs(delta[cell] - stamp.get((row - 3, col - 4), 0.0)) < 1e-9
 
 
 def test_the_true_emitter_scores_zero_and_rivals_do_not() -> None:
+    """Unchanged in substance: the truth still scores zero, once saturated cells are out."""
     first = snapshot(field_after([Coordinate(2, 2)]))
     second = snapshot(field_after([Coordinate(2, 2), Coordinate(2, 3)]))
     delta = residual(second, first)
-    assert match_error(delta, (2, 3), grid_size=7) < 1e-12
+    usable = informative(second, first)
+    assert match_error(delta, (2, 3), grid_size=7, trusted=usable) < 1e-12
     for rival in ((2, 2), (2, 4), (1, 3), (0, 0)):
-        assert match_error(delta, rival, grid_size=7) > 0.05
+        assert match_error(delta, rival, grid_size=7, trusted=usable) > 0.05
 
 
 def test_the_decoder_tracks_a_walk_with_revisits_exactly() -> None:
