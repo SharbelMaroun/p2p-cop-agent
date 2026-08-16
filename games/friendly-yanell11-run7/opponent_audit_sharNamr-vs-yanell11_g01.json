@@ -1,0 +1,536 @@
+{
+  "_note": "The opponent's revealed audit payloads, exactly as received, after our verifier confirmed every commitment reproduces. Retained as evidence: these records fix where their agent actually was, which a capture claim alone does not (C-051).",
+  "_schema": "opponent-audit",
+  "audits": [
+    {
+      "records": [
+        {
+          "commit": "88cc170e1ad2fdd237cd3f373526a2f3e57594b6b4daec323c1663fa6be11198",
+          "nonce": "e79c818199bd9de077858d790a889ed9",
+          "payload": {
+            "code_version": "1.00",
+            "github_commit": "f9f41a7afbbf1560244a127a9f99b8cccb0a7d3b",
+            "group_name": "YANELL11",
+            "model": "claude-haiku-4-5",
+            "spec": {
+              "cpu_cores": 12,
+              "cpu_mhz": 2592.0,
+              "gpu": "none detected",
+              "machine": "AMD64",
+              "os": "Windows 10",
+              "python": "3.10.20",
+              "ram_gb": 15.77
+            },
+            "step": 0,
+            "sub_game_number": 1,
+            "token_budget": 200000,
+            "type": "system_spec"
+          }
+        },
+        {
+          "commit": "856f6e8985e47b96792740ae013ff3db672f8d3d7d896a0e174e6d5a19b73ef4",
+          "nonce": "876a989edf8416d6ea1203060683a706",
+          "payload": {
+            "hint": "You will find only my shadow east of Mount Carmel.",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              3,
+              3
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[3, 3];barriers=[]",
+            "step": 1,
+            "tokens_step": 0,
+            "tokens_total": 0,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "97d5625fff5c86289915e56c6a96508d1623b6a3ee088c1e784ebf482a8ecc7b",
+          "nonce": "3620e1fbf47125ce282c5d322db336d3",
+          "payload": {
+            "hint": "Heading north, the German Colony covers my tracks.",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              3,
+              3
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[3, 3];barriers=[[0, 0]]",
+            "step": 2,
+            "tokens_step": 0,
+            "tokens_total": 0,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "18ff9c8c27f936ba63487d2d9f371a301dc9c175ba31d6caacfe445f0028d425",
+          "nonce": "2db605491f7b0ad4187c4a7622f78db1",
+          "payload": {
+            "hint": "Catch me if you can near the Baha'i Gardens\u2014I'm heading north toward the mountain!",
+            "intent": "lie",
+            "move": "move:S",
+            "position": [
+              4,
+              3
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 3];barriers=[[0, 0]]",
+            "step": 3,
+            "tokens_step": 94,
+            "tokens_total": 94,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "aab176b6c82b7098ef116427abddcdda245a1f3845aaf81c56a7669ea25b71cb",
+          "nonce": "880abfb94f31bfce873c19c12342309b",
+          "payload": {
+            "hint": "Look west, somewhere around Wadi Nisnas - or not.",
+            "intent": "lie",
+            "move": "move:E",
+            "position": [
+              4,
+              4
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 4];barriers=[[0, 0]]",
+            "step": 4,
+            "tokens_step": 0,
+            "tokens_total": 94,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "86adcd73cc2452309a1422326f877fb7ccfaa7ea332b12dc514ae50aa8c14a51",
+          "nonce": "c659e46571ff055efd2cce5d0a5f2357",
+          "payload": {
+            "hint": "Slipping east past the Louis Promenade, try to keep up.",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              4,
+              4
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 4];barriers=[[0, 0], [0, 3]]",
+            "step": 5,
+            "tokens_step": 0,
+            "tokens_total": 94,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "9ed54112493fdb54a22856a77e2ef66d5a88489eb94b4a0ca7ce7c3cb0de4ab8",
+          "nonce": "ca4e4b57777772f3b2e6da64e03a9671",
+          "payload": {
+            "hint": "\"Catch me if you can\u2014I'm heading east past the Bahai Gardens!\"",
+            "intent": "lie",
+            "move": "move:W",
+            "position": [
+              4,
+              3
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 3];barriers=[[0, 0], [0, 3]]",
+            "step": 6,
+            "tokens_step": 90,
+            "tokens_total": 184,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "6e08e9bbf07f3825dc8b14641906f759ad944de1b95aaf7f063c7ae776d97b9f",
+          "nonce": "fd25235b48b3d1111a580279afc98841",
+          "payload": {
+            "hint": "Heading east, Mount Carmel covers my tracks.",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              4,
+              3
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 3];barriers=[[0, 0], [0, 3], [1, 1]]",
+            "step": 7,
+            "tokens_step": 0,
+            "tokens_total": 184,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "8ea3f59d143a2707772f04a5211e70ba6b0f909286561550a1355c17ac0cbee5",
+          "nonce": "6764aa50b0f8eb8b91ab985458db153a",
+          "payload": {
+            "hint": "I drifted east near the German Colony while you hesitated.",
+            "intent": "lie",
+            "move": "move:W",
+            "position": [
+              4,
+              2
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 2];barriers=[[0, 0], [0, 3], [1, 1]]",
+            "step": 8,
+            "tokens_step": 0,
+            "tokens_total": 184,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "2533eef81075aa15eda037a4e98d3ba729e42ef9fb1f4ab0ed27e3f022a9594b",
+          "nonce": "b03a0df5f0026ace700ff637ad8586f4",
+          "payload": {
+            "hint": "You'll never catch me near the Carmel Center\u2014I've headed east toward the port!",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              4,
+              2
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 2];barriers=[[0, 0], [0, 3], [1, 1], [1, 4]]",
+            "step": 9,
+            "tokens_step": 91,
+            "tokens_total": 275,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "961e24a074cd560ec0738f1fb5e61bcbadd23fb301a7ea73739cfa573ec7367f",
+          "nonce": "e55f47af8799aec8d4535b9864c654fd",
+          "payload": {
+            "hint": "Slipping north past Wadi Nisnas, try to keep up.",
+            "intent": "lie",
+            "move": "move:S",
+            "position": [
+              5,
+              2
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[5, 2];barriers=[[0, 0], [0, 3], [1, 1], [1, 4]]",
+            "step": 10,
+            "tokens_step": 0,
+            "tokens_total": 275,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "c6dfe71e38c8a2574acd2fd0442c29b78182ba1f5575cea90b10da7ca67b2c2f",
+          "nonce": "a51262d4abf3ebf8e8aa49ebdf250a2a",
+          "payload": {
+            "hint": "You will find only my shadow east of the Louis Promenade.",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              5,
+              2
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[5, 2];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2]]",
+            "step": 11,
+            "tokens_step": 0,
+            "tokens_total": 275,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "b7e8d51311e6b4345e6bb942a42f804e82e1ec28ea3190c7cd48383f1904221d",
+          "nonce": "1f735ed792ff7fce2e1fcb891f1df0a1",
+          "payload": {
+            "hint": "I've gone north past the Baha'i Gardens\u2014catch me if you can!",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              5,
+              2
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[5, 2];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4]]",
+            "step": 12,
+            "tokens_step": 90,
+            "tokens_total": 365,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "9cb5eb9387fd625e0c776d78c20013ee44b945a744831e9e09723256b788c58b",
+          "nonce": "8ae8b71f91bfc46a960c38c546b94153",
+          "payload": {
+            "hint": "I drifted east near Mount Carmel while you hesitated.",
+            "intent": "lie",
+            "move": "move:W",
+            "position": [
+              5,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[5, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4]]",
+            "step": 13,
+            "tokens_step": 0,
+            "tokens_total": 365,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "995d9f8eb061cfde8a402444e41eb24f9a6c1c274366083692cb86993859d33e",
+          "nonce": "f8f5a084ce1e4bd51187cb94abdba735",
+          "payload": {
+            "hint": "Look south, somewhere around the German Colony - or not.",
+            "intent": "lie",
+            "move": "move:N",
+            "position": [
+              4,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4]]",
+            "step": 14,
+            "tokens_step": 0,
+            "tokens_total": 365,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "864d0985279759db665a5b90a944fc4e229fa99918475af3eb8e65e63cb13bfd",
+          "nonce": "d9fe3cdff2281f7d4586457104cb2604",
+          "payload": {
+            "hint": "I'm heading toward the Bah\u00e1\u02bc\u00ed Gardens, north of where you started!",
+            "intent": "lie",
+            "move": "move:S",
+            "position": [
+              5,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[5, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+            "step": 15,
+            "tokens_step": 90,
+            "tokens_total": 455,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "3760f51a4fe1c601c25d2d5d3d9e372c9df14b27eda8d160f2d9d12ab8a640a9",
+          "nonce": "3034a4416fdd19424bd80ba62b6c3d37",
+          "payload": {
+            "hint": "You will find only my shadow north of Wadi Nisnas.",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              5,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[5, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+            "step": 16,
+            "tokens_step": 0,
+            "tokens_total": 455,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "ffe689d18e796b274a3df005ac92a3827b242dc39ab18a71981f4f136f1348a2",
+          "nonce": "318a2411fb9fb9b8ce90955a5eeb49bf",
+          "payload": {
+            "hint": "Heading south, the Louis Promenade covers my tracks.",
+            "intent": "lie",
+            "move": "move:N",
+            "position": [
+              4,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+            "step": 17,
+            "tokens_step": 0,
+            "tokens_total": 455,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "8ef250a43c543ebd8d215ff0fc6d6a15ac25592911baa4f3484a071e3db0fbe4",
+          "nonce": "7cca30cd7522356c345391f34726bd8b",
+          "payload": {
+            "hint": "I've escaped toward the Baha'i Gardens, heading further north up the mountain!",
+            "intent": "lie",
+            "move": "move:S",
+            "position": [
+              5,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[5, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+            "step": 18,
+            "tokens_step": 90,
+            "tokens_total": 545,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "31bae0c1f93841b870b376d27c5b24587bbaed015bf2dfd16a19b438b863877e",
+          "nonce": "9e27a85e6283903cf71403c8bd75eeb5",
+          "payload": {
+            "hint": "Look south, somewhere around Mount Carmel - or not.",
+            "intent": "lie",
+            "move": "move:N",
+            "position": [
+              4,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[4, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+            "step": 19,
+            "tokens_step": 0,
+            "tokens_total": 545,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "dac363cedb5669064ae9fddfc81385686f1aa1b769f0a7b20647d18e679f2561",
+          "nonce": "9009fa0895960856e3a44d3945f63060",
+          "payload": {
+            "hint": "Slipping south past the German Colony, try to keep up.",
+            "intent": "lie",
+            "move": "move:N",
+            "position": [
+              3,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[3, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3], [4, 2]]",
+            "step": 20,
+            "tokens_step": 0,
+            "tokens_total": 545,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "1531bba231bf329f9e9a2fb2cf1edf24aaf51b380fc13ebc2e01580e77d00535",
+          "nonce": "a4d020fb1a3fae62858ec236e80b2552",
+          "payload": {
+            "hint": "Catch me if you can near the Baha'i Gardens\u2014I'm heading east fast!",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              3,
+              1
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[3, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3], [4, 2]]",
+            "step": 21,
+            "tokens_step": 92,
+            "tokens_total": 637,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "5b6ec24163ca17315e0fe078e75663e7954a5eb0e0d5f1388f46b3073e3a36dc",
+          "nonce": "732462a919ba3b8f971168de36229220",
+          "payload": {
+            "hint": "Heading east, Wadi Nisnas covers my tracks.",
+            "intent": "lie",
+            "move": "move:W",
+            "position": [
+              3,
+              0
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[3, 0];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3], [4, 2]]",
+            "step": 22,
+            "tokens_step": 0,
+            "tokens_total": 637,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "3abe441fdcab5f5549253ddecc2afcdf150db063a1f69a7b7733394ff041f427",
+          "nonce": "86657ca472ecc33c4061bc5f326eb093",
+          "payload": {
+            "hint": "I drifted south near the Louis Promenade while you hesitated.",
+            "intent": "lie",
+            "move": "move:N",
+            "position": [
+              2,
+              0
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[2, 0];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3], [4, 2]]",
+            "step": 23,
+            "tokens_step": 0,
+            "tokens_total": 637,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "e2cec758d2022f324357c865e0c15effda3f473fad0351b0a7707d0b256800e2",
+          "nonce": "e39172be5857821c15f7927cc4da6296",
+          "payload": {
+            "hint": "\"Catch me if you can near the Stella Maris Carmelite Monastery\u2014I'm heading further north!\"",
+            "intent": "lie",
+            "move": "move:STAY",
+            "position": [
+              2,
+              0
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[2, 0];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3], [4, 2]]",
+            "step": 24,
+            "tokens_step": 98,
+            "tokens_total": 735,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "9cecffde5f7a0a9e59c1aa2f7fa93065d02c5096a190c224c7c9d4f55c20b499",
+          "nonce": "2a2e81377b389dbf94376808bfb35e12",
+          "payload": {
+            "hint": "Slipping south past Mount Carmel, try to keep up.",
+            "intent": "lie",
+            "move": "move:N",
+            "position": [
+              1,
+              0
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[1, 0];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3], [4, 2]]",
+            "step": 25,
+            "tokens_step": 0,
+            "tokens_total": 735,
+            "type": "turn"
+          }
+        },
+        {
+          "commit": "813e9e3b1dfbf3069b875896a20368f0069d7d0db49a2b0d18b7cefa5e8b4c83",
+          "nonce": "f20f01a3d4a542b1cbbe0cf0b32e62bc",
+          "payload": {
+            "hint": "",
+            "intent": "truth",
+            "move": "move:STAY",
+            "position": [
+              1,
+              0
+            ],
+            "role": "thief",
+            "state": "grid=7x7;self=[1, 0];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 0], [2, 2], [2, 4], [3, 1], [3, 3], [4, 2]]",
+            "step": 26,
+            "tokens_step": 0,
+            "tokens_total": 735,
+            "type": "turn"
+          }
+        }
+      ],
+      "result_claim": {
+        "how": "boxed in (rule 47)",
+        "type": "capture",
+        "winner": "police"
+      },
+      "sender": "thief"
+    }
+  ],
+  "game_id": "sharNamr-vs-yanell11",
+  "opponent_group_id": "yanell11",
+  "sub_game_number": 1
+}
