@@ -27,6 +27,15 @@ from p2p_cop_agent.reporting.naming import log_filename
 WINNER_BY_OUTCOME = {"CAPTURE": "police", "SURVIVAL": "thief"}
 
 
+class MatchArtifactError(RuntimeError):
+    """Raised when a finished match cannot produce an auditable artifact.
+
+    Distinct from `LogArtifactError`, which polices the *shape* of a log that has records.
+    This one reports that there was nothing to write and says why the match ended, so the
+    cause survives into the driver's output instead of being replaced by a traceback.
+    """
+
+
 def persist_match(
     directory: Path,
     *,
@@ -136,6 +145,21 @@ def write_match_log(
         # whole story, and populated on anything else.
         "result_reason": reason,
     }
+    # A match that negotiated but never took a turn seals a step-0 attestation and no
+    # moves, so `sealed` is empty and `build_log` rightly refuses -- a log with no records
+    # cannot be audited. Raising ITS generic message here loses the one thing worth having:
+    # `reason`, the whole point of `C-050`. This module's own docstring says an outcome
+    # without its cause is an outcome nobody can act on, and on 2026-08-16 that is exactly
+    # what happened -- run 6 sub-game 1 died after 157s and the traceback overwrote the
+    # explanation in the driver's tail, leaving the opponent's logs as the only witness
+    # for the second time.
+    if not in_play:
+        raise MatchArtifactError(
+            f"sub-game {sub_game} ended {name.lower()} with NO turn records: the peers "
+            f"negotiated (the step-0 attestation sealed) but no move was ever exchanged. "
+            f"reason={reason!r}. Nothing is written, because a log with no records cannot "
+            f"be audited [AE-18] -- but the reason above is the cause worth chasing."
+        )
     log = build_log(identity=identity, sub_game=sub_game, records=in_play, summary=summary)
     revealed = reveal_log(
         log,
