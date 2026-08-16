@@ -1,0 +1,76 @@
+{
+  "_schema": "per-subgame-config",
+  "agreed_between": [
+    "sharNamr",
+    "yanell11"
+  ],
+  "config": {
+    "board_and_agents": {
+      "axis_origin_corner": "top-left",
+      "axis_start_index": 0,
+      "cop_start": [
+        0,
+        0
+      ],
+      "grid_size": 7,
+      "num_agents": 2,
+      "thief_start": [
+        3,
+        3
+      ]
+    },
+    "movement_and_barriers": {
+      "max_barriers": 14,
+      "max_moves": 35,
+      "move_set": [
+        "N",
+        "S",
+        "E",
+        "W",
+        "STAY"
+      ],
+      "survival_threshold": 35
+    },
+    "network_and_league": {
+      "diversity_reward": 10,
+      "max_games_per_team": 10,
+      "min_games_to_pass": 2,
+      "num_games": 6,
+      "response_timeout_sec": 30,
+      "token_budget_per_series": 200000,
+      "watchdog_timeout_sec": 60
+    },
+    "pheromones": {
+      "pheromone_center_intensity": 0.9,
+      "pheromone_decay": 0.1,
+      "pheromone_grid_size": 5,
+      "pheromone_min_center_intensity": 0.5
+    },
+    "rate_limiter_gatekeeper": {
+      "concurrent_requests": 2,
+      "max_retries": 3,
+      "queue_depth": 100,
+      "requests_per_minute": 30,
+      "retry_backoff_sec": 5
+    },
+    "scoring": {
+      "capture_cop": 20,
+      "capture_thief": 5,
+      "survival_cop": 5,
+      "survival_thief": 10,
+      "technical_loss": 0,
+      "tie_score": 2
+    }
+  },
+  "config_name": "config_sharNamr-vs-yanell11_g05.json",
+  "config_sha256": "41cd0d7dc0f6bbcc0f305f051b9fbbfa69d463122053dc8062486a24dd1c5373",
+  "game_id": "sharNamr-vs-yanell11",
+  "game_uid": "9b80122e-75f9-c32d-5bff-abc032ae086b",
+  "links": {
+    "config": "config_sharNamr-vs-yanell11_g05.json",
+    "log": "log_sharNamr-vs-yanell11_g05.json"
+  },
+  "scent_model_sha256": "c77a12609b9f1c3df90067ce166b6b0455c8343dba9d463b0e8e402f8469b34f",
+  "schema_version": "1.2",
+  "sub_game_number": 5
+}
