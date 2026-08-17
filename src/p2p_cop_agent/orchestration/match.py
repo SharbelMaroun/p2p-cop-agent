@@ -21,6 +21,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from p2p_cop_agent.adapters.report_identity import series_label
 from p2p_cop_agent.orchestration.delivery import DeliveryRetry
 from p2p_cop_agent.orchestration.negotiation_handshake import Agreement, negotiate_match
 from p2p_cop_agent.orchestration.phases import PhaseMachine
@@ -116,10 +117,16 @@ def play_match(
     # the result report -- which already used this derivation -- said
     # `7b1d942e-5a9c-...`, the same UUID `uoh-ay26` independently computed for G005. The
     # report was right and the logs were the outlier, so the logs move.
+    #
+    # The LABEL is threaded too, added 2026-08-17. Fixing the log writer alone left the
+    # configs and the declaration on the unlabelled derivation, so friendly-10 shipped
+    # `314202bd-...` in its logs and result and `9b80122e-...` in all six configs and the
+    # declaration -- the same defect one layer over, caught by
+    # `scripts/check_artifact_identity.py` on the very series meant to prove it fixed.
+    groups_here = [str(identity.get("group_id") or ""),
+                   str(agreement.opponent_identity.get("group_id") or "")]
     game_uid = derive_game_uid(
-        terms_from_config(game),
-        [str(identity.get("group_id") or ""),
-         str(agreement.opponent_identity.get("group_id") or "")],
+        terms_from_config(game), groups_here, series_label(game_id, groups_here),
     )
     declaration = build_declaration(
         game_id=game_id, game_uid=game_uid, our_identity=identity,

@@ -90,7 +90,11 @@ def test_a_confirmed_capture_ends_the_run_early_over_the_wire(remote_peer) -> No
     ), 10)
 
     assert result.outcome is Outcome.CAPTURE
-    assert result.steps == 2
+    # OUR claiming turn, not their confirmation (`yanell11`, 2026-08-17): a capture settles
+    # in the Cop's numbering. The claim went out on our step 1; their answer came back
+    # numbered 2. Asserted 2 until then, which is the disagreement our two teams' reports
+    # carried for three series.
+    assert result.steps == 1, "a capture settles on the Cop's claiming turn"
     assert result.audit["result_claim"] == "capture"
 
     turns = [e for e in transcript_entries(transcript) if e["tool"] == "receive_turn"]

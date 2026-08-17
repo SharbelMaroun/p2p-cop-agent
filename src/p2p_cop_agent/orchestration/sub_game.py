@@ -28,6 +28,7 @@ from dataclasses import dataclass
 from p2p_cop_agent.domain.scoring import Outcome
 from p2p_cop_agent.orchestration.delivery import DeliveryRetry
 from p2p_cop_agent.orchestration.phases import PhaseMachine
+from p2p_cop_agent.orchestration.settled_step import _settled_step
 from p2p_cop_agent.orchestration.terminal_claims import decided_by
 from p2p_cop_agent.orchestration.turn_loop import (
     Decide,
@@ -105,7 +106,7 @@ def run_sub_game_over_wire(
             # The opponent's message decided the game before our turn existed —
             # nothing further is owed, and replying to a finished game is how the
             # first rehearsal turned one survival into two disagreeing artifacts.
-            settled = claim.step if isinstance(claim.step, int) else step - 1
+            settled = _settled_step(claim, turns, step)
             return _finish(claim.outcome, settled, claim.reason, turns,
                            ledger, transport, send_audit, step_zero)
         except TurnLoopError as exc:

@@ -1,0 +1,1177 @@
+{
+  "_schema": "game-log",
+  "game_id": "sharNamr-vs-yanell11-friendly-10",
+  "game_uid": "314202bd-29a5-d899-84b5-c5c9a9186cab",
+  "links": {
+    "config": "config_sharNamr-vs-yanell11-friendly-10_g03.json",
+    "log": "log_sharNamr-vs-yanell11-friendly-10_g03.json"
+  },
+  "mutual_agreement": {
+    "confirmed": true,
+    "opponent_group_id": "yanell11",
+    "sha256": "41cd0d7dc0f6bbcc0f305f051b9fbbfa69d463122053dc8062486a24dd1c5373"
+  },
+  "records": [
+    {
+      "commit": "aa89dde2ef9f5109203730eac452aaa39383b3c504e114669e1c2efa003b57ae",
+      "hint": "heading toward the the north edge",
+      "intent": "truth",
+      "move": "BARRIER:[0, 0]",
+      "nonce": "a2c3756f131a91f72170718556ed9b36",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ]
+        ],
+        "hint": "heading toward the the north edge",
+        "intent": "truth",
+        "move": "BARRIER:[0, 0]",
+        "position": [
+          0,
+          0
+        ],
+        "state": "grid=7x7;self=[0, 0];barriers=[[0, 0]]",
+        "step": 1,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 1
+    },
+    {
+      "commit": "2613c1603967f4ca0cb35407c9b1d79d514913fe447ef7ec7388224cfb8f899e",
+      "hint": "way past the the north edge",
+      "intent": "bluff",
+      "move": "MOVE:EAST",
+      "nonce": "810ec6710dca5f0cd012b00c18561a16",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ]
+        ],
+        "hint": "way past the the north edge",
+        "intent": "bluff",
+        "move": "MOVE:EAST",
+        "position": [
+          0,
+          1
+        ],
+        "state": "grid=7x7;self=[0, 1];barriers=[[0, 0]]",
+        "step": 2,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 2
+    },
+    {
+      "commit": "89455ff9a9b2688908085b90cfda336f67a65f8b63c793cbc1aebf07effe400c",
+      "hint": "closing in near the the north edge",
+      "intent": "truth",
+      "move": "MOVE:EAST",
+      "nonce": "256d969768c335d1351de330e2e5ea5c",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ]
+        ],
+        "hint": "closing in near the the north edge",
+        "intent": "truth",
+        "move": "MOVE:EAST",
+        "position": [
+          0,
+          2
+        ],
+        "state": "grid=7x7;self=[0, 2];barriers=[[0, 0]]",
+        "step": 3,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 3
+    },
+    {
+      "commit": "09f992597b24abee3457644d74f158bf501e47dbc31462c206613cd7cde8b5e1",
+      "hint": "far from the the north edge",
+      "intent": "bluff",
+      "move": "BARRIER:[0, 3]",
+      "nonce": "3dc54e6f657c3ba21d3dd54568378615",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "hint": "far from the the north edge",
+        "intent": "bluff",
+        "move": "BARRIER:[0, 3]",
+        "position": [
+          0,
+          2
+        ],
+        "state": "grid=7x7;self=[0, 2];barriers=[[0, 0], [0, 3]]",
+        "step": 4,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 4
+    },
+    {
+      "commit": "a1d45af3bba9e5d24e31e9c5634ee75d6ff9d84fe8c84c0135c887d4594cdb37",
+      "hint": "somewhere by the the north edge",
+      "intent": "truth",
+      "move": "MOVE:SOUTH",
+      "nonce": "8e3269bba91adcdd5b26231245e0cb00",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "hint": "somewhere by the the north edge",
+        "intent": "truth",
+        "move": "MOVE:SOUTH",
+        "position": [
+          1,
+          2
+        ],
+        "state": "grid=7x7;self=[1, 2];barriers=[[0, 0], [0, 3]]",
+        "step": 5,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 5
+    },
+    {
+      "commit": "b75a2e37109e29c6f5ddb161d4fb0a4f5ed99e94a73c40eaafdcda3c15ecb5f5",
+      "hint": "nowhere near the the north edge",
+      "intent": "bluff",
+      "move": "BARRIER:[1, 1]",
+      "nonce": "ef741adec5f458f03c83b81bd215c0e2",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "hint": "nowhere near the the north edge",
+        "intent": "bluff",
+        "move": "BARRIER:[1, 1]",
+        "position": [
+          1,
+          2
+        ],
+        "state": "grid=7x7;self=[1, 2];barriers=[[0, 0], [0, 3], [1, 1]]",
+        "step": 6,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 6
+    },
+    {
+      "commit": "7666994724cce535bc18e0c45eb637ef7e320f0818e0d6d07ba5686206dcd650",
+      "hint": "heading toward the the north edge",
+      "intent": "truth",
+      "move": "MOVE:EAST",
+      "nonce": "0b64da96a1e9869272e13a398503a07d",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "hint": "heading toward the the north edge",
+        "intent": "truth",
+        "move": "MOVE:EAST",
+        "position": [
+          1,
+          3
+        ],
+        "state": "grid=7x7;self=[1, 3];barriers=[[0, 0], [0, 3], [1, 1]]",
+        "step": 7,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 7
+    },
+    {
+      "commit": "8cb5773a713d12c1dbc3a7c7631113633e53698bc18331dd009c44bb21324708",
+      "hint": "way past the the north edge",
+      "intent": "bluff",
+      "move": "BARRIER:[1, 4]",
+      "nonce": "17d10c9fa352103ed073d29b0cc5666a",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ]
+        ],
+        "hint": "way past the the north edge",
+        "intent": "bluff",
+        "move": "BARRIER:[1, 4]",
+        "position": [
+          1,
+          3
+        ],
+        "state": "grid=7x7;self=[1, 3];barriers=[[0, 0], [0, 3], [1, 1], [1, 4]]",
+        "step": 8,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 8
+    },
+    {
+      "commit": "daf92bc9ed6c5d45bbf6f4338fc52a6a8fc065e3ea73b1715f100555e7acd6a1",
+      "hint": "closing in near the the north edge",
+      "intent": "truth",
+      "move": "MOVE:SOUTH",
+      "nonce": "a3c9139a7d943d2efe53ad8afa3878e3",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ]
+        ],
+        "hint": "closing in near the the north edge",
+        "intent": "truth",
+        "move": "MOVE:SOUTH",
+        "position": [
+          2,
+          3
+        ],
+        "state": "grid=7x7;self=[2, 3];barriers=[[0, 0], [0, 3], [1, 1], [1, 4]]",
+        "step": 9,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 9
+    },
+    {
+      "commit": "5a90d9ea36d38b47d9216938095546ca092e98cef8a3a3d1f0ec9ce16136ecd1",
+      "hint": "far from the the north edge",
+      "intent": "bluff",
+      "move": "BARRIER:[2, 2]",
+      "nonce": "3cbb92f2142b2a867c43eac55cc434a9",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ]
+        ],
+        "hint": "far from the the north edge",
+        "intent": "bluff",
+        "move": "BARRIER:[2, 2]",
+        "position": [
+          2,
+          3
+        ],
+        "state": "grid=7x7;self=[2, 3];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2]]",
+        "step": 10,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 10
+    },
+    {
+      "commit": "0fb1392016be21a8f932b5986d329d1d663bf1a30f4f85d7299ccb9bd11a08e4",
+      "hint": "somewhere by the the north edge",
+      "intent": "truth",
+      "move": "BARRIER:[2, 4]",
+      "nonce": "0a257828f09247d2eb848300cd4e3c65",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ]
+        ],
+        "hint": "somewhere by the the north edge",
+        "intent": "truth",
+        "move": "BARRIER:[2, 4]",
+        "position": [
+          2,
+          3
+        ],
+        "state": "grid=7x7;self=[2, 3];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4]]",
+        "step": 11,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 11
+    },
+    {
+      "commit": "d68018a9a4c2424aedfb19392c33ee8956d4d070a81155307df268e8cf6503fb",
+      "hint": "nowhere near the the north edge",
+      "intent": "bluff",
+      "move": "MOVE:SOUTH",
+      "nonce": "541dfbdeb78bd2f70ab602261c643f61",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ]
+        ],
+        "hint": "nowhere near the the north edge",
+        "intent": "bluff",
+        "move": "MOVE:SOUTH",
+        "position": [
+          3,
+          3
+        ],
+        "state": "grid=7x7;self=[3, 3];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4]]",
+        "step": 12,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 12
+    },
+    {
+      "commit": "70ad9d7c3ca9a03e4feb881cff949798e5b1d51eb1bc15a04530b91762e45f57",
+      "hint": "heading toward the the east side",
+      "intent": "truth",
+      "move": "MOVE:EAST",
+      "nonce": "64f5e9e785668055c292f3dc680379dc",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ]
+        ],
+        "hint": "heading toward the the east side",
+        "intent": "truth",
+        "move": "MOVE:EAST",
+        "position": [
+          3,
+          4
+        ],
+        "state": "grid=7x7;self=[3, 4];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4]]",
+        "step": 13,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 13
+    },
+    {
+      "commit": "9fa6849fd193cb45b8a81377ef2683957aabbf09c7b280be0ee93a3a8a5e61e0",
+      "hint": "way past the the east side",
+      "intent": "bluff",
+      "move": "BARRIER:[3, 3]",
+      "nonce": "94a71d90f4274e451f994fef6a1c1578",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "hint": "way past the the east side",
+        "intent": "bluff",
+        "move": "BARRIER:[3, 3]",
+        "position": [
+          3,
+          4
+        ],
+        "state": "grid=7x7;self=[3, 4];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+        "step": 14,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 14
+    },
+    {
+      "commit": "1a6dc82cfa843564502883d1a5f1741464c7c3b5bd5cf388ca47423f487ed476",
+      "hint": "closing in near the the west side",
+      "intent": "truth",
+      "move": "MOVE:SOUTH",
+      "nonce": "9da057bd76527764299d4f8f0e40aa8b",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "hint": "closing in near the the west side",
+        "intent": "truth",
+        "move": "MOVE:SOUTH",
+        "position": [
+          4,
+          4
+        ],
+        "state": "grid=7x7;self=[4, 4];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+        "step": 15,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 15
+    },
+    {
+      "commit": "aecca5b25d18be81f124a36bddf143aeefffc000d53ad938857c09f4827f7fcd",
+      "hint": "far from the the south edge",
+      "intent": "bluff",
+      "move": "MOVE:WEST",
+      "nonce": "ed8955d9e1bb1f360534f7983ecaf0ef",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "hint": "far from the the south edge",
+        "intent": "bluff",
+        "move": "MOVE:WEST",
+        "position": [
+          4,
+          3
+        ],
+        "state": "grid=7x7;self=[4, 3];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+        "step": 16,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 16
+    },
+    {
+      "commit": "f739f9fb6bcfff65ee03c294e8731fe11d04aa216ae961a7a0bd5d484ca57c06",
+      "hint": "somewhere by the the south edge",
+      "intent": "truth",
+      "move": "MOVE:WEST",
+      "nonce": "5a4aa14785836d84fb6f0952e5706a02",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "hint": "somewhere by the the south edge",
+        "intent": "truth",
+        "move": "MOVE:WEST",
+        "position": [
+          4,
+          2
+        ],
+        "state": "grid=7x7;self=[4, 2];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+        "step": 17,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 17
+    },
+    {
+      "commit": "1225c5d5cb0103bd539a9b6d6f4303a67388fa6606e9661e2615dde3fdfc895d",
+      "hint": "nowhere near the the south edge",
+      "intent": "bluff",
+      "move": "MOVE:SOUTH",
+      "nonce": "b382f623d258e4a94b5259f7ec4be02b",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "hint": "nowhere near the the south edge",
+        "intent": "bluff",
+        "move": "MOVE:SOUTH",
+        "position": [
+          5,
+          2
+        ],
+        "state": "grid=7x7;self=[5, 2];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3]]",
+        "step": 18,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 18
+    },
+    {
+      "commit": "a812649aeaccf931c49ecc31744a783e11aed880dc38b8e1796cf43612f36cb7",
+      "hint": "heading toward the the south edge",
+      "intent": "truth",
+      "move": "BARRIER:[4, 2]",
+      "nonce": "af0b974f95e064ab6a0d6110192613e4",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "hint": "heading toward the the south edge",
+        "intent": "truth",
+        "move": "BARRIER:[4, 2]",
+        "position": [
+          5,
+          2
+        ],
+        "state": "grid=7x7;self=[5, 2];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3], [4, 2]]",
+        "step": 19,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 19
+    },
+    {
+      "commit": "192af2178d592b72e45e89d82aae0b5c8f5132181bd1aefef64c7442d7e35fc1",
+      "hint": "way past the the south edge",
+      "intent": "bluff",
+      "move": "MOVE:WEST",
+      "nonce": "b058e0ddad565d35b7130d80cf1e1835",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "hint": "way past the the south edge",
+        "intent": "bluff",
+        "move": "MOVE:WEST",
+        "position": [
+          5,
+          1
+        ],
+        "state": "grid=7x7;self=[5, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3], [4, 2]]",
+        "step": 20,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 20
+    },
+    {
+      "commit": "9006115be9a12425f52f531d390d64407a29ac6dde760ef1f33632fb4b3aa1b3",
+      "hint": "closing in near the the south edge",
+      "intent": "truth",
+      "move": "MOVE:NORTH",
+      "nonce": "3cc668bc49e1a3abe0ea4184d8f59d8a",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "hint": "closing in near the the south edge",
+        "intent": "truth",
+        "move": "MOVE:NORTH",
+        "position": [
+          4,
+          1
+        ],
+        "state": "grid=7x7;self=[4, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 3], [4, 2]]",
+        "step": 21,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 21
+    },
+    {
+      "commit": "e21f35cb5f87d490e8c42415e57a92ebe815a2256944e52db13e98a555b9fa6f",
+      "hint": "far from the the south edge",
+      "intent": "bluff",
+      "move": "BARRIER:[3, 1]",
+      "nonce": "6aa30e53f15ca43ceb9be10f291e12be",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "hint": "far from the the south edge",
+        "intent": "bluff",
+        "move": "BARRIER:[3, 1]",
+        "position": [
+          4,
+          1
+        ],
+        "state": "grid=7x7;self=[4, 1];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3], [4, 2]]",
+        "step": 22,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 22
+    },
+    {
+      "commit": "c478d814030d82d38fbb2133e37f6c0709fd9e6548adc5dae2453d3251046117",
+      "hint": "somewhere by the the south edge",
+      "intent": "truth",
+      "move": "MOVE:WEST",
+      "nonce": "119083334e4677b1c5be8f82f0c747e3",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "hint": "somewhere by the the south edge",
+        "intent": "truth",
+        "move": "MOVE:WEST",
+        "position": [
+          4,
+          0
+        ],
+        "state": "grid=7x7;self=[4, 0];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3], [4, 2]]",
+        "step": 23,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 23
+    },
+    {
+      "commit": "b6413723ee2a5af2981c822cd6882d277b1f780facc26864f9f17d7198d8e7fe",
+      "hint": "nowhere near the the north edge",
+      "intent": "bluff",
+      "move": "MOVE:NORTH",
+      "nonce": "b9bfac2499e54a15a59c346f233c6494",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "hint": "nowhere near the the north edge",
+        "intent": "bluff",
+        "move": "MOVE:NORTH",
+        "position": [
+          3,
+          0
+        ],
+        "state": "grid=7x7;self=[3, 0];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3], [4, 2]]",
+        "step": 24,
+        "verdict": "bluff"
+      },
+      "sender": "police",
+      "step": 24
+    },
+    {
+      "commit": "e802c7049da472490d67913f7bb741dab87af5a256a937b63d0ebdf3278e2c11",
+      "hint": "heading toward the the north edge",
+      "intent": "truth",
+      "move": "BARRIER:[2, 0]",
+      "nonce": "7012161a4ec8f4d6fc93e8f9e38ab95c",
+      "payload": {
+        "barriers": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "hint": "heading toward the the north edge",
+        "intent": "truth",
+        "move": "BARRIER:[2, 0]",
+        "position": [
+          3,
+          0
+        ],
+        "state": "grid=7x7;self=[3, 0];barriers=[[0, 0], [0, 3], [1, 1], [1, 4], [2, 0], [2, 2], [2, 4], [3, 1], [3, 3], [4, 2]]",
+        "step": 25,
+        "verdict": "truth"
+      },
+      "sender": "police",
+      "step": 25
+    }
+  ],
+  "schema_version": "1.2",
+  "sub_game_number": 3,
+  "summary": {
+    "audit": {
+      "log_verified": true,
+      "steps_checked": 25,
+      "tampered": false
+    },
+    "duration_seconds": 0,
+    "ended_at": "2026-08-17T13:30:31.979116+00:00",
+    "github_commit": {
+      "sharNamr": "7b2b5a912047fb328c9afdd4f13b9003d80c9aec",
+      "yanell11": "ef25f6fe8567b9c78bafdad24ecfa281b63d1976"
+    },
+    "group_id": "sharNamr",
+    "opponent_group_id": "yanell11",
+    "result": "capture",
+    "result_reason": "the opponent confirmed capture at [1, 0]",
+    "role": "police",
+    "started_at": "2026-08-17T13:28:46.385817+00:00",
+    "steps": 26,
+    "sub_game_number": 3,
+    "timezone": "UTC",
+    "tokens_total": 0,
+    "winner_role": "police"
+  }
+}

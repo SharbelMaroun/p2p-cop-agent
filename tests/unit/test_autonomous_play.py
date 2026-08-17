@@ -108,7 +108,9 @@ def test_a_whole_sub_game_plays_with_no_message_fed_in_by_hand() -> None:
         reply(2, claim_response={"claim": [3, 3], "caught": True}),
     )
     assert result.outcome is Outcome.CAPTURE
-    assert result.steps == 2
+    # OUR claiming turn, not their confirmation: a capture settles in the causing side's
+    # numbering (`orchestration/settled_step`). The survival case below is unaffected.
+    assert result.steps == 1, "a capture settles on the Cop's claiming turn"
     # The confirming claim ends the game before our second turn exists; nothing
     # further is owed on a decided game (first-rehearsal finding, 2026-08-08).
     assert len(opponent.sent) == 1

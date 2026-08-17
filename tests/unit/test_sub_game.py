@@ -49,7 +49,12 @@ def test_a_confirmed_capture_ends_the_sub_game_immediately() -> None:
         turn(3),
     ))
     assert result.outcome is Outcome.CAPTURE
-    assert result.steps == 2
+    # OUR capturing turn, not their confirmation (`yanell11`, 2026-08-17). A capture is
+    # caused by the Cop, so it settles in the Cop's numbering: the claim went out on our
+    # step 1 and their answer came back numbered 2. This asserted 2 -- the opponent's count
+    # of their own concession -- which is how friendly-10 filed 26 against 25 sealed
+    # records, and why our reports and theirs disagreed on `steps` for three series.
+    assert result.steps == 1, "a capture settles on the Cop's claiming turn"
     assert "confirmed capture" in result.reason
 
 
