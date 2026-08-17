@@ -143,8 +143,16 @@ def build_final_result(
             "series_tie": series_tie,
             "tokens_total_series": {
                 g: sum(int(r["tokens"].get(g, 0)) for r in ordered) for g in groups},  # type: ignore[call-overload,union-attr]
-            "games_played_including_this": league.get(
-                "games_played_including_this", dict.fromkeys(groups, 1)),
+            # Each side declares its OWN figure and NOTHING for the opponent. Rule 38's
+            # sanction is pointed -- "disqualifies the group that made the false
+            # declaration" (`inst/:2031`) -- so a number we file for them is a declaration
+            # we are not entitled to make, and if it were wrong the rule would have to
+            # decide whose it was. A group absent from the config emits `null`, matching
+            # what `yanell11` file for us; the league joins each figure to whoever is
+            # entitled to declare it. We filed a number for them until 2026-08-17.
+            "games_played_including_this": {
+                group: (league.get("games_played_including_this") or {}).get(group)
+                for group in groups},
             "first_meeting_between_groups": league.get("first_meeting_between_groups", True),
             "diversity_reward_applied": league.get(
                 "diversity_reward_applied", dict.fromkeys(groups, False)),
