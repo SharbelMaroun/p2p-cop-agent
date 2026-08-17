@@ -51,9 +51,36 @@ def _spaced(value: object) -> bytes:
     return json.dumps(value, sort_keys=True, ensure_ascii=False).encode("utf-8")
 
 
-def derive_game_uid(terms: Mapping[str, object], group_ids: Sequence[str]) -> str:
-    """Their shared derivation: a UUID from the terms and the sorted group pair."""
-    seed = _canonical(dict(terms)) + b"|" + "|".join(sorted(group_ids)).encode("utf-8")
+def derive_game_uid(terms: Mapping[str, object], group_ids: Sequence[str],
+                    game_id: str | None = None) -> str:
+    """The shared derivation, in two branches agreed with `yanell11` on 2026-08-17.
+
+    **Unlabelled** seeds with the sorted group pair, and is unchanged::
+
+        UUID(SHA256(canonical(terms) + "|" + "|".join(sorted(group_ids)))[:16])
+
+    **Labelled** seeds with the agreed series id instead::
+
+        UUID(SHA256(canonical(terms) + "|" + game_id)[:16])
+
+    **Why the second branch exists.** The first consumes only the terms and the group pair,
+    so it *cannot* discriminate between two series between the same peers under the same
+    terms -- by construction, not by oversight. Runs 4, 7 and 8 against `yanell11` therefore
+    all carried `9b80122e-…`, and runs 4 and 8 additionally share a consensus digest because
+    both finished 77-77 / 3-3 and the preimage holds no timestamp. Two complete series,
+    byte-indistinguishable at the identity level: harmless in our own inbox, and a rule-35
+    conflict wearing a valid schema in the league's.
+
+    **Why both branches must stay.** Every artifact either peer has already written was
+    named by the unlabelled form. Collapsing the two into one -- for instance by always
+    seeding with `game_id` -- silently renames all of it. That is not hypothetical: the
+    spec `yanell11` sent described only the labelled formula while claiming the unlabelled
+    value was preserved, and the two disagree because `"sharNamr-vs-yanell11"` and
+    `"sharNamr|yanell11"` are different strings for the same pair. Obvious written down,
+    invisible in prose. `test_series_consensus_sha` pins the counter-example.
+    """
+    tail = game_id if game_id else "|".join(sorted(group_ids))
+    seed = _canonical(dict(terms)) + b"|" + tail.encode("utf-8")
     return str(uuid.UUID(bytes=hashlib.sha256(seed).digest()[:16]))
 
 

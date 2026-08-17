@@ -23,6 +23,7 @@ from p2p_cop_agent.reporting import MatchIdentity, write_artifact
 from p2p_cop_agent.reporting.log_artifact import build_log, reveal_log
 from p2p_cop_agent.reporting.log_audit import verify_own_commitments
 from p2p_cop_agent.reporting.naming import log_filename
+from p2p_cop_agent.reporting.opponent_spec import opponent_commit
 
 # Outcome name -> the role the scoring table pays for it; a technical loss pays no one.
 WINNER_BY_OUTCOME = {"CAPTURE": "police", "SURVIVAL": "thief"}
@@ -69,10 +70,17 @@ def persist_match(
         config_sha256=config_sha256, outcome=outcome, steps=steps,
         started_at=started_at, audit=audit,
         # Rule 53 per game, per team (inst/:1295): ours from the running tree, theirs
-        # from the negotiation identity (C-038's member, when sent).
+        # from the negotiation identity -- or, failing that, from the Step-0 attestation
+        # inside the audit they disclosed to us. Theirs read `"unknown"` in every report we
+        # ever sent while the value sat in the first record of every audit they revealed.
+        # Preferring the attestation over anything typed by hand is the point: their emailed
+        # commit was already stale by the time run 8 played, and so was our own sheet.
         github_commit={
-            str(side.get("group_id", "unknown")): str(side.get("git_commit_hash", "unknown"))
-            for side in (identity, opponent)
+            str(identity.get("group_id", "unknown")):
+                str(identity.get("git_commit_hash", "unknown")),
+            str(opponent.get("group_id", "unknown")):
+                str(opponent.get("git_commit_hash", "")
+                    or opponent_commit(opponent_audits) or "unknown"),
         },
         reason=reason,
     )
