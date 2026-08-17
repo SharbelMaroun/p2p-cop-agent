@@ -21,6 +21,7 @@ from pathlib import Path
 
 from p2p_cop_agent.reporting import MatchIdentity, write_artifact
 from p2p_cop_agent.reporting.log_artifact import build_log, reveal_log
+from p2p_cop_agent.reporting.log_audit import verify_own_commitments
 from p2p_cop_agent.reporting.naming import log_filename
 
 # Outcome name -> the role the scoring table pays for it; a technical loss pays no one.
@@ -137,9 +138,19 @@ def write_match_log(
         # Rule 53's per-game commit hash, per team, recorded at write time so the
         # series report can carry it without reconstruction (C-043).
         "github_commit": dict(github_commit or {}),
-        # The template requires the key (source 3); reconciliation fills it after the
-        # cross-audit, and an empty object is honest before that has run.
-        "audit": {},
+        # EARNED, not asserted. `sub_game_row` used to emit
+        # `{"log_verified": True, "tampered": False}` as hardcoded literals, so every
+        # report claimed a verification that had never run -- a false statement in a signed
+        # artifact, which is the one category that ends a game outright rather than
+        # costing points. What we can honestly check is our OWN log: each sealed record
+        # carries its commit beside the payload and nonce that produced it, so recomputing
+        # `move_commit` over every step either reproduces the commitment or does not.
+        #
+        # This is deliberately narrower than it sounds, and the narrowness is the point:
+        # it verifies that our reveal matches our own commitments, NOT that the opponent's
+        # log is sound. Cross-peer reconciliation is a separate act (rule 36) and fills
+        # nothing here.
+        "audit": verify_own_commitments(sealed),
         # `C-050`: why the sub-game ended. Always present so its ABSENCE never has to be
         # interpreted; empty on a clean capture or survival, where the result is the
         # whole story, and populated on anything else.

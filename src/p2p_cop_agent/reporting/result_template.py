@@ -69,7 +69,18 @@ def sub_game_row(summary: Mapping[str, object], groups: Sequence[str]) -> JsonOb
         "score": score,
         "log_files": dict.fromkeys((ours, theirs), f"log_{summary['game_id']}_g{number:02d}.json") if "game_id" in summary else
                      dict.fromkeys((ours, theirs), f"log_g{number:02d}.json"),
-        "audit": {"log_verified": True, "tampered": False},
+        # From the log, never a literal. This was
+        # `{"log_verified": True, "tampered": False}` hardcoded until 2026-08-17, so every
+        # report asserted a verification that had never run -- a false claim in a signed
+        # artifact. `reporting.log_audit` now recomputes every commitment from its reveal
+        # and the log carries the result; absent or malformed, we report NOT verified,
+        # because the honest answer to "did the audit pass" when nothing checked is no.
+        "audit": dict(audit) if isinstance(audit := summary.get("audit"), Mapping) and audit
+                 else {"log_verified": False, "tampered": False, "steps_checked": 0},
+        # Present because the opponent emits it and a grader compares the pair. Ours said
+        # 29 where yanell11's said 28 on the same sub-games (2026-08-17); omitting the
+        # field hid the disagreement rather than settling it.
+        "steps": int(summary.get("steps", 0) or 0),
     }
 
 
@@ -139,4 +150,13 @@ def build_final_result(
                 "diversity_reward_applied", dict.fromkeys(groups, False)),
         },
         "mutual_agreement": {"sha256": config_sha256, "confirmed": True},
+        # Whether this series counts, stated rather than inferred. Absent until
+        # 2026-08-17, so nothing in our artifact separated a rehearsal from a graded game
+        # -- and we sent five friendly reports that a reader could only tell apart by the
+        # recipient. yanell11's own report carries {"counted": false, "reason": "friendly"};
+        # this is the same field, deliberately matching their spelling so the two files
+        # read as one pair. Defaults to uncounted: a game claimed as counted when it was a
+        # rehearsal is the more expensive mistake of the two.
+        "league": {"counted": bool(league.get("counted", False)),
+                   "reason": str(league.get("reason", "friendly"))},
     }

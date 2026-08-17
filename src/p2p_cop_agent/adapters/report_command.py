@@ -27,6 +27,7 @@ from p2p_cop_agent.adapters.report_identity import (
 )
 from p2p_cop_agent.reporting.gmail_message import build_report_message, encoded_message
 from p2p_cop_agent.reporting.gmail_transport import http_status_of, make_transmit
+from p2p_cop_agent.reporting.log_audit import verify_own_commitments
 from p2p_cop_agent.reporting.result_template import build_final_result, sub_game_row
 from p2p_cop_agent.reporting.send_report import ReportSender
 from p2p_cop_agent.shared.private_config import load_private_config
@@ -50,6 +51,16 @@ def gather_summaries(directories: list[Path]) -> list[dict]:
             agreement = data.get("mutual_agreement") or {}
             summary["config_sha256"] = agreement.get("sha256", "")
             summary["confirmed"] = agreement.get("confirmed") is True
+            # Verify HERE, from the revealed log itself, rather than trusting whatever the
+            # summary happens to carry. The revealed records hold `commit` beside the
+            # `payload` and `nonce` that produced it, so every commitment is recomputable
+            # at report time -- which also covers logs written before the check existed.
+            # Without this the report block said `log_verified: True` as a hardcoded
+            # literal; with only the summary to go on it would say False for every log
+            # already on disk. Neither is the truth, and the truth is cheap to obtain.
+            verified = verify_own_commitments(data.get("records") or [])
+            if verified.get("steps_checked"):
+                summary["audit"] = verified
             summaries.append(summary)
     if not summaries:
         raise ReportCommandError(f"no log_*.json under {[str(d) for d in directories]}")

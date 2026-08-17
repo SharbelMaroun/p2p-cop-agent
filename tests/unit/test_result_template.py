@@ -58,7 +58,26 @@ def test_per_sub_game_rows_carry_per_team_members() -> None:
     assert row["roles"] == {"sharNamr": "cop", "uoh-ay26": "thief"}
     assert row["github_commit"] == {"sharNamr": "a" * 40, "uoh-ay26": "b" * 40}
     assert row["score"] == {"sharNamr": 20, "uoh-ay26": 5}
-    assert row["audit"] == {"log_verified": True, "tampered": False}
+
+
+def test_an_unverified_log_is_reported_unverified() -> None:
+    """This asserted `{"log_verified": True, "tampered": False}` until 2026-08-17.
+
+    It passed because the template emitted those literals unconditionally, so the test and
+    the code agreed on a claim neither had earned -- every report said the log had been
+    verified when nothing had checked one. The fixture summary carries no `audit`, so the
+    honest answer here is NOT verified, and that is now what both assert.
+    `reporting.log_audit` supplies the real value when a log is present.
+    """
+    row = build()["sub_games"][1]
+    assert row["audit"]["log_verified"] is False
+    assert row["audit"]["steps_checked"] == 0
+
+
+def test_a_verified_log_carries_its_verdict_through() -> None:
+    earned = {"log_verified": True, "tampered": False, "steps_checked": 25}
+    row = sub_game_row({**summary(2, "police", "capture"), "audit": earned}, GROUPS)
+    assert row["audit"] == earned
 
 
 def test_the_series_totals_read_ninety_thirty() -> None:

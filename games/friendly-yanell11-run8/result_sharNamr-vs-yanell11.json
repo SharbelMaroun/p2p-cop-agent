@@ -1,0 +1,270 @@
+{
+  "_schema": "result-report",
+  "final_result": {
+    "diversity_reward_applied": {
+      "sharNamr": false,
+      "yanell11": false
+    },
+    "first_meeting_between_groups": false,
+    "games_played_including_this": {
+      "sharNamr": 0,
+      "yanell11": 0
+    },
+    "series_tie": true,
+    "sub_games_won": {
+      "sharNamr": 3,
+      "yanell11": 3
+    },
+    "ties": 0,
+    "tokens_total_series": {
+      "sharNamr": 0,
+      "yanell11": 0
+    },
+    "total_score": {
+      "sharNamr": 77,
+      "yanell11": 77
+    },
+    "winner_group": null
+  },
+  "game_id": "sharNamr-vs-yanell11",
+  "game_uid": "9b80122e-75f9-c32d-5bff-abc032ae086b",
+  "groups": [
+    "sharNamr",
+    "yanell11"
+  ],
+  "league": {
+    "counted": false,
+    "reason": "friendly"
+  },
+  "links": {
+    "config": "config_sharNamr-vs-yanell11_g<NN>.json",
+    "declaration": "declaration_sharNamr-vs-yanell11.json",
+    "log": "log_sharNamr-vs-yanell11_g<NN>.json",
+    "result": "result_sharNamr-vs-yanell11.json"
+  },
+  "mutual_agreement": {
+    "confirmed": true,
+    "sha256": "98aca36eac1ead95069966fec00c7bc65a3bbf4aaf814f4cae1187767f5d9de9"
+  },
+  "num_sub_games": 6,
+  "report_type": "final_game_result",
+  "repositories": [
+    "https://github.com/SharbelMaroun/p2p-cop-agent",
+    "https://github.com/SharbelMaroun/p2p-thief-agent",
+    "https://github.com/Nell-Kh/police-agent",
+    "https://github.com/Nell-Kh/thief-agent"
+  ],
+  "schema_version": "1.1",
+  "series_consensus": {
+    "consensus_sha": "98aca36eac1ead95069966fec00c7bc65a3bbf4aaf814f4cae1187767f5d9de9",
+    "game_id": "sharNamr-vs-yanell11",
+    "game_uid": "9b80122e-75f9-c32d-5bff-abc032ae086b"
+  },
+  "sub_games": [
+    {
+      "audit": {
+        "log_verified": true,
+        "steps_checked": 25,
+        "tampered": false
+      },
+      "ended_at": "2026-08-17T08:16:49.543698+00:00",
+      "github_commit": {
+        "sharNamr": "7d13ab17c0048238a8acaa0b08354341c6210f53",
+        "yanell11": "unknown"
+      },
+      "log_files": {
+        "sharNamr": "log_sharNamr-vs-yanell11_g01.json",
+        "yanell11": "log_sharNamr-vs-yanell11_g01.json"
+      },
+      "result": "capture",
+      "roles": {
+        "sharNamr": "cop",
+        "yanell11": "thief"
+      },
+      "score": {
+        "sharNamr": 20,
+        "yanell11": 5
+      },
+      "started_at": "2026-08-17T08:15:12.270738+00:00",
+      "steps": 26,
+      "sub_game_number": 1,
+      "tie": false,
+      "tokens": {
+        "sharNamr": 0,
+        "yanell11": 0
+      },
+      "winner_group": "sharNamr"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "steps_checked": 29,
+        "tampered": false
+      },
+      "ended_at": "2026-08-17T08:17:35.292279+00:00",
+      "github_commit": {
+        "sharNamr": "a74e1a232d82d49bcb627601f9f49f93c4b83ab9",
+        "yanell11": "unknown"
+      },
+      "log_files": {
+        "sharNamr": "log_sharNamr-vs-yanell11_g02.json",
+        "yanell11": "log_sharNamr-vs-yanell11_g02.json"
+      },
+      "result": "capture",
+      "roles": {
+        "sharNamr": "thief",
+        "yanell11": "cop"
+      },
+      "score": {
+        "sharNamr": 5,
+        "yanell11": 20
+      },
+      "started_at": "2026-08-17T08:16:55.072555+00:00",
+      "steps": 29,
+      "sub_game_number": 2,
+      "tie": false,
+      "tokens": {
+        "sharNamr": 0,
+        "yanell11": 0
+      },
+      "winner_group": "yanell11"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "steps_checked": 25,
+        "tampered": false
+      },
+      "ended_at": "2026-08-17T08:18:24.914200+00:00",
+      "github_commit": {
+        "sharNamr": "7d13ab17c0048238a8acaa0b08354341c6210f53",
+        "yanell11": "unknown"
+      },
+      "log_files": {
+        "sharNamr": "log_sharNamr-vs-yanell11_g03.json",
+        "yanell11": "log_sharNamr-vs-yanell11_g03.json"
+      },
+      "result": "capture",
+      "roles": {
+        "sharNamr": "cop",
+        "yanell11": "thief"
+      },
+      "score": {
+        "sharNamr": 20,
+        "yanell11": 5
+      },
+      "started_at": "2026-08-17T08:17:38.590754+00:00",
+      "steps": 26,
+      "sub_game_number": 3,
+      "tie": false,
+      "tokens": {
+        "sharNamr": 0,
+        "yanell11": 0
+      },
+      "winner_group": "sharNamr"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "steps_checked": 29,
+        "tampered": false
+      },
+      "ended_at": "2026-08-17T08:19:15.094756+00:00",
+      "github_commit": {
+        "sharNamr": "a74e1a232d82d49bcb627601f9f49f93c4b83ab9",
+        "yanell11": "unknown"
+      },
+      "log_files": {
+        "sharNamr": "log_sharNamr-vs-yanell11_g04.json",
+        "yanell11": "log_sharNamr-vs-yanell11_g04.json"
+      },
+      "result": "capture",
+      "roles": {
+        "sharNamr": "thief",
+        "yanell11": "cop"
+      },
+      "score": {
+        "sharNamr": 5,
+        "yanell11": 20
+      },
+      "started_at": "2026-08-17T08:18:32.588789+00:00",
+      "steps": 29,
+      "sub_game_number": 4,
+      "tie": false,
+      "tokens": {
+        "sharNamr": 0,
+        "yanell11": 0
+      },
+      "winner_group": "yanell11"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "steps_checked": 25,
+        "tampered": false
+      },
+      "ended_at": "2026-08-17T08:20:52.092588+00:00",
+      "github_commit": {
+        "sharNamr": "7d13ab17c0048238a8acaa0b08354341c6210f53",
+        "yanell11": "unknown"
+      },
+      "log_files": {
+        "sharNamr": "log_sharNamr-vs-yanell11_g05.json",
+        "yanell11": "log_sharNamr-vs-yanell11_g05.json"
+      },
+      "result": "capture",
+      "roles": {
+        "sharNamr": "cop",
+        "yanell11": "thief"
+      },
+      "score": {
+        "sharNamr": 20,
+        "yanell11": 5
+      },
+      "started_at": "2026-08-17T08:19:18.267096+00:00",
+      "steps": 26,
+      "sub_game_number": 5,
+      "tie": false,
+      "tokens": {
+        "sharNamr": 0,
+        "yanell11": 0
+      },
+      "winner_group": "sharNamr"
+    },
+    {
+      "audit": {
+        "log_verified": true,
+        "steps_checked": 29,
+        "tampered": false
+      },
+      "ended_at": "2026-08-17T08:21:39.097553+00:00",
+      "github_commit": {
+        "sharNamr": "a74e1a232d82d49bcb627601f9f49f93c4b83ab9",
+        "yanell11": "unknown"
+      },
+      "log_files": {
+        "sharNamr": "log_sharNamr-vs-yanell11_g06.json",
+        "yanell11": "log_sharNamr-vs-yanell11_g06.json"
+      },
+      "result": "capture",
+      "roles": {
+        "sharNamr": "thief",
+        "yanell11": "cop"
+      },
+      "score": {
+        "sharNamr": 5,
+        "yanell11": 20
+      },
+      "started_at": "2026-08-17T08:20:58.086696+00:00",
+      "steps": 29,
+      "sub_game_number": 6,
+      "tie": false,
+      "tokens": {
+        "sharNamr": 0,
+        "yanell11": 0
+      },
+      "winner_group": "yanell11"
+    }
+  ],
+  "timezone": "UTC"
+}
