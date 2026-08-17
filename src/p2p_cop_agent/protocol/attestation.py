@@ -132,6 +132,18 @@ def build_step_zero(
     return {
         "step": 0,
         "type": "system_spec",
+        # `github_commit` at TOP LEVEL as well as nested, added 2026-08-17. This peer sealed
+        # the commit only as `code.git_commit` while the companion Thief sealed it as a
+        # top-level `github_commit` -- one team, two shapes, the same split that had the two
+        # repositories declaring different scent models. `yanell11`'s reader looks for the
+        # top-level key and is NOT role-limited, so it read our Thief's commit in every
+        # sub-game and filed `"unknown"` for our Cop in every sub-game. The gap looked
+        # symmetric from both sides and was ours alone.
+        #
+        # Both keys carry the identical value; the nested one stays because it is what
+        # existing sealed records committed to, and removing it would change the meaning of
+        # a field peers may already parse.
+        "github_commit": git_commit,
         "code": {"git_commit": git_commit},
         "game": {"game_id": _require_nonempty(game_id, "game_id"), "config_sha256": config_sha256},
         "group": {"group_id": _require_nonempty(group_id, "group_id")},

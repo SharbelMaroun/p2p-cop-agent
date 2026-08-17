@@ -173,6 +173,13 @@ def serve_match(
             artifacts_dir, game_id=game_id, sub_game=sub_game, identity=identity,
             opponent=result.agreement.opponent_identity or {},
             config_sha256=sdk.config_sha256, outcome=result.outcome.outcome,
+            # The SHARED uid, not `config_sha256[:32]`. That value was computed only by
+            # this side, so the Cop's log named the series something no other artifact and
+            # no peer could reproduce -- while the companion Thief's log carried the real
+            # derivation and the result carried the labelled one. Three identities for one
+            # series inside our own evidence, which `yanell11` verified their side against
+            # and found clean. The label is threaded so all four artifact families agree.
+            game_config=dict(sdk.game_config),
             steps=result.outcome.steps, started_at=started_at,
             audit=result.outcome.audit, reason=result.outcome.reason,
             opponent_audits=getattr(peer, "opponent_audits", []),

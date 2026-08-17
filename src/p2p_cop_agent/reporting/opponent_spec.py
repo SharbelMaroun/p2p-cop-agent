@@ -42,7 +42,16 @@ def opponent_commit(audits: Sequence[Mapping[str, object]]) -> str | None:
     attestation is called; inventing ``"unknown"`` here would hide the difference between
     "they did not disclose it" and "we did not look".
     """
-    commit = opponent_step_zero(audits).get("github_commit")
-    if isinstance(commit, str) and commit.strip():
-        return commit.strip()
+    payload = opponent_step_zero(audits)
+    # Top level first, then nested. Our OWN Cop sealed the commit only as
+    # `code.git_commit` until 2026-08-17 while our Thief used the top-level key, so a peer
+    # reading one shape saw "unknown" for half a series. Accepting both here means a peer
+    # who took our old shape as the convention is still readable -- we tightened what we
+    # emit and left what we accept broad, which is the only direction that cannot break
+    # somebody else.
+    for candidate in (payload.get("github_commit"),
+                      (payload.get("code") or {}).get("git_commit")
+                      if isinstance(payload.get("code"), Mapping) else None):
+        if isinstance(candidate, str) and candidate.strip():
+            return candidate.strip()
     return None

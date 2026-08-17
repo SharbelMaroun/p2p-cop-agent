@@ -24,6 +24,7 @@ from p2p_cop_agent.reporting.log_artifact import build_log, reveal_log
 from p2p_cop_agent.reporting.log_audit import verify_own_commitments
 from p2p_cop_agent.reporting.naming import log_filename
 from p2p_cop_agent.reporting.opponent_spec import opponent_commit
+from p2p_cop_agent.reporting.shared_identity import shared_game_uid
 
 # Outcome name -> the role the scoring table pays for it; a technical loss pays no one.
 WINNER_BY_OUTCOME = {"CAPTURE": "police", "SURVIVAL": "thief"}
@@ -52,6 +53,7 @@ def persist_match(
     audit: Mapping[str, object],
     reason: str,
     opponent_audits: Sequence[dict],
+    game_config: Mapping[str, object] | None = None,
 ) -> None:
     """Write everything one finished sub-game leaves behind (`C-051`).
 
@@ -64,7 +66,11 @@ def persist_match(
     from p2p_cop_agent.adapters.opponent_audit import write_opponent_audit  # noqa: PLC0415
 
     write_match_log(
-        directory, game_id=game_id, game_uid=config_sha256[:32], sub_game=sub_game,
+        directory, game_id=game_id, game_uid=shared_game_uid(
+            game_config, game_id,
+            [str(identity.get("group_id", "unknown")),
+             str(opponent.get("group_id", "unknown"))], config_sha256),
+        sub_game=sub_game,
         group_id=str(identity.get("group_id", "unknown")),
         opponent_group_id=str(opponent.get("group_id", "unknown")),
         config_sha256=config_sha256, outcome=outcome, steps=steps,
