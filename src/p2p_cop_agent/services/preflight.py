@@ -35,14 +35,20 @@ from p2p_cop_agent.protocol.negotiation import (
     terms_from_config,
     validate_participants,
 )
-from p2p_cop_agent.services.credential_location import credential_path
+
+# ARMED/DISABLED are re-exported deliberately. They moved to `reporting_readiness` with the
+# check that uses them, but callers and tests import them from here, and quietly relocating a
+# public name is a break dressed as a tidy-up: `ruff --fix` removed them as unused and took
+# the whole of test_preflight with it.
+from p2p_cop_agent.services.reporting_readiness import (  # noqa: F401
+    ARMED,
+    DISABLED,
+    reporting_check,
+)
 from p2p_cop_agent.shared import __version__
 from p2p_cop_agent.shared.config import JsonObject
 from p2p_cop_agent.shared.private_config import load_private_config, opponent_url, public_url
 from p2p_cop_agent.strategy.scent_lock import scent_model_hash
-
-ARMED = "ARMED"
-DISABLED = "DISABLED"
 
 # Match-config schema versions this build implements. The book's Appendix B example prints
 # `"schema_version": "1.2"` (`inst/police_thief_p2p_Summary.md:2927`), which is why 1.2 is the
@@ -68,21 +74,6 @@ class Check:
 
 def _identity() -> Check:
     return Check("version", f"code {__version__}")
-
-
-def _reporting(config: object) -> Check:
-    """**The question this command was built to answer.** Absent credential = cannot send.
-
-    Reported as a failure only when a credential *is* present, because for an uncounted
-    friendly series an armed sender is the surprising state, not the safe one.
-    """
-    try:
-        path = credential_path(config)  # type: ignore[arg-type]
-    except Exception as exc:  # noqa: BLE001 - any refusal means no usable credential
-        return Check("reporting", f"{DISABLED} ({exc})", ok=None)
-    if not path.exists():
-        return Check("reporting", f"{DISABLED} (no credential at {path})", ok=None)
-    return Check("reporting", f"{ARMED} (credential present at {path})", ok=False)
 
 
 def _port(config: object) -> Check:
@@ -173,5 +164,5 @@ def preflight(match_path: Path, private_path: Path) -> list[Check]:
     group_id = game_section.get("group_id") if isinstance(game_section, dict) else None
     checks.extend(_match(match_path, group_id))
     checks.append(Check("scent lock", scent_model_hash()))
-    checks.append(_reporting(config))
+    checks.append(reporting_check(config))
     return checks
